@@ -1,8 +1,16 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import Image from 'react-bootstrap/Image';
 import { StyledMain } from './styled';
 
 const Logo = () => {
-    return <StyledMain>Logo</StyledMain>;
+    return (
+        <StyledMain>
+            <Link to="/">
+                <Image src="assets/logo.png" className="responsive" />
+            </Link>
+        </StyledMain>
+    );
 };
 
 export default Logo;
