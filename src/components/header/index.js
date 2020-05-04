@@ -1,11 +1,15 @@
 import React from 'react';
+import Logo from '../logo';
+import Menu from '../menu';
+import { StyledMain } from './styled';
 
 const Header = () => {
-    return <div>header</div>;
+    return (
+        <StyledMain>
+            <Logo />
+            <Menu />
+        </StyledMain>
+    );
 };
 
 export default Header;
-
-Header.propTypes = {};
-
-Header.defaultProps = {};
