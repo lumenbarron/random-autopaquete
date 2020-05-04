@@ -1,14 +1,8 @@
 import React from 'react';
-import { Wrapper, Copyright } from './styled';
-
-const year = new Date().getFullYear();
+// import {  } from './styled';
 
 const Footer = () => {
-    return (
-        <Wrapper>
-            <Copyright>© Copyright Nexxtway {year}</Copyright>
-        </Wrapper>
-    );
+    return <div>Footer</div>;
 };
 
 export default Footer;
