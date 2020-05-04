@@ -2,19 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Header from '../header';
 import Footer from '../footer';
+import { StyledMain } from './styled';
 
 const Layout = ({ children }) => (
     <>
-        <div>
+        <StyledMain>
             <Header />
             <div>{children}</div>
             <Footer />
-        </div>
+        </StyledMain>
     </>
 );
 
+Layout.propTypes = {
+    children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
+};
+
+Layout.defaultProps = {
+    children: undefined,
+};
+
 export default Layout;
-
-Layout.propTypes = {};
-
-Layout.defaultProps = {};
