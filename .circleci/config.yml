@@ -1,0 +1,92 @@
+# JavaScript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+
+defaults: &defaults
+    working_directory: ~/repo
+    docker:
+        - image: circleci/node:10.15
+
+jobs:
+    build_and_test:
+        <<: *defaults
+
+        steps:
+            - checkout
+
+            # Download and cache dependencies
+            - restore_cache:
+                  keys:
+                      - v1-dependencies-{{ checksum "yarn.lock" }}
+                      # fallback to using the latest cache if no exact match is found
+                      - v1-dependencies-
+
+            - run: yarn install
+
+            - save_cache:
+                  paths:
+                      - node_modules
+                  key: v1-dependencies-{{ checksum "yarn.lock" }}
+
+            - run: yarn lint
+
+            - run:
+                  name: run test
+                  command: |
+                      if [ -n "$COVERALLS_REPO_TOKEN" ]; then
+                          yarn test --ci --maxWorkers=2 --coverage --coverageReporters=text-lcov | ./node_modules/coveralls/bin/coveralls.js
+                      else
+                          yarn test --ci --maxWorkers=2
+                      fi
+
+    deploy_firebase:
+        <<: *defaults
+
+        steps:
+            - checkout
+
+            # Download and cache dependencies
+            - restore_cache:
+                  keys:
+                      - v1-dependencies-{{ checksum "yarn.lock" }}
+                      # fallback to using the latest cache if no exact match is found
+                      - v1-dependencies-
+
+            - run:
+                  name: Create .env file
+                  command: |
+                      touch .env;
+                      echo REACT_APP_API_KEY=$REACT_APP_API_KEY >> .env;
+                      echo REACT_APP_AUTH_DOMAIN=$REACT_APP_AUTH_DOMAIN >> .env;
+                      echo REACT_APP_DATABASE_URL=$REACT_APP_DATABASE_URL >> .env;
+                      echo REACT_APP_PROJECT_ID=$REACT_APP_PROJECT_ID >> .env;
+                      echo REACT_APP_STORAGE_BUCKET=$REACT_APP_STORAGE_BUCKET >> .env;
+                      echo REACT_APP_MESSAGING_SENDER_ID=$REACT_APP_MESSAGING_SENDER_ID >> .env;
+                      echo REACT_APP_APP_ID=$REACT_APP_APP_ID >> .env;
+                      echo REACT_APP_MEASUREMENT_ID=$REACT_APP_MEASUREMENT_ID >> .env;
+                      echo REACT_APP_ALGOLIA_APP_ID=$REACT_APP_ALGOLIA_APP_ID >> .env;
+                      echo REACT_APP_ALGOLIA_SEARCH_KEY=$REACT_APP_ALGOLIA_SEARCH_KEY >> .env;
+
+            - run: yarn install
+
+            - run:
+                  name: 'Build Project'
+                  command: 'yarn build'
+
+            - run:
+                  name: 'Deploy to Firebase Hosting'
+                  command: './node_modules/.bin/firebase deploy --only hosting --token=$FIREBASE_TOKEN'
+
+workflows:
+    version: 2
+    build_and_test:
+        jobs:
+            - build_and_test
+            - deploy_firebase:
+                  requires:
+                      - build_and_test
+                  filters:
+                      branches:
+                          only: master
