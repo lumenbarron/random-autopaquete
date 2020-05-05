@@ -50,5 +50,9 @@ export const StyledMain = styled.div`
 
     a {
         color: ${theme.colors.primary};
+
+        :hover {
+            text-decoration: none;
+        }
     }
 `;

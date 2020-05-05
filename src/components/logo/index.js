@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Image from 'react-bootstrap/Image';
+import { Image } from 'react-bootstrap';
 import { StyledMain } from './styled';
 
 const Logo = () => {

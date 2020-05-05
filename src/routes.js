@@ -5,7 +5,10 @@ import Home from './pages/home';
 const AppRoutes = () => {
     return (
         <Switch>
-            <Route exact path="/" component={Home} />
+            <Route exact path="/enviar" component={Home} />
+            <Route exact path="/servicios" component={Home} />
+            <Route exact path="/cotizacion" component={Home} />
+            <Route exact path="/mi-cuenta" component={Home} />
             <Redirect to="/" />
         </Switch>
     );
