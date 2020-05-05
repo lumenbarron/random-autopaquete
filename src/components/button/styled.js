@@ -32,4 +32,28 @@ export const StyledButton = styled(Button).attrs(props => {
         `
             width: 120px;
     `};
+
+    ${props =>
+        props.fill &&
+        !props.outline &&
+        `
+        background: ${props.backgroundcolor} !important;
+        border: 2px solid ${props.backgroundcolor} !important;
+    `};
+
+    ${props =>
+        !props.fill &&
+        `
+        color: ${theme.colors.mainFont} !important;
+        background: none !important;
+        border: 2px solid transparent !important;
+    `};
 `;
+
+/* 
+    ${props =>
+        props.fill &&
+        `
+        background: none !important;
+        border: none !important;
+    `}; */
