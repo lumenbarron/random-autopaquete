@@ -11,6 +11,7 @@ export const StyledMain = styled.div`
     max-width: 1400px;
     margin: 0 auto;
     box-sizing: border-box;
+    padding: 0 25px;
 
     h1,
     h2,
