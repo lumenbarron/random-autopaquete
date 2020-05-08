@@ -12,16 +12,13 @@ import { StyledFooter } from './styled';
 const Footer = () => {
     return (
         <StyledFooter>
+            <div className="border" />
             <div className="main-footer">
                 <div className="container">
                     <div className="row">
                         {/* Column 1 */}
                         <div className="col">
-                            <img
-                                src="assets/truck-white.png"
-                                alt="LogoFooter"
-                                className="responsive"
-                            />
+                            <img src="assets/truck-white.png" alt="LogoFooter" />
                         </div>
                         {/* Column 2 */}
                         <div className="col">
@@ -34,7 +31,7 @@ const Footer = () => {
                             </ul>
                         </div>
                         {/* Column 3 */}
-                        <div className="col">
+                        <div className="col col3">
                             <h4>Contacto</h4>
                             <ul>
                                 <li>
