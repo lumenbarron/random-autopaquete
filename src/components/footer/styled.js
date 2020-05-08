@@ -2,15 +2,9 @@ import styled from 'styled-components';
 import theme from '../../theme';
 
 export const StyledFooter = styled.div`
-    .border {
-        height: 100px;
-        border-top-left-radius: 750px;
-        border-top-right-radius: 750px;
-        background: #780000;
-    }
     .main-footer {
         color: #fff;
-        background: linear-gradient(#780000, #ab0000);
+        background-color: ${theme.colors.primary};
         padding-top: 5em;
         position: relative;
         bottom: 0;
@@ -31,7 +25,7 @@ export const StyledFooter = styled.div`
         background-color: #2f2e2e;
         color: #fff;
         height: 50px;
-        padding-top: 1em;
+        padding-top: em;
     }
 
     .footertwo p a {

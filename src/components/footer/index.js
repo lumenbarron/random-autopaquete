@@ -12,7 +12,6 @@ import { StyledFooter } from './styled';
 const Footer = () => {
     return (
         <StyledFooter>
-            <div className="border" />
             <div className="main-footer">
                 <div className="container">
                     <div className="row">
