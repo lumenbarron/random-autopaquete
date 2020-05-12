@@ -5,7 +5,7 @@ import PageContent from '../../components/page-content';
 const ConditionsPage = () => {
     return (
         <StyledConditions>
-            <div>
+            <div className="container">
                 <div className="white-space" />
                 <h1 className="title">Términos y Condiciones</h1>
                 <div className="white-space" />

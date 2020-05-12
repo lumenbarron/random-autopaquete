@@ -5,7 +5,7 @@ export const StyledConditions = styled.div`
         position: relative;
         width: 100%;
         min-height: 100vh;
-        padding: 0 250px;
+        padding: 0 100px;
         margin: 0;
     }
 
@@ -30,7 +30,8 @@ export const StyledConditions = styled.div`
     .title {
         margin: 0;
         line-height: 1.15;
-        font-size: 4rem;
+        font-size: 3rem;
+        font-weight: 600;
     }
 
     .title,
