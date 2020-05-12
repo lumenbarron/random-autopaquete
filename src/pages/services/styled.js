@@ -17,25 +17,29 @@ export const StyledServices = styled.div`
         }
 
         .videotwo{
-            left: 0;
-          width: 100%;
-          height: 100%;
+            left: 0 !important;
+          width: 100%!important;
+          height: 100% !important;
           object-fit;
             
         }
         h1{
           text-align: center;
-          font-size: 5rem;
-          color: #C94141; 
+          font-size: 60px !important;
+          color: #C94141;
+          font-weight: 600;
+           
         }
 
         h2{
           text-align: center;
-          color: #6B6B6B;
+          color: #6B6B6B !important;
+          font-size: 20px;
+          font-weight: 500;
         }
 
         p{
-          font-size: 2rem;
+          font-size: 1.3rem !important;
           color: #C94141;
           text-align: center;
         }
@@ -56,7 +60,9 @@ export const StyledServices = styled.div`
         
         img{
           display:block;
-          margin:auto;
+          margin: auto !important;
+          max-width: 100%;
+          height: 100px !important;
           
         }
 

@@ -6,22 +6,20 @@ const ServicesPage = () => {
     return (
         <StyledServices>
             <div>
-                <video src="./assets/videos/video.mp4" autoPlay="" muted="" loop="" />
-                <h1> Nuestros servicios</h1>
                 <ReactPlayer className="videotwo" url="./assets/videos/video.mp4" playing />
+                <div className="white-space" />
+                <h1> Nuestros servicios</h1>
+                <div className="white-space" />
                 <h2>Paqueterías para empresas + de 20 envíos</h2>
+                <div className="white-space" />
                 <div className="flex-container">
                     <div>
                         <img src="./assets/box-check.png" alt="Plataforma fácil de usar" />
                         <p>Plataforma fácil de usar</p>
                     </div>
                     <div>
-                        <img
-                            height="100px"
-                            src="./assets/world.png"
-                            alt="Tus envíos a mejor precio"
-                        />
-                        <p>Tus envíos a mejor preci o</p>
+                        <img src="./assets/world.png" alt="Tus envíos a mejor precio" />
+                        <p>Tus envíos a mejor precio</p>
                     </div>
                     <div>
                         <img
@@ -53,6 +51,8 @@ const ServicesPage = () => {
                         <p>Genera tu guía fácil y rápido</p>
                     </div>
                 </div>
+                <div className="white-space" />
+                <div className="white-space" />
             </div>
         </StyledServices>
     );

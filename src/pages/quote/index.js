@@ -7,11 +7,11 @@ const QuotePage = () => {
             <div>
                 <h1 className="title">Solicitud de cotización</h1>
             </div>
-            <div>
+            <div className="flexbox, container">
                 <form
+                    className="formulario"
                     action="https://incrementacrm.com/api/widget/web-form/c38333ae647c560bc985f8bcb1ecc96bea72c0fc"
                     method="post"
-                    className="container"
                     id="ClientWebFormForm"
                     acceptCharset="utf-8"
                 >
@@ -55,7 +55,6 @@ const QuotePage = () => {
                         <label htmlFor="ClientEmail">Email</label>
                         <input
                             name="data[Client][email]"
-                            className="form-control"
                             placeholder="Email"
                             type="email"
                             id="ClientEmail"
@@ -68,20 +67,19 @@ const QuotePage = () => {
                         </label>
                         <input
                             name="data[Client][realizas_mas_de_20_envios_al_mes]"
-                            className="form-control"
-                            placeholder="øRealizas m·s de 20 envÌos al mes?"
+                            placeholder="¿Realizas m·s de 20 envÌos al mes?"
                             type="text"
                             id="ClientRealizasMasDe20EnviosAlMes"
                         />
                     </div>
 
                     <div className="submit">
-                        <input className="btn btn-default" type="submit" value="Enviar" />
+                        <input className="boton" type="submit" value="Enviar" />
                     </div>
                 </form>
             </div>
             <div>
-                <img src="./assets/quote.png" alt="Cotización.png" />
+                <img className="flexbox" src="./assets/quote.png" alt="Cotización.png" />
             </div>
         </StyledQuote>
     );
