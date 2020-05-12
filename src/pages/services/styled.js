@@ -16,7 +16,7 @@ export const StyledServices = styled.div`
           
         }
 
-        .ReactPlayer{
+        .videotwo{
             left: 0;
           width: 100%;
           height: 100%;

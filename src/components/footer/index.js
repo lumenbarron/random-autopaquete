@@ -23,9 +23,9 @@ const Footer = () => {
                         <div className="col">
                             <h4>Horario</h4>
                             <ul>
-                                <li>Lunes - Viernes</li>
+                                <li> Lunes - Viernes</li>
                                 <li>
-                                    <FontAwesomeIcon icon={faClock} />9 am - 5 pm
+                                    <FontAwesomeIcon className="icon" icon={faClock} />9 am - 5 pm
                                 </li>
                             </ul>
                         </div>
@@ -34,19 +34,19 @@ const Footer = () => {
                             <h4>Contacto</h4>
                             <ul>
                                 <li>
-                                    <FontAwesomeIcon icon={faEnvelope} />
+                                    <FontAwesomeIcon className="icon" icon={faEnvelope} />
                                     atencion1@autopaquete.com
                                 </li>
                                 <li>
-                                    <FontAwesomeIcon icon={faPhoneAlt} />
+                                    <FontAwesomeIcon className="icon" icon={faPhoneAlt} />
                                     01 (33) 1542 1033
                                 </li>
                                 <li>
-                                    <FontAwesomeIcon icon={faComment} />
+                                    <FontAwesomeIcon className="icon" icon={faComment} />
                                     WhatsApp: +52 (33) 2297 7746
                                 </li>
                                 <li>
-                                    <FontAwesomeIcon icon={faLocationArrow} />
+                                    <FontAwesomeIcon className="icon" icon={faLocationArrow} />
                                     Guadalajara, Jalisco.
                                 </li>
                             </ul>

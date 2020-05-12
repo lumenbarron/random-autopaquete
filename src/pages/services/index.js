@@ -8,34 +8,37 @@ const ServicesPage = () => {
             <div>
                 <video src="./assets/videos/video.mp4" autoPlay="" muted="" loop="" />
                 <h1> Nuestros servicios</h1>
-                <ReactPlayer url="./assets/videos/video.mp4" playing />
+                <ReactPlayer className="videotwo" url="./assets/videos/video.mp4" playing />
                 <h2>Paqueterías para empresas + de 20 envíos</h2>
-                <div>
-                    <img src="./assets/box-check.png" alt="Plataforma fácil de usar" />
-                    <p>Plataforma fácil de usar</p>
-                </div>
-                <div>
-                    <img height="100px" src="./assets/world.png" alt="Tus envíos a mejor precio" />
-                    <p>Tus envíos a mejor preci o</p>
-                </div>
-                <div>
-                    <img
-                        src="/assets/warehouse.png"
-                        alt="Organiza y controla tus envíos fácilmente"
-                    />
-                    <p>Organiza y controla tus envíos fácilmente</p>
-                </div>
-                <div>
-                    <img src="/assets/truck.png" alt="Recolección sin costo" />
-                    <p>Recolección sin costo</p>
+                <div className="flex-container">
+                    <div>
+                        <img src="./assets/box-check.png" alt="Plataforma fácil de usar" />
+                        <p>Plataforma fácil de usar</p>
+                    </div>
+                    <div>
+                        <img
+                            height="100px"
+                            src="./assets/world.png"
+                            alt="Tus envíos a mejor precio"
+                        />
+                        <p>Tus envíos a mejor preci o</p>
+                    </div>
+                    <div>
+                        <img
+                            src="/assets/warehouse.png"
+                            alt="Organiza y controla tus envíos fácilmente"
+                        />
+                        <p>Organiza y controla tus envíos fácilmente</p>
+                    </div>
+                    <div>
+                        <img src="/assets/truck.png" alt="Recolección sin costo" />
+                        <p>Recolección sin costo</p>
+                    </div>
                 </div>
                 <div className="white-space" />
                 <h2>Paqueterías para - de 20 envíos</h2>
                 <div className="white-space" />
-                <div>
-                    <img src="./assets/box-check.png" alt="Plataforma fácil de usar" />
-                    <p>Plataforma fácil de usar</p>
-                </div>
+
                 <div className="flex-container2">
                     <div>
                         <img

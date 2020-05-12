@@ -25,7 +25,7 @@ export const StyledFooter = styled.div`
         background-color: #2f2e2e;
         color: #fff;
         height: 50px;
-        padding-top: em;
+        padding-top: 1em;
     }
 
     .footertwo p a {
@@ -39,5 +39,9 @@ export const StyledFooter = styled.div`
     .col ul li,
     h4 {
         text-align: left;
+    }
+
+    .icon {
+        margin: 0px 10px;
     }
 `;
