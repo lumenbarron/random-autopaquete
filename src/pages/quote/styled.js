@@ -48,6 +48,7 @@ export const StyledQuote = styled.div`
         color: #bb4b46;
         text-decoration: none;
         text-aline: center;
+        font-weight: 600;
       }
       .flexbox {
         display: flex;

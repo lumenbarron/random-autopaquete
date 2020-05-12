@@ -40,8 +40,9 @@ export const StyledServices = styled.div`
 
         p{
           font-size: 1.3rem !important;
-          color: #C94141;
-          text-align: center;
+          color: #C94141 !important;
+          text-align: center !important;
+          font-weight: 800;
         }
         
         .flex-container, .flex-container2 {
@@ -69,6 +70,11 @@ export const StyledServices = styled.div`
         .white-space{
           height: 50px;
         }
+
+        .white-spacetwo{
+          height: 20px;
+        }
+
 
         @media (max-width: 600px) {
           .div {

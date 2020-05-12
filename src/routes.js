@@ -12,6 +12,7 @@ import AccountPage from './pages/account';
 import ServicesPage from './pages/services';
 import OverweightPage from './pages/overweight';
 import ConditionsPage from './pages/conditions';
+import LoginPage from './pages/login';
 
 const AppRoutes = () => {
     return (
@@ -27,7 +28,7 @@ const AppRoutes = () => {
             <Route exact path="/servicios" component={ServicesPage} />
             <Route exact path="/sobrepeso" component={OverweightPage} />
             <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
-
+            <Route extrac path="/login" component={LoginPage} />
             <Redirect to="/" />
         </Switch>
     );
