@@ -4,7 +4,7 @@ import theme from '../../theme';
 export const StyledFooter = styled.div`
     .main-footer {
         color: #fff;
-        background-color: ${theme.colors.primary};
+        background: linear-gradient(#780000, ${theme.colors.primary});
         padding-top: 5em;
         position: relative;
         bottom: 0;

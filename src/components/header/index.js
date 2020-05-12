@@ -7,6 +7,7 @@ const Header = () => {
     return (
         <StyledMain>
             <Logo />
+
             <Menu />
         </StyledMain>
     );
