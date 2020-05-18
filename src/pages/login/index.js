@@ -22,6 +22,36 @@ const LoginPage = () => {
                     </Button>
                 </Form>
             </div>
+            <div>
+                <h1>Regístrate</h1>
+                <div>
+                    <form>
+                        <label>
+                            Nombre (s):
+                            <input type="text" name="name" />
+                        </label>
+                        <label>
+                            Apellido (s):
+                            <input type="text" name="name" />
+                        </label>{' '}
+                        <label>
+                            Correo:
+                            <input type="email" name="name" />
+                        </label>{' '}
+                        <label>
+                            Nombre de usuario:
+                            <input type="text" name="name" />
+                        </label>{' '}
+                        <label>
+                            Contraseña:
+                            <input type="password" name="name" />
+                        </label>
+                        <Button className="boton" type="submit">
+                            Unirse
+                        </Button>
+                    </form>
+                </div>
+            </div>
         </StyledLogin>
     );
 };

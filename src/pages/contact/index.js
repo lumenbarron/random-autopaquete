@@ -18,10 +18,26 @@ const ContactPage = () => {
                 <div>
                     <form>
                         <label>
-                            Name:
+                            Nombre (s):
                             <input type="text" name="name" />
                         </label>
-                        <input type="submit" value="Submit" />
+                        <label>
+                            Apellido (s):
+                            <input type="password" name="name" />
+                        </label>{' '}
+                        <label>
+                            Teléfono:
+                            <input type="text" name="name" />
+                        </label>{' '}
+                        <label>
+                            Correo:
+                            <input type="text" name="name" />
+                        </label>{' '}
+                        <label>
+                            Mensaje:
+                            <input type="text" name="name" />
+                        </label>
+                        <input type="submit" value=" Envar" />
                     </form>
                 </div>
                 <div className="col">
