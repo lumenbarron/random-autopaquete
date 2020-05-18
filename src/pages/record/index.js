@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const StyledBadge = styled(Badge)`
-    color: #1de9b6;
+    color: #09d3ac;
 `;
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
 const containerStyles = { height: 312 };
