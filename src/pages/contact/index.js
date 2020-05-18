@@ -1,6 +1,4 @@
 import React from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faClock,
@@ -13,12 +11,19 @@ import { StyledContact } from './styled';
 
 const ContactPage = () => {
     return (
-        <StyledContact className="container">
-            <div>
+        <StyledContact>
+            <div className="container">
                 <h1>Contacto</h1>
-
                 <div />
-
+                <div>
+                    <form>
+                        <label>
+                            Name:
+                            <input type="text" name="name" />
+                        </label>
+                        <input type="submit" value="Submit" />
+                    </form>
+                </div>
                 <div className="col">
                     <h4>Horario</h4>
                     <ul>
