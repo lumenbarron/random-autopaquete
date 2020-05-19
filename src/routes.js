@@ -20,7 +20,7 @@ const AppRoutes = () => {
         <Switch>
             <Route exact path="/" component={HomePage} />
             <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
-            <Route extrac path="/admin" component={AdminPage} />
+            <Route exact path="/admin" component={AdminPage} />
             <Route exact path="/contacto" component={ContactPage} />
             <Route exact path="/cotizacion" component={QuotePage} />
             <Route exact path="/direcciones" component={DirectionPage} />
@@ -30,10 +30,24 @@ const AppRoutes = () => {
             <Route exact path="/servicios" component={ServicesPage} />
             <Route exact path="/sobrepeso" component={OverweightPage} />
             <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
-            <Route extrac path="/login" component={LoginPage} />
+            <Route exact path="/login" component={LoginPage} />
             <Redirect to="/" />
         </Switch>
     );
 };
+
+const AppRoutes = () => {}
+  return (<Switch>
+            <Route path="/login" component={LoginPage} />
+            <Route path="/admin" component={AdminPage} />
+            <Route>
+              <Layout>
+                <Switch>
+                  <Route path="/aviso-de-privacidad" component={PrivacyPage} />
+                  <Route component={HomePage} />
+                </Switch>
+              </Layout>
+            </Route>
+          </Switch>);
 
 export default AppRoutes;

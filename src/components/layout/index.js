@@ -4,11 +4,11 @@ import Header from '../header';
 import Footer from '../footer';
 import { StyledMain } from './styled';
 
+
 const Layout = ({ children }) => (
     <>
         <StyledMain>
             <Header />
-
             <div>{children}</div>
             <Footer />
         </StyledMain>
