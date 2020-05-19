@@ -3,6 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 
 import HomePage from './pages/home';
 import PrivacyPage from './pages/privacy';
+import AdminPage from './pages/admin';
 import ContactPage from './pages/contact';
 import QuotePage from './pages/quote';
 import DirectionPage from './pages/direction';
@@ -19,6 +20,7 @@ const AppRoutes = () => {
         <Switch>
             <Route exact path="/" component={HomePage} />
             <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
+            <Route extrac path="/admin" component={AdminPage} />
             <Route exact path="/contacto" component={ContactPage} />
             <Route exact path="/cotizacion" component={QuotePage} />
             <Route exact path="/direcciones" component={DirectionPage} />

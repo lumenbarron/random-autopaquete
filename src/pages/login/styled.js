@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const StyledLogin = styled.div`
     h1 {
-        color: C94141 !important;
+        color: #C94141 !important;
         font-weight: 600;
     }
     .boton {
@@ -13,6 +13,11 @@ export const StyledLogin = styled.div`
     }
 
     .boton:hover {
-  background-color: #C94141;
-  color: white;
+        background-color: #C94141;
+        color: white;
+    }
+
+    .flexwrap{
+        
+    }
 `;

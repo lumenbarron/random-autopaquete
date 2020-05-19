@@ -76,10 +76,14 @@ export const StyledServices = styled.div`
         }
 
 
-        @media (max-width: 600px) {
+        @media (max-width: 306px) {
           .div {
             width: 100%;
             height: auto;
             flex-direction: column;
           }
+          .flex-container > div {
+            width: 50%;
+          }
+        }
 `;

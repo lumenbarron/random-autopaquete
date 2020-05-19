@@ -5,7 +5,7 @@ export const StyledConditions = styled.div`
         position: relative;
         width: 100%;
         min-height: 100vh;
-        padding: 0 150px;
+        padding: 0 140px;
         margin: 0;
     }
 

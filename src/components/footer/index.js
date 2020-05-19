@@ -35,7 +35,7 @@ const Footer = () => {
                             <ul>
                                 <li>
                                     <FontAwesomeIcon className="icon" icon={faEnvelope} />
-                                    atencion1@autopaquete.com
+                                    atencion@autopaquete.com
                                 </li>
                                 <li>
                                     <FontAwesomeIcon className="icon" icon={faPhoneAlt} />

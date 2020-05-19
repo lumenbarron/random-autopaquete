@@ -1,13 +1,13 @@
 import React from 'react';
-import { Column, Badge, TableWithBrowserPagination } from 'react-rainbow-components';
-import styled from 'styled-components';
+import { Column, TableWithBrowserPagination } from 'react-rainbow-components';
+import { StyledOverweight } from './styled';
 
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 256 };
 
 const OverweightPage = () => {
     return (
-        <div>
+        <StyledOverweight>
             <div>
                 <h1>Sobrepeso</h1>
 
@@ -29,7 +29,7 @@ const OverweightPage = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </StyledOverweight>
     );
 };
 
