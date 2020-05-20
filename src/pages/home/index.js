@@ -45,15 +45,21 @@ const HomePage = () => {
                 <p>Convenios corporativos</p>
             </div>
             <div>
-                <h1>Nuestros clientes</h1>
-                <img src="./assets/logo-rappi.png" alt="" />
-                <img src="./assets/logo-sello-rojo.png" alt="" />
-                <img src="./assets/logo-cloe.png" alt="" />
-                <img src="./assets/logo-chai.png" alt="" />
-                <img src="./assets/logo-artmosfera.png" alt="" />
-                <img src="./assets/logo-linguatectv.png" alt="" />
-                <img src="./assets/logo-peter-piper.png" alt="" />
-                <img src="./assets/logo-nine-west.png" alt="" />
+            <h1>Nuestros clientes</h1>
+                <div className="wrapper">
+                    <div className="slider"> 
+                        <div className="slide">
+                            <img src="./assets/logo-rappi.png" alt="" />
+                            <img src="./assets/logo-sello-rojo.png" alt="" />
+                            <img src="./assets/logo-cloe.png" alt="" />
+                            <img src="./assets/logo-chai.png" alt="" />
+                            <img src="./assets/logo-artmosfera.png" alt="" />
+                            <img src="./assets/logo-linguatectv.png" alt="" />
+                            <img src="./assets/logo-peter-piper.png" alt="" />
+                            <img src="./assets/logo-nine-west.png" alt="" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </StyledHome>
     );
