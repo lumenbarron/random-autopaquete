@@ -8,30 +8,18 @@ export const StyledQuote = styled.div`
     }
 
     .formulario {
-        max-width: 500px;
         margin: 2rem auto;
         padding: 2rem;
     }
 
-    .flexbox {
-        display: flex !important;
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .flexbox div.divflexbox {
-        width: 50%;
-    }
 
     label {
-        display: block;
         padding: 1rem 0 0.25rem;
         font-size: 14px;
         color: Black;
     }
 
     input {
-        display: block;
         width: 100%;
         border: 2px solid #b2b2b2;
         padding: 0.5rem;
@@ -59,8 +47,8 @@ export const StyledQuote = styled.div`
     }
 
     img {
-        margin-top: 50px;
-        padding: 0 90px 0 0;
+        margin-top: 90px;
+        min-width: 600px;
     }
 
     .white-space {

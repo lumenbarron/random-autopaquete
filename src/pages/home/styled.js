@@ -1,12 +1,27 @@
 import styled from 'styled-components';
 
 export const StyledHome = styled.div`
+
+
+
+    .responsive{
+        height: auto;
+        max-width: 100%;
+    }
+
+    .button {
+    background-color: #ab0000;
+    color: white;
+    }
+    
+    //Inicio carrousel logos
     .wrapper {
         width: 100vw;
         height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
+        background: #F3F3F3;
     }
 
     .slider{
@@ -25,7 +40,7 @@ export const StyledHome = styled.div`
     }
 
     .slide img{
-        height: 100px;
+        height: 200px;
         padding: 0 50px 0 50px;
     }
 
@@ -33,10 +48,5 @@ export const StyledHome = styled.div`
     0% {transform: translateX(0);}
     100% {transform: translateX(-100%);}
     }
-
-
-    .button {
-        background-color: #ab0000;
-        color: white;
-    }
+    //Fin carrousel logos
 `;
