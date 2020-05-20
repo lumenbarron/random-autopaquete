@@ -36,18 +36,4 @@ const AppRoutes = () => {
     );
 };
 
-const AppRoutes = () => {}
-  return (<Switch>
-            <Route path="/login" component={LoginPage} />
-            <Route path="/admin" component={AdminPage} />
-            <Route>
-              <Layout>
-                <Switch>
-                  <Route path="/aviso-de-privacidad" component={PrivacyPage} />
-                  <Route component={HomePage} />
-                </Switch>
-              </Layout>
-            </Route>
-          </Switch>);
-
 export default AppRoutes;
