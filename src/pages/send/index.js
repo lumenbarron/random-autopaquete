@@ -1,7 +1,12 @@
 import React from 'react';
+import { ProgressIndicator } from 'react-rainbow-components';
 
 const SendPage = () => {
-    return <div>SendPage</div>;
+    return (
+        <div>
+            <ProgressIndicator />
+        </div>
+    );
 };
 
 export default SendPage;
