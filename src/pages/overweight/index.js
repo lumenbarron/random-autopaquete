@@ -8,7 +8,7 @@ const containerTableStyles = { height: 256 };
 const OverweightPage = () => {
     return (
         <StyledOverweight>
-            <div>
+            <div className="back">
                 <h1>Sobrepeso</h1>
 
                 <div className="rainbow-p-bottom_xx-large">
