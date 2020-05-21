@@ -5,7 +5,7 @@ import PageContent from '../../components/page-content';
 const PrivacyPage = () => {
     return (
         <StyledPrivacy>
-            <div cassName="container">
+            <div className="container">
                 <div className="white-space" />
                 <h1 className="title">Aviso de privacidad</h1>
                 <div className="white-space" />

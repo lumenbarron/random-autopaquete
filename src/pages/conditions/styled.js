@@ -1,13 +1,6 @@
 import styled from 'styled-components';
 
 export const StyledConditions = styled.div`
-    .container {
-        position: relative;
-        width: 100%;
-        min-height: 100vh;
-        padding: 0 140px;
-        margin: 0;
-    }
 
     main {
         padding: 5rem 0;

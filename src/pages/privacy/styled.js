@@ -1,14 +1,6 @@
 import styled from 'styled-components';
 
 export const StyledPrivacy = styled.div`
-    .container {
-        position: relative;
-        width: 100%;
-        min-height: 100vh;
-        padding: 0 100px;
-        margin: 0;
-    }
-
     main {
         padding: 5rem 0;
         flex: 1;

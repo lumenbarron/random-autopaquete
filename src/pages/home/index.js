@@ -3,7 +3,7 @@ import { Button } from 'react-rainbow-components';
 import { StyledHome } from './styled';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col'
+import Col from 'react-bootstrap/Col';
 
 
 const HomePage = () => {
@@ -11,24 +11,25 @@ const HomePage = () => {
         <StyledHome>
             <Container>
                 <Row>
-                 <Col>
-                    <h1>La plataforma que te permite una excelente logística de envíos.</h1>
-                    <p>
-                        Autopaquete es la plataforma gratuita que te permitirá gestionar tus envíos
-                        al mejor precio y de una manera muy sencilla.
-                    </p>
-                    <Button className="button" shaded label="¡Comienza ya!" />
+                    <Col>
+                        <h1>La plataforma que te permite una excelente logística de envíos.</h1>
+                        <p>
+                            Autopaquete es la plataforma gratuita que te permitirá gestionar tus envíos
+                            al mejor precio y de una manera muy sencilla.
+                        </p>
+                        <Button className="button" shaded label="¡Comienza ya!" />
                     </Col>
-                </Row>
                 
-                <Col>
+                    <Col>
                     <img
                         className="responsive"
                         src="./assets/intro-img.png"
                         alt="La plataforma que te permite una excelente logística de envíos"
                     />
-                </Col>
+                    </Col>
+                </Row>
             </Container>
+            
             <div className="flex" >
                 <div>
                     <img src="./assets/truck-2.png" alt="Nosotros" />

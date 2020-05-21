@@ -6,11 +6,13 @@ export const StyledContact = styled.div`
         font-weight: 600;
     }
 
-    .container {
-        background-color: #f7ece2 !important;
+    .back {
+        background-color: #f7ece2;
+        width: 1920px;
+        height:1080px;
     }
 
-    .col ul li,
+    col ul li,
     h4 {
         text-align: left;
     }
@@ -20,7 +22,7 @@ export const StyledContact = styled.div`
         font-weight: 600;
     }
 
-    .icon {
+    icon {
         margin: 0px 10px;
         color: #fcb043;
     }
