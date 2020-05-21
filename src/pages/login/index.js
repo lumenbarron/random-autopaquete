@@ -50,8 +50,11 @@ const LoginPage = () => {
                             <Button className="boton" type="submit">
                                 Unirse
                             </Button>
-
-                            <p>Al darle Unirse estás aceptando nuestro <a href="/aviso-de-privacidad">Aviso de privacidad</a> y nuestros <a href="/terminos-y-condiciones">Términos y condiciones.</a></p>
+                            <p>
+                                Al darle Unirse estás aceptando nuestro{' '}
+                                <a href="/aviso-de-privacidad">Aviso de privacidad</a> y nuestros{' '}
+                                <a href="/terminos-y-condiciones">Términos y condiciones.</a>
+                            </p>
                         </form>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Column, TableWithBrowserPagination } from 'react-rainbow-components';
+import { StyledColumn, StyledTable } from '../../styled';
 import { StyledOverweight } from './styled';
 
 const containerStyles = { height: 312 };
@@ -13,19 +13,15 @@ const OverweightPage = () => {
 
                 <div className="rainbow-p-bottom_xx-large">
                     <div style={containerStyles}>
-                        <TableWithBrowserPagination
-                            pageSize={10}
-                            keyField="id"
-                            style={containerTableStyles}
-                        >
-                            <Column header="Fecha " field="date" />
-                            <Column header="Paquete (Guía)" field="guide" />
-                            <Column header="Kilos Declarados" field="kdeclared" />
-                            <Column header="Kilos reales" field="kreal" />
-                            <Column header="Kilos cobrados" field="Kcollected" />
+                        <StyledTable pageSize={10} keyField="id" style={containerTableStyles}>
+                            <StyledColumn header="Fecha " field="date" />
+                            <StyledColumn header="Paquete (Guía)" field="guide" />
+                            <StyledColumn header="Kilos Declarados" field="kdeclared" />
+                            <StyledColumn header="Kilos reales" field="kreal" />
+                            <StyledColumn header="Kilos cobrados" field="Kcollected" />
 
-                            <Column header="Cargos" field="charge" />
-                        </TableWithBrowserPagination>
+                            <StyledColumn header="Cargos" field="charge" />
+                        </StyledTable>
                     </div>
                 </div>
             </div>

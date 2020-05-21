@@ -14,24 +14,39 @@ import ServicesPage from './pages/services';
 import OverweightPage from './pages/overweight';
 import ConditionsPage from './pages/conditions';
 import LoginPage from './pages/login';
+import Layout from './components/layout';
 
 const AppRoutes = () => {
     return (
         <Switch>
-            <Route exact path="/" component={HomePage} />
-            <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
-            <Route exact path="/admin" component={AdminPage} />
-            <Route exact path="/contacto" component={ContactPage} />
-            <Route exact path="/cotizacion" component={QuotePage} />
-            <Route exact path="/direcciones" component={DirectionPage} />
-            <Route exact path="/enviar" component={SendPage} />
-            <Route exact path="/historial" component={RecordPage} />
-            <Route exact path="/mi-cuenta" component={AccountPage} />
-            <Route exact path="/servicios" component={ServicesPage} />
-            <Route exact path="/sobrepeso" component={OverweightPage} />
-            <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
-            <Route exact path="/login" component={LoginPage} />
-            <Redirect to="/" />
+            <Route>
+                <Layout layoutType="empty">
+                    <Switch>
+                        <Route exact path="/login" component={LoginPage} />
+                        <Route exact path="/admin" component={AdminPage} />
+                    </Switch>
+                </Layout>
+                <Layout layoutType="sidebar-only">
+                    <Switch>
+                        <Route exact path="/contacto" component={ContactPage} />
+                    </Switch>
+                </Layout>
+                <Layout layoutType="header-footer">
+                    <Switch>
+                        <Route exact path="/" component={HomePage} />
+                        <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
+                        <Route exact path="/cotizacion" component={QuotePage} />
+                        <Route exact path="/direcciones" component={DirectionPage} />
+                        <Route exact path="/enviar" component={SendPage} />
+                        <Route exact path="/historial" component={RecordPage} />
+                        <Route exact path="/mi-cuenta" component={AccountPage} />
+                        <Route exact path="/servicios" component={ServicesPage} />
+                        <Route exact path="/sobrepeso" component={OverweightPage} />
+                        <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
+                        <Redirect to="/" />
+                    </Switch>
+                </Layout>
+            </Route>
         </Switch>
     );
 };
