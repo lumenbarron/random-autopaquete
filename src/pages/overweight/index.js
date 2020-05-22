@@ -1,9 +1,20 @@
 import React from 'react';
-import { StyledColumn, StyledTable } from '../../styled';
+
+import { Table, Column } from 'react-rainbow-components';
+import styled from 'styled-components';
+
 import { StyledOverweight } from './styled';
 
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 256 };
+
+const StyledTable = styled(Table)`
+    color: #1de9b6;
+`;
+
+const StyledColumn = styled(Column)`
+    color: #1de9b6;
+`;
 
 const OverweightPage = () => {
     return (
