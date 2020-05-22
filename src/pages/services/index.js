@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactPlayer from 'react-player';
-import { FileSelector } from 'react-rainbow-components';
+
 import { StyledServices } from './styled';
 
 const ServicesPage = () => {
     return (
         <StyledServices>
-            <FileSelector />
             <div>
                 <ReactPlayer className="videotwo" url="./assets/videos/video.mp4" playing />
                 <div className="white-space" />

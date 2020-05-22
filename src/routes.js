@@ -22,7 +22,6 @@ const AppRoutes = () => {
             <Route>
                 <Layout layoutType="empty">
                     <Switch>
-                        <Route exact path="/login" component={LoginPage} />
                         <Route exact path="/admin" component={AdminPage} />
                     </Switch>
                 </Layout>
@@ -34,6 +33,7 @@ const AppRoutes = () => {
                 <Layout layoutType="header-footer">
                     <Switch>
                         <Route exact path="/" component={HomePage} />
+                        <Route exact path="/login" component={LoginPage} />
                         <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
                         <Route exact path="/cotizacion" component={QuotePage} />
                         <Route exact path="/direcciones" component={DirectionPage} />
