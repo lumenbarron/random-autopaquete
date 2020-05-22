@@ -8,10 +8,12 @@ import { StyledHome } from './styled';
 const HomePage = () => {
     return (
         <StyledHome>
-            <Container>
-                <Row>
+            <Container className="sectionback">
+                <Row className="content">
                     <Col>
-                        <h1>La plataforma que te permite una excelente logística de envíos.</h1>
+                        <h1 className="title">
+                            La plataforma que te permite una excelente logística de envíos.
+                        </h1>
                         <p>
                             Autopaquete es la plataforma gratuita que te permitirá gestionar tus
                             envíos al mejor precio y de una manera muy sencilla.
@@ -21,23 +23,22 @@ const HomePage = () => {
 
                     <Col>
                         <img
-                            className="responsive"
                             src="./assets/intro-img.png"
                             alt="La plataforma que te permite una excelente logística de envíos"
                         />
                     </Col>
                 </Row>
             </Container>
-            <Container>
+            <Container className="nback">
                 <Row>
                     <Col>
                         <img src="./assets/truck-2.png" alt="Nosotros" />
                     </Col>
                     <Col>
-                        <div className="flex">
+                        <div>
                             <div />
                             <div>
-                                <h1>Nosotros</h1>
+                                <h1 className="title">Nosotros</h1>
                                 <p>
                                     Somos una empresa 100% mexicana con más de 3 años de experiencia
                                     en el medio de transporte y paquetería, conocemos la importancia
@@ -55,26 +56,38 @@ const HomePage = () => {
                 <Row className="justify-content-md-center">
                     <Col xs lg="2">
                         <div>
-                            <img src="./assets/check-table.png" alt="Guías a crédito" />
+                            <img
+                                className="tmedium"
+                                src="./assets/check-table.png"
+                                alt="Guías a crédito"
+                            />
                             <p>Guías a crédito</p>
                         </div>
                     </Col>
                     <Col md="auto">
                         <div>
-                            <img src="./assets/box-check.png" alt="Soluciones logísticas" />
+                            <img
+                                className="tmedium"
+                                src="./assets/box-check.png"
+                                alt="Soluciones logísticas"
+                            />
                             <p>Soluciones logísticas</p>
                         </div>
                     </Col>
                     <Col xs lg="2">
                         <div>
-                            <img src="./assets/pin-check.png" alt="Convenios corporativos" />
+                            <img
+                                className="tmedium"
+                                src="./assets/pin-check.png"
+                                alt="Convenios corporativos"
+                            />
                             <p>Convenios corporativos</p>
                         </div>
                     </Col>
                 </Row>
             </Container>
-            <div>
-                <h1>Nuestros clientes</h1>
+            <div className="backsilder">
+                <h1 className="nclients">Nuestros clientes</h1>
                 <div className="wrapper">
                     <div className="slider">
                         <div className="slide">

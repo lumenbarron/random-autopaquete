@@ -13,16 +13,21 @@ const AccountPage = () => {
                     <h2>Saldo Actual</h2>
                     <h2>$10,000</h2>
                 </div>
-                <Container>
+                <Container className="imgtext">
                     <Row>
                         <Col>
                             <Row>
-                                <Col>
-                                    <img src="/assets/greyline.png" alt="" />
+                                <Col className="spaceline">
+                                    <img className="lineimg" src="/assets/greyline.png" alt="" />
                                 </Col>
                                 <Col>
-                                    <img src="/assets/briefcase-money.png" alt="" />
+                                    <img
+                                        className="boximg"
+                                        src="/assets/briefcase-money.png"
+                                        alt=""
+                                    />
 
+                                    <div className="whitespace" />
                                     <h3>Pago en banco o transferencia</h3>
                                     <p>
                                         INFORMACIÓN BANCARIA AUTOPAQUETE SERVICIOS SA DE CV BBVA
@@ -33,12 +38,17 @@ const AccountPage = () => {
                         </Col>
                         <Col>
                             <Row>
-                                <Col>
-                                    <img src="/assets/greyline.png" alt="" />
+                                <Col className="spaceline">
+                                    <img className="lineimg" src="/assets/greyline.png" alt="" />
                                 </Col>
                                 <Col>
-                                    <img src="/assets/contact-email.png" alt="" />
+                                    <img
+                                        className="boximg"
+                                        src="/assets/contact-email.png"
+                                        alt=""
+                                    />
 
+                                    <div className="whitespace" />
                                     <h3>En caso de requerir factura solicitarlo en el correo</h3>
                                     <a href="mailto:atencion1@autopaquete.com">
                                         atencion1@autopaquete.com
@@ -48,12 +58,17 @@ const AccountPage = () => {
                         </Col>
                         <Col>
                             <Row>
-                                <Col>
-                                    <img src="/assets/greyline.png" alt="" />
+                                <Col className="spaceline">
+                                    <img className="lineimg" src="/assets/greyline.png" alt="" />
                                 </Col>
                                 <Col>
-                                    <img src="/assets/laptop-computer.png" alt="" />
+                                    <img
+                                        className="boximg"
+                                        src="/assets/laptop-computer.png"
+                                        alt=""
+                                    />
 
+                                    <div className="whitespace" />
                                     <h3>
                                         El equipo de autopaquete se encargará de que tus créditos se
                                         vean reflejados en la plataforma
