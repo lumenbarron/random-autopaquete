@@ -17,6 +17,7 @@ const ContactPage = () => {
         <StyledContact>
             <div className="back">
                 /*Back-end*/
+                //Test2
                 <h1>Contacto</h1>
                 <div />
                 <div>
