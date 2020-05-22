@@ -24,17 +24,7 @@ const AppRoutes = () => {
             <Route path="/admin">
                 <StyledMain>
                     <Switch>
-<<<<<<< HEAD
                         <Route exact path="/admin" component={AdminPage} />
-=======
-                        <AdminSidebar />
-                        {/* Otras rutas de admin aquí
-                  <Route path="/usuarios" component={UsersPage} />
-                  <Route path="/usuario/:uid" component={UserPage} />
-                  <Route path="/sobrepesos" component={AddOverweightsPage} />
-                  */}
-                        <Route component={AdminPage} />
->>>>>>> 5f9749e9eee40960b1ac887a9df11d8fd6c474a4
                     </Switch>
                 </StyledMain>
             </Route>
@@ -53,7 +43,6 @@ const AppRoutes = () => {
             <Route>
                 <Layout>
                     <Switch>
-<<<<<<< HEAD
                         <Route exact path="/" component={HomePage} />
                         <Route exact path="/login" component={LoginPage} />
                         <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
@@ -65,16 +54,6 @@ const AppRoutes = () => {
                         <Route exact path="/servicios" component={ServicesPage} />
                         <Route exact path="/sobrepeso" component={OverweightPage} />
                         <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
-                        <Redirect to="/" />
-=======
-                        <Route path="/login" component={LoginPage} />
-                        <Route path="/aviso-de-privacidad" component={PrivacyPage} />
-                        <Route path="/servicios" component={ServicesPage} />
-                        <Route path="/cotizacion" component={QuotePage} />
-                        <Route path="/enviar" component={SendPage} />
-                        <Route path="/terminos-y-condiciones" component={ConditionsPage} />
-                        <Route component={HomePage} />
->>>>>>> 5f9749e9eee40960b1ac887a9df11d8fd6c474a4
                     </Switch>
                 </Layout>
             </Route>

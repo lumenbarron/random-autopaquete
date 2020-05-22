@@ -1,9 +1,5 @@
 import React from 'react';
 import ReactPlayer from 'react-player';
-<<<<<<< HEAD
-
-=======
->>>>>>> 5f9749e9eee40960b1ac887a9df11d8fd6c474a4
 import { StyledServices } from './styled';
 
 const ServicesPage = () => {
