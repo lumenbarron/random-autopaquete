@@ -4,34 +4,12 @@ import Header from '../header';
 import Footer from '../footer';
 import { StyledMain } from './styled';
 
-function Layout(props) {
-    const { children, layoutType } = props;
-
-    const isHeaderFooter = layoutType === 'header-footer';
-    const isSidebarOnly = layoutType === 'sidebar-only';
-    const isEmpty = layoutType === 'empty';
-
-    console.log('isHeaderFooter', isHeaderFooter);
-    console.log('isSidebarOnly', isSidebarOnly);
-    console.log('isEmpty', isEmpty);
-    console.log('children', children);
-
+function Layout({ children }) {
     return (
         <StyledMain>
-            {isHeaderFooter ? <Header /> : undefined}
-            {isHeaderFooter ? <div>{children}</div> : undefined}
-            {isHeaderFooter ? <Footer /> : undefined}
-
-            {isSidebarOnly ? (
-                <div>
-                    <div>sidebar</div>
-                    <div>{children}</div>
-                </div>
-            ) : (
-                undefined
-            )}
-
-            {isEmpty ? <div>{children}</div> : undefined}
+            <Header />
+            <div>{children}</div>
+            <Footer />
         </StyledMain>
     );
 }

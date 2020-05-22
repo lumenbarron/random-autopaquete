@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import HomePage from './pages/home';
 import PrivacyPage from './pages/privacy';
@@ -15,23 +15,45 @@ import OverweightPage from './pages/overweight';
 import ConditionsPage from './pages/conditions';
 import LoginPage from './pages/login';
 import Layout from './components/layout';
+import { StyledMain } from './components/layout/styled';
+import { AccountSidebar, AdminSidebar } from './components/layout/sidebar';
 
 const AppRoutes = () => {
     return (
         <Switch>
-            <Route>
-                <Layout layoutType="empty">
+            <Route path="/admin">
+                <StyledMain>
                     <Switch>
+<<<<<<< HEAD
                         <Route exact path="/admin" component={AdminPage} />
+=======
+                        <AdminSidebar />
+                        {/* Otras rutas de admin aquí
+                  <Route path="/usuarios" component={UsersPage} />
+                  <Route path="/usuario/:uid" component={UserPage} />
+                  <Route path="/sobrepesos" component={AddOverweightsPage} />
+                  */}
+                        <Route component={AdminPage} />
+>>>>>>> 5f9749e9eee40960b1ac887a9df11d8fd6c474a4
                     </Switch>
-                </Layout>
-                <Layout layoutType="sidebar-only">
+                </StyledMain>
+            </Route>
+            <Route path="/mi-cuenta">
+                <StyledMain>
+                    <AccountSidebar />
                     <Switch>
-                        <Route exact path="/contacto" component={ContactPage} />
+                        <Route path="/historial" component={RecordPage} />
+                        <Route path="/sobrepeso" component={OverweightPage} />
+                        <Route path="/direcciones" component={DirectionPage} />
+                        <Route path="/contacto" component={ContactPage} />
+                        <Route component={AccountPage} />
                     </Switch>
-                </Layout>
-                <Layout layoutType="header-footer">
+                </StyledMain>
+            </Route>
+            <Route>
+                <Layout>
                     <Switch>
+<<<<<<< HEAD
                         <Route exact path="/" component={HomePage} />
                         <Route exact path="/login" component={LoginPage} />
                         <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
@@ -44,6 +66,15 @@ const AppRoutes = () => {
                         <Route exact path="/sobrepeso" component={OverweightPage} />
                         <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
                         <Redirect to="/" />
+=======
+                        <Route path="/login" component={LoginPage} />
+                        <Route path="/aviso-de-privacidad" component={PrivacyPage} />
+                        <Route path="/servicios" component={ServicesPage} />
+                        <Route path="/cotizacion" component={QuotePage} />
+                        <Route path="/enviar" component={SendPage} />
+                        <Route path="/terminos-y-condiciones" component={ConditionsPage} />
+                        <Route component={HomePage} />
+>>>>>>> 5f9749e9eee40960b1ac887a9df11d8fd6c474a4
                     </Switch>
                 </Layout>
             </Route>
