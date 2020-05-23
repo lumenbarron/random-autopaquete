@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useFirebaseApp, useUser } from 'reactfire';
@@ -15,23 +15,20 @@ const LoginPage = () => {
     const submit = e => {
         e.preventDefault();
         firebase.auth().createUserWithEmailAndPassword(email, password);
-        /*
-        Esta parte es la que manda el email de verificación
-        cuando se agregar el usuario pero no funciono porque el valor inicial
-        de la función es null (Ese es el error)
-        */
-        // user.signInWithEmailAndPassword()
     };
+
+    useEffect(() => {
+        if (user && !user.emailVerified) {
+            user.sendEmailVerification();
+        }
+    }, [user]);
+
     // Iniciar sesión
     const login = async e => {
         e.preventDefault();
         await firebase.auth().signInWithEmailAndPassword(email, password);
     };
-    // Mandar email de verificación
-    const mensaje = async e => {
-        e.preventDefault();
-        await user.sendEmailVerification();
-    };
+
     // Cerrar sesión
     const logout = async e => {
         e.preventDefault();
@@ -76,9 +73,6 @@ const LoginPage = () => {
                         <Form>
                             <Button className="boton" type="submit" onClick={logout}>
                                 Cerrar sesión
-                            </Button>
-                            <Button className="boton" type="submit" onClick={mensaje}>
-                                Mandar correo de verificación
                             </Button>
                         </Form>
                     )}
