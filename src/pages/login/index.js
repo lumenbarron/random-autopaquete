@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useFirebaseApp, useUser } from 'reactfire';
@@ -14,14 +14,13 @@ const LoginPage = () => {
     // Crear usuario con correo y contraseña
     const submit = e => {
         e.preventDefault();
-        firebase.auth().createUserWithEmailAndPassword(email, password);
+        firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
+            .then(({ user }) => {
+                user.sendEmailVerification();
+            });
     };
-
-    useEffect(() => {
-        if (user && !user.emailVerified) {
-            user.sendEmailVerification();
-        }
-    }, [user]);
 
     // Iniciar sesión
     const login = async e => {
