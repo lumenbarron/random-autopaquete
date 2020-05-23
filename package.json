@@ -21,6 +21,7 @@
         "react-rainbow-components": "^1.15.0",
         "react-router-dom": "^5.1.2",
         "react-scripts": "3.3.1",
+        "reactfire": "^2.0.0-alpha.3",
         "styled-components": "^4.3.2"
     },
     "scripts": {
