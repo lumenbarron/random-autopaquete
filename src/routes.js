@@ -23,6 +23,7 @@ const AppRoutes = () => {
         <Switch>
             <Route path="/admin">
                 <StyledMain>
+                    <AdminSidebar />
                     <Switch>
                         <Route exact path="/admin" component={AdminPage} />
                     </Switch>
@@ -32,11 +33,12 @@ const AppRoutes = () => {
                 <StyledMain>
                     <AccountSidebar />
                     <Switch>
-                        <Route path="/historial" component={RecordPage} />
-                        <Route path="/sobrepeso" component={OverweightPage} />
-                        <Route path="/direcciones" component={DirectionPage} />
-                        <Route path="/contacto" component={ContactPage} />
-                        <Route component={AccountPage} />
+                        <Route path="/mi-cuenta/historial" component={RecordPage} />
+                        <Route path="/mi-cuenta/sobrepeso" component={OverweightPage} />
+                        <Route path="/mi-cuenta/direcciones" component={DirectionPage} />
+                        <Route path="/mi-cuenta/contacto" component={ContactPage} />
+                        <Route path="/mi-cuenta/enviar" component={SendPage} />
+                        <Route path="/mi-cuenta/" component={AccountPage} />
                     </Switch>
                 </StyledMain>
             </Route>
@@ -47,12 +49,7 @@ const AppRoutes = () => {
                         <Route exact path="/login" component={LoginPage} />
                         <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
                         <Route exact path="/cotizacion" component={QuotePage} />
-                        <Route exact path="/direcciones" component={DirectionPage} />
-                        <Route exact path="/enviar" component={SendPage} />
-                        <Route exact path="/historial" component={RecordPage} />
-                        <Route exact path="/mi-cuenta" component={AccountPage} />
                         <Route exact path="/servicios" component={ServicesPage} />
-                        <Route exact path="/sobrepeso" component={OverweightPage} />
                         <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
                     </Switch>
                 </Layout>
