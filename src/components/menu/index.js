@@ -43,7 +43,7 @@ const Menu = () => {
                     </Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Link to="/mi-cuenta">
+                    <Link to="/login">
                         <StyledButton
                             label="Mi cuenta"
                             variant={activeMenu === 3 ? 'brand' : 'outline-brand'}

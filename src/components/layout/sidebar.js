@@ -6,7 +6,6 @@ import styled from 'styled-components';
 const SideBarContainer = styled.div.attrs(props => {
     return props.theme.rainbow.palette;
 })`
-    position: fixed;
     display: flex;
     flex-direction: column;
     height: 100vh;
