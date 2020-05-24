@@ -22,7 +22,7 @@ const AppRoutes = () => {
     return (
         <Switch>
             <Route path="/admin">
-                <StyledMain>
+                <StyledMain style={{ display: 'flex' }}>
                     <AdminSidebar />
                     <Switch>
                         <Route exact path="/admin" component={AdminPage} />
@@ -30,7 +30,7 @@ const AppRoutes = () => {
                 </StyledMain>
             </Route>
             <Route path="/mi-cuenta">
-                <StyledMain>
+                <StyledMain style={{ display: 'flex' }}>
                     <AccountSidebar />
                     <Switch>
                         <Route path="/mi-cuenta/historial" component={RecordPage} />

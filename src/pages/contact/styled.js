@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
 export const StyledContact = styled.div`
+    width: 70%;
+
     h1 {
         color: #c94141;
         font-weight: 600;
@@ -9,7 +11,7 @@ export const StyledContact = styled.div`
     .back {
         background-color: #f7ece2;
         width: 1920px;
-        height:1080px;
+        height: 1080px;
     }
 
     col ul li,
