@@ -19,4 +19,21 @@ export const StyledRecord = styled.div`
     tr {
         font-weight: 500;
     }
+
+    th{
+        text-align: center !important;
+    }
+
+    .btn-new {
+    background-color: #AB0000; 
+    color: #fff; 
+    border-radius: 25px;
+    padding: 8px 16px;
+    
+    }
+
+    .btn-new:hover {
+    background-color: #C94141;
+    color: white;
+    padding: 8px 16px;
 `;

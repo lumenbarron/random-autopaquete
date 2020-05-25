@@ -1,8 +1,6 @@
 import styled from 'styled-components';
 
 export const StyledContact = styled.div`
-    width: 70%;
-
     h1 {
         color: #c94141;
         font-weight: 600;
@@ -10,11 +8,17 @@ export const StyledContact = styled.div`
 
     .back {
         background-color: #f7ece2;
-        width: auto;
+        width: 2000px;
         height: 1080px;
     }
 
-    col ul li,
+    li {
+        font-size: 0.9rem;
+        text-align: left;
+        width: 300px;
+    }
+
+    col ul,
     h4 {
         text-align: left;
     }
@@ -24,8 +28,24 @@ export const StyledContact = styled.div`
         font-weight: 600;
     }
 
-    icon {
+    .icon {
         margin: 0px 10px;
         color: #fcb043;
+        margin: 0px 10px;
+    }
+
+    .boton {
+        background-color: #ab0000;
+        border: none;
+        border-radius: 25px;
+    }
+
+    .boton:hover {
+        background-color: #c94141;
+        color: white;
+    }
+
+    .message {
+        padding-left: 120px;
     }
 `;

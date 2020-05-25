@@ -10,16 +10,16 @@ const StyledBadge = styled(Badge)`
 `;
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
 const containerStyles = { height: 312 };
-const containerTableStyles = { height: 256 };
+const containerTableStyles = { height: 356 };
 
 const RecordPage = () => {
     return (
         <StyledRecord>
-            <div className="trecord">
-                <div className="boxtable">
+            <div>
+                <div>
                     <h1>Mis envíos</h1>
 
-                    <div className="rainbow-align-content_center rainbow-p-vertical_x-large rainbow-flex_wrap">
+                    <div>
                         <Input
                             className="rainbow-p-around_medium"
                             placeholder="Buscar"
@@ -48,6 +48,9 @@ const RecordPage = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div>
+                <button className="btn-new">Enviar uno nuevo</button>
             </div>
         </StyledRecord>
     );
