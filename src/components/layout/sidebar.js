@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
 import LoginPage from '../../pages/login/index';
+import redirectIfLoggedOut from '../../helpers/redirectIfLoggedOut';
 
 
 
@@ -110,14 +111,20 @@ export function AccountSidebar() {
 
     const firebase = useFirebaseApp();
     const history = useHistory();
+    const user = useUser();
 
-        // Cerrar sesión
-        const logout = async e => {
-            e.preventDefault();
-            await firebase.auth().signOut();
-            history.push('/');
-        };
+    // Cerrar sesión
+    const logout = async e => {
+        e.preventDefault();
+        await firebase.auth().signOut();
+        history.push('/');
+    };
 
+    useEffect(() => {
+        redirectIfLoggedOut(user);
+    }, [user]);
+
+        
 
     return (
         
