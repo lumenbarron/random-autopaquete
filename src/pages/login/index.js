@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { Input } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledLoginPage, StyledLoginSection } from './styled';
+import redirectIfLoggedOut from '../../helpers/redirectIfLoggedOut';
 import 'firebase/auth';
 
 const LoginPage = () => {
@@ -15,41 +16,64 @@ const LoginPage = () => {
     const [name, setName] = useState('');
     const [lastname, setLastName] = useState('');
     const firebase = useFirebaseApp();
-    const user = useUser();
     const history = useHistory();
+    const user = useUser();
 
 
+
+    useEffect(() => {
+        redirectIfLoggedOut(user);
+    }, [user]);  
+/*
     useEffect(() => {
         if (user !== null) {
             history.push('/mi-cuenta');
         }
     }, [user]);
+*/
 
     // Crear usuario con correo y contraseña
     const register = e => {
         e.preventDefault();
+        if(newEmail.trim() === '' || newPassword.trim() === '' || name.trim() === '' || lastname.trim() === ''  ){
+            console.log("Espacios vacios");
+            return;
+        }
         firebase
             .auth()
             .createUserWithEmailAndPassword(newEmail, newPassword)
             .then(({ user }) => {
                 user.sendEmailVerification();
-                history.push('/mi-cuenta');
+                 history.push('/mi-cuenta');
             });
     };
 
     // Iniciar sesión
     const login = async e => {
         e.preventDefault();
+        if(email.trim() === '' || password.trim() === ''){
+            console.log("Espacios vacios");
+            return;
+        }
         await firebase.auth().signInWithEmailAndPassword(email, password);
         history.push('/mi-cuenta');
+
+
+
     };
 
     const restorePass = async e => {
         e.preventDefault();
+        if(email.trim() === ''){
+            console.log("Espacios vacios");
+            return;
+        }
         firebase
         .auth()
         .sendPasswordResetEmail(email);
     };
+
+
 
     
     return (
