@@ -2,8 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
 import styled from 'styled-components';
+import { useFirebaseApp, useUser } from 'reactfire';
+import { useHistory } from 'react-router-dom';
+import LoginPage from '../../pages/login/index';
+
+
+
 
 const SideBarContainer = styled.div.attrs(props => {
+
     return props.theme.rainbow.palette;
 })`
     display: flex;
@@ -100,9 +107,24 @@ function UserAvatarIcon() {
 }
 
 export function AccountSidebar() {
+
+    const firebase = useFirebaseApp();
+    const history = useHistory();
+
+        // Cerrar sesión
+        const logout = async e => {
+            e.preventDefault();
+            await firebase.auth().signOut();
+            history.push('/');
+        };
+
+
     return (
+        
         <SideBarContainer className="rainbow-p-top_small rainbow-p-bottom_medium">
             <SidebarHeader>
+                
+
                 <Logo src="/assets/logo.png" />
                 <StyledAvatar
                     icon={<UserAvatarIcon />}
@@ -114,7 +136,7 @@ export function AccountSidebar() {
                 <Link to="/mi-cuenta">
                     <AddCreditButton>Agregar</AddCreditButton>
                 </Link>
-                <Link to="/" style={{ display: 'block' }}>
+                <Link to="/" style={{ display: 'block' }} onClick={logout}>
                     Cerrar sesión
                 </Link>
             </SidebarHeader>
@@ -155,7 +177,7 @@ export function AccountSidebar() {
                     />
                 </Link>
                 <Link to="/">
-                    <StyledSidebarItem name="Salir" label="Salir" />
+                    <StyledSidebarItem name="Salir" label="Salir"/>
                 </Link>
             </StyledSidebar>
         </SideBarContainer>
