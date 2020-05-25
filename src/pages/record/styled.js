@@ -12,13 +12,11 @@ export const StyledRecord = styled.div`
     -moz-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
 
-    .trecord {
-        padding: 40px 20px 20px 20px;
+    h1 {
+        font-weight: 700;
     }
 
-    .boxtable {
-        box-shadow: 10px;
-        background: #fff;
-        border-radius: 45px;
+    tr {
+        font-weight: 500;
     }
 `;

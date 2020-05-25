@@ -62,6 +62,7 @@ const LoginPage = () => {
                                 type="email"
                                 controlid="email"
                                 onChange={ev => setEmail(ev.target.value)}
+                                className="ini-form"
                             />
                         </Form.Group>
                         <Form.Group controlId="formGroupPassword">
@@ -70,6 +71,7 @@ const LoginPage = () => {
                                 type="password"
                                 controlid="password"
                                 onChange={ev => setPassword(ev.target.value)}
+                                className="ini-form"
                             />
                         </Form.Group>
                         <Button className="boton" type="submit" onClick={login}>
@@ -98,6 +100,7 @@ const LoginPage = () => {
                                 name="name"
                                 className="rainbow-p-around_medium"
                                 onChange={ev => setName(ev.target.value)}
+                                style={{ width: '45%' }}
                             />
                             <Input
                                 id="lastname"
@@ -105,6 +108,7 @@ const LoginPage = () => {
                                 name="lastname"
                                 className="rainbow-p-around_medium"
                                 onChange={ev => setLastName(ev.target.value)}
+                                style={{ width: '45%' }}
                             />
                         </div>
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -114,7 +118,7 @@ const LoginPage = () => {
                                 name="email"
                                 type="email"
                                 className="rainbow-p-around_medium"
-                                style={{ width: '97%' }}
+                                style={{ width: '90%' }}
                                 onChange={ev => setNewEmail(ev.target.value)}
                             />
                         </div>
@@ -125,12 +129,12 @@ const LoginPage = () => {
                                 name="password"
                                 type="password"
                                 className="rainbow-p-around_medium"
-                                style={{ width: '97%' }}
+                                style={{ width: '90%' }}
                                 onChange={ev => setNewPassword(ev.target.value)}
                             />
                         </div>
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
-                            <p style={{ fontSize: '0.6rem' }}>
+                            <p style={{ fontSize: '0.9rem' }}>
                                 Al darle Unirse estás aceptando nuestro{' '}
                                 <a href="/aviso-de-privacidad">Aviso de privacidad</a> y nuestros{' '}
                                 <a href="/terminos-y-condiciones">Términos y condiciones.</a>

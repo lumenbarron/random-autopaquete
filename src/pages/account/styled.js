@@ -15,14 +15,14 @@ export const StyledAccount = styled.div`
     h1 {
         color: #ab0000;
         font-weight: 700;
-        padding-left: 400px;
+        padding-left: 100px;
         padding-top: 50px;
     }
 
     h2 {
         color: #6b6b6b !important;
         font-weight: 600;
-        padding-left: 400px;
+        padding-left: 100px;
     }
 
     h3 {

@@ -9,10 +9,14 @@ export const StyledLoginPage = styled.div`
         color: #c94141 !important;
         font-weight: 600;
     }
+
+    .ini-form {
+        border-radius: 25px;
+    }
     .boton {
         background-color: #ab0000;
         border: none;
-        border-radius: 22px;
+        border-radius: 25px;
     }
 
     .boton:hover {

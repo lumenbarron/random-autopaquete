@@ -10,7 +10,7 @@ export const StyledContact = styled.div`
 
     .back {
         background-color: #f7ece2;
-        width: 1920px;
+        width: auto;
         height: 1080px;
     }
 
