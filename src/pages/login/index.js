@@ -18,6 +18,7 @@ const LoginPage = () => {
     const user = useUser();
     const history = useHistory();
 
+
     useEffect(() => {
         if (user !== null) {
             history.push('/mi-cuenta');
@@ -43,18 +44,18 @@ const LoginPage = () => {
         history.push('/mi-cuenta');
     };
 
-    // Cerrar sesión
-    const logout = async e => {
+    const restorePass = async e => {
         e.preventDefault();
-        await firebase.auth().signOut();
+        firebase
+        .auth()
+        .sendPasswordResetEmail(email);
     };
 
+    
     return (
         <StyledLoginPage>
             <StyledLoginSection>
                 <h1>Iniciar sesión</h1>
-                {// Cuando el usuario no esta logeado
-                !user && (
                     <Form>
                         <Form.Group controlId="formGroupEmail">
                             <Form.Label>Email o nombre de ususario</Form.Label>
@@ -77,17 +78,9 @@ const LoginPage = () => {
                         <Button className="boton" type="submit" onClick={login}>
                             Iniciar sesión
                         </Button>
+                        <a onClick={restorePass}>¿Olvidaste tu constraseña?</a>
                     </Form>
-                )}
-
-                {// Cuando el usuario esta logeado
-                user && (
-                    <Form>
-                        <Button className="boton" type="submit" onClick={logout}>
-                            Cerrar sesión
-                        </Button>
-                    </Form>
-                )}
+                
             </StyledLoginSection>
             <StyledLoginSection>
                 <h1>Regístrate</h1>
@@ -135,8 +128,8 @@ const LoginPage = () => {
                         </div>
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <p style={{ fontSize: '0.9rem' }}>
-                                Al darle Unirse estás aceptando nuestro{' '}
-                                <a href="/aviso-de-privacidad">Aviso de privacidad</a> y nuestros{' '}
+                                Al darle Unirse estás aceptando nuestro
+                                <a href="/aviso-de-privacidad" >Aviso de privacidad</a> y nuestros{' '}
                                 <a href="/terminos-y-condiciones">Términos y condiciones.</a>
                             </p>
                             <Button
@@ -146,6 +139,7 @@ const LoginPage = () => {
                             >
                                 Unirse
                             </Button>
+
                         </div>
                     </form>
                 </div>
