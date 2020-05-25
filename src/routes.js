@@ -12,6 +12,8 @@ import RecordPage from './pages/record';
 import AccountPage from './pages/account';
 import ServicesPage from './pages/services';
 import OverweightPage from './pages/overweight';
+import AdminoverweightPage from './pages/adminoverweight';
+import StyledAusers from './pages/adminusers';
 import ConditionsPage from './pages/conditions';
 import LoginPage from './pages/login';
 import Layout from './components/layout';
@@ -51,6 +53,8 @@ const AppRoutes = () => {
                         <Route exact path="/cotizacion" component={QuotePage} />
                         <Route exact path="/servicios" component={ServicesPage} />
                         <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
+                        <Route path="/asobrepeso" component={AdminoverweightPage} />
+                        <Route path="/ausuarios" component={StyledAusers} />
                     </Switch>
                 </Layout>
             </Route>
