@@ -13,7 +13,16 @@ export const StyledLoginPage = styled.div`
     .ini-form {
         border-radius: 25px;
     }
-ff4
+
+    .boton {
+        background-color: #ab0000;
+        border: none;
+        border-radius: 25px;
+    }
+
+    .boton:hover {
+        background-color: #c94141;
+        color: white;
 `;
 
 export const StyledLoginSection = styled.div`
