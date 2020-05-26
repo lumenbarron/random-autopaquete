@@ -1,10 +1,16 @@
 import styled from 'styled-components';
 
 export const StyledHome = styled.div`
-    .sectionback {
-
     .title {
         font-weight: 700 !important;
+        font-size: 2.6rem;
+    }
+
+    .text {
+        font-size: 1.5rem;
+    }
+    .ntext {
+        font-size: 1.2rem;
     }
 
     .responsive {

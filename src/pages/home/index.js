@@ -8,17 +8,17 @@ import { StyledHome } from './styled';
 const HomePage = () => {
     return (
         <StyledHome>
-            <Container className="sectionback">
+            <Container>
                 <Row className="content">
                     <Col>
                         <h1 className="title">
                             La plataforma que te permite una excelente logística de envíos.
                         </h1>
-                        <p>
+                        <p className="text">
                             Autopaquete es la plataforma gratuita que te permitirá gestionar tus
                             envíos al mejor precio y de una manera muy sencilla.
                         </p>
-                        <Button className="button" shaded label="¡Comienza ya!" />
+                        <Button className="" shaded label="¡Comienza ya!" />
                     </Col>
 
                     <Col>
@@ -39,7 +39,7 @@ const HomePage = () => {
                             <div />
                             <div>
                                 <h1 className="title">Nosotros</h1>
-                                <p>
+                                <p className="ntext">
                                     Somos una empresa 100% mexicana con más de 3 años de experiencia
                                     en el medio de transporte y paquetería, conocemos la importancia
                                     de un servicio personalizado y adecuado a las necesidades
