@@ -3,9 +3,12 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'react-rainbow-components';
-import { useFirebaseApp, useUser } from 'reactfire';
+import { useFirebaseApp, useUser, useFirestore } from 'reactfire';
 import { StyledLoginPage, StyledLoginSection } from './styled';
 import redirectIfLoggedOut from '../../helpers/redirectIfLoggedOut';
+
+
+
 import 'firebase/auth';
 
 const LoginPage = () => {
@@ -18,17 +21,21 @@ const LoginPage = () => {
     const firebase = useFirebaseApp();
     const history = useHistory();
     const user = useUser();
-
-
+    const firestore = useFirestore();
 /*
     useEffect(() => {
-        redirectIfLoggedOut(user);
+        RedirectIfLoggedOut(user);
     }, [user]);  
 */
     useEffect(() => {
-        if (user !== null) {
+
+        if (user){
+        if (user.email === "roheg56658@prowerl.com") {
+            history.push('/admin');
+        }else if(user !== null) {
             history.push('/mi-cuenta');
         }
+    }
     }, [user]);
 
 
@@ -58,7 +65,17 @@ const LoginPage = () => {
         await firebase.auth().signInWithEmailAndPassword(email, password);
         history.push('/mi-cuenta');
 
-
+        firestore.collection("profiles").add({
+            first: "Ada",
+            last: "Lovelace",
+            born: 1815
+        })
+        .then(function(docRef) {
+            console.log("Document written with ID: ", docRef.id);
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
 
     };
 
@@ -73,7 +90,7 @@ const LoginPage = () => {
         .sendPasswordResetEmail(email);
     };
 
-
+    
 
     
     return (

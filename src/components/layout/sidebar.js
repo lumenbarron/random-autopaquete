@@ -127,8 +127,6 @@ export function AccountSidebar() {
         }
     }, [user]);
 
-        
-
     return (
         
         <SideBarContainer className="rainbow-p-top_small rainbow-p-bottom_medium">
