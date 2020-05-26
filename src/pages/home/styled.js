@@ -34,8 +34,10 @@ export const StyledHome = styled.div`
     }
 
     div h1.nclients {
+        font-size: 3rem;
         font-weight: 600;
         text-align: center;
+        padding-top: 8rem;
     }
     .wrapper {
         width: auto;
