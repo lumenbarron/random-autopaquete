@@ -1,12 +1,17 @@
 import  { Redirect } from 'react-router-dom'
 import React from 'react';
+import { useHistory } from 'react-router-dom';
+
+
 
 export default function redirectIfLoggedOut(user) {
+    //const history = useHistory();
     if(user) {
         console.log('logged');
-        return <Redirect to='/mi-cuenta'  />
+      //  history.push('/mi-cuenta');
     }else {
         console.log('not logged');
-    return <Redirect to='/'  />
-    }
+    //return history.push('/mi-cuenta');
 };
+
+}

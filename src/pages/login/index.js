@@ -20,17 +20,17 @@ const LoginPage = () => {
     const user = useUser();
 
 
-
+/*
     useEffect(() => {
         redirectIfLoggedOut(user);
     }, [user]);  
-/*
+*/
     useEffect(() => {
         if (user !== null) {
             history.push('/mi-cuenta');
         }
     }, [user]);
-*/
+
 
     // Crear usuario con correo y contraseña
     const register = e => {

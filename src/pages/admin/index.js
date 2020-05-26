@@ -1,8 +1,20 @@
-import React from 'react';
-
+import React, {useEffect} from 'react';
+import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledAdmin } from './styled';
+import { useHistory } from 'react-router-dom';
 
 const AdminPage = () => {
+
+    const firebase = useFirebaseApp();
+    const history = useHistory();
+    const user = useUser();
+
+    useEffect(() => {
+        if (user == null) {
+            history.push('/login');
+        }
+    }, [user]);
+
     return (
         <StyledAdmin>
         <div>

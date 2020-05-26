@@ -4,14 +4,15 @@ import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
-import LoginPage from '../../pages/login/index';
 import redirectIfLoggedOut from '../../helpers/redirectIfLoggedOut';
 
 
 
 
-const SideBarContainer = styled.div.attrs(props => {
 
+
+const SideBarContainer = styled.div.attrs(props => {
+ 
     return props.theme.rainbow.palette;
 })`
     display: flex;
@@ -121,7 +122,9 @@ export function AccountSidebar() {
     };
 
     useEffect(() => {
-        redirectIfLoggedOut(user);
+        if (user == null) {
+            history.push('/login');
+        }
     }, [user]);
 
         
