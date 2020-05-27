@@ -3,9 +3,10 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'react-rainbow-components';
-import { useFirebaseApp, useUser, useFirestore } from 'reactfire';
-import { StyledLoginPage, StyledLoginSection } from './styled';
 
+import { useFirebaseApp, useUser, useFirestore, useFirestoreCollectionData } from 'reactfire';
+import * as firebase from 'firebase';
+import { StyledLoginPage, StyledLoginSection } from './styled';
 import 'firebase/auth';
 
 const LoginPage = () => {
@@ -18,12 +19,9 @@ const LoginPage = () => {
     const firebase = useFirebaseApp();
     const history = useHistory();
     const user = useUser();
-    const firestore = useFirestore();
-    /*
-    useEffect(() => {
-        RedirectIfLoggedOut(user);
-    }, [user]);
-*/
+    const db = firebase.firestore();
+
+
     useEffect(() => {
         if (user) {
             if (user.email === 'roheg56658@prowerl.com') {
@@ -52,7 +50,20 @@ const LoginPage = () => {
             .then(({ user }) => {
                 user.sendEmailVerification();
                 history.push('/mi-cuenta');
+                const profilesCollectionAdd = db.collection('profiles').add({
+                    name: name,
+                    lastname: lastname,
+                    user_type: 'admin'
+                });
+            profilesCollectionAdd
+                .then(function(docRef) {
+                    console.log('Document written with ID: ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
             });
+
     };
 
     // Iniciar sesión
@@ -64,20 +75,6 @@ const LoginPage = () => {
         }
         await firebase.auth().signInWithEmailAndPassword(email, password);
         history.push('/mi-cuenta');
-
-        firestore
-            .collection('profiles')
-            .add({
-                first: 'Ada',
-                last: 'Lovelace',
-                born: 1815,
-            })
-            .then(function(docRef) {
-                console.log('Document written with ID: ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
     };
 
     const restorePass = async e => {
