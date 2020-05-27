@@ -16,7 +16,7 @@ const StyledColumn = styled(Column)`
     color: #1de9b6;
 `;
 
-const AdminoverweightPage = () => {
+const AdminOverweightPage = () => {
     return (
         <StyledAdminoverweight>
             <div className="back">
@@ -39,4 +39,4 @@ const AdminoverweightPage = () => {
     );
 };
 
-export default AdminoverweightPage;
+export default AdminOverweightPage;

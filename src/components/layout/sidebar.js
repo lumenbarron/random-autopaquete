@@ -1,18 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
 import styled from 'styled-components';
-import { useFirebaseApp, useUser } from 'reactfire';
+import { useFirebaseApp } from 'reactfire';
 import { useHistory } from 'react-router-dom';
-import redirectIfLoggedOut from '../../helpers/redirectIfLoggedOut';
-
-
-
-
-
+import { useSecurity } from '../../hooks/useSecurity';
 
 const SideBarContainer = styled.div.attrs(props => {
- 
     return props.theme.rainbow.palette;
 })`
     display: flex;
@@ -23,6 +17,11 @@ const SideBarContainer = styled.div.attrs(props => {
     padding-bottom: 14px;
     padding-top: 14px;
     background: ${props => props.background.main};
+    background-image: url(${props => props.backImg});
+    background-size: cover;
+    background-position-x: -2em;
+    background-position-y: 0em;
+    background-repeat: no-repeat;
     width: 20%;
     border-bottom-left-radius: 0.875rem;
     max-width: 350px;
@@ -39,6 +38,7 @@ const SidebarHeader = styled.div.attrs(props => {
 const StyledSidebar = styled(Sidebar)`
     border: 1px solid #f2f2f2;
     margin: 10px;
+    background: #fff;
 `;
 
 const StyledSidebarItem = styled(SidebarItem)`
@@ -109,30 +109,20 @@ function UserAvatarIcon() {
 }
 
 export function AccountSidebar() {
-
     const firebase = useFirebaseApp();
     const history = useHistory();
-    const user = useUser();
 
-    // Cerrar sesión
     const logout = async e => {
         e.preventDefault();
         await firebase.auth().signOut();
         history.push('/');
     };
 
-    useEffect(() => {
-        if (user == null) {
-            history.push('/login');
-        }
-    }, [user]);
+    useSecurity();
 
     return (
-        
         <SideBarContainer className="rainbow-p-top_small rainbow-p-bottom_medium">
             <SidebarHeader>
-                
-
                 <Logo src="/assets/logo.png" />
                 <StyledAvatar
                     icon={<UserAvatarIcon />}
@@ -185,7 +175,7 @@ export function AccountSidebar() {
                     />
                 </Link>
                 <Link to="/">
-                    <StyledSidebarItem name="Salir" label="Salir"/>
+                    <StyledSidebarItem name="Salir" label="Salir" />
                 </Link>
             </StyledSidebar>
         </SideBarContainer>
@@ -193,30 +183,45 @@ export function AccountSidebar() {
 }
 
 export function AdminSidebar() {
+    const firebase = useFirebaseApp();
+    const history = useHistory();
+
+    const logout = async e => {
+        e.preventDefault();
+        await firebase.auth().signOut();
+        history.push('/');
+    };
+
+    useSecurity('admin');
+
     return (
-        <div className="backadmin">
-            <SideBarContainer className="rainbow-p-top_small rainbow-p-bottom_medium">
-                <SidebarHeader>
-                    <Logo src="/logo-admin.png" />
-                    <h5>Administrador</h5>
-                </SidebarHeader>
-                <StyledSidebar>
-                    <Link to="/mi-cuenta/enviar">
-                        <StyledSidebarItem
-                            icon={<img src="/assets/admin-users.png" alt="" />}
-                            name="Enviar"
-                            label="Usuarios"
-                        />
-                    </Link>
-                    <Link to="/mi-cuenta/historial">
-                        <StyledSidebarItem
-                            icon={<img src="/assets/icon-overweight.png" alt="" />}
-                            name="Historial"
-                            label="Sobrepeso"
-                        />
-                    </Link>
-                </StyledSidebar>
-            </SideBarContainer>
-        </div>
+        <SideBarContainer
+            className="rainbow-p-top_small rainbow-p-bottom_medium"
+            backImg="/assets/redbox-1.png"
+        >
+            <SidebarHeader>
+                <Logo src="/logo-admin.png" />
+                <h5 style={{ color: '#fff' }}>Administrador</h5>
+                <Link to="/" style={{ display: 'block' }} onClick={logout}>
+                    Cerrar sesión
+                </Link>
+            </SidebarHeader>
+            <StyledSidebar>
+                <Link to="/admin/usuarios">
+                    <StyledSidebarItem
+                        icon={<img src="/assets/admin-users.png" alt="" />}
+                        name="Enviar"
+                        label="Usuarios"
+                    />
+                </Link>
+                <Link to="/admin/sobrepesos">
+                    <StyledSidebarItem
+                        icon={<img src="/assets/icon-overweight.png" alt="" />}
+                        name="Historial"
+                        label="Sobrepeso"
+                    />
+                </Link>
+            </StyledSidebar>
+        </SideBarContainer>
     );
 }

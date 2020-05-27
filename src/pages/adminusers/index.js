@@ -16,7 +16,7 @@ const StyledColumn = styled(Column)`
     color: #1de9b6;
 `;
 
-const AusersPage = () => {
+const AdminUsersPage = () => {
     return (
         <StyledAusers>
             <div className="back">
@@ -38,4 +38,4 @@ const AusersPage = () => {
     );
 };
 
-export default AusersPage;
+export default AdminUsersPage;

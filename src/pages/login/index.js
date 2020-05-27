@@ -5,9 +5,6 @@ import { useHistory } from 'react-router-dom';
 import { Input } from 'react-rainbow-components';
 import { useFirebaseApp, useUser, useFirestore } from 'reactfire';
 import { StyledLoginPage, StyledLoginSection } from './styled';
-import redirectIfLoggedOut from '../../helpers/redirectIfLoggedOut';
-
-
 
 import 'firebase/auth';
 
@@ -22,28 +19,31 @@ const LoginPage = () => {
     const history = useHistory();
     const user = useUser();
     const firestore = useFirestore();
-/*
+    /*
     useEffect(() => {
         RedirectIfLoggedOut(user);
-    }, [user]);  
+    }, [user]);
 */
     useEffect(() => {
-
-        if (user){
-        if (user.email === "roheg56658@prowerl.com") {
-            history.push('/admin');
-        }else if(user !== null) {
-            history.push('/mi-cuenta');
+        if (user) {
+            if (user.email === 'roheg56658@prowerl.com') {
+                history.push('/admin');
+            } else if (user !== null) {
+                history.push('/mi-cuenta');
+            }
         }
-    }
-    }, [user]);
-
+    }, [user, history]);
 
     // Crear usuario con correo y contraseña
     const register = e => {
         e.preventDefault();
-        if(newEmail.trim() === '' || newPassword.trim() === '' || name.trim() === '' || lastname.trim() === ''  ){
-            console.log("Espacios vacios");
+        if (
+            newEmail.trim() === '' ||
+            newPassword.trim() === '' ||
+            name.trim() === '' ||
+            lastname.trim() === ''
+        ) {
+            console.log('Espacios vacios');
             return;
         }
         firebase
@@ -51,77 +51,74 @@ const LoginPage = () => {
             .createUserWithEmailAndPassword(newEmail, newPassword)
             .then(({ user }) => {
                 user.sendEmailVerification();
-                 history.push('/mi-cuenta');
+                history.push('/mi-cuenta');
             });
     };
 
     // Iniciar sesión
     const login = async e => {
         e.preventDefault();
-        if(email.trim() === '' || password.trim() === ''){
-            console.log("Espacios vacios");
+        if (email.trim() === '' || password.trim() === '') {
+            console.log('Espacios vacios');
             return;
         }
         await firebase.auth().signInWithEmailAndPassword(email, password);
         history.push('/mi-cuenta');
 
-        firestore.collection("profiles").add({
-            first: "Ada",
-            last: "Lovelace",
-            born: 1815
-        })
-        .then(function(docRef) {
-            console.log("Document written with ID: ", docRef.id);
-        })
-        .catch(function(error) {
-            console.error("Error adding document: ", error);
-        });
-
+        firestore
+            .collection('profiles')
+            .add({
+                first: 'Ada',
+                last: 'Lovelace',
+                born: 1815,
+            })
+            .then(function(docRef) {
+                console.log('Document written with ID: ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
     };
 
     const restorePass = async e => {
         e.preventDefault();
-        if(email.trim() === ''){
-            console.log("Espacios vacios");
+        if (email.trim() === '') {
+            console.log('Espacios vacios');
             return;
         }
-        firebase
-        .auth()
-        .sendPasswordResetEmail(email);
+        firebase.auth().sendPasswordResetEmail(email);
     };
 
-    
-
-    
     return (
         <StyledLoginPage>
             <StyledLoginSection>
                 <h1>Iniciar sesión</h1>
-                    <Form>
-                        <Form.Group controlId="formGroupEmail">
-                            <Form.Label>Email o nombre de ususario</Form.Label>
-                            <Form.Control
-                                type="email"
-                                controlid="email"
-                                onChange={ev => setEmail(ev.target.value)}
-                                className="ini-form"
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formGroupPassword">
-                            <Form.Label>Contraseña</Form.Label>
-                            <Form.Control
-                                type="password"
-                                controlid="password"
-                                onChange={ev => setPassword(ev.target.value)}
-                                className="ini-form"
-                            />
-                        </Form.Group>
-                        <Button className="boton" type="submit" onClick={login}>
-                            Iniciar sesión
-                        </Button>
-                        <a onClick={restorePass}>¿Olvidaste tu constraseña?</a>
-                    </Form>
-                
+                <Form>
+                    <Form.Group controlId="formGroupEmail">
+                        <Form.Label>Email o nombre de ususario</Form.Label>
+                        <Form.Control
+                            type="email"
+                            controlid="email"
+                            onChange={ev => setEmail(ev.target.value)}
+                            className="ini-form"
+                        />
+                    </Form.Group>
+                    <Form.Group controlId="formGroupPassword">
+                        <Form.Label>Contraseña</Form.Label>
+                        <Form.Control
+                            type="password"
+                            controlid="password"
+                            onChange={ev => setPassword(ev.target.value)}
+                            className="ini-form"
+                        />
+                    </Form.Group>
+                    <Button className="boton" type="submit" onClick={login}>
+                        Iniciar sesión
+                    </Button>
+                    <a href="/login" onClick={restorePass}>
+                        ¿Olvidaste tu constraseña?
+                    </a>
+                </Form>
             </StyledLoginSection>
             <StyledLoginSection>
                 <h1>Regístrate</h1>
@@ -170,7 +167,7 @@ const LoginPage = () => {
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <p style={{ fontSize: '0.9rem' }}>
                                 Al darle Unirse estás aceptando nuestro
-                                <a href="/aviso-de-privacidad" >Aviso de privacidad</a> y nuestros{' '}
+                                <a href="/aviso-de-privacidad">Aviso de privacidad</a> y nuestros{' '}
                                 <a href="/terminos-y-condiciones">Términos y condiciones.</a>
                             </p>
                             <Button
@@ -180,7 +177,6 @@ const LoginPage = () => {
                             >
                                 Unirse
                             </Button>
-
                         </div>
                     </form>
                 </div>

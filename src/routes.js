@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 
 import HomePage from './pages/home';
 import PrivacyPage from './pages/privacy';
@@ -12,8 +12,8 @@ import RecordPage from './pages/record';
 import AccountPage from './pages/account';
 import ServicesPage from './pages/services';
 import OverweightPage from './pages/overweight';
-import AdminoverweightPage from './pages/adminoverweight';
-import StyledAusers from './pages/adminusers';
+import AdminOverweightPage from './pages/adminoverweight';
+import AdminUsersPage from './pages/adminusers';
 import ConditionsPage from './pages/conditions';
 import LoginPage from './pages/login';
 import Layout from './components/layout';
@@ -23,11 +23,14 @@ import { AccountSidebar, AdminSidebar } from './components/layout/sidebar';
 const AppRoutes = () => {
     return (
         <Switch>
+            <Route exact path="/admin" component={AdminPage} />
             <Route path="/admin">
                 <StyledMain style={{ display: 'flex' }}>
                     <AdminSidebar />
                     <Switch>
-                        <Route exact path="/admin" component={AdminPage} />
+                        <Route path="/admin/sobrepesos" component={AdminOverweightPage} />
+                        <Route path="/admin/usuarios" component={AdminUsersPage} />
+                        <Redirect to="/admin" />
                     </Switch>
                 </StyledMain>
             </Route>
@@ -41,6 +44,7 @@ const AppRoutes = () => {
                         <Route path="/mi-cuenta/contacto" component={ContactPage} />
                         <Route path="/mi-cuenta/enviar" component={SendPage} />
                         <Route path="/mi-cuenta/" component={AccountPage} />
+                        <Redirect to="/login" />
                     </Switch>
                 </StyledMain>
             </Route>
@@ -53,8 +57,6 @@ const AppRoutes = () => {
                         <Route exact path="/cotizacion" component={QuotePage} />
                         <Route exact path="/servicios" component={ServicesPage} />
                         <Route exact path="/terminos-y-condiciones" component={ConditionsPage} />
-                        <Route path="/asobrepeso" component={AdminoverweightPage} />
-                        <Route path="/ausuarios" component={StyledAusers} />
                     </Switch>
                 </Layout>
             </Route>
