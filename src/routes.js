@@ -12,6 +12,7 @@ import RecordPage from './pages/record';
 import AccountPage from './pages/account';
 import ServicesPage from './pages/services';
 import OverweightPage from './pages/overweight';
+import DocumentsPage from './pages/documents';
 import AdminOverweightPage from './pages/adminoverweight';
 import AdminUsersPage from './pages/adminusers';
 import ConditionsPage from './pages/conditions';
@@ -51,6 +52,7 @@ const AppRoutes = () => {
             <Route>
                 <Layout>
                     <Switch>
+                        <Route path="/documentacion" component={DocumentsPage} />
                         <Route exact path="/" component={HomePage} />
                         <Route exact path="/login" component={LoginPage} />
                         <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
