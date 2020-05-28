@@ -155,7 +155,7 @@ const TabPersonaMoral = () => {
                         className="rainbow-p-horizontal_medium rainbow-m_auto"
                         label="Acta Constitutiva"
                         placeholder="Sube o arrastra tu archivo aquí"
-                        style={{ height: '20%' }}
+                        style={{ height: '20%', marginBottom: '1rem' }}
                     />
                 </div>
                 <div style={{ flex: '1 1', textAlign: 'center' }}>
