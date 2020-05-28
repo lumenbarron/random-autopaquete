@@ -3,11 +3,12 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'react-rainbow-components';
-
 import { useFirebaseApp, useUser, useFirestore, useFirestoreCollectionData } from 'reactfire';
 import * as firebase from 'firebase';
 import { StyledLoginPage, StyledLoginSection } from './styled';
 import 'firebase/auth';
+import { useSecurity } from '../../hooks/useSecurity';
+import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -22,7 +23,7 @@ const LoginPage = () => {
     const db = firebase.firestore();
 
 
-    useEffect(() => {
+   /* useEffect(() => {
         if (user) {
             if (user.email === 'roheg56658@prowerl.com') {
                 history.push('/admin');
@@ -31,6 +32,9 @@ const LoginPage = () => {
             }
         }
     }, [user, history]);
+*/
+
+
 
     // Crear usuario con correo y contraseña
     const register = e => {
@@ -53,7 +57,7 @@ const LoginPage = () => {
                 const profilesCollectionAdd = db.collection('profiles').add({
                     name: name,
                     lastname: lastname,
-                    user_type: 'admin',
+                    user_type: 'regular',
                     ID: user.uid
                 });
             profilesCollectionAdd
@@ -86,6 +90,8 @@ const LoginPage = () => {
         }
         firebase.auth().sendPasswordResetEmail(email);
     };
+    useRegularSecurity();
+    useSecurity();
 
     return (
         <StyledLoginPage>

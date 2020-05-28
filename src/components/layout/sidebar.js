@@ -1,10 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useFirebaseApp } from 'reactfire';
-import { useHistory } from 'react-router-dom';
+import { useBlockSecurity } from '../../hooks/useBlockSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
+import { useRegularSecurity } from '../../hooks/useRegularSecurity';
+
+
 
 const SideBarContainer = styled.div.attrs(props => {
     return props.theme.rainbow.palette;
@@ -118,7 +121,7 @@ export function AccountSidebar() {
         history.push('/');
     };
 
-    useSecurity();
+    useBlockSecurity();
 
     return (
         <SideBarContainer className="rainbow-p-top_small rainbow-p-bottom_medium">
@@ -192,7 +195,7 @@ export function AdminSidebar() {
         history.push('/');
     };
 
-    useSecurity('admin');
+
 
     return (
         <SideBarContainer
