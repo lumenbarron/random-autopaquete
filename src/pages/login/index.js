@@ -53,7 +53,8 @@ const LoginPage = () => {
                 const profilesCollectionAdd = db.collection('profiles').add({
                     name: name,
                     lastname: lastname,
-                    user_type: 'admin'
+                    user_type: 'admin',
+                    ID: user.uid
                 });
             profilesCollectionAdd
                 .then(function(docRef) {
