@@ -32,8 +32,5 @@ export function useBlockSecurity(type) {
                 console.log('Error getting documents: ', error);
             });
     }
-    if (!user) {
-        history.push('/login');
-    }
     // Validar si el usuario no esta loggeado
 }

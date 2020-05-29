@@ -1,29 +1,31 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StyledAdmin } from './styled';
-import { useSecurity } from '../../hooks/useSecurity';
-import { useBlockSecurity } from '../../hooks/useBlockSecurity';
+import 'firebase/auth';
+import { useFirebaseApp, useUser } from 'reactfire';
+import { useHistory } from 'react-router-dom';
+
 
 
 const AdminPage = () => {
 
-    /* Prueba para leer y escribir datos desde firebase
-    var db = firebase.firestore();
-    const profilesCollection = db.collection("profiles").get();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const firebase = useFirebaseApp();
+    const history = useHistory();
 
-    profilesCollection
-    .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
-        
-        });
-    })
-    .catch(function(error) {
-        console.error("Error adding document: ", error);
-    });
-        */
 
-    useSecurity();
-    useBlockSecurity();
+    const login = async e => {
+        e.preventDefault();
+        if (email.trim() === '' || password.trim() === '') {
+            console.log('Espacios vacios');
+            return;
+        }
+
+
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        history.push('/mi-cuenta');
+    };
+
 
 
     return (
@@ -45,6 +47,7 @@ const AdminPage = () => {
                                     type="submit"
                                     value="Iniciar sesión"
                                     className="button"
+                                    onClick={login}
                                 ></input>
                             </div>
                         </form>

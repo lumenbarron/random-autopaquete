@@ -3,7 +3,6 @@ import { Link, useHistory } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useFirebaseApp } from 'reactfire';
-import { useBlockSecurity } from '../../hooks/useBlockSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 
@@ -121,7 +120,8 @@ export function AccountSidebar() {
         history.push('/');
     };
 
-    useBlockSecurity();
+    useSecurity();
+    useRegularSecurity();
 
     return (
         <SideBarContainer className="rainbow-p-top_small rainbow-p-bottom_medium">
@@ -194,6 +194,9 @@ export function AdminSidebar() {
         await firebase.auth().signOut();
         history.push('/');
     };
+
+    useSecurity();
+    useRegularSecurity();
 
 
 

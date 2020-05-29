@@ -8,7 +8,6 @@ export function useSecurity(type) {
     const location = useLocation();
     const db = firebase.firestore();
 
-
     // Validar que un ususario existe
     if (user) {
         // Generar la consulta a frestore jalando el id del usuario
@@ -18,18 +17,20 @@ export function useSecurity(type) {
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     console.log(doc.data().user_type);
-                    if (doc.data().user_type === 'admin') {
+                    if (doc.data().user_type === 'admin') {                        
                         const pathNames = location.pathname.split('/');
-
-                        if (pathNames[1] !== 'admin') {
+                       if (pathNames[1] !== 'admin') {
                             history.push('/admin');
                         }
                         // revisar si el usuario tiene perfil en firestore y si es de tipo admin
                     }
+
                 });
+
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
             });
+            
     }
 }

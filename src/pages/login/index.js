@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'react-rainbow-components';
-import { useFirebaseApp, useUser, useFirestore, useFirestoreCollectionData } from 'reactfire';
+import { useFirebaseApp, useUser } from 'reactfire';
 import * as firebase from 'firebase';
 import { StyledLoginPage, StyledLoginSection } from './styled';
 import 'firebase/auth';
@@ -17,13 +17,13 @@ const LoginPage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [name, setName] = useState('');
     const [lastname, setLastName] = useState('');
+    const [image, setImage] = useState('');
     const firebase = useFirebaseApp();
     const history = useHistory();
     const user = useUser();
     const db = firebase.firestore();
 
-
-   /* useEffect(() => {
+    /* useEffect(() => {
         if (user) {
             if (user.email === 'roheg56658@prowerl.com') {
                 history.push('/admin');
@@ -33,8 +33,6 @@ const LoginPage = () => {
         }
     }, [user, history]);
 */
-
-
 
     // Crear usuario con correo y contraseña
     const register = e => {
@@ -55,20 +53,19 @@ const LoginPage = () => {
                 user.sendEmailVerification();
                 history.push('/mi-cuenta');
                 const profilesCollectionAdd = db.collection('profiles').add({
-                    name: name,
-                    lastname: lastname,
+                    name,
+                    lastname,
                     user_type: 'regular',
-                    ID: user.uid
+                    ID: user.uid,
                 });
-            profilesCollectionAdd
-                .then(function(docRef) {
-                    console.log('Document written with ID: ', docRef.id);
-                })
-                .catch(function(error) {
-                    console.error('Error adding document: ', error);
-                });
+                profilesCollectionAdd
+                    .then(function(docRef) {
+                        console.log('Document written with ID: ', docRef.id);
+                    })
+                    .catch(function(error) {
+                        console.error('Error adding document: ', error);
+                    });
             });
-
     };
 
     // Iniciar sesión
@@ -78,6 +75,8 @@ const LoginPage = () => {
             console.log('Espacios vacios');
             return;
         }
+
+
         await firebase.auth().signInWithEmailAndPassword(email, password);
         history.push('/mi-cuenta');
     };
@@ -90,6 +89,17 @@ const LoginPage = () => {
         }
         firebase.auth().sendPasswordResetEmail(email);
     };
+    const uploadImage = async e => {
+        e.preventDefault();
+        if (email.trim() === '') {
+            console.log('Espacios vacios');
+            return;
+        }
+        firebase.auth().sendPasswordResetEmail(email);
+    };
+
+    
+
     useRegularSecurity();
     useSecurity();
 
@@ -124,6 +134,23 @@ const LoginPage = () => {
                     </a>
                 </Form>
             </StyledLoginSection>
+
+            <Form>
+                    <Form.Group controlId="formGroupEmail">
+                        <Form.Label>Email o nombre de ususario</Form.Label>
+                        <Form.Control
+                            type="file"
+                            controlid="file"
+                            onChange={ev => setImage(ev.target.value)}
+                            className="ini-form"
+                            />
+                    </Form.Group>
+                    <Button className="file" type="submit" onClick={uploadImage}>
+                        Subir imagen prueba
+                    </Button>
+            </Form>
+
+
             <StyledLoginSection>
                 <h1>Regístrate</h1>
                 <div>
