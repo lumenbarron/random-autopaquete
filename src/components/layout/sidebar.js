@@ -6,8 +6,6 @@ import { useFirebaseApp } from 'reactfire';
 import { useSecurity } from '../../hooks/useSecurity';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 
-
-
 const SideBarContainer = styled.div.attrs(props => {
     return props.theme.rainbow.palette;
 })`
@@ -28,6 +26,7 @@ const SideBarContainer = styled.div.attrs(props => {
     border-bottom-left-radius: 0.875rem;
     max-width: 350px;
     min-width: 150px;
+    flex: 1 1;
 `;
 
 const SidebarHeader = styled.div.attrs(props => {
@@ -197,8 +196,6 @@ export function AdminSidebar() {
 
     useSecurity();
     useRegularSecurity();
-
-
 
     return (
         <SideBarContainer

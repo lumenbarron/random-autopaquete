@@ -1,15 +1,20 @@
 import styled from 'styled-components';
 
 export const StyledAccount = styled.div`
+    flex: 1 1;
+
     .back {
         background-color: #f7ece2;
-        width: 1920px;
-        height: 1080px;
-        position: absolute;
+        padding: 3rem;
+        min-height: 100vh;
     }
 
     .imgtext {
-        margin-top: 300px;
+        margin-top: 20vh;
+    }
+
+    .imgtext > .row > .col {
+        min-width: 300px;
     }
 
     h1 {
