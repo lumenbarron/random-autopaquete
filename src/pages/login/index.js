@@ -5,9 +5,11 @@ import { useHistory } from 'react-router-dom';
 import { Input } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import * as firebase from 'firebase';
+import 'firebase/storage';
 import { StyledLoginPage, StyledLoginSection } from './styled';
 import { useBlockSecurity } from '../../hooks/useBlockSecurity';
 import 'firebase/auth';
+
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -22,16 +24,6 @@ const LoginPage = () => {
     const user = useUser();
     const db = firebase.firestore();
 
-    /* useEffect(() => {
-        if (user) {
-            if (user.email === 'roheg56658@prowerl.com') {
-                history.push('/admin');
-            } else if (user !== null) {
-                history.push('/mi-cuenta');
-            }
-        }
-    }, [user, history]);
-*/
 
     // Crear usuario con correo y contraseña
     const register = e => {
@@ -111,16 +103,8 @@ const LoginPage = () => {
         }
         firebase.auth().sendPasswordResetEmail(email);
     };
-    const uploadImage = async e => {
-        e.preventDefault();
-        if (email.trim() === '') {
-            console.log('Espacios vacios');
-            return;
-        }
-        firebase.auth().sendPasswordResetEmail(email);
-    };
 
-    useBlockSecurity();
+ //   useBlockSecurity();
 
     return (
         <StyledLoginPage>
@@ -154,20 +138,6 @@ const LoginPage = () => {
                 </Form>
             </StyledLoginSection>
 
-            <Form>
-                <Form.Group controlId="formGroupEmail">
-                    <Form.Label>Email o nombre de ususario</Form.Label>
-                    <Form.Control
-                        type="file"
-                        controlid="file"
-                        onChange={ev => setImage(ev.target.value)}
-                        className="ini-form"
-                    />
-                </Form.Group>
-                <Button className="file" type="submit" onClick={uploadImage}>
-                    Subir imagen prueba
-                </Button>
-            </Form>
 
             <StyledLoginSection>
                 <h1>Regístrate</h1>

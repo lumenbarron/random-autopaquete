@@ -16,8 +16,6 @@ const AdminPage = () => {
     const history = useHistory();
     const db = firebase.firestore();
 
-
-
     const login = async e => {
         e.preventDefault();
         if (email.trim() === '' || password.trim() === '') {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tab, Input } from 'react-rainbow-components';
+import { useFirebaseApp, useUser } from 'reactfire';
 import {
     StyledContainer,
     StyledTabset,
@@ -8,11 +9,54 @@ import {
     StyledSubmit,
 } from './styled.js';
 import { useSecurity } from '../../hooks/useSecurity';
-
 // TODO: CAMBIAR ESTO EN CUANTO LIBEREN LA VERSION FINAL DE FileSelector
 import FileSelector from '../../components/react-rainbow-beta/components/FileSelector';
 
 const TabPersonaFisica = () => {
+    const [name, setName] = useState('');
+    const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
+    const [RFC, setRFC] = useState('');
+    const [date, setDate] = useState('');
+    const [INEnumber, setINENumber] = useState('');
+    const [fileFiscal, setFileFiscal] = useState('');
+    const [fileIne, setFileINE] = useState([]);
+    const [fileDomicilio, setFileAddress] = useState([]);
+    const firebase = useFirebaseApp();
+
+    const registerPersonaFisica = files => {
+        const file = files[0];
+        if (file) {
+            const storageRef = firebase.storage().ref(`photos/${file.name}`);
+
+            storageRef.put(file).then(function(snapshot) {
+                console.log('Uploaded a blob or file!');
+            });
+        }
+     /*   const profilesCollectionAdd = db.collection('profiles').add({
+            name: name,
+            direccion: address,
+            telefono: phone,
+            RFC: RFC,
+            Fecha: date,
+            INENumero: RFC,
+            RFC: RFC,
+
+
+        });
+        profilesCollectionAdd
+            .then(function(docRef) {
+                console.log('Document written with ID: ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });*/
+    };
+
+
+    console.log(name);
+    console.log(fileFiscal);
+
     return (
         <StyledTabContent
             aria-labelledby="pfisica"
@@ -28,6 +72,7 @@ const TabPersonaFisica = () => {
                             name="nombreCompleto"
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
+                            onChange={ev => setName(ev.target.value)}
                         />
                         <Input
                             id="domicilio"
@@ -35,6 +80,7 @@ const TabPersonaFisica = () => {
                             name="domicilio"
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
+                            onChange={ev => setAddress(ev.target.value)}
                         />
                     </div>
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -44,6 +90,7 @@ const TabPersonaFisica = () => {
                             name="telefono"
                             className="rainbow-p-around_medium"
                             style={{ width: '45%' }}
+                            onChange={ev => setPhone(ev.target.value)}
                         />
                         <Input
                             id="rfc"
@@ -51,6 +98,7 @@ const TabPersonaFisica = () => {
                             name="rfc"
                             className="rainbow-p-around_medium"
                             style={{ width: '45%' }}
+                            onChange={ev => setRFC(ev.target.value)}
                         />
                     </div>
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -61,6 +109,7 @@ const TabPersonaFisica = () => {
                             type="date"
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
+                            onChange={ev => setDate(ev.target.value)}
                         />
                         <Input
                             id="numeroINE"
@@ -68,6 +117,7 @@ const TabPersonaFisica = () => {
                             name="numeroINE"
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
+                            onChange={ev => setINENumber(ev.target.value)}
                         />
                     </div>
                 </div>
@@ -77,18 +127,21 @@ const TabPersonaFisica = () => {
                         label="Constancia de Situación Fiscal (Opcional)"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
+                        onChange={setFileFiscal}
                     />
                     <FileSelector
                         className="rainbow-p-horizontal_medium rainbow-m_auto"
                         label="Foto de INE"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
+                        onChange={setFileINE}
                     />
                     <FileSelector
                         className="rainbow-p-horizontal_medium rainbow-m_auto"
                         label="Comprobante de domicilio"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
+                        onChange={setFileAddress}
                     />
                     <h5 className="rainbow-m-vertical_x-large">
                         Al enviar tu documentación aceptas los términos y condiciones y el aviso de
@@ -193,7 +246,7 @@ const TabPersonaMoral = () => {
 const DocumentsPage = () => {
     const [selected, setSelected] = useState('pfisica');
 
-    useSecurity();
+    // useSecurity();
 
     return (
         <StyledContainer>
