@@ -28,6 +28,49 @@ export const StyledHome = styled.div`
         height: 120px;
         align-items: center;
     }
+
+    //Time line
+
+    .timeline {
+        position: relative;
+        margin: 50px auto;
+        padding: 40px 0;
+        whith: 1000px;
+    }
+
+    .timeline: before {
+        content: '';
+        position: absolute;
+        left: 50%
+        width: 8px;
+        height:100%;
+        background: #E8E8E8;
+    }
+
+    .timeline ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    .timeline ul li {
+        list-style: none;
+        position: relative;
+        width: 50%;
+        padding: 20px 40px;
+        box-sizing: border-box;
+    }
+
+    .timeline ul li:nth-child(odd){
+        float: left;
+        text-align: center;
+
+    }
+    .timeline ul li:nth-child(even){
+        float: left;
+        text-align: center;
+
+    }
+
     //Inicio carrousel logos
     .backsilder {
         background: #f4f4f4;

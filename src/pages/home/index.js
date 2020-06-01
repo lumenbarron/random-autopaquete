@@ -51,7 +51,6 @@ const HomePage = () => {
                     </Col>
                 </Row>
             </Container>
-
             <Container>
                 <Row className="justify-content-md-center">
                     <Col xs lg="2">
@@ -86,6 +85,59 @@ const HomePage = () => {
                     </Col>
                 </Row>
             </Container>
+
+            <div className="timeline">
+                <ul>
+                    <li>
+                        <div className="tcontent">
+                            <h3>Ahorra tiempo con nuestra plataforma fácil de usar</h3>
+                            <p>
+                                Autopaquete te brinda la oportunidad de crear guías, monitorear los
+                                status de tus pedidos, comparar entre los servicios de envíos y
+                                mucho más de una manera muy rápida y fácil de usar.
+                            </p>
+                        </div>
+                        <div className="time">
+                            <img src="./assets/clock.png" alt="clock" />
+                        </div>
+                    </li>
+                    <li>
+                        <div className="tcontent">
+                            <h3>Controla el status de tus pedidos desde nuestra plataforma</h3>
+                            <p>
+                                En nuestra plataforma podrás revisar el status de todos tus pedidos.
+                            </p>
+                        </div>
+                        <div className="time">
+                            <img src="./assets/localizacion.png" alt="localizacion" />
+                        </div>
+                    </li>
+                    <li>
+                        <div className="tcontent">
+                            <h3>Compara precios en los diferentes servicios de paqueteríasr</h3>
+                            <p>
+                                Te brindamos la opción para que compares los precios reales del
+                                momento y elijas la mejor opción.
+                            </p>
+                        </div>
+                        <div className="time">
+                            <img src="./assets/airplane.png" alt="airplane" />
+                        </div>
+                    </li>
+                    <li>
+                        <div className="tcontent">
+                            <h3>Añade usuarios brindando accesos personalizados.</h3>
+                            <p>
+                                Trabaja con más personas creando distintos usuarios que podrán
+                                cumplir distintas funcionalidades dentro de la plataforma.
+                            </p>
+                        </div>
+                        <div className="time">
+                            <img src="./assets/user-box.png" alt="user-box" />
+                        </div>
+                    </li>
+                </ul>
+            </div>
             <div className="backsilder">
                 <h1 className="nclients">Nuestros clientes</h1>
                 <div className="wrapper">
