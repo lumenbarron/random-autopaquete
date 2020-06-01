@@ -213,14 +213,14 @@ export function AdminSidebar() {
                 <Link to="/admin/usuarios">
                     <StyledSidebarItem
                         icon={<img src="/assets/admin-users.png" alt="" />}
-                        name="Enviar"
+                        name="Usuarios"
                         label="Usuarios"
                     />
                 </Link>
                 <Link to="/admin/sobrepesos">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-overweight.png" alt="" />}
-                        name="Historial"
+                        name="Sobrepeso"
                         label="Sobrepeso"
                     />
                 </Link>
