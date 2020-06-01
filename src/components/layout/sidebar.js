@@ -119,7 +119,6 @@ export function AccountSidebar() {
         history.push('/');
     };
 
-    useSecurity();
     useRegularSecurity();
 
     return (
@@ -195,7 +194,6 @@ export function AdminSidebar() {
     };
 
     useSecurity();
-    useRegularSecurity();
 
     return (
         <SideBarContainer

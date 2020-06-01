@@ -21,7 +21,7 @@ export function useBlockSecurity(type) {
                         console.log(user);
                     }
                     if (doc.data().user_type === 'admin') {
-                        history.push('/admin');
+                        history.push('/admin/usuarios');
                         console.log(user);
                     }
 

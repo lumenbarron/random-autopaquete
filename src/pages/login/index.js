@@ -6,9 +6,8 @@ import { Input } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import * as firebase from 'firebase';
 import { StyledLoginPage, StyledLoginSection } from './styled';
+import { useBlockSecurity } from '../../hooks/useBlockSecurity';
 import 'firebase/auth';
-import { useSecurity } from '../../hooks/useSecurity';
-import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -76,9 +75,32 @@ const LoginPage = () => {
             return;
         }
 
+        await firebase
+            .auth()
+            .signInWithEmailAndPassword(email, password)
+            .then(({ user }) => {
+                const docRef = db.collection('profiles').where('ID', '==', user.uid);
+                docRef
+                    .get()
+                    .then(function(querySnapshot) {
+                        querySnapshot.forEach(function(doc) {
+                            console.log(doc.data().user_type);
+                            if (doc.data().user_type === 'regular') {
+                                history.push('/mi-cuenta');
+                                console.log(user);
+                            }
+                            if (doc.data().user_type === 'admin') {
+                                history.push('/admin/usuarios');
+                                console.log(user);
+                            }
 
-        await firebase.auth().signInWithEmailAndPassword(email, password);
-        history.push('/mi-cuenta');
+                            // revisar si el usuario tiene perfil en firestore y si es de tipo admin
+                        });
+                    })
+                    .catch(function(error) {
+                        console.log('Error getting documents: ', error);
+                    });
+            });
     };
 
     const restorePass = async e => {
@@ -98,10 +120,7 @@ const LoginPage = () => {
         firebase.auth().sendPasswordResetEmail(email);
     };
 
-    
-
-    useRegularSecurity();
-    useSecurity();
+    useBlockSecurity();
 
     return (
         <StyledLoginPage>
@@ -136,20 +155,19 @@ const LoginPage = () => {
             </StyledLoginSection>
 
             <Form>
-                    <Form.Group controlId="formGroupEmail">
-                        <Form.Label>Email o nombre de ususario</Form.Label>
-                        <Form.Control
-                            type="file"
-                            controlid="file"
-                            onChange={ev => setImage(ev.target.value)}
-                            className="ini-form"
-                            />
-                    </Form.Group>
-                    <Button className="file" type="submit" onClick={uploadImage}>
-                        Subir imagen prueba
-                    </Button>
+                <Form.Group controlId="formGroupEmail">
+                    <Form.Label>Email o nombre de ususario</Form.Label>
+                    <Form.Control
+                        type="file"
+                        controlid="file"
+                        onChange={ev => setImage(ev.target.value)}
+                        className="ini-form"
+                    />
+                </Form.Group>
+                <Button className="file" type="submit" onClick={uploadImage}>
+                    Subir imagen prueba
+                </Button>
             </Form>
-
 
             <StyledLoginSection>
                 <h1>Regístrate</h1>

@@ -8,6 +8,9 @@ export function useRegularSecurity(type) {
     const location = useLocation();
     const db = firebase.firestore();
 
+    if(!user){
+        history.push('/');
+    }
 
     //Validar que un ususario existe
         if (user) {
@@ -17,16 +20,8 @@ export function useRegularSecurity(type) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.data().user_type);
-                        if (doc.data().user_type === 'regular') {
-                            const pathNames = location.pathname.split('/');
-                            console.log(user.uid);
-                            if (pathNames[1] !== 'mi-cuenta') {
-                                history.push('/mi-cuenta');
-                                console.log(pathNames);
-                            }
-
-                            // revisar si el usuario tiene perfil en firestore y si es de tipo admin
+                        if (doc.data().user_type !== 'regular') {
+                            history.push('/');
                         }
                     });
                 })
