@@ -18,6 +18,10 @@ export const StyledPaneContainer = styled.div`
     flex-direction: row;
     flex-wrap: wrap;
     margin: 3rem;
+
+    @media (max-width: 768px) {
+        margin: 3rem auto;
+    }
 `;
 
 const StyledPane = styled.div.attrs(props => {
@@ -33,7 +37,7 @@ const StyledPane = styled.div.attrs(props => {
     display: flex;
     flex-wrap: wrap;
     min-height: 30vh;
-    min-width: 360px;
+    min-width: 330px;
     justify-content: flex-start;
     flex-direction: column;
 

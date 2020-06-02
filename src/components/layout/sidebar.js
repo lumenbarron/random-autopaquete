@@ -1,21 +1,38 @@
-import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
 import styled, { keyframes } from 'styled-components';
 import { useFirebaseApp } from 'reactfire';
 import { useSecurity } from '../../hooks/useSecurity';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCamera, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faTimes, faBars } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
-import { slideRight } from 'react-animations';
 
 // TODO: CAMBIAR ESTO EN CUANTO LIBEREN LA VERSION FINAL DE FileSelector
 import FileSelector from '../../components/react-rainbow-beta/components/FileSelector';
 
 Modal.setAppElement('#root');
 
-const slideAnimation = keyframes`${slideRight}`;
+const slideOutAnimation = keyframes`
+  from {
+    margin-left:0;
+  }
+
+  to {
+    margin-left:-350px;
+  }
+`;
+
+const slideInAnimation = keyframes`
+  from {
+    margin-left:-350px;
+  }
+
+  to {
+    margin-left:0px;
+  }
+`;
 
 const SideBarContainer = styled.div.attrs(props => {
     return props.theme.rainbow.palette;
@@ -38,6 +55,18 @@ const SideBarContainer = styled.div.attrs(props => {
     max-width: 350px;
     min-width: 150px;
     flex: 1 1;
+
+    @media (max-width: 768px) {
+        margin-left: -350px;
+    }
+
+    &.hide {
+        animation: ${slideOutAnimation} 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+    }
+
+    &.show {
+        animation: ${slideInAnimation} 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+    }
 `;
 
 const SidebarHeader = styled.div.attrs(props => {
@@ -146,12 +175,40 @@ const StyledSubmit = styled.button.attrs(props => {
     }
 `;
 
+const SidebarResponsiveBars = styled(FontAwesomeIcon)`
+    padding: 10px;
+    width: 48px !important;
+    height: 48px;
+    background: crimson;
+    color: white;
+    border-radius: 0 10px 10px 0;
+    position: absolute;
+    left: 0;
+    z-index: 9;
+
+    @media (min-width: 769px) {
+        display: none;
+    }
+`;
+
 export function AccountSidebar() {
     const firebase = useFirebaseApp();
     const history = useHistory();
+    const location = useLocation();
     const [avatar, setAvatar] = useState([]);
 
     const [modalIsOpen, setIsOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(null);
+    const [containerClassName, setContainerClassName] = useState(
+        'rainbow-p-top_small rainbow-p-bottom_medium',
+    );
+
+    useEffect(() => {
+        if (sidebarOpen) {
+            setContainerClassName(containerClassName => containerClassName.replace('show', 'hide'));
+            setSidebarOpen(false);
+        }
+    }, [location]);
 
     const logout = async e => {
         e.preventDefault();
@@ -167,10 +224,29 @@ export function AccountSidebar() {
         setIsOpen(false);
     };
 
+    const toggleSidebar = e => {
+        if (sidebarOpen === null) {
+            setContainerClassName(containerClassName + ' show');
+            setSidebarOpen(true);
+            return;
+        }
+        if (sidebarOpen) {
+            setContainerClassName(containerClassName.replace('show', 'hide'));
+            setSidebarOpen(false);
+            return;
+        }
+        if (!sidebarOpen) {
+            setContainerClassName(containerClassName.replace('hide', 'show'));
+            setSidebarOpen(true);
+            return;
+        }
+    };
+
     useRegularSecurity();
 
     return (
-        <SideBarContainer className="rainbow-p-top_small rainbow-p-bottom_medium">
+        <SideBarContainer className={containerClassName}>
+            <SidebarResponsiveBars icon={faBars} onClick={toggleSidebar} />
             <SidebarHeader>
                 <Logo src="/assets/logo.png" />
                 <div
