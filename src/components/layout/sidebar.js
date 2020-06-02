@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useFirebaseApp } from 'reactfire';
 import { useSecurity } from '../../hooks/useSecurity';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCamera, faTimes } from '@fortawesome/free-solid-svg-icons';
+import Modal from 'react-modal';
+import { slideRight } from 'react-animations';
+
+// TODO: CAMBIAR ESTO EN CUANTO LIBEREN LA VERSION FINAL DE FileSelector
+import FileSelector from '../../components/react-rainbow-beta/components/FileSelector';
+
+Modal.setAppElement('#root');
+
+const slideAnimation = keyframes`${slideRight}`;
 
 const SideBarContainer = styled.div.attrs(props => {
     return props.theme.rainbow.palette;
@@ -84,6 +95,17 @@ const AddCreditButton = styled('button')`
     margin: 0.5rem;
 `;
 
+const CameraIcon = styled(FontAwesomeIcon)`
+    top: 1.6rem;
+    position: relative;
+    right: 1.2rem;
+    background: gainsboro;
+    padding: 5px;
+    width: 24px !important;
+    height: 24px;
+    border-radius: 50%;
+`;
+
 /** TODO: MODIFICAR ESTE ICONO POR UNA FOTO */
 function UserAvatarIcon() {
     return (
@@ -109,14 +131,40 @@ function UserAvatarIcon() {
     );
 }
 
+const StyledSubmit = styled.button.attrs(props => {
+    return props.theme.rainbow.palette;
+})`
+    background-color: #ab0000;
+    border: none;
+    border-radius: 25px;
+    padding: 0.5rem 2rem;
+    color: white;
+
+    &:hover {
+        background-color: #c94141;
+        color: white;
+    }
+`;
+
 export function AccountSidebar() {
     const firebase = useFirebaseApp();
     const history = useHistory();
+    const [avatar, setAvatar] = useState([]);
+
+    const [modalIsOpen, setIsOpen] = useState(false);
 
     const logout = async e => {
         e.preventDefault();
         await firebase.auth().signOut();
         history.push('/');
+    };
+
+    const changeAvatar = () => {
+        setIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsOpen(false);
     };
 
     useRegularSecurity();
@@ -125,11 +173,17 @@ export function AccountSidebar() {
         <SideBarContainer className="rainbow-p-top_small rainbow-p-bottom_medium">
             <SidebarHeader>
                 <Logo src="/assets/logo.png" />
-                <StyledAvatar
-                    icon={<UserAvatarIcon />}
-                    assistiveText="user icon"
-                    title="user icon"
-                />
+                <div
+                    style={{ position: 'relative', left: '12px', cursor: 'pointer' }}
+                    onClick={changeAvatar}
+                >
+                    <StyledAvatar
+                        icon={<UserAvatarIcon style={{ cursor: 'pointer' }} />}
+                        assistiveText="user icon"
+                        title="user icon"
+                    />
+                    <CameraIcon icon={faCamera} />
+                </div>
                 <Status>Activado</Status>
                 <h5>Créditos</h5>
                 <Link to="/mi-cuenta">
@@ -179,6 +233,49 @@ export function AccountSidebar() {
                     <StyledSidebarItem name="Salir" label="Salir" />
                 </Link>
             </StyledSidebar>
+            <Modal
+                isOpen={modalIsOpen}
+                contentLabel="Example Modal"
+                style={{
+                    overlay: {
+                        backgroundColor: 'rgba(100,100,100,0.5)',
+                    },
+                    content: {
+                        width: 'fit-content',
+                        height: 'fit-content',
+                        margin: 'auto',
+                        padding: '2rem',
+                        borderRadius: '0.875rem',
+                        color: 'crimson',
+                        boxShadow: '0px 0px 16px -4px rgba(0, 0, 0, 0.75)',
+                        fontFamily: "'Montserrat','sans-serif'",
+                        textAlign: 'center',
+                    },
+                }}
+            >
+                <h2 style={{ fontSize: '1.5rem', textAlign: 'center' }}>Cambia tu imagen</h2>
+                <button
+                    onClick={closeModal}
+                    style={{
+                        border: 'none',
+                        background: 'none',
+                        float: 'right',
+                        marginTop: '-3rem',
+                        marginRight: '-1rem',
+                    }}
+                >
+                    <FontAwesomeIcon icon={faTimes} />
+                </button>
+                <FileSelector
+                    className="rainbow-p-horizontal_medium rainbow-m-vertical_large"
+                    label="Foto de perfil"
+                    placeholder="Sube o arrastra tu archivo aquí"
+                    onChange={setAvatar}
+                />
+                <StyledSubmit type="submit" onClick={closeModal}>
+                    Continuar
+                </StyledSubmit>
+            </Modal>
         </SideBarContainer>
     );
 }

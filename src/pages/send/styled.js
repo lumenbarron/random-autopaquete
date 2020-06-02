@@ -7,6 +7,10 @@ export const StyledSendPage = styled.div`
 
     background-color: #f7ece2;
     min-height: 100vh;
+
+    @media (max-width: 768px) {
+        padding: 3rem 0;
+    }
 `;
 
 export const StyledPaneContainer = styled.div`
