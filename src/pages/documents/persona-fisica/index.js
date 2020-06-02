@@ -34,53 +34,55 @@ const TabPersonaFisica = () => {
     });
 
     const saveData = () => {
-        // docRef.get().then(function(querySnapshot) {
-        //     querySnapshot.forEach(function(doc) {
-        //         const userName = doc.data().name;
-        //         const lastName = doc.data().lastname;
-        //         const DocRef = doc.id;
+        docRef.get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                const userName = doc.data().name;
+                const lastName = doc.data().lastname;
+                const DocRef = doc.id;
 
-        //         console.log('Apellido', doc.data().lastname);
-        //         console.log('Usuario', doc.data().name);
+                console.log('Apellido', doc.data().lastname);
+                console.log('Usuario', doc.data().name);
 
-        if (uploadedFiles === filesToUpload) {
-            const userData = {
-                ID: user.uid,
-                name: '',
-                lastname: '',
-                nombre_fiscal: name,
-                direccion: address,
-                telefono: phone,
-                RFC,
-                Fecha: date,
-                INENumero: INEnumber,
-                Comprobante_fiscal: INEnumber,
-                user_type: 'regular',
-                files: {
-                    fileFiscal: fileFiscal ? `photos/${fileFiscal[0].name}` : undefined,
-                    fileIne: fileIne ? `photos/${fileIne[0].name}` : undefined,
-                    fileDomicilio: fileDomicilio ? `photos/${fileDomicilio[0].name}` : undefined,
-                },
-            };
+                if (uploadedFiles === filesToUpload) {
+                    const userData = {
+                        ID: user.uid,
+                        name: userName,
+                        lastname: lastName,
+                        nombre_fiscal: name,
+                        direccion: address,
+                        telefono: phone,
+                        RFC,
+                        Fecha: date,
+                        INENumero: INEnumber,
+                        Comprobante_fiscal: INEnumber,
+                        user_type: 'regular',
+                        files: {
+                            fileFiscal: fileFiscal ? `photos/${fileFiscal[0].name}` : undefined,
+                            fileIne: fileIne ? `photos/${fileIne[0].name}` : undefined,
+                            fileDomicilio: fileDomicilio
+                                ? `photos/${fileDomicilio[0].name}`
+                                : undefined,
+                        },
+                    };
 
-            //console.log('Documento', DocRef);
-            const profilesCollectionAdd = db
-                .collection('profiles')
-                .doc('XehxzcFtQNFosDYOISeJ')
-                .update(userData);
+                    //console.log('Documento', DocRef);
+                    const profilesCollectionAdd = db
+                        .collection('profiles')
+                        .doc(DocRef)
+                        .update(userData);
 
-            //const profilesCollectionAdd = db.collection('profiles').add(userData);
+                    //const profilesCollectionAdd = db.collection('profiles').add(userData);
 
-            profilesCollectionAdd
-                .then(function() {
-                    console.log('Document successfully written!');
-                })
-                .catch(function(error) {
-                    console.error('Error writing document: ', error);
-                });
-        }
-        //     });
-        // });
+                    profilesCollectionAdd
+                        .then(function() {
+                            console.log('Document successfully written!');
+                        })
+                        .catch(function(error) {
+                            console.error('Error writing document: ', error);
+                        });
+                }
+            });
+        });
     };
 
     const register = e => {

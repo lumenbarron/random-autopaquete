@@ -5,47 +5,143 @@ import { StyledTabContent, StyledForm, StyledSubmit } from '../styled.js';
 import FileSelector from '../../../components/react-rainbow-beta/components/FileSelector';
 
 const TabPersonaMoral = () => {
-    const [name, setName] = useState('');
-    const [address, setAddress] = useState('');
+    const [razonSocial, setRazonSocial] = useState('');
+    const [nameLegal, setnameLegal] = useState('');
+    const [address, setAdrress] = useState('');
     const [phone, setPhone] = useState('');
     const [RFC, setRFC] = useState('');
-    const [date, setDate] = useState('');
-    const [INEnumber, setINENumber] = useState('');
-    const [fileDomicilio, setFileAddress] = useState([]);
-    const [fileIne, setFileINE] = useState([]);
-    const [fileFiscal, setFileFiscal] = useState('');
-    //const [file, setFile] = useState('');
+
+    const [FileActa, setFileActa] = useState();
+    const [fileFiscal, setFileFiscal] = useState();
+    const [fileIne, setFileINE] = useState();
+    const [fileDomicilio, setFileAddress] = useState();
+
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
 
-    const register = files => {
-        // const file = files[0];
-        // const fileName = files[0].name;
-        // const pathF = firebase.storage();
-        // const filePath = `photos/${fileName}`;
-        // const storageRef = pathF.ref(filePath);
-        // storageRef.put(file).then(function(snapshot) {
-        //     console.log('Uploaded a blob or file!');
-        //     console.log(file.name);
-        //     console.log(pathF);
-        //     console.log(file);
-        // });
-        // // const profilesCollectionAdd = db.collection('profiles').add({
-        //     name,
-        //     direccion: address,
-        //     telefono: phone,
-        //     RFC,
-        //     Fecha: date,
-        //     INENumero: INEnumber,
-        //     Comprobante_fiscal: INEnumber,
-        // });
-        // profilesCollectionAdd
-        //     .then(function(docRef) {
-        //         console.log('Document written with ID: ', docRef.id);
-        //     })
-        //     .catch(function(error) {
-        //         console.error('Error adding document: ', error);
-        //     });
+    const user = useUser();
+
+    let uploadedFiles = 0;
+    let filesToUpload = 0;
+
+    const docRef = db.collection('profiles').where('ID', '==', user.uid);
+    docRef.get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            // console.log(doc);
+        });
+    });
+
+    const saveData = () => {
+        docRef.get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                const userName = doc.data().name;
+                const lastName = doc.data().lastname;
+                const DocRef = doc.id;
+
+                console.log('Apellido', doc.data().lastname);
+                console.log('Usuario', doc.data().name);
+
+                if (uploadedFiles === filesToUpload) {
+                    const userData = {
+                        ID: user.uid,
+                        name: userName,
+                        lastname: lastName,
+                        nombre_fiscal: 'name',
+                        direccion: address,
+                        telefono: phone,
+                        RFC,
+                        Fecha: 'date',
+                        INENumero: 'INEnumber',
+                        Comprobante_fiscal: 'INEnumber',
+                        user_type: 'regular',
+                        files: {
+                            fileFiscal: fileFiscal ? `photos/${fileFiscal[0].name}` : undefined,
+                            fileIne: fileIne ? `photos/${fileIne[0].name}` : undefined,
+                            fileDomicilio: fileDomicilio
+                                ? `photos/${fileDomicilio[0].name}`
+                                : undefined,
+                        },
+                    };
+
+                    //console.log('Documento', DocRef);
+                    const profilesCollectionAdd = db
+                        .collection('profiles')
+                        .doc(DocRef)
+                        .update(userData);
+
+                    //const profilesCollectionAdd = db.collection('profiles').add(userData);
+
+                    profilesCollectionAdd
+                        .then(function() {
+                            console.log('Document successfully written!');
+                        })
+                        .catch(function(error) {
+                            console.error('Error writing document: ', error);
+                        });
+                }
+            });
+        });
+    };
+
+    const register = e => {
+        e.preventDefault();
+
+        console.log('name', 'name');
+        console.log('address', address);
+        console.log('phone', phone);
+        console.log('RFC', RFC);
+        console.log('INEnumber', 'INEnumber');
+
+        console.log('fileFiscal', fileFiscal);
+        console.log('fileIne', fileIne);
+        console.log('fileDomicilio', fileDomicilio);
+
+        let fileName = '';
+        let filePath = '';
+
+        filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
+        filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
+        filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
+
+        if (fileDomicilio) {
+            fileName = fileDomicilio[0].name;
+            filePath = `photos/${fileName}`;
+            firebase
+                .storage()
+                .ref(filePath)
+                .put(fileDomicilio[0])
+                .then(snapshot => {
+                    // save somewhere ---> snapshot;
+                    uploadedFiles += 1;
+                    saveData();
+                });
+        }
+
+        if (fileIne) {
+            fileName = fileIne[0].name;
+            filePath = `photos/${fileName}`;
+            firebase
+                .storage()
+                .ref(filePath)
+                .put(fileIne[0])
+                .then(snapshot => {
+                    uploadedFiles += 1;
+                    saveData();
+                });
+        }
+
+        if (fileFiscal) {
+            fileName = fileFiscal[0].name;
+            filePath = `photos/${fileName}`;
+            firebase
+                .storage()
+                .ref(filePath)
+                .put(fileFiscal[0])
+                .then(snapshot => {
+                    uploadedFiles += 1;
+                    saveData();
+                });
+        }
     };
 
     return (
