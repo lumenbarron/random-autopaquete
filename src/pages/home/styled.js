@@ -88,6 +88,7 @@ export const StyledHome = styled.div`
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden; 
     }
 
     .slider {
@@ -96,6 +97,7 @@ export const StyledHome = styled.div`
         position: relative;
         box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0, 2);
         //overflow: hidden;
+        
     }
 
     .slide {
