@@ -6,12 +6,12 @@ import FileSelector from '../../../components/react-rainbow-beta/components/File
 
 const TabPersonaMoral = () => {
     const [razonSocial, setRazonSocial] = useState('');
-    const [nameLegal, setnameLegal] = useState('');
+    const [legalName, setLegalName] = useState('');
     const [address, setAdrress] = useState('');
     const [phone, setPhone] = useState('');
     const [RFC, setRFC] = useState('');
 
-    const [FileActa, setFileActa] = useState();
+    const [fileActaConstitutiva, setFileActaConstitutiva] = useState();
     const [fileFiscal, setFileFiscal] = useState();
     const [fileIne, setFileINE] = useState();
     const [fileDomicilio, setFileAddress] = useState();
@@ -38,23 +38,21 @@ const TabPersonaMoral = () => {
                 const lastName = doc.data().lastname;
                 const DocRef = doc.id;
 
-                console.log('Apellido', doc.data().lastname);
-                console.log('Usuario', doc.data().name);
-
                 if (uploadedFiles === filesToUpload) {
                     const userData = {
                         ID: user.uid,
                         name: userName,
                         lastname: lastName,
-                        nombre_fiscal: 'name',
+                        razon_social: razonSocial,
+                        nombreRepresentanteLegal: legalName,
                         direccion: address,
                         telefono: phone,
                         RFC,
-                        Fecha: 'date',
-                        INENumero: 'INEnumber',
-                        Comprobante_fiscal: 'INEnumber',
                         user_type: 'regular',
                         files: {
+                            fileActaConstitutiva: fileActaConstitutiva
+                                ? `photos/${fileActaConstitutiva[0].name}`
+                                : undefined,
                             fileFiscal: fileFiscal ? `photos/${fileFiscal[0].name}` : undefined,
                             fileIne: fileIne ? `photos/${fileIne[0].name}` : undefined,
                             fileDomicilio: fileDomicilio
@@ -99,9 +97,36 @@ const TabPersonaMoral = () => {
         let fileName = '';
         let filePath = '';
 
+        filesToUpload = fileActaConstitutiva ? filesToUpload + 1 : filesToUpload;
         filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
         filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
         filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
+
+        if (fileActaConstitutiva) {
+            fileName = fileActaConstitutiva[0].name;
+            filePath = `photos/${fileName}`;
+            firebase
+                .storage()
+                .ref(filePath)
+                .put(fileActaConstitutiva[0])
+                .then(snapshot => {
+                    uploadedFiles += 1;
+                    saveData();
+                });
+        }
+
+        if (fileFiscal) {
+            fileName = fileFiscal[0].name;
+            filePath = `photos/${fileName}`;
+            firebase
+                .storage()
+                .ref(filePath)
+                .put(fileFiscal[0])
+                .then(snapshot => {
+                    uploadedFiles += 1;
+                    saveData();
+                });
+        }
 
         if (fileDomicilio) {
             fileName = fileDomicilio[0].name;
@@ -129,19 +154,6 @@ const TabPersonaMoral = () => {
                     saveData();
                 });
         }
-
-        if (fileFiscal) {
-            fileName = fileFiscal[0].name;
-            filePath = `photos/${fileName}`;
-            firebase
-                .storage()
-                .ref(filePath)
-                .put(fileFiscal[0])
-                .then(snapshot => {
-                    uploadedFiles += 1;
-                    saveData();
-                });
-        }
     };
 
     return (
@@ -159,6 +171,7 @@ const TabPersonaMoral = () => {
                             name="razonSocial"
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
+                            onChange={ev => setRazonSocial(ev.target.value)}
                         />
                         <Input
                             id="nombreRepLegal"
@@ -166,6 +179,7 @@ const TabPersonaMoral = () => {
                             name="nombreRepLegal"
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
+                            onChange={ev => setLegalName(ev.target.value)}
                         />
                         <Input
                             id="domicilio"
@@ -173,6 +187,7 @@ const TabPersonaMoral = () => {
                             name="domicilio"
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
+                            onChange={ev => setAdrress(ev.target.value)}
                         />
                     </div>
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -182,6 +197,7 @@ const TabPersonaMoral = () => {
                             name="telefono"
                             className="rainbow-p-around_medium"
                             style={{ width: '45%' }}
+                            onChange={ev => setPhone(ev.target.value)}
                         />
                         <Input
                             id="rfc"
@@ -189,6 +205,7 @@ const TabPersonaMoral = () => {
                             name="rfc"
                             className="rainbow-p-around_medium"
                             style={{ width: '45%' }}
+                            onChange={ev => setRFC(ev.target.value)}
                         />
                     </div>
                     <FileSelector
@@ -196,6 +213,7 @@ const TabPersonaMoral = () => {
                         label="Acta Constitutiva"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%', marginBottom: '1rem' }}
+                        onChange={setFileActaConstitutiva}
                     />
                 </div>
                 <div style={{ flex: '1 1', textAlign: 'center' }}>
@@ -204,19 +222,21 @@ const TabPersonaMoral = () => {
                         label="Constancia de Situación Fiscal"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
+                        onChange={setFileFiscal}
                     />
                     <FileSelector
                         className="rainbow-p-horizontal_medium rainbow-m_auto"
                         label="Comprobante de domicilio"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
+                        onChange={setFileAddress}
                     />
                     <FileSelector
                         className="rainbow-p-horizontal_medium rainbow-m_auto"
                         label="Foto de INE Representante Legal"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
-                        onChange={register}
+                        onChange={setFileINE}
                     />
                     <h5 className="rainbow-m-vertical_x-large">
                         Al enviar tu documentación aceptas los términos y condiciones y el aviso de
