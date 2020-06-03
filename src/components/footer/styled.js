@@ -2,6 +2,11 @@ import styled from 'styled-components';
 import theme from '../../theme';
 
 export const StyledFooter = styled.div`
+    & > img {
+        width: 100%;
+        margin-top: -10%;
+        margin-bottom: -14%;
+    }
     .main-footer {
         color: #fff;
         background: linear-gradient(#780000, ${theme.colors.primary});

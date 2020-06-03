@@ -12,6 +12,7 @@ import { StyledFooter } from './styled';
 const Footer = () => {
     return (
         <StyledFooter>
+            <img src="/assets/footer.svg" style={{ width: '100%' }} />
             <div className="main-footer">
                 <div className="container">
                     <div className="row">

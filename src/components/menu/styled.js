@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button } from 'react-rainbow-components';
+import { Button, AvatarMenu } from 'react-rainbow-components';
 import theme from '../../theme';
 
 export const StyledMain = styled.div`
@@ -23,3 +23,5 @@ export const StyledButton = styled(Button)`
         padding: 0 30px;
     `}
 `;
+
+export const StyledAvatarMenu = styled(AvatarMenu)``;

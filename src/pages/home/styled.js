@@ -1,3 +1,4 @@
+import { Card } from 'react-rainbow-components';
 import styled from 'styled-components';
 
 export const StyledHome = styled.div`
@@ -31,11 +32,17 @@ export const StyledHome = styled.div`
 
     //Time line
 
+    .timeline-header {
+      text-align:center;
+      margin:2rem;
+    }
+
     .timeline {
         position: relative;
         margin: 50px auto;
         padding: 40px 0;
-        whith: 1000px;
+        width: 90%;
+        max-width:1200px;
     }
 
     .timeline: before {
@@ -43,7 +50,7 @@ export const StyledHome = styled.div`
         position: absolute;
         left: 50%
         width: 8px;
-        height:100%;
+        height:80%;
         background: #E8E8E8;
     }
 
@@ -53,23 +60,72 @@ export const StyledHome = styled.div`
     }
 
     .timeline ul li {
-        list-style: none;
-        position: relative;
-        width: 50%;
-        padding: 20px 40px;
-        box-sizing: border-box;
+      display:flex;
     }
 
     .timeline ul li:nth-child(odd){
-        float: left;
-        text-align: center;
 
     }
+
     .timeline ul li:nth-child(even){
-        float: left;
-        text-align: center;
-
+      flex-direction:row-reverse;
     }
+
+    .tcontent {
+      background:linear-gradient(45deg, #bb1b1f, #7c0004);
+      margin: 1rem 5rem;
+      padding: 1rem 3rem;
+      text-align: center;
+      flex: 1 1;
+      border-radius: 1rem;
+      position:relative;
+    }
+
+    li:nth-child(odd) .tcontent::after {
+        content: url(/assets/timeline-dot.svg);
+        position: absolute;
+        top: 33%;
+        right: -6.85rem;
+    }
+
+    li:nth-child(even) .tcontent::before {
+        content: url(/assets/timeline-dot.svg);
+        position: absolute;
+        top: 33%;
+        left: -6.45rem;
+        transform: rotate(180deg);
+    }
+
+    .timeline li:not(:first-child) .tcontent  {
+      margin: 3rem 5rem;
+    }
+
+    ..timeline li:not(:first-child) .tcontent + div {
+      margin: 3rem 5rem;
+    }
+
+    .tcontent + div {
+      float: left;
+      margin: 1rem 5rem;
+      flex: 1 1;
+      padding: 1rem 3rem;
+      text-align: center;
+    }
+    .tcontent + div img {
+      width:40%;
+    }
+
+    & .tcontent h3 {
+      color:white;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    & .tcontent p {
+      color:white;
+      font-size:0.75rem;
+    }
+
 
     //Inicio carrousel logos
     .backsilder {
@@ -88,7 +144,7 @@ export const StyledHome = styled.div`
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden; 
+        overflow: hidden;
     }
 
     .slider {
@@ -97,7 +153,7 @@ export const StyledHome = styled.div`
         position: relative;
         box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0, 2);
         //overflow: hidden;
-        
+
     }
 
     .slide {
@@ -112,13 +168,46 @@ export const StyledHome = styled.div`
         padding: 0 50px 0 50px;
     }
 
+    & .nback {
+      padding:5rem;
+      background: rgb(242,242,242);
+    }
+
     @keyframes slideshow {
         0% {
-            transform: translateX(0);
+            transform: translateX(-10%);
         }
         100% {
-            transform: translateX(-100%);
+            transform: translateX(-110%);
         }
     }
     //Fin carrousel logos
+`;
+
+export const StyledCard = styled(Card)`
+    flex: 1 1;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    min-width: 195px;
+    margin: 1rem;
+
+    & img {
+        margin: 1rem auto;
+    }
+
+    & h4 {
+        font-weight: bold;
+        color: crimson;
+        text-align: center;
+        font-size: 1rem !important;
+    }
+    & ul {
+        font-size: 0.7rem;
+        list-style: circle;
+        line-height: 1rem;
+        margin-left: 1rem;
+    }
+    & li {
+        margin-bottom: 0.5rem;
+    }
 `;

@@ -3,12 +3,12 @@ import { Button } from 'react-rainbow-components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { StyledHome } from './styled';
+import { StyledHome, StyledCard } from './styled';
 
 const HomePage = () => {
     return (
         <StyledHome>
-            <Container>
+            <Container className="rainbow-m-vertical_medium" style={{ marginBottom: '-4rem' }}>
                 <Row className="content">
                     <Col>
                         <h1 className="title">
@@ -18,7 +18,12 @@ const HomePage = () => {
                             Autopaquete es la plataforma gratuita que te permitirá gestionar tus
                             envíos al mejor precio y de una manera muy sencilla.
                         </p>
-                        <Button className="" shaded label="¡Comienza ya!" />
+                        <Button
+                            className="rainbow-m-vertical_medium"
+                            shaded
+                            label="¡Comienza ya!"
+                            variant="brand"
+                        />
                     </Col>
 
                     <Col>
@@ -29,63 +34,110 @@ const HomePage = () => {
                     </Col>
                 </Row>
             </Container>
-            <Container className="nback">
-                <Row>
-                    <Col>
-                        <img src="./assets/truck-2.png" alt="Nosotros" />
-                    </Col>
-                    <Col>
-                        <div>
-                            <div />
+            <img src="/assets/nback.svg" style={{ width: '100%' }} />
+            <div className="nback">
+                <Container>
+                    <Row>
+                        <Col>
+                            <img src="./assets/truck-2.png" alt="Nosotros" />
+                        </Col>
+                        <Col>
                             <div>
-                                <h1 className="title">Nosotros</h1>
-                                <p className="ntext">
-                                    Somos una empresa 100% mexicana con más de 3 años de experiencia
-                                    en el medio de transporte y paquetería, conocemos la importancia
-                                    de un servicio personalizado y adecuado a las necesidades
-                                    específicas de usted y su empresa, con nosotros encontrará
-                                    diferentes opciones para sus envíos a un mejor precio.
-                                </p>
+                                <div />
+                                <div>
+                                    <h1 className="title">Nosotros</h1>
+                                    <p className="ntext">
+                                        Somos una empresa 100% mexicana con más de 3 años de
+                                        experiencia en el medio de transporte y paquetería,
+                                        conocemos la importancia de un servicio personalizado y
+                                        adecuado a las necesidades específicas de usted y su
+                                        empresa, con nosotros encontrará diferentes opciones para
+                                        sus envíos a un mejor precio.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    </Col>
-                </Row>
-            </Container>
-            <Container>
-                <Row className="justify-content-md-center">
-                    <Col xs lg="2">
-                        <div>
-                            <img
-                                className="tmedium"
-                                src="./assets/check-table.png"
-                                alt="Guías a crédito"
-                            />
-                            <p>Guías a crédito</p>
-                        </div>
-                    </Col>
-                    <Col md="auto">
-                        <div>
-                            <img
-                                className="tmedium"
-                                src="./assets/box-check.png"
-                                alt="Soluciones logísticas"
-                            />
-                            <p>Soluciones logísticas</p>
-                        </div>
-                    </Col>
-                    <Col xs lg="2">
-                        <div>
-                            <img
-                                className="tmedium"
-                                src="./assets/pin-check.png"
-                                alt="Convenios corporativos"
-                            />
-                            <p>Convenios corporativos</p>
-                        </div>
-                    </Col>
-                </Row>
-            </Container>
-
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
+            <div
+                style={{
+                    background: 'linear-gradient(45deg, #bb1b1f, #7c0004)',
+                }}
+            >
+                <img src="/assets/back-cards.svg" style={{ width: '100%' }} />
+                <div
+                    style={{
+                        display: 'flex',
+                        width: '50%',
+                        margin: '-14rem auto -3rem auto',
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    <StyledCard className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-vertical_small rainbow-p-horizontal_large rainbow-m-horizontal_large">
+                        <img src="/assets/icon-box.png" />
+                        <h4>Mensajería Personal</h4>
+                        <ul>
+                            <li>Manda hasta 20 paquetes sin registrarte.</li>
+                            <li>Genera tu guía en 3 sencillos pasos.</li>
+                            <li>Compara precios y elige la mejor opción.</li>
+                        </ul>
+                    </StyledCard>
+                    <StyledCard className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-vertical_small rainbow-p-horizontal_large rainbow-m-horizontal_large">
+                        <img src="/assets/icon-box.png" />
+                        <h4>Mensajería Empresarial</h4>
+                        <ul>
+                            <li>Encuentra los mejores precios con nuestra plataforma gratuita.</li>
+                            <li>
+                                Organiza tu empresa de la manera más fácil monitoreando todos tus
+                                paquetes en tiempo real.
+                            </li>
+                            <li>Opera todos tus paquetes desde un mismo lugar.</li>
+                        </ul>
+                    </StyledCard>
+                </div>
+                <img
+                    src="/assets/back-cards-below.svg"
+                    style={{ width: '100%', marginBottom: '-1px' }}
+                />
+            </div>
+            <div style={{ background: 'rgb(242,242,242)', padding: '5rem 0' }}>
+                <Container>
+                    <Row className="justify-content-md-center">
+                        <Col xs lg="2">
+                            <div style={{ textAlign: 'center' }}>
+                                <img
+                                    className="tmedium"
+                                    src="./assets/check-table.png"
+                                    alt="Guías a crédito"
+                                />
+                                <p className="rainbow-m-vertical_medium">Guías a crédito</p>
+                            </div>
+                        </Col>
+                        <Col md="auto">
+                            <div style={{ textAlign: 'center' }}>
+                                <img
+                                    className="tmedium"
+                                    src="./assets/box-check.png"
+                                    alt="Soluciones logísticas"
+                                />
+                                <p className="rainbow-m-vertical_medium">Soluciones logísticas</p>
+                            </div>
+                        </Col>
+                        <Col xs lg="2">
+                            <div style={{ textAlign: 'center' }}>
+                                <img
+                                    className="tmedium"
+                                    src="./assets/pin-check.png"
+                                    alt="Convenios corporativos"
+                                />
+                                <p className="rainbow-m-vertical_medium">Convenios corporativos</p>
+                            </div>
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
+            <h1 className="title timeline-header">¿Cómo funciona?</h1>
             <div className="timeline">
                 <ul>
                     <li>

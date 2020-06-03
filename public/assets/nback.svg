@@ -1,0 +1,13 @@
+<svg viewBox="0 0 580 100" width="580" height="100" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>background</title>
+  <rect fill="#fff" id="canvas_background" height="102" width="582" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <path id="svg_2" d="m1.5,-1.507728c0,0 32,69 270,89c238,20 311,2 310.5,2c0.5,0 0.5,21 0,21c0.5,0 -584.5,-2 -584,-2c-0.5,0 -5.5,-50 3.5,-110z" stroke-width="0" stroke="#000" fill="#f2f2f2"/>
+ </g>
+</svg>
