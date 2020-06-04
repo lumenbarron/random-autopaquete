@@ -3,6 +3,7 @@ import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
+import { useFirebaseApp, useUser } from 'reactfire';
 
 // TODO: CAMBIAR A LOS DATOS REALES DEL USUARIO
 const addresses = [
@@ -69,6 +70,73 @@ export const OrigenComponent = ({ onSave }) => {
         };
     });
 
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const user = useUser();
+
+    const [name, setName] = useState('');
+    const [CP, setCP] = useState('');
+    const [location, setLocation] = useState('');
+    const [country, setCountry] = useState('');
+    const [streetNumero, setStreetNumber] = useState('');
+    const [refPlace, setrefPlace] = useState('');
+    const [phone, setPhone] = useState('');
+
+    const registerDirecction = e => {
+        e.preventDefault();
+        if (
+            name.trim() === '' ||
+            CP.trim() === '' ||
+            location.trim() === '' ||
+            country.trim() === '' ||
+            streetNumero.trim() === '' ||
+            refPlace.trim() === '' ||
+            phone.trim() === ''
+        ) {
+            console.log('Espacios vacios');
+            return;
+        }
+        const directionsCollectionAdd = db.collection('sender_addresses').add({
+            name,
+            codigo_postal: CP,
+            Colonia: location,
+            ciudad_estado: country,
+            calle_numero: streetNumero,
+            Referencias_lugar: refPlace,
+            Telefono: phone,
+            ID: user.uid,
+        });
+        directionsCollectionAdd
+            .then(function(docRef) {
+                console.log('Document written with ID: ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+
+        const directionsGuiasCollectionAdd = db.collection('guia').add({
+            ID: user.uid,
+            sender_addresses: {
+                name,
+                codigo_postal: CP,
+                Colonia: location,
+                ciudad_estado: country,
+                calle_numero: streetNumero,
+                Referencias_lugar: refPlace,
+                Telefono: phone,
+                ID: user.uid,
+            },
+        });
+        directionsGuiasCollectionAdd
+            .then(function(docRef) {
+                console.log('Document written with ID: ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+        onSave();
+    };
+
     return (
         <StyledPaneContainer>
             <StyledLeftPane>
@@ -95,6 +163,7 @@ export const OrigenComponent = ({ onSave }) => {
                         name="nombre"
                         className="rainbow-p-around_medium"
                         style={{ width: '70%' }}
+                        onChange={e => setName(e.target.value)}
                     />
                     <Input
                         id="cp"
@@ -102,6 +171,7 @@ export const OrigenComponent = ({ onSave }) => {
                         name="cp"
                         className="rainbow-p-around_medium"
                         style={{ width: '30%' }}
+                        onChange={e => setCP(e.target.value)}
                     />
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -111,6 +181,7 @@ export const OrigenComponent = ({ onSave }) => {
                         name="colonia"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
+                        onChange={e => setLocation(e.target.value)}
                     />
                     <Input
                         id="ciudad"
@@ -118,6 +189,7 @@ export const OrigenComponent = ({ onSave }) => {
                         name="ciudad"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
+                        onChange={e => setCountry(e.target.value)}
                     />
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -127,6 +199,7 @@ export const OrigenComponent = ({ onSave }) => {
                         name="domicilio"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
+                        onChange={e => setStreetNumber(e.target.value)}
                     />
                     <Input
                         id="referencia"
@@ -134,6 +207,7 @@ export const OrigenComponent = ({ onSave }) => {
                         name="referencia"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
+                        onChange={e => setrefPlace(e.target.value)}
                     />
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -143,12 +217,17 @@ export const OrigenComponent = ({ onSave }) => {
                         name="telefono"
                         className="rainbow-p-around_medium"
                         style={{ width: '50%' }}
+                        onChange={e => setPhone(e.target.value)}
                     />
                     <div style={{ flex: '1 1', textAlign: 'right' }}>
                         <CheckboxToggle id="guardar" label="Guardar" />
                     </div>
                 </div>
-                <Button variant="brand" className="rainbow-m-around_medium" onClick={onSave}>
+                <Button
+                    variant="brand"
+                    className="rainbow-m-around_medium"
+                    onClick={registerDirecction}
+                >
                     Continuar
                     <FontAwesomeIcon icon={faArrowRight} className="rainbow-m-left_medium" />
                 </Button>
