@@ -24,76 +24,64 @@ const TabPersonaMoral = () => {
     let uploadedFiles = 0;
     let filesToUpload = 0;
 
-    const docRef = db.collection('profiles').where('ID', '==', user.uid);
-    docRef.get().then(function(querySnapshot) {
-        querySnapshot.forEach(function(doc) {
-            // console.log(doc);
-        });
-    });
-
     const saveData = () => {
-        docRef.get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                const userName = doc.data().name;
-                const lastName = doc.data().lastname;
-                const DocRef = doc.id;
-
-                if (uploadedFiles === filesToUpload) {
-                    const userData = {
-                        ID: user.uid,
-                        name: userName,
-                        lastname: lastName,
-                        razon_social: razonSocial,
-                        nombreRepresentanteLegal: legalName,
-                        direccion: address,
-                        telefono: phone,
-                        RFC,
-                        user_type: 'regular',
-                        files: {
-                            fileActaConstitutiva: fileActaConstitutiva
-                                ? `photos/${fileActaConstitutiva[0].name}`
-                                : undefined,
-                            fileFiscal: fileFiscal ? `photos/${fileFiscal[0].name}` : undefined,
-                            fileIne: fileIne ? `photos/${fileIne[0].name}` : undefined,
-                            fileDomicilio: fileDomicilio
-                                ? `photos/${fileDomicilio[0].name}`
-                                : undefined,
-                        },
-                    };
-
-                    //console.log('Documento', DocRef);
-                    const profilesCollectionAdd = db
-                        .collection('profiles')
-                        .doc(DocRef)
-                        .update(userData);
-
-                    //const profilesCollectionAdd = db.collection('profiles').add(userData);
-
-                    profilesCollectionAdd
-                        .then(function() {
-                            console.log('Document successfully written!');
-                        })
-                        .catch(function(error) {
-                            console.error('Error writing document: ', error);
-                        });
-                }
+        if (user) {
+            const docRef = db.collection('profiles').where('ID', '==', user.uid);
+            docRef.get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    // console.log(doc);
+                });
             });
-        });
+
+            docRef.get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    const userName = doc.data().name;
+                    const lastName = doc.data().lastname;
+                    const DocRef = doc.id;
+
+                    if (uploadedFiles === filesToUpload) {
+                        const userData = {
+                            ID: user.uid,
+                            name: userName,
+                            lastname: lastName,
+                            razon_social: razonSocial,
+                            nombreRepresentanteLegal: legalName,
+                            direccion: address,
+                            telefono: phone,
+                            RFC,
+                            user_type: 'regular',
+                            files: {
+                                fileActaConstitutiva: fileActaConstitutiva
+                                    ? `photos/${fileActaConstitutiva[0].name}`
+                                    : undefined,
+                                fileFiscal: fileFiscal ? `photos/${fileFiscal[0].name}` : undefined,
+                                fileIne: fileIne ? `photos/${fileIne[0].name}` : undefined,
+                                fileDomicilio: fileDomicilio
+                                    ? `photos/${fileDomicilio[0].name}`
+                                    : undefined,
+                            },
+                        };
+
+                        const profilesCollectionAdd = db
+                            .collection('profiles')
+                            .doc(DocRef)
+                            .update(userData);
+
+                        profilesCollectionAdd
+                            .then(function() {
+                                console.log('Document successfully written!');
+                            })
+                            .catch(function(error) {
+                                console.error('Error writing document: ', error);
+                            });
+                    }
+                });
+            });
+        }
     };
 
     const register = e => {
         e.preventDefault();
-
-        console.log('name', 'name');
-        console.log('address', address);
-        console.log('phone', phone);
-        console.log('RFC', RFC);
-        console.log('INEnumber', 'INEnumber');
-
-        console.log('fileFiscal', fileFiscal);
-        console.log('fileIne', fileIne);
-        console.log('fileDomicilio', fileDomicilio);
-
         let fileName = '';
         let filePath = '';
 
@@ -104,7 +92,7 @@ const TabPersonaMoral = () => {
 
         if (fileActaConstitutiva) {
             fileName = fileActaConstitutiva[0].name;
-            filePath = `photos/${fileName}`;
+            filePath = `documentation/${user.uid}/${fileName}`;
             firebase
                 .storage()
                 .ref(filePath)
@@ -117,7 +105,7 @@ const TabPersonaMoral = () => {
 
         if (fileFiscal) {
             fileName = fileFiscal[0].name;
-            filePath = `photos/${fileName}`;
+            filePath = `documentation/${user.uid}/${fileName}`;
             firebase
                 .storage()
                 .ref(filePath)
@@ -130,7 +118,7 @@ const TabPersonaMoral = () => {
 
         if (fileDomicilio) {
             fileName = fileDomicilio[0].name;
-            filePath = `photos/${fileName}`;
+            filePath = `documentation/${user.uid}/${fileName}`;
             firebase
                 .storage()
                 .ref(filePath)
