@@ -83,7 +83,7 @@ export const DestinoComponent = ({ onSave }) => {
     const [refPlace, setrefPlace] = useState('');
     const [phone, setPhone] = useState('');
 
-    const registerDirecction = e => {
+    const registerDirecction = () => {
         if (
             name.trim() === '' ||
             CP.trim() === '' ||
@@ -94,6 +94,7 @@ export const DestinoComponent = ({ onSave }) => {
             phone.trim() === ''
         ) {
             console.log('Espacios vacios');
+            console.log();
             return;
         }
         const directionsCollectionAdd = db.collection('receiver_addresses').add({
@@ -128,7 +129,7 @@ export const DestinoComponent = ({ onSave }) => {
                 const lastName = doc.data().lastname;
                 const DocRefe = doc.id;
                 console.log('DocRef', DocRefe);
-                console.log('docData', doc.data());
+                console.log('   docData', doc.data());
 
                 const directionsGuiasCollection = {
                     receiver_addresses: {
@@ -151,13 +152,13 @@ export const DestinoComponent = ({ onSave }) => {
                 directionsGuiasCollectionAdd
                     .then(function(docRef) {
                         console.log('Se cumplio! Document written with ID: ', docRef.id);
+                        onSave(docRef.id);
                     })
                     .catch(function(error) {
                         console.error('Error adding document: ', error);
                     });
             });
         });
-        onSave();
     };
 
     return (

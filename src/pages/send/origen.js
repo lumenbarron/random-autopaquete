@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
 import { useFirebaseApp, useUser } from 'reactfire';
+import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
+import SendPage from '../send/index';
 
 // TODO: CAMBIAR A LOS DATOS REALES DEL USUARIO
 const addresses = [
@@ -65,7 +66,7 @@ export const OrigenComponent = ({ onSave }) => {
 
     const options = addresses.map((val, idx) => {
         return {
-            value: idx + '',
+            value: `${idx}`,
             label: <AddressRadioOption data={val} />,
         };
     });
@@ -82,8 +83,9 @@ export const OrigenComponent = ({ onSave }) => {
     const [refPlace, setrefPlace] = useState('');
     const [phone, setPhone] = useState('');
 
-    const registerDirecction = e => {
-        e.preventDefault();
+    const [checkBox, setCheckBox] = useState(true);
+
+    const registerDirecction = () => {
         if (
             name.trim() === '' ||
             CP.trim() === '' ||
@@ -130,11 +132,12 @@ export const OrigenComponent = ({ onSave }) => {
         directionsGuiasCollectionAdd
             .then(function(docRef) {
                 console.log('Document written with ID: ', docRef.id);
+                const idGuia = docRef.id;
+                onSave(idGuia);
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
-        onSave();
     };
 
     return (
@@ -220,7 +223,12 @@ export const OrigenComponent = ({ onSave }) => {
                         onChange={e => setPhone(e.target.value)}
                     />
                     <div style={{ flex: '1 1', textAlign: 'right' }}>
-                        <CheckboxToggle id="guardar" label="Guardar" />
+                        <CheckboxToggle
+                            id="guardar"
+                            label="Guardar"
+                            value={checkBox}
+                            onChange={e => setCheckBox(e.target.checked)}
+                        />
                     </div>
                 </div>
                 <Button

@@ -12,6 +12,7 @@ const SendPage = () => {
 
     const saveOriginData = () => {
         // TODO: Guardar la info de la dirección a firestore (si fue solicitado)
+
         // TODO: Guardar la dirección en un State, para usarla cuando se creará la guía
         setCurrentStepName('destino');
     };
