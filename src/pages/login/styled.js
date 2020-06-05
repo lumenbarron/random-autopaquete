@@ -8,6 +8,7 @@ export const StyledLoginPage = styled.div`
     h1 {
         color: #c94141 !important;
         font-weight: 600;
+        text-align: center;
     }
 
     .ini-form {

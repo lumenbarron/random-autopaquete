@@ -112,7 +112,7 @@ export const StyledHome = styled.div`
       text-align: center;
     }
     .tcontent + div img {
-      width:40%;
+      width:90%;
     }
 
     & .tcontent h3 {
@@ -149,7 +149,7 @@ export const StyledHome = styled.div`
 
     .slider {
         width: 1000px;
-        height: 150px;
+        height: 10px;
         position: relative;
         box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0, 2);
         //overflow: hidden;

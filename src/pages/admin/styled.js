@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const StyledAdmin = styled.div`
-    .back {
+    .back1 {
         font-family: Roboto, sans-serif;
         margin: 0;
         background: url(/assets/backadmin.png);
