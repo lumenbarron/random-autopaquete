@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import { useHistory } from 'react-router-dom';
-import { Input } from 'react-rainbow-components';
+import { Input, Button } from 'react-rainbow-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faKey, faUser, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import * as firebase from 'firebase';
 import 'firebase/storage';
@@ -10,6 +11,9 @@ import { StyledLoginPage, StyledLoginSection } from './styled';
 import { useBlockSecurity } from '../../hooks/useBlockSecurity';
 import 'firebase/auth';
 
+const containerStyles = {
+    maxWidth: 1000,
+};
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -23,7 +27,6 @@ const LoginPage = () => {
     const history = useHistory();
     const user = useUser();
     const db = firebase.firestore();
-
 
     // Crear usuario con correo y contraseña
     const register = e => {
@@ -104,40 +107,44 @@ const LoginPage = () => {
         firebase.auth().sendPasswordResetEmail(email);
     };
 
- //   useBlockSecurity();
+    //   useBlockSecurity();
 
     return (
         <StyledLoginPage>
             <StyledLoginSection>
                 <h1>Iniciar sesión</h1>
-                <Form>
-                    <Form.Group controlId="formGroupEmail">
-                        <Form.Label>Email o nombre de ususario</Form.Label>
-                        <Form.Control
-                            type="email"
-                            controlid="email"
-                            onChange={ev => setEmail(ev.target.value)}
-                            className="ini-form"
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formGroupPassword">
-                        <Form.Label>Contraseña</Form.Label>
-                        <Form.Control
-                            type="password"
-                            controlid="password"
-                            onChange={ev => setPassword(ev.target.value)}
-                            className="ini-form"
-                        />
-                    </Form.Group>
+                <form>
+                    <Input
+                        label="Email o nombre de ususario"
+                        style={containerStyles}
+                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                        icon={<FontAwesomeIcon icon={faEnvelope} />}
+                        onChange={ev => setEmail(ev.target.value)}
+                    />
+                    <Input
+                        label="Contraseña"
+                        style={containerStyles}
+                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                        icon={<FontAwesomeIcon icon={faKey} />}
+                        type="password"
+                        onChange={ev => setPassword(ev.target.value)}
+                    />
+
+                    <Button
+                        shaded
+                        label="Button Destructive"
+                        variant="destructive"
+                        className="rainbow-m-around_medium"
+                    />
+
                     <Button className="boton" type="submit" onClick={login}>
                         Iniciar sesión
                     </Button>
                     <a href="/login" onClick={restorePass}>
                         ¿Olvidaste tu constraseña?
                     </a>
-                </Form>
+                </form>
             </StyledLoginSection>
-
 
             <StyledLoginSection>
                 <h1>Regístrate</h1>
@@ -151,6 +158,7 @@ const LoginPage = () => {
                                 className="rainbow-p-around_medium"
                                 onChange={ev => setName(ev.target.value)}
                                 style={{ width: '45%' }}
+                                icon={<FontAwesomeIcon icon={faUser} />}
                             />
                             <Input
                                 id="lastname"
@@ -159,6 +167,7 @@ const LoginPage = () => {
                                 className="rainbow-p-around_medium"
                                 onChange={ev => setLastName(ev.target.value)}
                                 style={{ width: '45%' }}
+                                icon={<FontAwesomeIcon icon={faUser} />}
                             />
                         </div>
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -170,6 +179,7 @@ const LoginPage = () => {
                                 className="rainbow-p-around_medium"
                                 style={{ width: '90%' }}
                                 onChange={ev => setNewEmail(ev.target.value)}
+                                icon={<FontAwesomeIcon icon={faEnvelope} />}
                             />
                         </div>
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -181,6 +191,7 @@ const LoginPage = () => {
                                 className="rainbow-p-around_medium"
                                 style={{ width: '90%' }}
                                 onChange={ev => setNewPassword(ev.target.value)}
+                                icon={<FontAwesomeIcon icon={faKey} />}
                             />
                         </div>
                         <div className="rainbow-align-content_center rainbow-flex_wrap">

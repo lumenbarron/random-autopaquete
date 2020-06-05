@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { StyledAdmin } from './styled';
 import 'firebase/auth';
 import * as firebase from 'firebase';
@@ -6,10 +6,7 @@ import * as firebase from 'firebase';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
 
-
-
 const AdminPage = () => {
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const firebase = useFirebaseApp();
@@ -23,7 +20,6 @@ const AdminPage = () => {
             return;
         }
 
-
         await firebase
             .auth()
             .signInWithEmailAndPassword(email, password)
@@ -36,7 +32,7 @@ const AdminPage = () => {
                             console.log(doc.data().user_type);
                             if (doc.data().user_type === 'regular') {
                                 history.push('/mi-cuenta');
-                                console.log("En este forumlario solo se registra el admin");
+                                console.log('En este forumlario solo se registra el admin');
                             }
                             if (doc.data().user_type === 'admin') {
                                 history.push('/admin/usuarios');
@@ -55,22 +51,26 @@ const AdminPage = () => {
     return (
         <StyledAdmin>
             <div>
-                <div className="back">
+                <div className="back1">
                     <div className="formulario">
                         <form>
                             <img src="assets/logo.png" alt="Logo Autopaquete" width="300"></img>
                             <div className="contenedor">
                                 <div className="input-contenedor">
-                                    <input type="text" placeholder="Correo Electronico"
-                                    id="email"
-                                    onChange={ev => setEmail(ev.target.value)}
+                                    <input
+                                        type="text"
+                                        placeholder="Correo Electronico"
+                                        id="email"
+                                        onChange={ev => setEmail(ev.target.value)}
                                     ></input>
                                 </div>
 
                                 <div className="input-contenedor">
-                                    <input type="password" placeholder="Contraseña"
-                                    id="password"
-                                    onChange={ev => setPassword(ev.target.value)}
+                                    <input
+                                        type="password"
+                                        placeholder="Contraseña"
+                                        id="password"
+                                        onChange={ev => setPassword(ev.target.value)}
                                     ></input>
                                 </div>
                                 <input
@@ -82,7 +82,6 @@ const AdminPage = () => {
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
         </StyledAdmin>
