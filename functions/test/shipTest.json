@@ -1,0 +1,29 @@
+{
+    "senderAddress": {
+        "name": "test",
+        "Telefono": "33333333333",
+        "calle_numero": "test",
+        "ciudad": "test",
+        "estado": "JA",
+        "Referencias_lugar": "test",
+        "codigo_postal": "44500",
+        "Colonia": "Test"
+    },
+    "receiverAddress": {
+        "name": "test",
+        "Telefono": "33333333333",
+        "calle_numero": "test",
+        "ciudad": "test",
+        "estado": "JA",
+        "Referencias_lugar": "test",
+        "codigo_postal": "44500",
+        "Colonia": "Test"
+    },
+    "packaging": {
+        "weight": "5",
+        "height": "20",
+        "width": "20",
+        "length": "20",
+        "content": "joyas"
+    }
+}
