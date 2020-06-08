@@ -94,10 +94,9 @@ export const DestinoComponent = ({ onSave }) => {
             phone.trim() === ''
         ) {
             console.log('Espacios vacios');
-            console.log();
             return;
         }
-        const directionsCollectionAdd = db.collection('receiver_addresses').add({
+        const directionData = {
             name,
             codigo_postal: CP,
             Colonia: location,
@@ -106,59 +105,21 @@ export const DestinoComponent = ({ onSave }) => {
             Referencias_lugar: refPlace,
             Telefono: phone,
             ID: user.uid,
-        });
+        };
 
-        directionsCollectionAdd
-            .then(function(docRef) {
-                console.log('Document written with ID: ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
-        const docRef = db.collection('guia').where('ID', '==', user.uid);
-        console.log(docRef);
-        docRef.get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                console.log('El código llega hasta aquí');
-                console.log('Doc:', doc);
-            });
-        });
-        docRef.get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                const userName = doc.data().name;
-                const lastName = doc.data().lastname;
-                const DocRefe = doc.id;
-                console.log('DocRef', DocRefe);
-                console.log('   docData', doc.data());
-
-                const directionsGuiasCollection = {
-                    receiver_addresses: {
-                        name,
-                        codigo_postal: CP,
-                        Colonia: location,
-                        ciudad_estado: country,
-                        calle_numero: streetNumero,
-                        Referencias_lugar: refPlace,
-                        Telefono: phone,
-                        ID: user.uid,
-                    },
-                };
-
-                const directionsGuiasCollectionAdd = db
-                    .collection('guia')
-                    .doc(DocRefe)
-                    .update(directionsGuiasCollection);
-
-                directionsGuiasCollectionAdd
-                    .then(function(docRef) {
-                        console.log('Se cumplio! Document written with ID: ', docRef.id);
-                        onSave(docRef.id);
-                    })
-                    .catch(function(error) {
-                        console.error('Error adding document: ', error);
-                    });
-            });
-        });
+        const directionGuiaData = {
+            receiver_addresses: {
+                name,
+                codigo_postal: CP,
+                Colonia: location,
+                ciudad_estado: country,
+                calle_numero: streetNumero,
+                Referencias_lugar: refPlace,
+                Telefono: phone,
+                ID: user.uid,
+            },
+        };
+        onSave(directionData, directionGuiaData);
     };
 
     return (

@@ -70,7 +70,6 @@ export const OrigenComponent = ({ onSave }) => {
             label: <AddressRadioOption data={val} />,
         };
     });
-
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
@@ -84,6 +83,8 @@ export const OrigenComponent = ({ onSave }) => {
     const [phone, setPhone] = useState('');
 
     const [checkBox, setCheckBox] = useState(true);
+
+    let idGuia;
 
     const registerDirecction = () => {
         if (
@@ -110,7 +111,7 @@ export const OrigenComponent = ({ onSave }) => {
         });
         directionsCollectionAdd
             .then(function(docRef) {
-                console.log('Document written with ID: ', docRef.id);
+                console.log('Document written with ID (origen): ', docRef.id);
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
@@ -131,9 +132,10 @@ export const OrigenComponent = ({ onSave }) => {
         });
         directionsGuiasCollectionAdd
             .then(function(docRef) {
-                console.log('Document written with ID: ', docRef.id);
-                const idGuia = docRef.id;
-                onSave(idGuia);
+                console.log('Document written with ID (Guía): ', docRef.id);
+                idGuia = docRef.id;
+                console.log('Se crea y se guarda el id de la guía', idGuia);
+                onSave({ idGuia });
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
@@ -234,7 +236,7 @@ export const OrigenComponent = ({ onSave }) => {
                 <Button
                     variant="brand"
                     className="rainbow-m-around_medium"
-                    onClick={registerDirecction}
+                    onClick={() => registerDirecction()}
                 >
                     Continuar
                     <FontAwesomeIcon icon={faArrowRight} className="rainbow-m-left_medium" />

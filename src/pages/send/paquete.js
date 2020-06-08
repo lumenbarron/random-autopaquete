@@ -9,6 +9,8 @@ import {
     StyledRadioGroup,
     HelpLabel,
 } from './styled';
+import * as firebase from 'firebase';
+import { useFirebaseApp, useUser } from 'reactfire';
 
 // TODO: CAMBIAR A LOS DATOS REALES DEL USUARIO
 const packaging = [
@@ -66,6 +68,66 @@ export const PaqueteComponent = ({ onSave }) => {
         };
     });
 
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const user = useUser();
+
+    const [name, setName] = useState('');
+    const [height, setHeight] = useState('');
+    const [width, setWidth] = useState('');
+    const [depth, setDepth] = useState('');
+    const [weight, setWeight] = useState('');
+
+    const [contentDescription, setContentDescription] = useState('');
+    const [quantity, setQuantity] = useState('');
+    const [insurance, setInsurance] = useState(false);
+    const [contentValue, setContentValue] = useState('');
+
+    const registerDirecction = () => {
+        if (
+            name.trim() === '' ||
+            height.trim() === '' ||
+            width.trim() === '' ||
+            depth.trim() === '' ||
+            weight.trim() === '' ||
+            contentDescription.trim() === '' ||
+            quantity.trim() === '' ||
+            contentValue.trim() === '' ||
+            quantity.trim() === ''
+        ) {
+            console.log('Espacios vacios');
+            return;
+        }
+        const directionData = {
+            ID: user.uid,
+            name,
+            Height: height,
+            Width: width,
+            Depth: depth,
+            Weight: weight,
+            Content_description: contentDescription,
+            Quantity: quantity,
+            Insurance: insurance,
+            Content_value: contentValue,
+        };
+
+        const directionGuiaData = {
+            pakage: {
+                ID: user.uid,
+                name,
+                Height: height,
+                Width: width,
+                Depth: depth,
+                Weight: weight,
+                Content_description: contentDescription,
+                Quantity: quantity,
+                Insurance: insurance,
+                Content_value: contentValue,
+            },
+        };
+        onSave(directionData, directionGuiaData);
+    };
+
     return (
         <StyledPaneContainer>
             <StyledLeftPane>
@@ -87,6 +149,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         name="nombre"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1', minWidth: '200px' }}
+                        onChange={e => setName(e.target.value)}
                     />
                     <div style={{ flex: '1 1', minWidth: '300px' }}>
                         <p style={{ textAlign: 'center' }}>Dimensiones</p>
@@ -96,6 +159,7 @@ export const PaqueteComponent = ({ onSave }) => {
                                 name="height"
                                 className="rainbow-p-around_medium"
                                 style={{ width: '30%' }}
+                                onChange={e => setHeight(e.target.value)}
                             />
                             <HelpLabel>x</HelpLabel>
                             <Input
@@ -103,6 +167,7 @@ export const PaqueteComponent = ({ onSave }) => {
                                 name="width"
                                 className="rainbow-p-around_medium"
                                 style={{ width: '30%' }}
+                                onChange={e => setWidth(e.target.value)}
                             />
                             <HelpLabel>x</HelpLabel>
                             <Input
@@ -110,6 +175,7 @@ export const PaqueteComponent = ({ onSave }) => {
                                 name="depth"
                                 className="rainbow-p-around_medium"
                                 style={{ width: '30%' }}
+                                onChange={e => setDepth(e.target.value)}
                             />
                             <HelpLabel>cm</HelpLabel>
                         </div>
@@ -122,6 +188,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         name="peso"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
+                        onChange={e => setWeight(e.target.value)}
                     />
                     <HelpLabel>kgs</HelpLabel>
                     <Input
@@ -130,6 +197,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         name="contenido"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
+                        onChange={e => setContentDescription(e.target.value)}
                     />
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -139,6 +207,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         name="cantidad"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
+                        onChange={e => setQuantity(e.target.value)}
                     />
                     <CheckboxToggle
                         id="asegurar"
@@ -151,12 +220,17 @@ export const PaqueteComponent = ({ onSave }) => {
                         name="valor"
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
+                        onChange={e => setContentValue(e.target.value)}
                     />
                 </div>
                 <div style={{ textAlign: 'right' }}>
                     <CheckboxToggle id="guardar" label="Guardar" />
                 </div>
-                <Button variant="brand" className="rainbow-m-around_medium" onClick={onSave}>
+                <Button
+                    variant="brand"
+                    className="rainbow-m-around_medium"
+                    onClick={registerDirecction}
+                >
                     Continuar
                     <FontAwesomeIcon icon={faArrowRight} className="rainbow-m-left_medium" />
                 </Button>
