@@ -21,16 +21,18 @@ const SendPage = () => {
         setCurrentStepName('destino');
     };
 
-    const saveDestinationData = (directionData, directionGuiaData) => {
+    const saveDestinationData = (directionData, directionGuiaData, checkBox) => {
         // TODO: Guardar la info de la dirección a firestore (si fue solicitado)
-        db.collection('receiver_addresses')
-            .add(directionData)
-            .then(function(docRef) {
-                console.log('Document written with ID (destino): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
+        if (checkBox) {
+            db.collection('receiver_addresses')
+                .add(directionData)
+                .then(function(docRef) {
+                    console.log('Document written with ID (destino): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+        }
         // TODO: Guardar la dirección en un State, para usarla cuando se creará la guía
         const directionsGuiasCollectionAdd = db
             .collection('guia')
@@ -47,16 +49,18 @@ const SendPage = () => {
         setCurrentStepName('paquete');
     };
 
-    const savePackagingData = (packageData, packageGuiaData) => {
+    const savePackagingData = (packageData, packageGuiaData, checkBox) => {
         // TODO: Guardar la info del paquete a firestore (si fue solicitado)
-        db.collection('package')
-            .add(packageData)
-            .then(function(docRef) {
-                console.log('Document written with ID (destino): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
+        if (checkBox) {
+            db.collection('package')
+                .add(packageData)
+                .then(function(docRef) {
+                    console.log('Document written with ID (destino): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+        }
         // TODO: Guardar la info del paquete en un State, para usarla cuando se creará la guía
         const directionsGuiasCollectionAdd = db
             .collection('guia')

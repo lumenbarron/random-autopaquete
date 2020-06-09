@@ -83,6 +83,8 @@ export const DestinoComponent = ({ onSave }) => {
     const [refPlace, setrefPlace] = useState('');
     const [phone, setPhone] = useState('');
 
+    const [checkBox, setCheckBox] = useState(true);
+
     const registerDirecction = () => {
         if (
             name.trim() === '' ||
@@ -119,7 +121,7 @@ export const DestinoComponent = ({ onSave }) => {
                 ID: user.uid,
             },
         };
-        onSave(directionData, directionGuiaData);
+        onSave(directionData, directionGuiaData, checkBox);
     };
 
     return (
@@ -205,7 +207,12 @@ export const DestinoComponent = ({ onSave }) => {
                         onChange={e => setPhone(e.target.value)}
                     />
                     <div style={{ flex: '1 1', textAlign: 'right' }}>
-                        <CheckboxToggle id="guardar" label="Guardar" />
+                        <CheckboxToggle
+                            id="guardar"
+                            label="Guardar"
+                            value={checkBox}
+                            onChange={e => setCheckBox(e.target.checked)}
+                        />
                     </div>
                 </div>
                 <Button

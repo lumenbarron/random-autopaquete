@@ -80,8 +80,10 @@ export const PaqueteComponent = ({ onSave }) => {
 
     const [contentDescription, setContentDescription] = useState('');
     const [quantity, setQuantity] = useState('');
-    const [insurance, setInsurance] = useState(false);
     const [contentValue, setContentValue] = useState('');
+
+    const [insurance, setInsurance] = useState(false);
+    const [checkBox, setCheckBox] = useState(true);
 
     const registerDirecction = () => {
         if (
@@ -125,7 +127,7 @@ export const PaqueteComponent = ({ onSave }) => {
                 Content_value: contentValue,
             },
         };
-        onSave(packageData, packageGuiaData);
+        onSave(packageData, packageGuiaData, checkBox);
     };
 
     return (
@@ -224,7 +226,12 @@ export const PaqueteComponent = ({ onSave }) => {
                     />
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                    <CheckboxToggle id="guardar" label="Guardar" />
+                    <CheckboxToggle
+                        id="guardar"
+                        label="Guardar"
+                        value={checkBox}
+                        onChange={e => setCheckBox(e.target.checked)}
+                    />
                 </div>
                 <Button
                     variant="brand"

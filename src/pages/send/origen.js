@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -47,6 +47,15 @@ const addresses = [
 ];
 
 const AddressRadioOption = ({ data }) => {
+    // const docRef = db.collection('sender_addresses').where('ID', '==', user.uid);
+    // docRef.get().then(function(querySnapshot) {
+    //     querySnapshot.forEach(function(doc) {
+    //         setDirectionData(doc);
+    //         console.log(doc);
+    //     });
+    // });
+    //};
+
     return (
         <>
             <span>
@@ -61,18 +70,48 @@ const AddressRadioOption = ({ data }) => {
     );
 };
 
-export const OrigenComponent = ({ onSave }) => {
+export const OrigenComponent = ({ onSave, directions }) => {
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const user = useUser();
+
+    const [directionData, setDirectionData] = useState([]);
+
+    useEffect(() => {
+        const reloadDirectios = () => {
+            db.collection('sender_addresses')
+                .where('ID', '==', user.uid)
+                .onSnapshot(handleDirections);
+        };
+        reloadDirectios();
+    }, []);
+
+    function handleDirections(snapshot) {
+        const directionData = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setDirectionData(directionData);
+        console.log(directionData[0].name);
+    }
+
     const [value, setValue] = useState(null);
 
+    // {
+    //     directionData.map(directions => (
+    //         <p key={directions.id} directions={directions}>
+    //             {directionData[0].name}
+    //         </p>
+    //     ));
+    // }
     const options = addresses.map((val, idx) => {
         return {
             value: `${idx}`,
             label: <AddressRadioOption data={val} />,
         };
     });
-    const firebase = useFirebaseApp();
-    const db = firebase.firestore();
-    const user = useUser();
 
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
@@ -99,23 +138,25 @@ export const OrigenComponent = ({ onSave }) => {
             console.log('Espacios vacios');
             return;
         }
-        const directionsCollectionAdd = db.collection('sender_addresses').add({
-            name,
-            codigo_postal: CP,
-            Colonia: location,
-            ciudad_estado: country,
-            calle_numero: streetNumero,
-            Referencias_lugar: refPlace,
-            Telefono: phone,
-            ID: user.uid,
-        });
-        directionsCollectionAdd
-            .then(function(docRef) {
-                console.log('Document written with ID (origen): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
+        if (checkBox) {
+            const directionsCollectionAdd = db.collection('sender_addresses').add({
+                name,
+                codigo_postal: CP,
+                Colonia: location,
+                ciudad_estado: country,
+                calle_numero: streetNumero,
+                Referencias_lugar: refPlace,
+                Telefono: phone,
+                ID: user.uid,
             });
+            directionsCollectionAdd
+                .then(function(docRef) {
+                    console.log('Document written with ID (origen): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+        }
 
         const directionsGuiasCollectionAdd = db.collection('guia').add({
             ID: user.uid,
