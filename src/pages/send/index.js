@@ -47,10 +47,10 @@ const SendPage = () => {
         setCurrentStepName('paquete');
     };
 
-    const savePackagingData = (directionData, directionGuiaData) => {
+    const savePackagingData = (packageData, packageGuiaData) => {
         // TODO: Guardar la info del paquete a firestore (si fue solicitado)
         db.collection('package')
-            .add(directionData)
+            .add(packageData)
             .then(function(docRef) {
                 console.log('Document written with ID (destino): ', docRef.id);
             })
@@ -61,7 +61,7 @@ const SendPage = () => {
         const directionsGuiasCollectionAdd = db
             .collection('guia')
             .doc(idGuiaGlobal.current)
-            .update(directionGuiaData);
+            .update(packageGuiaData);
 
         directionsGuiasCollectionAdd
             .then(function(docRef) {
@@ -73,8 +73,30 @@ const SendPage = () => {
         setCurrentStepName('servicio');
     };
 
-    const saveServiceData = () => {
+    const saveServiceData = supplierData => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
+
+        db.collection('supplier')
+            .add(supplierData)
+            .then(function(docRef) {
+                console.log('Document written with ID (destino): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+
+        const directionsGuiasCollectionAdd = db
+            .collection('guia')
+            .doc(idGuiaGlobal.current)
+            .update(supplierData);
+
+        directionsGuiasCollectionAdd
+            .then(function(docRef) {
+                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
         setCurrentStepName('descarga');
     };
 

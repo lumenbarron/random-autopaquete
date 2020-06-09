@@ -98,7 +98,7 @@ export const PaqueteComponent = ({ onSave }) => {
             console.log('Espacios vacios');
             return;
         }
-        const directionData = {
+        const packageData = {
             ID: user.uid,
             name,
             Height: height,
@@ -111,7 +111,7 @@ export const PaqueteComponent = ({ onSave }) => {
             Content_value: contentValue,
         };
 
-        const directionGuiaData = {
+        const packageGuiaData = {
             pakage: {
                 ID: user.uid,
                 name,
@@ -125,7 +125,7 @@ export const PaqueteComponent = ({ onSave }) => {
                 Content_value: contentValue,
             },
         };
-        onSave(directionData, directionGuiaData);
+        onSave(packageData, packageGuiaData);
     };
 
     return (
