@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -44,16 +44,28 @@ const packaging = [
     },
 ];
 
-const PackagingRadioOption = ({ data }) => {
+const PackagingRadioOption = ({ packages }) => {
+    const {
+        Content_description,
+        Content_value,
+        Depth,
+        Height,
+        Insurance,
+        Quantity,
+        Weight,
+        Width,
+        name,
+    } = packages;
+
     return (
         <>
             <span>
-                <b>{data.name}</b>
+                <b>{name}</b>
             </span>
             <p>
-                Dimensiones: {data.height}x{data.width}x{data.depth} cm
+                Dimensiones: {Height}x{Width}x{Depth} cm
             </p>
-            <p>Peso: {data.weight} kgs</p>
+            <p>Peso: {Weight} kgs</p>
         </>
     );
 };
@@ -61,12 +73,7 @@ const PackagingRadioOption = ({ data }) => {
 export const PaqueteComponent = ({ onSave }) => {
     const [value, setValue] = useState(null);
 
-    const options = packaging.map((val, idx) => {
-        return {
-            value: idx + '',
-            label: <PackagingRadioOption data={val} />,
-        };
-    });
+    const [packageData, setPackageData] = useState([]);
 
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -84,6 +91,31 @@ export const PaqueteComponent = ({ onSave }) => {
 
     const [insurance, setInsurance] = useState(false);
     const [checkBox, setCheckBox] = useState(true);
+
+    useEffect(() => {
+        const reloadDirectios = () => {
+            db.collection('package')
+                .where('ID', '==', user.uid)
+                .onSnapshot(handleDirections);
+        };
+        reloadDirectios();
+    }, []);
+
+    function handleDirections(snapshot) {
+        const packageData = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setPackageData(packageData);
+    }
+
+    const options = packageData.map((packages, idx) => {
+        return {
+            label: <PackagingRadioOption key={packages.id} packages={packages} value={packages} />,
+        };
+    });
 
     const registerDirecction = () => {
         if (

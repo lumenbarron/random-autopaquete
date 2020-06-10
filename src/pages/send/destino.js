@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -6,58 +6,27 @@ import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup 
 import * as firebase from 'firebase';
 import { useFirebaseApp, useUser } from 'reactfire';
 
-// TODO: CAMBIAR A LOS DATOS REALES DEL USUARIO
-const addresses = [
-    {
-        name: 'Juan Hernández',
-        address: 'Independencia 333',
-        neighborhood: 'Col. Centro',
-        city: 'Girasoles, Son.',
-        references: 'afuera del centro',
-        phone: '393939293',
-        cp: '44444',
-    },
-    {
-        name: 'Juan Hernández',
-        address: 'Independencia 333',
-        neighborhood: 'Col. Centro',
-        city: 'Girasoles, Son.',
-        references: 'afuera del centro',
-        phone: '393939293',
-        cp: '44444',
-    },
-    {
-        name: 'Juan Hernández',
-        address: 'Independencia 333',
-        neighborhood: 'Col. Centro',
-        city: 'Girasoles, Son.',
-        references: 'afuera del centro',
-        phone: '393939293',
-        cp: '44444',
-    },
-    {
-        name: 'Juan Hernández',
-        address: 'Independencia 333',
-        neighborhood: 'Col. Centro',
-        city: 'Girasoles, Son.',
-        references: 'afuera del centro',
-        phone: '393939293',
-        cp: '44444',
-    },
-];
+const AddressRadioOption = ({ directions }) => {
+    const {
+        Colonia,
+        Referencias_lugar,
+        Telefono,
+        calle_numero,
+        ciudad_estado,
+        codigo_postal,
+        name,
+    } = directions;
 
-const AddressRadioOption = ({ data }) => {
     return (
         <>
-            <h1>Prueba</h1>
             <span>
-                <b>{data.name}</b>
+                <b>{name}</b>
             </span>
-            <p>{data.address}</p>
-            <p>{data.neighborhood}</p>
-            <p>{data.city}</p>
-            <p>C.P. {data.cp}</p>
-            <p>Tel {data.phone}</p>
+            <p>{calle_numero}</p>
+            <p>{Colonia}</p>
+            <p>{ciudad_estado}</p>
+            <p>C.P. {codigo_postal}</p>
+            <p>Tel {Telefono}</p>
         </>
     );
 };
@@ -65,13 +34,16 @@ const AddressRadioOption = ({ data }) => {
 export const DestinoComponent = ({ onSave }) => {
     const [value, setValue] = useState(null);
 
-    const options = addresses.map((val, idx) => {
-        return {
-            value: idx + '',
-            label: <AddressRadioOption data={val} />,
-        };
-    });
-    console.log(value);
+    // const options = addresses.map((val, idx) => {
+    //     console.log(idx);
+
+    //     return {
+    //         value: idx + '',
+    //         label: <AddressRadioOption data={val} />,
+    //     };
+    // });
+    const [directionData, setDirectionData] = useState([]);
+
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
@@ -85,6 +57,38 @@ export const DestinoComponent = ({ onSave }) => {
     const [phone, setPhone] = useState('');
 
     const [checkBox, setCheckBox] = useState(true);
+
+    useEffect(() => {
+        const reloadDirectios = () => {
+            db.collection('receiver_addresses')
+                .where('ID', '==', user.uid)
+                .onSnapshot(handleDirections);
+        };
+        reloadDirectios();
+    }, []);
+
+    function handleDirections(snapshot) {
+        const directionData = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setDirectionData(directionData);
+    }
+
+    const options = directionData.map((directions, idx) => {
+        console.log(directions.id);
+        return {
+            label: (
+                <AddressRadioOption
+                    key={directions.id}
+                    directions={directions}
+                    value={directions}
+                />
+            ),
+        };
+    });
 
     const registerDirecction = () => {
         if (

@@ -38,6 +38,20 @@ export const OrigenComponent = ({ onSave }) => {
 
     const [directionData, setDirectionData] = useState([]);
 
+    const [value, setValue] = useState(null);
+
+    const [name, setName] = useState('Prueba1');
+    const [CP, setCP] = useState('');
+    const [location, setLocation] = useState('');
+    const [country, setCountry] = useState('');
+    const [streetNumero, setStreetNumber] = useState('');
+    const [refPlace, setrefPlace] = useState('');
+    const [phone, setPhone] = useState('');
+
+    const [checkBox, setCheckBox] = useState(true);
+
+    let idGuia;
+
     useEffect(() => {
         const reloadDirectios = () => {
             db.collection('sender_addresses')
@@ -57,26 +71,24 @@ export const OrigenComponent = ({ onSave }) => {
         setDirectionData(directionData);
     }
 
-    const [value, setValue] = useState(null);
-
-    const options = directionData.map((directions, val, idx) => {
+    const options = directionData.map((directions, idx) => {
+        console.log(directions.id);
         return {
-            value: directions + '',
-            label: <AddressRadioOption key={directions.id} directions={directions} />,
+            label: (
+                <AddressRadioOption
+                    key={directions.id}
+                    directions={directions}
+                    value={directions}
+                />
+            ),
         };
     });
+
+    // const handleOnChange = event => {
+    //     return setValue({ value: event.target.value });
+    // };
+
     console.log(value);
-    const [name, setName] = useState('');
-    const [CP, setCP] = useState('');
-    const [location, setLocation] = useState('');
-    const [country, setCountry] = useState('');
-    const [streetNumero, setStreetNumber] = useState('');
-    const [refPlace, setrefPlace] = useState('');
-    const [phone, setPhone] = useState('');
-
-    const [checkBox, setCheckBox] = useState(true);
-
-    let idGuia;
 
     const registerDirecction = () => {
         if (
@@ -163,6 +175,7 @@ export const OrigenComponent = ({ onSave }) => {
                         className="rainbow-p-around_medium"
                         style={{ width: '70%' }}
                         onChange={e => setName(e.target.value)}
+                        value={name}
                     />
                     <Input
                         id="cp"

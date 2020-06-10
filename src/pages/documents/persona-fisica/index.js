@@ -21,6 +21,9 @@ const TabPersonaFisica = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
 
+    var storage = firebase.storage();
+    var storageRef = storage.ref();
+
     const user = useUser();
 
     let uploadedFiles = 0;
@@ -89,16 +92,6 @@ const TabPersonaFisica = () => {
     const register = e => {
         e.preventDefault();
 
-        console.log('name', name);
-        console.log('address', address);
-        console.log('phone', phone);
-        console.log('RFC', RFC);
-        console.log('INEnumber', INEnumber);
-
-        console.log('fileFiscal', fileFiscal);
-        console.log('fileIne', fileIne);
-        console.log('fileDomicilio', fileDomicilio);
-
         let fileName = '';
         let filePath = '';
 
@@ -109,11 +102,14 @@ const TabPersonaFisica = () => {
         if (fileDomicilio) {
             fileName = fileDomicilio[0].name;
             filePath = `documentation/${user.uid}/${fileName}`;
+            const filePath2 = storageRef.child(`documentation/${user.uid}/${fileName}`);
+            const filePath3 = filePath2.root;
             firebase
                 .storage()
                 .ref(filePath)
                 .put(fileDomicilio[0])
                 .then(snapshot => {
+                    console.log(filePath.fullPath);
                     // save somewhere ---> snapshot;
                     uploadedFiles += 1;
                     saveData();
