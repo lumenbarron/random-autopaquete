@@ -6,71 +6,32 @@ import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
 import SendPage from '../send/index';
 
-// TODO: CAMBIAR A LOS DATOS REALES DEL USUARIO
-const addresses = [
-    {
-        name: 'Leandro Torres',
-        address: 'Independencia 333',
-        neighborhood: 'Col. Centro',
-        city: 'Girasoles, Son.',
-        references: 'afuera del centro',
-        phone: '393939293',
-        cp: '44444',
-    },
-    {
-        name: 'Leandro Torres',
-        address: 'Independencia 333',
-        neighborhood: 'Col. Centro',
-        city: 'Girasoles, Son.',
-        references: 'afuera del centro',
-        phone: '393939293',
-        cp: '44444',
-    },
-    {
-        name: 'Leandro Torres',
-        address: 'Independencia 333',
-        neighborhood: 'Col. Centro',
-        city: 'Girasoles, Son.',
-        references: 'afuera del centro',
-        phone: '393939293',
-        cp: '44444',
-    },
-    {
-        name: 'Leandro Torres',
-        address: 'Independencia 333',
-        neighborhood: 'Col. Centro',
-        city: 'Girasoles, Son.',
-        references: 'afuera del centro',
-        phone: '393939293',
-        cp: '44444',
-    },
-];
-
-const AddressRadioOption = ({ data }) => {
-    // const docRef = db.collection('sender_addresses').where('ID', '==', user.uid);
-    // docRef.get().then(function(querySnapshot) {
-    //     querySnapshot.forEach(function(doc) {
-    //         setDirectionData(doc);
-    //         console.log(doc);
-    //     });
-    // });
-    //};
+const AddressRadioOption = ({ directions }) => {
+    const {
+        Colonia,
+        Referencias_lugar,
+        Telefono,
+        calle_numero,
+        ciudad_estado,
+        codigo_postal,
+        name,
+    } = directions;
 
     return (
         <>
             <span>
-                <b>{data.name}</b>
+                <b>{name}</b>
             </span>
-            <p>{data.address}</p>
-            <p>{data.neighborhood}</p>
-            <p>{data.city}</p>
-            <p>C.P. {data.cp}</p>
-            <p>Tel {data.phone}</p>
+            <p>{calle_numero}</p>
+            <p>{Colonia}</p>
+            <p>{ciudad_estado}</p>
+            <p>C.P. {codigo_postal}</p>
+            <p>Tel {Telefono}</p>
         </>
     );
 };
 
-export const OrigenComponent = ({ onSave, directions }) => {
+export const OrigenComponent = ({ onSave }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
@@ -94,25 +55,17 @@ export const OrigenComponent = ({ onSave, directions }) => {
             };
         });
         setDirectionData(directionData);
-        console.log(directionData[0].name);
     }
 
     const [value, setValue] = useState(null);
 
-    // {
-    //     directionData.map(directions => (
-    //         <p key={directions.id} directions={directions}>
-    //             {directionData[0].name}
-    //         </p>
-    //     ));
-    // }
-    const options = addresses.map((val, idx) => {
+    const options = directionData.map((directions, val, idx) => {
         return {
-            value: `${idx}`,
-            label: <AddressRadioOption data={val} />,
+            value: directions + '',
+            label: <AddressRadioOption key={directions.id} directions={directions} />,
         };
     });
-
+    console.log(value);
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
     const [location, setLocation] = useState('');

@@ -49,6 +49,7 @@ const addresses = [
 const AddressRadioOption = ({ data }) => {
     return (
         <>
+            <h1>Prueba</h1>
             <span>
                 <b>{data.name}</b>
             </span>
@@ -70,7 +71,7 @@ export const DestinoComponent = ({ onSave }) => {
             label: <AddressRadioOption data={val} />,
         };
     });
-
+    console.log(value);
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
