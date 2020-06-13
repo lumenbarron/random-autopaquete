@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Column, Badge, TableWithBrowserPagination, Input } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledRecord } from './styled';
+import OrigenComponent from '../../pages/send/origen';
 
 const StyledBadge = styled(Badge)`
     color: #09d3ac;
@@ -12,7 +14,55 @@ const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest"
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 356 };
 
-const RecordPage = () => {
+const ShowRecords = () => {
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const user = useUser();
+
+    const [recordsData, setRecordsData] = useState([]);
+
+    useEffect(() => {
+        const reloadRecords = () => {
+            db.collection('guia')
+                .where('ID', '==', user.uid)
+                .onSnapshot(handleRecods);
+        };
+        reloadRecords();
+    }, []);
+
+    function handleRecods(snapshot) {
+        const recordsData = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setRecordsData(recordsData);
+    }
+    recordsData.map((records, idx) => {
+        console.log(records);
+        return {
+            label: <RecordPage key={records.id} records={records} />,
+        };
+    });
+};
+
+const RecordPage = ({ records }) => {
+    // const { pakage } = records;
+    console.log('dsdsa', records);
+    const dataa = [
+        {
+            date: records,
+            guide: 'e',
+            origin: 'df',
+            Destination: 'dfsa',
+            weight: 's',
+            service: 'sds',
+            status: 'dsa',
+            cost: 'dsad',
+        },
+    ];
+    ShowRecords();
     return (
         <StyledRecord>
             <div>
@@ -32,6 +82,7 @@ const RecordPage = () => {
                     <div className="rainbow-p-bottom_xx-large">
                         <div style={containerStyles}>
                             <TableWithBrowserPagination
+                                data={dataa}
                                 pageSize={10}
                                 keyField="id"
                                 style={containerTableStyles}
