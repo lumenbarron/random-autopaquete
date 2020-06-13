@@ -19,6 +19,7 @@ export const StyledLoginPage = styled.div`
         background-color: #ab0000;
         border: none;
         border-radius: 25px;
+        color: #fff;
     }
 
     .boton:hover {

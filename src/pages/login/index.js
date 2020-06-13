@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Form from 'react-bootstrap/Form';
+
 import { useHistory } from 'react-router-dom';
 import { Input, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -130,18 +130,11 @@ const LoginPage = () => {
                         onChange={ev => setPassword(ev.target.value)}
                     />
 
-                    <Button
-                        shaded
-                        label="Button Destructive"
-                        variant="destructive"
-                        className="rainbow-m-around_medium"
-                    />
-
                     <Button className="boton" type="submit" onClick={login}>
                         Iniciar sesión
                     </Button>
                     <a href="/login" onClick={restorePass}>
-                        ¿Olvidaste tu constraseña?
+                           ¿Olvidaste tu constraseña?
                     </a>
                 </form>
             </StyledLoginSection>
