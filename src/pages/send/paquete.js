@@ -113,9 +113,36 @@ export const PaqueteComponent = ({ onSave }) => {
 
     const options = packageData.map((packages, idx) => {
         return {
-            label: <PackagingRadioOption key={packages.id} packages={packages} value={packages} />,
+            value: packages.id,
+            label: <PackagingRadioOption key={packages.id} packages={packages} />,
         };
     });
+
+    useEffect(() => {
+        if (value) {
+            const docRef = db.collection('package').doc(value);
+            docRef
+                .get()
+                .then(function(doc) {
+                    if (doc.exists) {
+                        console.log(doc.data());
+                        setName(doc.data().name);
+                        setHeight(doc.data().Height);
+                        setWidth(doc.data().Width);
+                        setDepth(doc.data().Depth);
+                        setWeight(doc.data().Weight);
+                        setContentDescription(doc.data().Content_description);
+                        setContentValue(doc.data().Content_value);
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log('No such document!');
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Error getting document:', error);
+                });
+        }
+    }, [value]);
 
     const registerDirecction = () => {
         if (
@@ -181,6 +208,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         id="nombre"
                         label="Nombre"
                         name="nombre"
+                        value={name}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1', minWidth: '200px' }}
                         onChange={e => setName(e.target.value)}
@@ -191,6 +219,7 @@ export const PaqueteComponent = ({ onSave }) => {
                             <Input
                                 id="height"
                                 name="height"
+                                value={height}
                                 className="rainbow-p-around_medium"
                                 style={{ width: '30%' }}
                                 onChange={e => setHeight(e.target.value)}
@@ -199,6 +228,7 @@ export const PaqueteComponent = ({ onSave }) => {
                             <Input
                                 id="width"
                                 name="width"
+                                value={width}
                                 className="rainbow-p-around_medium"
                                 style={{ width: '30%' }}
                                 onChange={e => setWidth(e.target.value)}
@@ -207,6 +237,7 @@ export const PaqueteComponent = ({ onSave }) => {
                             <Input
                                 id="depth"
                                 name="depth"
+                                value={depth}
                                 className="rainbow-p-around_medium"
                                 style={{ width: '30%' }}
                                 onChange={e => setDepth(e.target.value)}
@@ -220,6 +251,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         id="peso"
                         label="Peso"
                         name="peso"
+                        value={weight}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
                         onChange={e => setWeight(e.target.value)}
@@ -229,6 +261,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         id="contenido"
                         label="Descripción del Contenido"
                         name="contenido"
+                        value={contentDescription}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
                         onChange={e => setContentDescription(e.target.value)}
@@ -239,6 +272,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         id="cantidad"
                         label="Cantidad"
                         name="cantidad"
+                        value={quantity}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
                         onChange={e => setQuantity(e.target.value)}
@@ -252,6 +286,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         id="valor"
                         label="Valor del Contenido"
                         name="valor"
+                        value={contentValue}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
                         onChange={e => setContentValue(e.target.value)}

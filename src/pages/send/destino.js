@@ -33,15 +33,6 @@ const AddressRadioOption = ({ directions }) => {
 
 export const DestinoComponent = ({ onSave }) => {
     const [value, setValue] = useState(null);
-
-    // const options = addresses.map((val, idx) => {
-    //     console.log(idx);
-
-    //     return {
-    //         value: idx + '',
-    //         label: <AddressRadioOption data={val} />,
-    //     };
-    // });
     const [directionData, setDirectionData] = useState([]);
 
     const firebase = useFirebaseApp();
@@ -53,7 +44,7 @@ export const DestinoComponent = ({ onSave }) => {
     const [location, setLocation] = useState('');
     const [country, setCountry] = useState('');
     const [streetNumero, setStreetNumber] = useState('');
-    const [refPlace, setrefPlace] = useState('');
+    const [placeRef, setPlaceRef] = useState('');
     const [phone, setPhone] = useState('');
 
     const [checkBox, setCheckBox] = useState(true);
@@ -80,15 +71,35 @@ export const DestinoComponent = ({ onSave }) => {
     const options = directionData.map((directions, idx) => {
         console.log(directions.id);
         return {
-            label: (
-                <AddressRadioOption
-                    key={directions.id}
-                    directions={directions}
-                    value={directions}
-                />
-            ),
+            value: directions.id,
+            label: <AddressRadioOption key={directions.id} directions={directions} />,
         };
     });
+
+    useEffect(() => {
+        if (value) {
+            const docRef = db.collection('receiver_addresses').doc(value);
+            docRef
+                .get()
+                .then(function(doc) {
+                    if (doc.exists) {
+                        setName(doc.data().name);
+                        setCP(doc.data().codigo_postal);
+                        setLocation(doc.data().Colonia);
+                        setCountry(doc.data().ciudad_estado);
+                        setStreetNumber(doc.data().calle_numero);
+                        setPlaceRef(doc.data().Referencias_lugar);
+                        setPhone(doc.data().Telefono);
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log('No such document!');
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Error getting document:', error);
+                });
+        }
+    }, [value]);
 
     const registerDirecction = () => {
         if (
@@ -97,7 +108,7 @@ export const DestinoComponent = ({ onSave }) => {
             location.trim() === '' ||
             country.trim() === '' ||
             streetNumero.trim() === '' ||
-            refPlace.trim() === '' ||
+            placeRef.trim() === '' ||
             phone.trim() === ''
         ) {
             console.log('Espacios vacios');
@@ -109,7 +120,7 @@ export const DestinoComponent = ({ onSave }) => {
             Colonia: location,
             ciudad_estado: country,
             calle_numero: streetNumero,
-            Referencias_lugar: refPlace,
+            Referencias_lugar: placeRef,
             Telefono: phone,
             ID: user.uid,
         };
@@ -121,7 +132,7 @@ export const DestinoComponent = ({ onSave }) => {
                 Colonia: location,
                 ciudad_estado: country,
                 calle_numero: streetNumero,
-                Referencias_lugar: refPlace,
+                Referencias_lugar: placeRef,
                 Telefono: phone,
                 ID: user.uid,
             },
@@ -153,6 +164,7 @@ export const DestinoComponent = ({ onSave }) => {
                         id="nombre"
                         label="Nombre"
                         name="nombre"
+                        value={name}
                         className="rainbow-p-around_medium"
                         style={{ width: '70%' }}
                         onChange={e => setName(e.target.value)}
@@ -161,6 +173,7 @@ export const DestinoComponent = ({ onSave }) => {
                         id="cp"
                         label="C.P."
                         name="cp"
+                        value={CP}
                         className="rainbow-p-around_medium"
                         style={{ width: '30%' }}
                         onChange={e => setCP(e.target.value)}
@@ -171,6 +184,7 @@ export const DestinoComponent = ({ onSave }) => {
                         id="colonia"
                         label="Colonia"
                         name="colonia"
+                        value={location}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
                         onChange={e => setLocation(e.target.value)}
@@ -179,6 +193,7 @@ export const DestinoComponent = ({ onSave }) => {
                         id="ciudad"
                         label="Ciudad y Estado"
                         name="ciudad"
+                        value={country}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
                         onChange={e => setCountry(e.target.value)}
@@ -189,6 +204,7 @@ export const DestinoComponent = ({ onSave }) => {
                         id="domicilio"
                         label="Calle y Número"
                         name="domicilio"
+                        value={streetNumero}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
                         onChange={e => setStreetNumber(e.target.value)}
@@ -197,9 +213,10 @@ export const DestinoComponent = ({ onSave }) => {
                         id="referencia"
                         label="Referencias del Lugar"
                         name="referencia"
+                        value={placeRef}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
-                        onChange={e => setrefPlace(e.target.value)}
+                        onChange={e => setPlaceRef(e.target.value)}
                     />
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -207,6 +224,7 @@ export const DestinoComponent = ({ onSave }) => {
                         id="telefono"
                         label="Telefono"
                         name="telefono"
+                        value={phone}
                         className="rainbow-p-around_medium"
                         style={{ width: '50%' }}
                         onChange={e => setPhone(e.target.value)}
