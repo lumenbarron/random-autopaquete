@@ -25,6 +25,7 @@ export const StyledLoginPage = styled.div`
     .boton:hover {
         background-color: #c94141;
         color: white;
+
 `;
 
 export const StyledLoginSection = styled.div`

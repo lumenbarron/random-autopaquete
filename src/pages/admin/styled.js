@@ -8,7 +8,7 @@ export const StyledAdmin = styled.div`
         background-size: cover;
         background-repeat: no-repeat;
         width: 100%;
-        height: 100%;
+        min-height: 1080px;
         position: absolute;
         display: flex;
         justify-content: center;

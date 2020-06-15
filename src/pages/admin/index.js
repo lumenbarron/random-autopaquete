@@ -54,7 +54,7 @@ const AdminPage = () => {
                 <div className="back1">
                     <div className="formulario">
                         <form>
-                            <img src="assets/logo.png" alt="Logo Autopaquete" width="300"></img>
+                            <img src="/assets/logo.png" alt="Logo Autopaquete" width="300"></img>
                             <div className="contenedor">
                                 <div className="input-contenedor">
                                     <input
