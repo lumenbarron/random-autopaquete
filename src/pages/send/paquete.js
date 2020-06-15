@@ -59,6 +59,7 @@ export const PaqueteComponent = ({ onSave }) => {
 
     const [insurance, setInsurance] = useState(false);
     const [checkBox, setCheckBox] = useState(true);
+    const [checkBoxSecure, setCheckBoxSecure] = useState(true);
 
     const creationDate = new Date();
 
@@ -122,13 +123,14 @@ export const PaqueteComponent = ({ onSave }) => {
             depth.trim() === '' ||
             weight.trim() === '' ||
             contentDescription.trim() === '' ||
-            quantity.trim() === '' ||
-            contentValue.trim() === '' ||
             quantity.trim() === ''
         ) {
             console.log('Espacios vacios');
             return;
         }
+        // if (checkBoxSecure) {
+        //     contentValue.trim() === '';
+        // }
         const packageData = {
             ID: user.uid,
             name,
@@ -140,7 +142,7 @@ export const PaqueteComponent = ({ onSave }) => {
             quantity: quantity,
             insurance: insurance,
             content_value: contentValue,
-            creation_date: creationDate,
+            creation_date: creationDate.toLocaleDateString(),
         };
 
         const packageGuiaData = {
@@ -155,7 +157,7 @@ export const PaqueteComponent = ({ onSave }) => {
                 quantity: quantity,
                 insurance: insurance,
                 content_value: contentValue,
-                creation_date: creationDate,
+                creation_date: creationDate.toLocaleDateString(),
             },
         };
         onSave(packageData, packageGuiaData, checkBox);

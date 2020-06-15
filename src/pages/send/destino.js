@@ -125,7 +125,7 @@ export const DestinoComponent = ({ onSave }) => {
             place_reference: placeRef,
             phone,
             ID: user.uid,
-            creation_date: creationDate,
+            creation_date: creationDate.toLocaleDateString(),
         };
 
         const directionGuiaData = {
@@ -138,7 +138,7 @@ export const DestinoComponent = ({ onSave }) => {
                 place_reference: placeRef,
                 phone,
                 ID: user.uid,
-                creation_date: creationDate,
+                creation_date: creationDate.toLocaleDateString(),
             },
         };
         onSave(directionData, directionGuiaData, checkBox);

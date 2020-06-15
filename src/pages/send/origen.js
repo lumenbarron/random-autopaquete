@@ -128,7 +128,7 @@ export const OrigenComponent = ({ onSave }) => {
                 place_reference: placeRef,
                 phone,
                 ID: user.uid,
-                creation_date: creationDate,
+                creation_date: creationDate.toLocaleDateString(),
             });
             directionsCollectionAdd
                 .then(function(docRef) {
@@ -150,7 +150,7 @@ export const OrigenComponent = ({ onSave }) => {
                 place_reference: placeRef,
                 phone,
                 ID: user.uid,
-                creation_date: creationDate,
+                creation_date: creationDate.toLocaleDateString(),
             },
         });
         directionsGuiasCollectionAdd
