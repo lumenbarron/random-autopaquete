@@ -13,7 +13,7 @@ const StyledBadge = styled(Badge)`
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 356 };
-//Prueba
+
 const ShowRecords = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -23,15 +23,13 @@ const ShowRecords = () => {
 
     useEffect(() => {
         const reloadRecords = () => {
-            db.collection('guia')
-                .where('ID', '==', user.uid)
-                .onSnapshot(handleRecods);
+            db.collection('guia').where('ID', '==', user.uid).onSnapshot(handleRecods);
         };
         reloadRecords();
     }, []);
 
     function handleRecods(snapshot) {
-        const recordsData = snapshot.docs.map(doc => {
+        const recordsData = snapshot.docs.map((doc) => {
             return {
                 id: doc.id,
                 ...doc.data(),
