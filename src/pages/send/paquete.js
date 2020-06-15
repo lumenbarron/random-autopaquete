@@ -12,48 +12,16 @@ import {
 import * as firebase from 'firebase';
 import { useFirebaseApp, useUser } from 'reactfire';
 
-// TODO: CAMBIAR A LOS DATOS REALES DEL USUARIO
-const packaging = [
-    {
-        name: 'Caja 20x20x20',
-        height: '20',
-        width: '20',
-        depth: '20',
-        weight: '5',
-    },
-    {
-        name: 'Caja 20x20x20',
-        height: '20',
-        width: '20',
-        depth: '20',
-        weight: '5',
-    },
-    {
-        name: 'Caja 20x20x20',
-        height: '20',
-        width: '20',
-        depth: '20',
-        weight: '5',
-    },
-    {
-        name: 'Caja 20x20x20',
-        height: '20',
-        width: '20',
-        depth: '20',
-        weight: '5',
-    },
-];
-
 const PackagingRadioOption = ({ packages }) => {
     const {
-        Content_description,
-        Content_value,
-        Depth,
-        Height,
-        Insurance,
-        Quantity,
-        Weight,
-        Width,
+        content_description,
+        content_value,
+        depth,
+        height,
+        insurance,
+        quantity,
+        weight,
+        width,
         name,
     } = packages;
 
@@ -63,9 +31,9 @@ const PackagingRadioOption = ({ packages }) => {
                 <b>{name}</b>
             </span>
             <p>
-                Dimensiones: {Height}x{Width}x{Depth} cm
+                Dimensiones: {height}x{width}x{depth} cm
             </p>
-            <p>Peso: {Weight} kgs</p>
+            <p>Peso: {weight} kgs</p>
         </>
     );
 };
@@ -91,6 +59,8 @@ export const PaqueteComponent = ({ onSave }) => {
 
     const [insurance, setInsurance] = useState(false);
     const [checkBox, setCheckBox] = useState(true);
+
+    const creationDate = new Date();
 
     useEffect(() => {
         const reloadDirectios = () => {
@@ -127,12 +97,12 @@ export const PaqueteComponent = ({ onSave }) => {
                     if (doc.exists) {
                         console.log(doc.data());
                         setName(doc.data().name);
-                        setHeight(doc.data().Height);
-                        setWidth(doc.data().Width);
-                        setDepth(doc.data().Depth);
-                        setWeight(doc.data().Weight);
-                        setContentDescription(doc.data().Content_description);
-                        setContentValue(doc.data().Content_value);
+                        setHeight(doc.data().height);
+                        setWidth(doc.data().width);
+                        setDepth(doc.data().depth);
+                        setWeight(doc.data().weight);
+                        setContentDescription(doc.data().content_description);
+                        setContentValue(doc.data().content_value);
                     } else {
                         // doc.data() will be undefined in this case
                         console.log('No such document!');
@@ -162,28 +132,30 @@ export const PaqueteComponent = ({ onSave }) => {
         const packageData = {
             ID: user.uid,
             name,
-            Height: height,
-            Width: width,
-            Depth: depth,
-            Weight: weight,
-            Content_description: contentDescription,
-            Quantity: quantity,
-            Insurance: insurance,
-            Content_value: contentValue,
+            height: height,
+            width: width,
+            depth: depth,
+            weight: weight,
+            content_description: contentDescription,
+            quantity: quantity,
+            insurance: insurance,
+            content_value: contentValue,
+            creation_date: creationDate,
         };
 
         const packageGuiaData = {
             pakage: {
                 ID: user.uid,
                 name,
-                Height: height,
-                Width: width,
-                Depth: depth,
-                Weight: weight,
-                Content_description: contentDescription,
-                Quantity: quantity,
-                Insurance: insurance,
-                Content_value: contentValue,
+                height: height,
+                width: width,
+                depth: depth,
+                weight: weight,
+                content_description: contentDescription,
+                quantity: quantity,
+                insurance: insurance,
+                content_value: contentValue,
+                creation_date: creationDate,
             },
         };
         onSave(packageData, packageGuiaData, checkBox);

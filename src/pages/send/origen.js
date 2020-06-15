@@ -8,11 +8,11 @@ import SendPage from '../send/index';
 
 const AddressRadioOption = ({ directions }) => {
     const {
-        Colonia,
+        neighborhood,
         Referencias_lugar,
         Telefono,
-        calle_numero,
-        ciudad_estado,
+        street_number,
+        country,
         codigo_postal,
         name,
     } = directions;
@@ -22,9 +22,9 @@ const AddressRadioOption = ({ directions }) => {
             <span>
                 <b>{name}</b>
             </span>
-            <p>{calle_numero}</p>
-            <p>{Colonia}</p>
-            <p>{ciudad_estado}</p>
+            <p>{street_number}</p>
+            <p>{neighborhood}</p>
+            <p>{country}</p>
             <p>C.P. {codigo_postal}</p>
             <p>Tel {Telefono}</p>
         </>
@@ -42,13 +42,15 @@ export const OrigenComponent = ({ onSave }) => {
 
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
-    const [location, setLocation] = useState('');
+    const [neighborhood, setNeighborhood] = useState('');
     const [country, setCountry] = useState('');
-    const [streetNumero, setStreetNumber] = useState('');
+    const [streetNumber, setStreetNumber] = useState('');
     const [placeRef, setPlaceRef] = useState('');
     const [phone, setPhone] = useState('');
 
     const [checkBox, setCheckBox] = useState(true);
+
+    const creationDate = new Date();
 
     let idGuia;
 
@@ -87,11 +89,11 @@ export const OrigenComponent = ({ onSave }) => {
                     if (doc.exists) {
                         setName(doc.data().name);
                         setCP(doc.data().codigo_postal);
-                        setLocation(doc.data().Colonia);
-                        setCountry(doc.data().ciudad_estado);
-                        setStreetNumber(doc.data().calle_numero);
-                        setPlaceRef(doc.data().Referencias_lugar);
-                        setPhone(doc.data().Telefono);
+                        setNeighborhood(doc.data().neighborhood);
+                        setCountry(doc.data().country);
+                        setStreetNumber(doc.data().street_number);
+                        setPlaceRef(doc.data().place_reference);
+                        setPhone(doc.data().phone);
                     } else {
                         // doc.data() will be undefined in this case
                         console.log('No such document!');
@@ -107,9 +109,9 @@ export const OrigenComponent = ({ onSave }) => {
         if (
             name.trim() === '' ||
             CP.trim() === '' ||
-            location.trim() === '' ||
+            neighborhood.trim() === '' ||
             country.trim() === '' ||
-            streetNumero.trim() === '' ||
+            streetNumber.trim() === '' ||
             placeRef.trim() === '' ||
             phone.trim() === ''
         ) {
@@ -120,12 +122,13 @@ export const OrigenComponent = ({ onSave }) => {
             const directionsCollectionAdd = db.collection('sender_addresses').add({
                 name,
                 codigo_postal: CP,
-                Colonia: location,
-                ciudad_estado: country,
-                calle_numero: streetNumero,
-                Referencias_lugar: placeRef,
-                Telefono: phone,
+                neighborhood,
+                country,
+                street_number: streetNumber,
+                place_reference: placeRef,
+                phone,
                 ID: user.uid,
+                creation_date: creationDate,
             });
             directionsCollectionAdd
                 .then(function(docRef) {
@@ -141,12 +144,13 @@ export const OrigenComponent = ({ onSave }) => {
             sender_addresses: {
                 name,
                 codigo_postal: CP,
-                Colonia: location,
-                ciudad_estado: country,
-                calle_numero: streetNumero,
-                Referencias_lugar: placeRef,
-                Telefono: phone,
+                neighborhood,
+                country,
+                street_number: streetNumber,
+                place_reference: placeRef,
+                phone,
                 ID: user.uid,
+                creation_date: creationDate,
             },
         });
         directionsGuiasCollectionAdd
@@ -205,10 +209,10 @@ export const OrigenComponent = ({ onSave }) => {
                         id="colonia"
                         label="Colonia"
                         name="colonia"
-                        value={location}
+                        value={neighborhood}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
-                        onChange={e => setLocation(e.target.value)}
+                        onChange={e => setNeighborhood(e.target.value)}
                     />
                     <Input
                         id="ciudad"
@@ -225,7 +229,7 @@ export const OrigenComponent = ({ onSave }) => {
                         id="domicilio"
                         label="Calle y Número"
                         name="domicilio"
-                        value={streetNumero}
+                        value={streetNumber}
                         className="rainbow-p-around_medium"
                         style={{ flex: '1 1' }}
                         onChange={e => setStreetNumber(e.target.value)}
