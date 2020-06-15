@@ -13,7 +13,7 @@ const StyledBadge = styled(Badge)`
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 356 };
-
+//Prueba
 const ShowRecords = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
