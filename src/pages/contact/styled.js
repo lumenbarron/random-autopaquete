@@ -8,8 +8,7 @@ export const StyledContact = styled.div`
 
     .back {
         background-color: #f7ece2;
-        width: 2000px;
-        height: 1080px;
+        max-height: 100vh;
     }
 
     li {
