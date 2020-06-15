@@ -12,7 +12,6 @@ export const StyledQuote = styled.div`
         padding: 2rem;
     }
 
-
     label {
         padding: 1rem 0 0.25rem;
         font-size: 14px;
@@ -21,7 +20,6 @@ export const StyledQuote = styled.div`
 
     input {
         width: 100%;
-        border: 2px solid #b2b2b2;
         padding: 0.5rem;
         font-size: 18px;
         border-radius: 35px;
