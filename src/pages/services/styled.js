@@ -2,10 +2,7 @@ import styled from 'styled-components';
 
 export const StyledServices = styled.div`
     
-        div{
-          margin: 0;
-          position: relative; 
-        }
+
 
         div video{
 
@@ -45,19 +42,7 @@ export const StyledServices = styled.div`
           font-weight: 800;
         }
         
-        .flex-container, .flex-container2 {
-          display: flex;
-        }
-
-        .flex-container > div {
-          width: 25%;
-          padding: 0 50px;
-        }
-
-        .flex-container2 > div {
-          width: 50%;
-          padding: 0 150px;
-        }
+        
         
         img{
           display:block;
@@ -68,22 +53,12 @@ export const StyledServices = styled.div`
         }
 
         .white-space{
-          height: 50px;
+          height: 150px;
         }
 
         .white-spacetwo{
-          height: 20px;
+          height: 50px;
         }
 
 
-        @media (max-width: 306px) {
-          .div {
-            width: 100%;
-            height: auto;
-            flex-direction: column;
-          }
-          .flex-container > div {
-            width: 50%;
-          }
-        }
 `;
