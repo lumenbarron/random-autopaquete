@@ -14,7 +14,21 @@ const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest"
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 356 };
 
-const ShowRecords = () => {
+// const ShowRecords = () => {
+
+//     return (
+//         <div>
+//             {recordsData.map(
+//                 (historyRecords, idx) => (
+//                     console.log(historyRecords),
+//                     (<RecordPage key={historyRecords.id} historyRecords={historyRecords} />)
+//                 ),
+//             )}
+//         </div>
+//     );
+// };
+
+const RecordPage = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
@@ -23,13 +37,15 @@ const ShowRecords = () => {
 
     useEffect(() => {
         const reloadRecords = () => {
-            db.collection('guia').where('ID', '==', user.uid).onSnapshot(handleRecods);
+            db.collection('guia')
+                .where('ID', '==', user.uid)
+                .onSnapshot(handleRecods);
         };
         reloadRecords();
     }, []);
 
     function handleRecods(snapshot) {
-        const recordsData = snapshot.docs.map((doc) => {
+        const recordsData = snapshot.docs.map(doc => {
             return {
                 id: doc.id,
                 ...doc.data(),
@@ -37,30 +53,25 @@ const ShowRecords = () => {
         });
         setRecordsData(recordsData);
     }
-    recordsData.map((records, idx) => {
-        console.log(records);
+
+    console.log(recordsData);
+    const numbers = [1, 2, 3, 4, 5];
+    const listItems = numbers.map(numbers => <p>{numbers}</p>);
+
+    const options = recordsData.map((historyRecord, idx) => {
+        console.log(historyRecord);
         return {
-            label: <RecordPage key={records.id} records={records} />,
+            date: historyRecord.sender_addresses.creation_date,
+            guide: '#',
+            origin: historyRecord.sender_addresses.name,
+            Destination: historyRecord.receiver_addresses.name,
+            weight: historyRecord.pakage.weight,
+            service: historyRecord.supplierData.Supplier,
+            status: 'Finalizado',
+            cost: historyRecord.supplierData.Supplier_cost,
         };
     });
-};
 
-const RecordPage = ({ records }) => {
-    // const { pakage } = records;
-    console.log('dsdsa', records);
-    const dataa = [
-        {
-            date: records,
-            guide: 'e',
-            origin: 'df',
-            Destination: 'dfsa',
-            weight: 's',
-            service: 'sds',
-            status: 'dsa',
-            cost: 'dsad',
-        },
-    ];
-    ShowRecords();
     return (
         <StyledRecord>
             <div>
@@ -80,7 +91,7 @@ const RecordPage = ({ records }) => {
                     <div className="rainbow-p-bottom_xx-large">
                         <div style={containerStyles}>
                             <TableWithBrowserPagination
-                                data={dataa}
+                                data={options}
                                 pageSize={10}
                                 keyField="id"
                                 style={containerTableStyles}
