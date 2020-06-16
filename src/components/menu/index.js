@@ -27,6 +27,17 @@ const Menu = () => {
         <StyledMain>
             <Nav fill className="justify-content-end" variant="pills" defaultActiveKey="/">
                 <Nav.Item>
+                    <Link to="/">
+                        <StyledButton
+                            label="Inicio"
+                            variant={activeMenu === 0 ? 'brand' : 'base'}
+                            onClick={() => setActiveMenu(0)}
+                            wide
+                            active={activeMenu === 0}
+                        />
+                    </Link>
+                </Nav.Item>
+                <Nav.Item>
                     <Link to="/servicios">
                         <StyledButton
                             label="Servicios"
