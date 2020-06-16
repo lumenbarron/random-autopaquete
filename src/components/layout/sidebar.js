@@ -5,11 +5,11 @@ import styled, { keyframes } from 'styled-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
+import * as firebase from 'firebase';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCamera, faTimes, faBars } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import moduleName from 'module';
-import * as firebase from 'firebase';
 
 // TODO: CAMBIAR ESTO EN CUANTO LIBEREN LA VERSION FINAL DE FileSelector
 import FileSelector from '../../components/react-rainbow-beta/components/FileSelector';
@@ -311,7 +311,6 @@ export function AccountSidebar() {
                 querySnapshot.forEach(function(doc) {
                     setAvatarURL(doc.data().avatar);
                     setAvatarName(doc.data().name);
-                    console.log('El que se tiene que guardar', doc.data());
                 });
             });
         }

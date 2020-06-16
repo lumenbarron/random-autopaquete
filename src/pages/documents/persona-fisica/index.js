@@ -22,7 +22,6 @@ const TabPersonaFisica = () => {
     const db = firebase.firestore();
 
     var storage = firebase.storage();
-    // var storageRef = storage.ref();
 
     const user = useUser();
 
@@ -32,11 +31,6 @@ const TabPersonaFisica = () => {
     const saveData = () => {
         if (user) {
             const docRef = db.collection('profiles').where('ID', '==', user.uid);
-            docRef.get().then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    // console.log(doc);
-                });
-            });
             docRef.get().then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     const userName = doc.data().name;
@@ -65,13 +59,10 @@ const TabPersonaFisica = () => {
                             },
                         };
 
-                        //console.log('Documento', DocRef);
                         const profilesCollectionAdd = db
                             .collection('profiles')
                             .doc(DocRef)
                             .update(userData);
-
-                        //const profilesCollectionAdd = db.collection('profiles').add(userData);
 
                         profilesCollectionAdd
                             .then(function() {

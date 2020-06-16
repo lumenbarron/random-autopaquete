@@ -1,17 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { StyledAccount } from './styled';
+import { useFirebaseApp, useUser } from 'reactfire';
+import formatMoney from 'accounting-js/lib/formatMoney.js';
 
 const AccountPage = () => {
+    const user = useUser();
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+
+    const [creditAmount, setCreditAmount] = useState();
+
+    useEffect(() => {
+        if (user) {
+            const docRef = db.collection('profiles').where('ID', '==', user.uid);
+
+            docRef.get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    setCreditAmount(doc.data().saldo);
+                });
+            });
+        }
+    }, [creditAmount]);
+
     return (
         <StyledAccount>
             <div className="back">
                 <div>
                     <h1>Créditos</h1>
                     <h2>Saldo Actual</h2>
-                    <h2>$10,000</h2>
+                    <h2>{formatMoney(creditAmount, 2)}</h2>
                 </div>
                 <Container className="imgtext">
                     <Row>

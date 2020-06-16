@@ -27,11 +27,6 @@ const TabPersonaMoral = () => {
     const saveData = () => {
         if (user) {
             const docRef = db.collection('profiles').where('ID', '==', user.uid);
-            docRef.get().then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    // console.log(doc);
-                });
-            });
 
             docRef.get().then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
