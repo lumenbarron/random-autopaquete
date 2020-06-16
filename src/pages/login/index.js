@@ -82,11 +82,9 @@ const LoginPage = () => {
                             console.log(doc.data().user_type);
                             if (doc.data().user_type === 'regular') {
                                 history.push('/mi-cuenta');
-                                console.log(user);
                             }
                             if (doc.data().user_type === 'admin') {
                                 history.push('/admin/usuarios');
-                                console.log(user);
                             }
 
                             // revisar si el usuario tiene perfil en firestore y si es de tipo admin
@@ -134,7 +132,7 @@ const LoginPage = () => {
                         Iniciar sesión
                     </Button>
                     <a href="/login" onClick={restorePass}>
-                           ¿Olvidaste tu constraseña?
+                        ¿Olvidaste tu constraseña?
                     </a>
                 </form>
             </StyledLoginSection>

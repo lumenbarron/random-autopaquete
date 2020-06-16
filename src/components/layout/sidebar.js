@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
 import styled, { keyframes } from 'styled-components';
-import { useFirebaseApp } from 'reactfire';
-import { useSecurity } from '../../hooks/useSecurity';
+import { useFirebaseApp, useUser } from 'reactfire';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
+import { useSecurity } from '../../hooks/useSecurity';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCamera, faTimes, faBars } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
+import moduleName from 'module';
+import * as firebase from 'firebase';
 
 // TODO: CAMBIAR ESTO EN CUANTO LIBEREN LA VERSION FINAL DE FileSelector
 import FileSelector from '../../components/react-rainbow-beta/components/FileSelector';
@@ -193,15 +195,19 @@ const SidebarResponsiveBars = styled(FontAwesomeIcon)`
 
 export function AccountSidebar() {
     const firebase = useFirebaseApp();
+    const user = useUser();
     const history = useHistory();
     const location = useLocation();
-    const [avatar, setAvatar] = useState([]);
+    const [avatar, setAvatar] = useState();
 
     const [modalIsOpen, setIsOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(null);
     const [containerClassName, setContainerClassName] = useState(
         'rainbow-p-top_small rainbow-p-bottom_medium',
     );
+
+    const storageRef = firebase.storage();
+    const db = firebase.firestore();
 
     useEffect(() => {
         if (sidebarOpen) {
@@ -240,6 +246,67 @@ export function AccountSidebar() {
             setContainerClassName(containerClassName.replace('hide', 'show'));
             setSidebarOpen(true);
             return;
+        }
+    };
+
+    const saveAvatar = url => {
+        if (user) {
+            const docRef = db.collection('profiles').where('ID', '==', user.uid);
+            docRef.get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    // console.log(doc);
+                });
+            });
+            docRef.get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    const DocRef = doc.id;
+                    console.log('El que se tiene que guardar', url);
+                    console.log('El que se tiene que guardar en este doc', DocRef);
+
+                    const userData = {
+                        avatar: url,
+                    };
+                    const profilesCollectionAdd = db
+                        .collection('profiles')
+                        .doc(DocRef)
+                        .update(userData);
+
+                    profilesCollectionAdd
+                        .then(function() {
+                            console.log('Document successfully written!');
+                        })
+                        .catch(function(error) {
+                            console.error('Error writing document: ', error);
+                        });
+                });
+            });
+        }
+    };
+
+    const saveURL = () => {
+        storageRef
+            .ref(`avatar/${user.uid}`)
+            .child(avatar[0].name)
+            .getDownloadURL()
+            .then(function(url) {
+                saveAvatar(url);
+            });
+    };
+
+    const updateAvatar = () => {
+        let fileName = '';
+        let filePath = '';
+
+        if (avatar) {
+            fileName = avatar[0].name;
+            filePath = `avatar/${user.uid}/${fileName}`;
+            firebase
+                .storage()
+                .ref(filePath)
+                .put(avatar[0])
+                .then(snapshot => {
+                    saveURL();
+                });
         }
     };
 
@@ -306,10 +373,11 @@ export function AccountSidebar() {
                     />
                 </Link>
                 <Link to="/" style={{ display: 'block' }} onClick={logout}>
-                    <StyledSidebarItem 
-                    icon={<img src="/assets/icon-exit.png" alt="icon-exit.png" />} 
-                    name="Cerrar sesión"
-                    label="Cerrar sesión" />
+                    <StyledSidebarItem
+                        icon={<img src="/assets/icon-exit.png" alt="icon-exit.png" />}
+                        name="Cerrar sesión"
+                        label="Cerrar sesión"
+                    />
                 </Link>
             </StyledSidebar>
             <Modal
@@ -351,7 +419,13 @@ export function AccountSidebar() {
                     placeholder="Sube o arrastra tu archivo aquí"
                     onChange={setAvatar}
                 />
-                <StyledSubmit type="submit" onClick={closeModal}>
+                <StyledSubmit
+                    type="submit"
+                    onClick={e => {
+                        closeModal();
+                        updateAvatar();
+                    }}
+                >
                     Continuar
                 </StyledSubmit>
             </Modal>
@@ -375,7 +449,6 @@ export function AdminSidebar() {
         <SideBarContainer
             className="rainbow-p-top_small rainbow-p-bottom_medium"
             //backImg="/assets/redbox-2.png"
-            
         >
             <SidebarHeader>
                 <Logo src="/logo-admin.png" />
