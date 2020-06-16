@@ -14,20 +14,6 @@ const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest"
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 356 };
 
-// const ShowRecords = () => {
-
-//     return (
-//         <div>
-//             {recordsData.map(
-//                 (historyRecords, idx) => (
-//                     console.log(historyRecords),
-//                     (<RecordPage key={historyRecords.id} historyRecords={historyRecords} />)
-//                 ),
-//             )}
-//         </div>
-//     );
-// };
-
 const RecordPage = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -54,12 +40,7 @@ const RecordPage = () => {
         setRecordsData(recordsData);
     }
 
-    console.log(recordsData);
-    const numbers = [1, 2, 3, 4, 5];
-    const listItems = numbers.map(numbers => <p>{numbers}</p>);
-
-    const options = recordsData.map((historyRecord, idx) => {
-        console.log(historyRecord);
+    const data = recordsData.map((historyRecord, idx) => {
         return {
             date: historyRecord.sender_addresses.creation_date,
             guide: '#',
@@ -91,7 +72,7 @@ const RecordPage = () => {
                     <div className="rainbow-p-bottom_xx-large">
                         <div style={containerStyles}>
                             <TableWithBrowserPagination
-                                data={options}
+                                data={data}
                                 pageSize={10}
                                 keyField="id"
                                 style={containerTableStyles}

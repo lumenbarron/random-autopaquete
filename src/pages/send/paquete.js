@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import * as firebase from 'firebase';
+import { useFirebaseApp, useUser } from 'reactfire';
 import {
     StyledLeftPane,
     StyledRightPane,
@@ -9,8 +11,6 @@ import {
     StyledRadioGroup,
     HelpLabel,
 } from './styled';
-import * as firebase from 'firebase';
-import { useFirebaseApp, useUser } from 'reactfire';
 
 const PackagingRadioOption = ({ packages }) => {
     const {
@@ -57,7 +57,6 @@ export const PaqueteComponent = ({ onSave }) => {
     const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
 
-    const [insurance, setInsurance] = useState(false);
     const [checkBox, setCheckBox] = useState(true);
     const [checkBoxSecure, setCheckBoxSecure] = useState(true);
 
@@ -126,41 +125,39 @@ export const PaqueteComponent = ({ onSave }) => {
             quantity.trim() === ''
         ) {
             console.log('Espacios vacios');
-            return;
-        }
-        // if (checkBoxSecure) {
-        //     contentValue.trim() === '';
-        // }
-        const packageData = {
-            ID: user.uid,
-            name,
-            height: height,
-            width: width,
-            depth: depth,
-            weight: weight,
-            content_description: contentDescription,
-            quantity: quantity,
-            insurance: insurance,
-            content_value: contentValue,
-            creation_date: creationDate.toLocaleDateString(),
-        };
-
-        const packageGuiaData = {
-            pakage: {
+        } else if (checkBoxSecure && contentValue.trim() === '') {
+            console.log('Espacios vacios (valor del contenido)');
+        } else {
+            const packageData = {
                 ID: user.uid,
                 name,
-                height: height,
-                width: width,
-                depth: depth,
-                weight: weight,
+                height,
+                width,
+                depth,
+                weight,
                 content_description: contentDescription,
-                quantity: quantity,
-                insurance: insurance,
+                quantity,
                 content_value: contentValue,
                 creation_date: creationDate.toLocaleDateString(),
-            },
-        };
-        onSave(packageData, packageGuiaData, checkBox);
+            };
+
+            const packageGuiaData = {
+                pakage: {
+                    ID: user.uid,
+                    name,
+                    height,
+                    width,
+                    depth,
+                    weight,
+                    content_description: contentDescription,
+                    quantity,
+                    content_value: contentValue,
+                    creation_date: creationDate.toLocaleDateString(),
+                },
+            };
+            onSave(packageData, packageGuiaData, checkBox);
+        }
+        console.log(checkBoxSecure);
     };
 
     return (
@@ -255,16 +252,30 @@ export const PaqueteComponent = ({ onSave }) => {
                         id="asegurar"
                         label="¿Desea asegurar?"
                         style={{ display: 'flex', flexDirection: 'column-reverse' }}
+                        value={checkBoxSecure}
+                        onChange={e => setCheckBoxSecure(e.target.checked)}
                     />
-                    <Input
-                        id="valor"
-                        label="Valor del Contenido"
-                        name="valor"
-                        value={contentValue}
-                        className="rainbow-p-around_medium"
-                        style={{ flex: '1 1' }}
-                        onChange={e => setContentValue(e.target.value)}
-                    />
+                    {checkBoxSecure ? (
+                        <Input
+                            id="valor"
+                            label="Valor del Contenido"
+                            name="valor"
+                            value={contentValue}
+                            className="rainbow-p-around_medium"
+                            style={{ flex: '1 1' }}
+                            onChange={e => setContentValue(e.target.value)}
+                        />
+                    ) : (
+                        <Input
+                            id="valor"
+                            label="Valor del Contenido"
+                            name="valor"
+                            value="0"
+                            className="rainbow-p-around_medium"
+                            style={{ display: 'none' }}
+                            onChange={e => setContentValue(e.target.value)}
+                        />
+                    )}
                 </div>
                 <div style={{ textAlign: 'right' }}>
                     <CheckboxToggle
