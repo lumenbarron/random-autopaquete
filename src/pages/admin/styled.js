@@ -20,10 +20,12 @@ export const StyledAdmin = styled.div`
     .contenedor {
         width: 100%;
         padding: 25px;
+        border-radius: 20px;
     }
 
     div.formulario {
         background: #fff;
+        border-radius:25px;
         padding: 3px;
     }
 

@@ -249,7 +249,9 @@ export function AccountSidebar() {
         <SideBarContainer className={containerClassName}>
             <SidebarResponsiveBars icon={faBars} onClick={toggleSidebar} />
             <SidebarHeader>
-                <Logo src="/assets/logo.png" />
+                <Link to="/">
+                    <Logo src="/assets/logo.png" />
+                </Link>
                 <div
                     style={{ position: 'relative', left: '12px', cursor: 'pointer' }}
                     onClick={changeAvatar}
@@ -265,9 +267,6 @@ export function AccountSidebar() {
                 <h5>Créditos</h5>
                 <Link to="/mi-cuenta">
                     <AddCreditButton>Agregar</AddCreditButton>
-                </Link>
-                <Link to="/" style={{ display: 'block' }} onClick={logout}>
-                    Cerrar sesión
                 </Link>
             </SidebarHeader>
             <StyledSidebar>
@@ -306,8 +305,11 @@ export function AccountSidebar() {
                         label="Contacto"
                     />
                 </Link>
-                <Link to="/">
-                    <StyledSidebarItem name="Salir" label="Salir" />
+                <Link to="/" style={{ display: 'block' }} onClick={logout}>
+                    <StyledSidebarItem 
+                    icon={<img src="/assets/icon-exit.png" alt="icon-exit.png" />} 
+                    name="Cerrar sesión"
+                    label="Cerrar sesión" />
                 </Link>
             </StyledSidebar>
             <Modal
@@ -372,7 +374,8 @@ export function AdminSidebar() {
     return (
         <SideBarContainer
             className="rainbow-p-top_small rainbow-p-bottom_medium"
-            backImg="/assets/redbox-1.png"
+            //backImg="/assets/redbox-2.png"
+            
         >
             <SidebarHeader>
                 <Logo src="/logo-admin.png" />
