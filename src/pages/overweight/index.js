@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Table, Column } from 'react-rainbow-components';
 import styled from 'styled-components';
 
 import { StyledOverweight } from './styled';
+
+import { useFirebaseApp, useUser } from 'reactfire';
 
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 256 };
@@ -17,6 +19,42 @@ const StyledColumn = styled(Column)`
 `;
 
 const OverweightPage = () => {
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const user = useUser();
+
+    const [overWeightData, setOverWeightData] = useState([]);
+
+    useEffect(() => {
+        const reloadRecords = () => {
+            db.collection('guia')
+                .where('ID', '==', user.uid)
+                .onSnapshot(handleOverWeight);
+        };
+        reloadRecords();
+    }, []);
+
+    function handleOverWeight(snapshot) {
+        const overWeightData = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setOverWeightData(overWeightData);
+    }
+
+    const data = overWeightData.map((historyRecord, idx) => {
+        return {
+            date: historyRecord.sender_addresses.creation_date,
+            guide: '#',
+            kdeclared: historyRecord.sender_addresses.name,
+            kreal: historyRecord.receiver_addresses.name,
+            Kcollected: historyRecord.pakage.weight,
+            charge: historyRecord.supplierData.Supplier,
+        };
+    });
+
     return (
         <StyledOverweight>
             <div className="back">
@@ -24,7 +62,12 @@ const OverweightPage = () => {
 
                 <div className="rainbow-p-bottom_xx-large">
                     <div style={containerStyles}>
-                        <StyledTable pageSize={10} keyField="id" style={containerTableStyles}>
+                        <StyledTable
+                            pageSize={10}
+                            data={data}
+                            keyField="id"
+                            style={containerTableStyles}
+                        >
                             <StyledColumn header="Fecha " field="date" />
                             <StyledColumn header="Paquete (Guía)" field="guide" />
                             <StyledColumn header="Kilos Declarados" field="kdeclared" />
