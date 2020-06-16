@@ -199,6 +199,8 @@ export function AccountSidebar() {
     const history = useHistory();
     const location = useLocation();
     const [avatar, setAvatar] = useState();
+    const [avatarURL, setAvatarURL] = useState('');
+    const [avatarName, setAvatarName] = useState('');
 
     const [modalIsOpen, setIsOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(null);
@@ -254,15 +256,7 @@ export function AccountSidebar() {
             const docRef = db.collection('profiles').where('ID', '==', user.uid);
             docRef.get().then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    // console.log(doc);
-                });
-            });
-            docRef.get().then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
                     const DocRef = doc.id;
-                    console.log('El que se tiene que guardar', url);
-                    console.log('El que se tiene que guardar en este doc', DocRef);
-
                     const userData = {
                         avatar: url,
                     };
@@ -309,6 +303,19 @@ export function AccountSidebar() {
                 });
         }
     };
+    useEffect(() => {
+        if (user) {
+            const docRef = db.collection('profiles').where('ID', '==', user.uid);
+
+            docRef.get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    setAvatarURL(doc.data().avatar);
+                    setAvatarName(doc.data().name);
+                    console.log('El que se tiene que guardar', doc.data());
+                });
+            });
+        }
+    }, [avatarURL]);
 
     useRegularSecurity();
 
@@ -324,9 +331,11 @@ export function AccountSidebar() {
                     onClick={changeAvatar}
                 >
                     <StyledAvatar
+                        src={avatarURL}
                         icon={<UserAvatarIcon style={{ cursor: 'pointer' }} />}
-                        assistiveText="user icon"
-                        title="user icon"
+                        assistiveText={avatarName}
+                        title={avatarName}
+                        size="large"
                     />
                     <CameraIcon icon={faCamera} />
                 </div>
