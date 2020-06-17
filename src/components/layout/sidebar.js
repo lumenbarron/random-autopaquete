@@ -60,14 +60,14 @@ const SideBarContainer = styled.div.attrs(props => {
 
     @media (max-width: 768px) {
         margin-left: -350px;
-    }
 
-    &.hide {
-        animation: ${slideOutAnimation} 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
-    }
+        &.hide {
+            animation: ${slideOutAnimation} 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+        }
 
-    &.show {
-        animation: ${slideInAnimation} 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+        &.show {
+            animation: ${slideInAnimation} 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+        }
     }
 `;
 
