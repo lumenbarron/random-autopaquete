@@ -33,7 +33,7 @@ const AddressRadioOption = ({ directions }) => {
 
 export const DestinoComponent = ({ onSave }) => {
     const [value, setValue] = useState(null);
-    const [directionData, setDirectionData] = useState([]);
+    const [directionDataa, setDirectionDataa] = useState([]);
 
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -61,17 +61,16 @@ export const DestinoComponent = ({ onSave }) => {
     }, []);
 
     function handleDirections(snapshot) {
-        const directionData = snapshot.docs.map(doc => {
+        const directionDataa = snapshot.docs.map(doc => {
             return {
                 id: doc.id,
                 ...doc.data(),
             };
         });
-        setDirectionData(directionData);
+        setDirectionDataa(directionDataa);
     }
 
-    const options = directionData.map((directions, idx) => {
-        console.log(directions.id);
+    const options = directionDataa.map((directions, idx) => {
         return {
             value: directions.id,
             label: <AddressRadioOption key={directions.id} directions={directions} />,
@@ -92,8 +91,8 @@ export const DestinoComponent = ({ onSave }) => {
                         setStreetNumber(doc.data().street_number);
                         setPlaceRef(doc.data().place_reference);
                         setPhone(doc.data().phone);
+                        setCheckBox(false);
                     } else {
-                        // doc.data() will be undefined in this case
                         console.log('No such document!');
                     }
                 })
@@ -116,6 +115,7 @@ export const DestinoComponent = ({ onSave }) => {
             console.log('Espacios vacios');
             return;
         }
+
         const directionData = {
             name,
             codigo_postal: CP,
@@ -141,7 +141,10 @@ export const DestinoComponent = ({ onSave }) => {
                 creation_date: creationDate.toLocaleDateString(),
             },
         };
-        onSave(directionData, directionGuiaData, checkBox);
+        const duplicateStreet = directionDataa.map((searchStree, idx) => {
+            return searchStree.street_number;
+        });
+        onSave(directionData, directionGuiaData, checkBox, duplicateStreet, streetNumber);
     };
 
     return (

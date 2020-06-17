@@ -21,9 +21,19 @@ const SendPage = () => {
         setCurrentStepName('destino');
     };
 
-    const saveDestinationData = (directionData, directionGuiaData, checkBox) => {
+    const saveDestinationData = (
+        directionData,
+        directionGuiaData,
+        checkBox,
+        duplicateStreet,
+        streetNumber,
+    ) => {
         // TODO: Guardar la info de la dirección a firestore (si fue solicitado)
         if (checkBox) {
+            if (duplicateStreet.includes(streetNumber)) {
+                console.log('Necesitas poner una calle diferente');
+                return;
+            }
             db.collection('receiver_addresses')
                 .add(directionData)
                 .then(function(docRef) {

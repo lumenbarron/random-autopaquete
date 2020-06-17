@@ -41,6 +41,7 @@ export const OrigenComponent = ({ onSave }) => {
     const [value, setValue] = useState();
 
     const [name, setName] = useState('');
+    //const [duplicateName, setDuplicateName] = useState(null);
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
     const [country, setCountry] = useState('');
@@ -55,12 +56,14 @@ export const OrigenComponent = ({ onSave }) => {
     let idGuia;
 
     useEffect(() => {
-        const reloadDirectios = () => {
-            db.collection('sender_addresses')
-                .where('ID', '==', user.uid)
-                .onSnapshot(handleDirections);
-        };
-        reloadDirectios();
+        if (user) {
+            const reloadDirectios = () => {
+                db.collection('sender_addresses')
+                    .where('ID', '==', user.uid)
+                    .onSnapshot(handleDirections);
+            };
+            reloadDirectios();
+        }
     }, []);
 
     function handleDirections(snapshot) {
@@ -94,8 +97,8 @@ export const OrigenComponent = ({ onSave }) => {
                         setStreetNumber(doc.data().street_number);
                         setPlaceRef(doc.data().place_reference);
                         setPhone(doc.data().phone);
+                        setCheckBox(false);
                     } else {
-                        // doc.data() will be undefined in this case
                         console.log('No such document!');
                     }
                 })
@@ -119,6 +122,14 @@ export const OrigenComponent = ({ onSave }) => {
             return;
         }
         if (checkBox) {
+            const duplicateStreet = directionData.map((searchStree, idx) => {
+                return searchStree.street_number;
+            });
+            if (duplicateStreet.includes(streetNumber)) {
+                console.log('Necesitas poner una calle diferente');
+                return;
+            }
+
             const directionsCollectionAdd = db.collection('sender_addresses').add({
                 name,
                 codigo_postal: CP,
@@ -130,6 +141,7 @@ export const OrigenComponent = ({ onSave }) => {
                 ID: user.uid,
                 creation_date: creationDate.toLocaleDateString(),
             });
+
             directionsCollectionAdd
                 .then(function(docRef) {
                     console.log('Document written with ID (origen): ', docRef.id);
@@ -154,6 +166,9 @@ export const OrigenComponent = ({ onSave }) => {
                 creation_date: creationDate.toLocaleDateString(),
             },
         });
+
+        const searchDuplicate = db.collection('sender_addresses').get();
+
         directionsGuiasCollectionAdd
             .then(function(docRef) {
                 console.log('Document written with ID (Guía): ', docRef.id);
@@ -184,7 +199,7 @@ export const OrigenComponent = ({ onSave }) => {
                 />
             </StyledLeftPane>
             <StyledRightPane>
-                <h4>Dirección de Origen</h4>
+                <h4>Dirección de origen</h4>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
                         id="nombre"
