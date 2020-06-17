@@ -268,6 +268,7 @@ export function AccountSidebar() {
                     profilesCollectionAdd
                         .then(function() {
                             console.log('Document successfully written!');
+                            setAvatarURL(url);
                         })
                         .catch(function(error) {
                             console.error('Error writing document: ', error);
@@ -314,7 +315,7 @@ export function AccountSidebar() {
                 });
             });
         }
-    }, [avatarURL]);
+    }, [user]);
 
     useRegularSecurity();
 
