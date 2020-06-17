@@ -12,70 +12,62 @@ import {
     faPhoneAlt,
     faLocationArrow,
     faComment,
+    faSearch,
+    faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { StyledContact } from './styled';
 
+const inputStyles = {
+    width: 400,
+};
+
 const containerStyles = {
-    maxWidth: 700,
+    maxWidth: 400,
 };
 
 const ContactPage = () => {
     return (
         <StyledContact>
             <div className="back">
-                <h1>Contacto</h1>
-
+                    <h1>Contacto</h1>
                 <div>
-                    <form>
-                        <div className="rainbow-align-content_center rainbow-flex_wrap">
-                            <Input
-                                id="name"
-                                label="Nombre(s)"
-                                name="name"
-                                className="rainbow-p-around_medium"
-                                style={{ width: '45%' }}
-                            />
-                            <Input
-                                id="lastname"
-                                label="Apellido(s)"
-                                name="lastname"
-                                className="rainbow-p-around_medium"
-                                style={{ width: '45%' }}
-                            />
-                        </div>
-                        <div className="rainbow-align-content_center rainbow-flex_wrap">
-                            <Input
-                                id="name"
-                                label="Teléfono"
-                                name="telefono"
-                                className="rainbow-p-around_medium"
-                                style={{ width: '45%' }}
-                            />
-                            <Input
-                                id="lastname"
-                                label="Correo"
-                                name="correo"
-                                className="rainbow-p-around_medium"
-                                style={{ width: '45%' }}
-                            />
-                        </div>
-
-                        <div>
-                            <Textarea
-                                id="example-textarea-1"
-                                label="Mensaje"
-                                rows={7}
-                                style={containerStyles}
-                                className="message"
-                            />
-                            ;
-                        </div>
-                        <div className="rainbow-align-content_center rainbow-flex_wrap">
-                            <Button className="boton" type="submit">
-                                Unirse
-                            </Button>
-                        </div>
-                    </form>
+                    <div className="rainbow-align-content_center rainbow-p-vertical_x-large rainbow-flex_wrap">
+                        <Input
+                            className="rainbow-p-around_medium"
+                            style={inputStyles}
+                            label="Nombre (s)"
+                            icon={<FontAwesomeIcon icon={faUser} className="rainbow-color_gray-3" />}
+                        />
+                        <Input
+                            className="rainbow-p-around_medium"
+                            style={inputStyles}
+                            label="Apellido (s)"
+                            icon={<FontAwesomeIcon icon={faUser}  />}
+                        />
+                    </div>
+                    <div className="rainbow-align-content_center rainbow-p-vertical_x-large rainbow-flex_wrap">
+                         <Input
+                            className="rainbow-p-around_medium"
+                            style={inputStyles}
+                            label="Teléfono"
+                            icon={<FontAwesomeIcon icon={faPhoneAlt} className="rainbow-color_gray-3" />}
+                        />
+                        <Input
+                            className="rainbow-p-around_medium"
+                            style={inputStyles}
+                            label="Correo"
+                            icon={<FontAwesomeIcon icon={faEnvelope}  />}
+                        />
+                    </div>
+                    <div>
+                    <Textarea
+                        id="example-textarea-1"
+                        label="Mensaje"
+                        rows={4}
+                        style={containerStyles}
+                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                    />;
+                    </div>                    
                 </div>
 
                 <Container>
