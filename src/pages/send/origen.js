@@ -141,6 +141,7 @@ export const OrigenComponent = ({ onSave }) => {
 
         const directionsGuiasCollectionAdd = db.collection('guia').add({
             ID: user.uid,
+            creation_date: creationDate.toLocaleDateString(),
             sender_addresses: {
                 name,
                 codigo_postal: CP,
