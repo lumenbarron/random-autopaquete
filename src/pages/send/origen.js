@@ -41,7 +41,6 @@ export const OrigenComponent = ({ onSave }) => {
     const [value, setValue] = useState();
 
     const [name, setName] = useState('');
-    //const [duplicateName, setDuplicateName] = useState(null);
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
     const [country, setCountry] = useState('');

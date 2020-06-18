@@ -111,6 +111,7 @@ const SendPage = () => {
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
+
         setCurrentStepName('descarga');
     };
 
@@ -127,7 +128,12 @@ const SendPage = () => {
                 {currentStepName === 'origen' && <OrigenComponent onSave={saveOriginData} />}
                 {currentStepName === 'destino' && <DestinoComponent onSave={saveDestinationData} />}
                 {currentStepName === 'paquete' && <PaqueteComponent onSave={savePackagingData} />}
-                {currentStepName === 'servicio' && <ServicioComponent onSave={saveServiceData} />}
+                {currentStepName === 'servicio' && (
+                    <ServicioComponent
+                        onSave={saveServiceData}
+                        idGuiaGlobal={idGuiaGlobal.current}
+                    />
+                )}
                 {currentStepName === 'descarga' && <DescargaComponent />}
             </StyledSendPage>
         </>
