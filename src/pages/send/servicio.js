@@ -19,32 +19,17 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
 
-    const [directionData, setDirectionData] = useState([]);
+    const [orderData, setOrderData] = useState([]);
 
-    useEffect(() => {
-        if (user) {
-            const reloadDirectios = () => {
-                db.collection('sender_addresses')
-                    .where('ID', '==', user.uid)
-                    .onSnapshot(handleDirections);
-            };
-            reloadDirectios();
-        }
-    }, []);
+    const [nameSender, setNameSender] = useState();
+    const [CPSender, setCPSender] = useState('');
+    const [neighborhoodSender, setNeighborhoodSender] = useState('');
+    const [countrySender, setCountrySender] = useState('');
+    const [streetNumberSender, setStreetNumberSender] = useState('');
+    const [placeRefSender, setPlaceRefSender] = useState('');
+    const [phoneSender, setPhoneSender] = useState('');
 
-    function handleDirections(snapshot) {
-        const directionData = snapshot.docs.map(doc => {
-            return {
-                id: doc.id,
-                ...doc.data(),
-            };
-        });
-        setDirectionData(directionData);
-    }
-
-    const options = directionData.map((directions, idx) => {
-        return {};
-    });
+    let idGuia = '13sCiHF6iFqm8D48LzI9';
 
     const registerFedex = () => {
         const supplierData = {
@@ -65,13 +50,19 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
         onSave({ supplierData });
     };
-    console.log(idGuiaGlobal);
+
+    db.collection('guia')
+        .doc(idGuia)
+        .onSnapshot(function(doc) {
+            setNameSender(doc.data().sender_addresses.name);
+        });
+
     return (
         <>
             <StyledDirectiosDetails style={{ justifyContent: 'center' }}>
                 <StyledDetails>
                     <span>
-                        <b>Tortas Macario</b>
+                        <b>{nameSender}</b>
                     </span>
                     <p>Pablo Valdez 668</p>
                     <p>La perla</p>

@@ -9,7 +9,7 @@ import { DescargaComponent } from './descarga';
 import { useFirebaseApp } from 'reactfire';
 
 const SendPage = () => {
-    const [currentStepName, setCurrentStepName] = useState('origen');
+    const [currentStepName, setCurrentStepName] = useState('servicio');
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const idGuiaGlobal = useRef(null);
