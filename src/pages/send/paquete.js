@@ -145,7 +145,7 @@ export const PaqueteComponent = ({ onSave }) => {
             };
 
             const packageGuiaData = {
-                pakage: {
+                package: {
                     ID: user.uid,
                     name,
                     height,

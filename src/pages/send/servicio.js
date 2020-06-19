@@ -20,16 +20,26 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const db = firebase.firestore();
 
     const [orderData, setOrderData] = useState([]);
-
+    //Sender states
     const [nameSender, setNameSender] = useState();
     const [CPSender, setCPSender] = useState('');
     const [neighborhoodSender, setNeighborhoodSender] = useState('');
     const [countrySender, setCountrySender] = useState('');
     const [streetNumberSender, setStreetNumberSender] = useState('');
-    const [placeRefSender, setPlaceRefSender] = useState('');
     const [phoneSender, setPhoneSender] = useState('');
-
-    let idGuia = '13sCiHF6iFqm8D48LzI9';
+    //Receiver states
+    const [nameReceiver, setNameReceiver] = useState();
+    const [CPReceiver, setCPReceiver] = useState('');
+    const [neighborhoodReceiver, setNeighborhoodReceiver] = useState('');
+    const [countryReceiver, setCountryReceiver] = useState('');
+    const [streetNumberReceiver, setStreetNumberReceiver] = useState('');
+    const [phoneReceiver, setPhoneReceiver] = useState('');
+    //Package information
+    const [namePackage, setNamePackage] = useState('');
+    const [height, setHeight] = useState('');
+    const [width, setWidth] = useState('');
+    const [depth, setDepth] = useState('');
+    const [weight, setWeight] = useState('');
 
     const registerFedex = () => {
         const supplierData = {
@@ -52,9 +62,29 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     db.collection('guia')
-        .doc(idGuia)
+        .doc(idGuiaGlobal)
         .onSnapshot(function(doc) {
+            console.log('dsadsa', doc.data());
+            //Get snapshot sender information
             setNameSender(doc.data().sender_addresses.name);
+            setCPSender(doc.data().sender_addresses.codigo_postal);
+            setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
+            setCountrySender(doc.data().sender_addresses.country);
+            setStreetNumberSender(doc.data().sender_addresses.street_number);
+            setPhoneSender(doc.data().sender_addresses.phone);
+            //Get snapshot to receive Receiver information
+            setNameReceiver(doc.data().receiver_addresses.name);
+            setCPReceiver(doc.data().receiver_addresses.codigo_postal);
+            setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
+            setCountryReceiver(doc.data().receiver_addresses.country);
+            setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
+            setPhoneReceiver(doc.data().receiver_addresses.phone);
+            //Get snapshot to receive package information
+            setNamePackage(doc.data().package.name);
+            setHeight(doc.data().package.height);
+            setWidth(doc.data().package.width);
+            setDepth(doc.data().package.depth);
+            setWeight(doc.data().package.weight);
         });
 
     return (
@@ -64,31 +94,30 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <span>
                         <b>{nameSender}</b>
                     </span>
-                    <p>Pablo Valdez 668</p>
-                    <p>La perla</p>
-                    <p>Guadalajara, Jalisco</p>
-                    <p>C.P. 46360</p>
-                    <p>Tel 3310628584</p>
+                    <p>{streetNumberSender}</p>
+                    <p>{neighborhoodSender}</p>
+                    <p>{countrySender}</p>
+                    <p>{CPSender}</p>
+                    <p>{phoneSender}</p>
                 </StyledDetails>
                 <StyledDetails>
                     <span>
-                        <b>Tortas Macario</b>
+                        <b>{nameReceiver}</b>
                     </span>
-                    <p>Pablo Valdez 668</p>
-                    <p>La perla</p>
-                    <p>Guadalajara, Jalisco</p>
-                    <p>C.P. 46360</p>
-                    <p>Tel 3310628584</p>
+                    <p>{streetNumberReceiver}</p>
+                    <p>{neighborhoodReceiver}</p>
+                    <p>{countryReceiver}</p>
+                    <p>{CPReceiver}</p>
+                    <p>{phoneReceiver}</p>
                 </StyledDetails>
                 <StyledDetails>
                     <span>
-                        <b>Tortas Macario</b>
+                        <b>{namePackage}</b>
                     </span>
-                    <p>Pablo Valdez 668</p>
-                    <p>La perla</p>
-                    <p>Guadalajara, Jalisco</p>
-                    <p>C.P. 46360</p>
-                    <p>Tel 3310628584</p>
+                    <p>
+                        Dimensiones: {height}x{width}x{depth} cm
+                    </p>
+                    <p>Peso: {weight} kgs</p>
                 </StyledDetails>
             </StyledDirectiosDetails>
             <StyledPaneContainer style={{ justifyContent: 'center' }}>
