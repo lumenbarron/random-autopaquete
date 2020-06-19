@@ -105,7 +105,7 @@ const LoginPage = () => {
         firebase.auth().sendPasswordResetEmail(email);
     };
 
-    //   useBlockSecurity();
+    useBlockSecurity();
 
     return (
         <StyledLoginPage>

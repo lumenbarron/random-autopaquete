@@ -9,7 +9,7 @@ import { DescargaComponent } from './descarga';
 import { useFirebaseApp } from 'reactfire';
 
 const SendPage = () => {
-    const [currentStepName, setCurrentStepName] = useState('origen');
+    const [currentStepName, setCurrentStepName] = useState('servicio');
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const idGuiaGlobal = useRef(null);
@@ -21,9 +21,19 @@ const SendPage = () => {
         setCurrentStepName('destino');
     };
 
-    const saveDestinationData = (directionData, directionGuiaData, checkBox) => {
+    const saveDestinationData = (
+        directionData,
+        directionGuiaData,
+        checkBox,
+        duplicateStreet,
+        streetNumber,
+    ) => {
         // TODO: Guardar la info de la dirección a firestore (si fue solicitado)
         if (checkBox) {
+            if (duplicateStreet.includes(streetNumber)) {
+                console.log('Necesitas poner una calle diferente');
+                return;
+            }
             db.collection('receiver_addresses')
                 .add(directionData)
                 .then(function(docRef) {
@@ -101,6 +111,7 @@ const SendPage = () => {
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
+
         setCurrentStepName('descarga');
     };
 
@@ -117,7 +128,12 @@ const SendPage = () => {
                 {currentStepName === 'origen' && <OrigenComponent onSave={saveOriginData} />}
                 {currentStepName === 'destino' && <DestinoComponent onSave={saveDestinationData} />}
                 {currentStepName === 'paquete' && <PaqueteComponent onSave={savePackagingData} />}
-                {currentStepName === 'servicio' && <ServicioComponent onSave={saveServiceData} />}
+                {currentStepName === 'servicio' && (
+                    <ServicioComponent
+                        onSave={saveServiceData}
+                        idGuiaGlobal={idGuiaGlobal.current}
+                    />
+                )}
                 {currentStepName === 'descarga' && <DescargaComponent />}
             </StyledSendPage>
         </>

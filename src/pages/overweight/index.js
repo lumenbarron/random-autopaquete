@@ -27,7 +27,7 @@ const OverweightPage = () => {
 
     useEffect(() => {
         const reloadRecords = () => {
-            db.collection('guia')
+            db.collection('overweights')
                 .where('ID', '==', user.uid)
                 .onSnapshot(handleOverWeight);
         };
@@ -44,14 +44,15 @@ const OverweightPage = () => {
         setOverWeightData(overWeightData);
     }
 
-    const data = overWeightData.map((historyRecord, idx) => {
+    const data = overWeightData.map((overWeight, idx) => {
+        console.log(overWeight);
         return {
-            date: historyRecord.sender_addresses.creation_date,
-            guide: '#',
-            kdeclared: historyRecord.sender_addresses.name,
-            kreal: historyRecord.receiver_addresses.name,
-            Kcollected: historyRecord.pakage.weight,
-            charge: historyRecord.supplierData.Supplier,
+            date: overWeight.fecha,
+            guide: overWeight.guia,
+            kdeclared: overWeight.kilos_declarados,
+            kreal: overWeight.kilos_reales,
+            Kcollected: overWeight.kilos_reales - overWeight.kilos_declarados,
+            charge: overWeight.cargo,
         };
     });
 

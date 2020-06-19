@@ -95,7 +95,6 @@ export const PaqueteComponent = ({ onSave }) => {
                 .get()
                 .then(function(doc) {
                     if (doc.exists) {
-                        console.log(doc.data());
                         setName(doc.data().name);
                         setHeight(doc.data().height);
                         setWidth(doc.data().width);
@@ -103,6 +102,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         setWeight(doc.data().weight);
                         setContentDescription(doc.data().content_description);
                         setContentValue(doc.data().content_value);
+                        setCheckBox(false);
                     } else {
                         // doc.data() will be undefined in this case
                         console.log('No such document!');
@@ -128,6 +128,9 @@ export const PaqueteComponent = ({ onSave }) => {
         } else if (checkBoxSecure && contentValue.trim() === '') {
             console.log('Espacios vacios (valor del contenido)');
         } else {
+            if (!checkBoxSecure) {
+                setContentValue(0);
+            }
             const packageData = {
                 ID: user.uid,
                 name,
@@ -157,8 +160,9 @@ export const PaqueteComponent = ({ onSave }) => {
             };
             onSave(packageData, packageGuiaData, checkBox);
         }
-        console.log(checkBoxSecure);
     };
+
+    console.log(contentValue);
 
     return (
         <StyledPaneContainer>

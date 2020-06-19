@@ -13,6 +13,26 @@ export const StyledSendPage = styled.div`
     }
 `;
 
+export const StyledDirectiosDetails = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    margin: 3rem 20rem 3rem 0;
+    justify-content: space-between;
+    @media (max-width: 1536px) {
+        margin: 3rem auto;
+    }
+`;
+
+export const StyledDetails = styled.div`
+    flex-basis: 22%
+    margin-right: 10px;
+    @media (max-width: 1024px) {
+        flex-basis: 100%
+        text-align: center;
+        margin: 1rem 0;
+            }
+`;
+
 export const StyledPaneContainer = styled.div`
     display: flex;
     flex-direction: row;
