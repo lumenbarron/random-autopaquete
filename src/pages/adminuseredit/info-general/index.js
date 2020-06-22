@@ -23,6 +23,8 @@ export default function InfoGeneral({ user }) {
         setSaldo(user.saldo ? user.saldo : '0');
     }, [user]);
 
+    const downloadFiles = () => {};
+
     return (
         <>
             <h2>Editar Usuario</h2>
@@ -45,7 +47,11 @@ export default function InfoGeneral({ user }) {
                         onChange={ev => setLastName(ev.target.value)}
                     />
 
-                    <Button label="Descargar Archivos" style={{ width: '100%', height: '4rem' }} />
+                    <Button
+                        label="Descargar Archivos"
+                        style={{ width: '100%', height: '4rem' }}
+                        onClick={downloadFiles}
+                    />
                 </div>
                 <div style={{ flex: '1 1' }}>
                     <RadioGroup

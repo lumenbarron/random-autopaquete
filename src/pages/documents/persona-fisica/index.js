@@ -77,6 +77,8 @@ const TabPersonaFisica = () => {
         }
     };
 
+    const saveURL = () => {};
+
     const register = e => {
         e.preventDefault();
 
@@ -90,13 +92,21 @@ const TabPersonaFisica = () => {
         if (fileDomicilio) {
             fileName = fileDomicilio[0].name;
             filePath = `documentation/${user.uid}/${fileName}`;
+
             firebase
                 .storage()
                 .ref(filePath)
                 .put(fileDomicilio[0])
                 .then(snapshot => {
                     uploadedFiles += 1;
-                    saveData();
+                    storage
+                        .ref(`documentation/${user.uid}`)
+                        .child(fileDomicilio[0].name)
+                        .getDownloadURL()
+                        .then(function(url) {
+                            saveData(url);
+                            console.log(url);
+                        });
                 });
         }
 

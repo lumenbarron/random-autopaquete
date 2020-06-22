@@ -52,6 +52,7 @@ const AdminUsersPage = () => {
     function editUser(e, profile) {
         e.preventDefault();
         history.push('/admin/usuario/' + profile.ID);
+        console.log(profile.ID);
     }
 
     return (
