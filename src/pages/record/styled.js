@@ -1,9 +1,14 @@
 import styled from 'styled-components';
 
 export const StyledRecord = styled.div`
-    width: 70%;
-    margin: 5rem;
-    padding: 2rem;
+    flex: 1 1;
+    background-color: #f7ece2;
+`;
+
+export const RecordContainer = styled.div`
+    background-color: white;
+    margin:5rem;
+    padding:2rem;
     border-radius: 3rem;
 
     color: crimson;
@@ -11,21 +16,7 @@ export const StyledRecord = styled.div`
     -webkit-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
-    
-     
 
-    .back{
-    width: 70%;
-    margin: 5rem;
-    padding: 2rem;
-    border-radius: 3rem;
-
-    color: crimson;
-
-    -webkit-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
-    }
     h1 {
         font-weight: 700;
     }
@@ -39,11 +30,11 @@ export const StyledRecord = styled.div`
     }
 
     .btn-new {
-    background-color: #AB0000; 
-    color: #fff; 
+    background-color: #AB0000;
+    color: #fff;
     border-radius: 25px;
     padding: 8px 16px;
-    
+
     }
 
     .btn-new:hover {

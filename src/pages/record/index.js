@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
-import { StyledRecord } from './styled';
+import { StyledRecord, RecordContainer } from './styled';
 import OrigenComponent from '../../pages/send/origen';
 
 const StyledBadge = styled(Badge)`
@@ -25,6 +25,7 @@ const RecordPage = () => {
         const reloadRecords = () => {
             db.collection('guia')
                 .where('ID', '==', user.uid)
+                .where('supplierData.Supplier', '>=', '')
                 .onSnapshot(handleRecods);
         };
         reloadRecords();
@@ -55,44 +56,53 @@ const RecordPage = () => {
 
     return (
         <StyledRecord>
-            <div>
+            <RecordContainer>
                 <div>
-                    <h1>Mis envíos</h1>
-
                     <div>
-                        <Input
-                            className="rainbow-p-around_medium"
-                            placeholder="Buscar"
-                            icon={
-                                <FontAwesomeIcon icon={faSearch} className="rainbow-color_gray-3" />
-                            }
-                        />
-                    </div>
+                        <h1>Mis envíos</h1>
 
-                    <div className="rainbow-p-bottom_xx-large">
-                        <div style={containerStyles}>
-                            <TableWithBrowserPagination
-                                data={data}
-                                pageSize={10}
-                                keyField="id"
-                                style={containerTableStyles}
-                            >
-                                <Column header="Fecha " field="date" />
-                                <Column header="Guía" field="guide" />
-                                <Column header="Origen" field="origin" />
-                                <Column header="Destino" field="Destination" />
-                                <Column header="Peso" field="weight" />
-                                <Column header="Servicio" field="service" />
-                                <Column header="Status" field="status" component={StatusBadge} />
-                                <Column header="Costo" field="cost" />
-                            </TableWithBrowserPagination>
+                        <div>
+                            <Input
+                                className="rainbow-p-around_medium"
+                                placeholder="Buscar"
+                                icon={
+                                    <FontAwesomeIcon
+                                        icon={faSearch}
+                                        className="rainbow-color_gray-3"
+                                    />
+                                }
+                            />
+                        </div>
+
+                        <div className="rainbow-p-bottom_xx-large">
+                            <div style={containerStyles}>
+                                <TableWithBrowserPagination
+                                    data={data}
+                                    pageSize={10}
+                                    keyField="id"
+                                    style={containerTableStyles}
+                                >
+                                    <Column header="Fecha " field="date" />
+                                    <Column header="Guía" field="guide" />
+                                    <Column header="Origen" field="origin" />
+                                    <Column header="Destino" field="Destination" />
+                                    <Column header="Peso" field="weight" />
+                                    <Column header="Servicio" field="service" />
+                                    <Column
+                                        header="Status"
+                                        field="status"
+                                        component={StatusBadge}
+                                    />
+                                    <Column header="Costo" field="cost" />
+                                </TableWithBrowserPagination>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div>
-                <button className="btn-new">Enviar uno nuevo</button>
-            </div>
+                <div>
+                    <button className="btn-new">Enviar uno nuevo</button>
+                </div>
+            </RecordContainer>
         </StyledRecord>
     );
 };

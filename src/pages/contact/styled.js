@@ -1,21 +1,28 @@
 import styled from 'styled-components';
 
 export const StyledContact = styled.div`
+    flex: 1 1;
+    background-color: #f7ece2;
+    display: flex;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -ms-flex-align: center;
+    align-items: center;
+
     .back {
-        background-color: #f7ece2;
-        width: 100%;
-        min-height:100%;
-        margin: 0;
+        min-height: 100%;
+        margin: 0 2rem;
         position: absolute;
         display: flex;
         justify-content: center;
-        flex-direction: column;  
+        flex-direction: column;
     }
 
     h1 {
         color: #c94141;
         font-weight: 700;
-        padding-left: 100px;
         padding-top: 50px;
     }
 
@@ -28,15 +35,13 @@ export const StyledContact = styled.div`
     col ul,
     h4 {
         text-align: left;
-        padding-right:100px;
+        padding-right: 100px;
     }
 
     h4 {
         color: #c94141;
         font-weight: 600;
     }
-
-
 
     .icon {
         margin: 0px 10px;

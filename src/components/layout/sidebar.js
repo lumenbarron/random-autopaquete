@@ -458,6 +458,7 @@ export function AdminSidebar() {
         <SideBarContainer
             className="rainbow-p-top_small rainbow-p-bottom_medium"
             //backImg="/assets/redbox-2.png"
+            style={{ backgroundColor: 'crimson', position: 'sticky', top: '0' }}
         >
             <SidebarHeader>
                 <Logo src="/logo-admin.png" />

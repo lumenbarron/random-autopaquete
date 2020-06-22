@@ -14,6 +14,7 @@ import ServicesPage from './pages/services';
 import OverweightPage from './pages/overweight';
 import DocumentsPage from './pages/documents';
 import AdminOverweightPage from './pages/adminoverweight';
+import AdminUserEditPage from './pages/adminuseredit';
 import AdminUsersPage from './pages/adminusers';
 import ConditionsPage from './pages/conditions';
 import LoginPage from './pages/login';
@@ -30,6 +31,7 @@ const AppRoutes = () => {
                     <AdminSidebar />
                     <Switch>
                         <Route path="/admin/sobrepesos" component={AdminOverweightPage} />
+                        <Route path="/admin/usuario/:userId" component={AdminUserEditPage} />
                         <Route path="/admin/usuarios" component={AdminUsersPage} />
                         <Redirect to="/admin" />
                     </Switch>

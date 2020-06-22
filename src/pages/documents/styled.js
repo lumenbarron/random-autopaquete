@@ -6,6 +6,7 @@ export const StyledContainer = styled.div.attrs(props => {
 })`
     color: ${props => props.text.main};
     margin: 3rem;
+    margin-bottom: 10%;
     display: flex;
     flex-direction: column;
     justify-content: center;
