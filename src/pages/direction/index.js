@@ -33,6 +33,8 @@ export default function DirectionPage() {
     const [senderAddresses, setSenderAddresses] = useState([]);
     const [receiverAddresses, setReceiverAddresses] = useState([]);
 
+    const creationDate = new Date();
+
     useEffect(() => {
         const reloadRecords = () => {
             db.collection('sender_addresses')
@@ -78,6 +80,74 @@ export default function DirectionPage() {
     }
 
     const data = senderAddresses.map(mapAddresses).concat(receiverAddresses.map(mapAddresses));
+
+    const registerDirecction = () => {
+        if (
+            name.trim() === '' ||
+            CP.trim() === '' ||
+            neighborhood.trim() === '' ||
+            country.trim() === '' ||
+            streetNumber.trim() === '' ||
+            placeRef.trim() === '' ||
+            phone.trim() === ''
+        ) {
+            console.log('Espacios vacios');
+            return;
+        }
+        const duplicateStreet = data.map((searchStree, idx) => {
+            return searchStree.street_number;
+        });
+        if (duplicateStreet.includes(streetNumber)) {
+            console.log('Necesitas poner una calle diferente');
+            return;
+        }
+
+        const directionsCollectionAdd = db.collection('sender_addresses').add({
+            name,
+            codigo_postal: CP,
+            neighborhood,
+            country,
+            street_number: streetNumber,
+            place_reference: placeRef,
+            phone,
+            ID: user.uid,
+            creation_date: creationDate.toLocaleDateString(),
+        });
+
+        directionsCollectionAdd
+            .then(function(docRef) {
+                console.log('Document written with ID (origen): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+
+        const directionsGuiasCollectionAdd = db.collection('guia').add({
+            ID: user.uid,
+            creation_date: creationDate.toLocaleDateString(),
+            sender_addresses: {
+                name,
+                codigo_postal: CP,
+                neighborhood,
+                country,
+                street_number: streetNumber,
+                place_reference: placeRef,
+                phone,
+                ID: user.uid,
+                creation_date: creationDate.toLocaleDateString(),
+            },
+        });
+
+        const searchDuplicate = db.collection('sender_addresses').get();
+
+        directionsGuiasCollectionAdd
+            .then(function(docRef) {
+                console.log('Document written with ID (Guía): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+    };
 
     return (
         <StyledDirection>
@@ -146,7 +216,9 @@ export default function DirectionPage() {
                                         style={{ width: '100%' }}
                                         onChange={e => setPhone(e.target.value)}
                                     />
-                                    <Button className="btn-new">Guardar</Button>
+                                    <Button className="btn-new" onClick={registerDirecction}>
+                                        Guardar
+                                    </Button>
                                 </div>
                                 <div style={{ flex: '1 1' }}>
                                     <h2>Dirección</h2>

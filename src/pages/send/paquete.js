@@ -161,9 +161,6 @@ export const PaqueteComponent = ({ onSave }) => {
             onSave(packageData, packageGuiaData, checkBox);
         }
     };
-
-    console.log(contentValue);
-
     return (
         <StyledPaneContainer>
             <StyledLeftPane>

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledRecord, RecordContainer } from './styled';
+import { useHistory } from 'react-router-dom';
 import OrigenComponent from '../../pages/send/origen';
 
 const StyledBadge = styled(Badge)`
@@ -18,14 +19,16 @@ const RecordPage = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
+    const history = useHistory();
 
     const [recordsData, setRecordsData] = useState([]);
+    const [supplier, setSupplier] = useState([]);
 
     useEffect(() => {
         const reloadRecords = () => {
             db.collection('guia')
                 .where('ID', '==', user.uid)
-                .where('supplierData.Supplier', '>=', '')
+                .where('status', '==', 'completed')
                 .onSnapshot(handleRecods);
         };
         reloadRecords();
@@ -47,12 +50,16 @@ const RecordPage = () => {
             guide: '#',
             origin: historyRecord.sender_addresses.name,
             Destination: historyRecord.receiver_addresses.name,
-            weight: historyRecord.pakage.weight,
+            weight: historyRecord.package.weight,
             service: historyRecord.supplierData.Supplier,
             status: 'Finalizado',
             cost: historyRecord.supplierData.Supplier_cost,
         };
     });
+
+    const pushSend = () => {
+        history.push('/mi-cuenta/enviar');
+    };
 
     return (
         <StyledRecord>
@@ -100,7 +107,9 @@ const RecordPage = () => {
                     </div>
                 </div>
                 <div>
-                    <button className="btn-new">Enviar uno nuevo</button>
+                    <button className="btn-new" onClick={pushSend}>
+                        Enviar uno nuevo
+                    </button>
                 </div>
             </RecordContainer>
         </StyledRecord>

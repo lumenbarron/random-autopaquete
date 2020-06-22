@@ -102,7 +102,7 @@ const SendPage = () => {
         const directionsGuiasCollectionAdd = db
             .collection('guia')
             .doc(idGuiaGlobal.current)
-            .update(supplierData);
+            .update({ status: 'completed', supplierData });
 
         directionsGuiasCollectionAdd
             .then(function(docRef) {

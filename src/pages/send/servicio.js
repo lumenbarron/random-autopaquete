@@ -19,7 +19,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
 
-    const [orderData, setOrderData] = useState([]);
     //Sender states
     const [nameSender, setNameSender] = useState();
     const [CPSender, setCPSender] = useState('');
@@ -48,7 +47,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             Supplier_cost: supplierCostFedex,
         };
 
-        onSave({ supplierData });
+        onSave(supplierData);
     };
 
     const registerEstafeta = () => {
@@ -58,7 +57,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             Supplier_cost: supplierCostEstafeta,
         };
 
-        onSave({ supplierData });
+        onSave(supplierData);
     };
 
     db.collection('guia')

@@ -22,7 +22,6 @@ const LoginPage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [name, setName] = useState('');
     const [lastname, setLastName] = useState('');
-    const [image, setImage] = useState('');
     const firebase = useFirebaseApp();
     const history = useHistory();
     const user = useUser();
