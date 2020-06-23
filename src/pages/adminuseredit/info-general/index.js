@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Button, RadioGroup, Textarea } from 'react-rainbow-components';
+import formatMoney from 'accounting-js/lib/formatMoney';
+import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledComment } from './styled';
-import formatMoney from 'accounting-js/lib/formatMoney.js';
+import * as firebase from 'firebase';
 
 export default function InfoGeneral({ user }) {
     const [lastname, setLastName] = useState('');
@@ -9,6 +11,12 @@ export default function InfoGeneral({ user }) {
     const [status, setStatus] = useState('');
     const [saldo, setSaldo] = useState('');
     const [email, setEmail] = useState('');
+
+    const [downloadsFiles, setDownloadsFiles] = useState([]);
+
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const userFirebase = useUser();
 
     const statusOptions = [
         { value: 'Aprobado', label: 'Aprobado' },
@@ -23,7 +31,54 @@ export default function InfoGeneral({ user }) {
         setSaldo(user.saldo ? user.saldo : '0');
     }, [user]);
 
-    const downloadFiles = () => {};
+    useEffect(() => {
+        if (user) {
+            const reloadFiles = () => {
+                db.collection('profiles')
+                    .where('ID', '==', user.ID)
+                    .onSnapshot(handleFiles);
+            };
+            reloadFiles();
+        }
+    }, []);
+
+    function handleFiles(snapshot) {
+        const downloadsFiles = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setDownloadsFiles(downloadsFiles);
+    }
+
+    const files = downloadsFiles.map((file, idx) => {
+        return [file.files];
+    });
+
+    console.log('Tiene que existir algo aquí', files);
+
+    const editProfile = () => {
+        const editProfile = {
+            name,
+            lastname,
+            status,
+            saldo,
+        };
+
+        const directionsGuiasCollectionAdd = db
+            .collection('profiles')
+            .doc(user.id)
+            .update(editProfile);
+
+        directionsGuiasCollectionAdd
+            .then(function(docRef) {
+                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+    };
 
     return (
         <>
@@ -47,11 +102,12 @@ export default function InfoGeneral({ user }) {
                         onChange={ev => setLastName(ev.target.value)}
                     />
 
-                    <Button
-                        label="Descargar Archivos"
-                        style={{ width: '100%', height: '4rem' }}
-                        onClick={downloadFiles}
-                    />
+                    <a href={files}>
+                        <Button
+                            label="Descargar Archivos"
+                            style={{ width: '100%', height: '4rem' }}
+                        />
+                    </a>
                 </div>
                 <div style={{ flex: '1 1' }}>
                     <RadioGroup
@@ -80,7 +136,7 @@ export default function InfoGeneral({ user }) {
                     <StyledComment>
                         Comentario 2<span className="date">23/Jun/2020</span>
                     </StyledComment>
-                    <Button className="btn-confirm" label="Guardar" />
+                    <Button className="btn-confirm" label="Guardar" onClick={editProfile} />
                 </div>
             </div>
         </>

@@ -21,12 +21,16 @@ const TabPersonaFisica = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
 
-    var storage = firebase.storage();
+    const storage = firebase.storage();
 
     const user = useUser();
 
     let uploadedFiles = 0;
     let filesToUpload = 0;
+
+    let urlDomicilio = '';
+    let urlIne = '';
+    let urlFiscal = '';
 
     const saveData = () => {
         if (user) {
@@ -51,11 +55,9 @@ const TabPersonaFisica = () => {
                             Comprobante_fiscal: INEnumber,
                             user_type: 'regular',
                             files: {
-                                fileFiscal: fileFiscal ? `photos/${fileFiscal[0].name}` : undefined,
-                                fileIne: fileIne ? `photos/${fileIne[0].name}` : undefined,
-                                fileDomicilio: fileDomicilio
-                                    ? `photos/${fileDomicilio[0].name}`
-                                    : undefined,
+                                fileFiscal: fileFiscal ? urlFiscal : undefined,
+                                fileIne: fileIne ? urlIne : undefined,
+                                fileDomicilio: fileDomicilio ? urlDomicilio : undefined,
                             },
                         };
 
@@ -77,7 +79,34 @@ const TabPersonaFisica = () => {
         }
     };
 
-    const saveURL = () => {};
+    const saveURL = () => {
+        storage
+            .ref(`documentation/${user.uid}`)
+            .child(fileDomicilio[0].name)
+            .getDownloadURL()
+            .then(function(url) {
+                urlDomicilio = url;
+                saveData();
+            });
+
+        storage
+            .ref(`documentation/${user.uid}`)
+            .child(fileIne[0].name)
+            .getDownloadURL()
+            .then(function(url) {
+                urlIne = url;
+                saveData();
+            });
+
+        storage
+            .ref(`documentation/${user.uid}`)
+            .child(fileFiscal[0].name)
+            .getDownloadURL()
+            .then(function(url) {
+                urlFiscal = url;
+                saveData();
+            });
+    };
 
     const register = e => {
         e.preventDefault();
@@ -99,14 +128,7 @@ const TabPersonaFisica = () => {
                 .put(fileDomicilio[0])
                 .then(snapshot => {
                     uploadedFiles += 1;
-                    storage
-                        .ref(`documentation/${user.uid}`)
-                        .child(fileDomicilio[0].name)
-                        .getDownloadURL()
-                        .then(function(url) {
-                            saveData(url);
-                            console.log(url);
-                        });
+                    saveURL();
                 });
         }
 
@@ -119,7 +141,7 @@ const TabPersonaFisica = () => {
                 .put(fileIne[0])
                 .then(snapshot => {
                     uploadedFiles += 1;
-                    saveData();
+                    saveURL();
                 });
         }
 
@@ -132,7 +154,7 @@ const TabPersonaFisica = () => {
                 .put(fileFiscal[0])
                 .then(snapshot => {
                     uploadedFiles += 1;
-                    saveData();
+                    saveURL();
                 });
         }
     };

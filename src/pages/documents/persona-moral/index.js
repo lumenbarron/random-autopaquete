@@ -18,11 +18,17 @@ const TabPersonaMoral = () => {
 
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
     const user = useUser();
 
     let uploadedFiles = 0;
     let filesToUpload = 0;
+
+    let urlDomicilio = '';
+    let urlIne = '';
+    let urlFiscal = '';
+    let urlActaConstituva = '';
 
     const saveData = () => {
         if (user) {
@@ -47,13 +53,11 @@ const TabPersonaMoral = () => {
                             user_type: 'regular',
                             files: {
                                 fileActaConstitutiva: fileActaConstitutiva
-                                    ? `photos/${fileActaConstitutiva[0].name}`
+                                    ? urlActaConstituva
                                     : undefined,
-                                fileFiscal: fileFiscal ? `photos/${fileFiscal[0].name}` : undefined,
-                                fileIne: fileIne ? `photos/${fileIne[0].name}` : undefined,
-                                fileDomicilio: fileDomicilio
-                                    ? `photos/${fileDomicilio[0].name}`
-                                    : undefined,
+                                fileFiscal: fileFiscal ? urlFiscal : undefined,
+                                fileIne: fileIne ? urlIne : undefined,
+                                fileDomicilio: fileDomicilio ? urlDomicilio : undefined,
                             },
                         };
 
@@ -75,6 +79,43 @@ const TabPersonaMoral = () => {
         }
     };
 
+    const saveURL = () => {
+        storage
+            .ref(`documentation/${user.uid}`)
+            .child(fileActaConstitutiva[0].name)
+            .getDownloadURL()
+            .then(function(url) {
+                urlActaConstituva = url;
+                saveData();
+            });
+
+        storage
+            .ref(`documentation/${user.uid}`)
+            .child(fileIne[0].name)
+            .getDownloadURL()
+            .then(function(url) {
+                urlIne = url;
+                saveData();
+            });
+        storage
+            .ref(`documentation/${user.uid}`)
+            .child(fileDomicilio[0].name)
+            .getDownloadURL()
+            .then(function(url) {
+                urlDomicilio = url;
+                saveData();
+            });
+
+        storage
+            .ref(`documentation/${user.uid}`)
+            .child(fileFiscal[0].name)
+            .getDownloadURL()
+            .then(function(url) {
+                urlFiscal = url;
+                saveData();
+            });
+    };
+
     const register = e => {
         e.preventDefault();
         let fileName = '';
@@ -94,7 +135,7 @@ const TabPersonaMoral = () => {
                 .put(fileActaConstitutiva[0])
                 .then(snapshot => {
                     uploadedFiles += 1;
-                    saveData();
+                    saveURL();
                 });
         }
 
@@ -107,7 +148,7 @@ const TabPersonaMoral = () => {
                 .put(fileFiscal[0])
                 .then(snapshot => {
                     uploadedFiles += 1;
-                    saveData();
+                    saveURL();
                 });
         }
 
@@ -119,22 +160,21 @@ const TabPersonaMoral = () => {
                 .ref(filePath)
                 .put(fileDomicilio[0])
                 .then(snapshot => {
-                    // save somewhere ---> snapshot;
                     uploadedFiles += 1;
-                    saveData();
+                    saveURL();
                 });
         }
 
         if (fileIne) {
             fileName = fileIne[0].name;
-            filePath = `photos/${fileName}`;
+            filePath = `documentation/${user.uid}/${fileName}`;
             firebase
                 .storage()
                 .ref(filePath)
                 .put(fileIne[0])
                 .then(snapshot => {
                     uploadedFiles += 1;
-                    saveData();
+                    saveURL();
                 });
         }
     };
