@@ -12,11 +12,16 @@ export default function InfoGeneral({ user }) {
     const [saldo, setSaldo] = useState('');
     const [email, setEmail] = useState('');
 
-    const [downloadsFiles, setDownloadsFiles] = useState([]);
+    const [fileFis, setDownloadsFiles] = useState([]);
 
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const userFirebase = useUser();
+
+    const [fileActaConstitutiva, setFileActaConstitutiva] = useState();
+    const [fileFiscal, setFileFiscal] = useState();
+    const [fileIne, setFileINE] = useState();
+    const [fileDomicilio, setFileAddress] = useState();
 
     const statusOptions = [
         { value: 'Aprobado', label: 'Aprobado' },
@@ -31,32 +36,37 @@ export default function InfoGeneral({ user }) {
         setSaldo(user.saldo ? user.saldo : '0');
     }, [user]);
 
-    useEffect(() => {
-        if (user) {
-            const reloadFiles = () => {
-                db.collection('profiles')
-                    .where('ID', '==', user.ID)
-                    .onSnapshot(handleFiles);
-            };
-            reloadFiles();
-        }
-    }, []);
-
-    function handleFiles(snapshot) {
-        const downloadsFiles = snapshot.docs.map(doc => {
-            return {
-                id: doc.id,
-                ...doc.data(),
-            };
+    ///////////////
+    const docRef = db.collection('profiles').doc(user.id);
+    docRef
+        .get()
+        .then(function(doc) {
+            if (doc.exists) {
+                setFileAddress(doc.data().files.fileDomicilio);
+                setFileINE(doc.data().files.fileIne);
+                setFileFiscal(doc.data().files.fileFiscal);
+                setFileActaConstitutiva(doc.data().files.fileActaConstitutiva);
+            } else {
+                console.log('No such document!');
+            }
+        })
+        .catch(function(error) {
+            console.log('Error getting document:', error);
         });
-        setDownloadsFiles(downloadsFiles);
-    }
 
-    const files = downloadsFiles.map((file, idx) => {
-        return [file.files];
-    });
+    const downloadFiles = () => {
+        window.open(fileDomicilio, 'Comprobante de domocilio');
+        window.open(fileFiscal, 'Comprobante situación fiscal');
+        window.open(fileIne, 'Comprobante de INE');
+        if (fileActaConstitutiva) {
+            window.open(fileActaConstitutiva, 'Acta constitutiva');
+        }
+    };
 
-    console.log('Tiene que existir algo aquí', files);
+    console.log('El de domicilio', fileDomicilio);
+    console.log('El de domicilio', fileFiscal);
+    console.log('El de domicilio', fileIne);
+    console.log('El de domicilio', fileActaConstitutiva);
 
     const editProfile = () => {
         const editProfile = {
@@ -102,12 +112,11 @@ export default function InfoGeneral({ user }) {
                         onChange={ev => setLastName(ev.target.value)}
                     />
 
-                    <a href={files}>
-                        <Button
-                            label="Descargar Archivos"
-                            style={{ width: '100%', height: '4rem' }}
-                        />
-                    </a>
+                    <Button
+                        label="Descargar Archivos"
+                        style={{ width: '100%', height: '4rem' }}
+                        onClick={downloadFiles}
+                    />
                 </div>
                 <div style={{ flex: '1 1' }}>
                     <RadioGroup

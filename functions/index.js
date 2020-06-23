@@ -1,4 +1,6 @@
 const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
 
 exports.createFedexShipment = functions.https.onRequest((req, res) => {
     const contentType = req.get('content-type');
@@ -184,4 +186,9 @@ exports.createEstafetaShipment = functions.https.onRequest((req, res) => {
             res.status(200).send(JSON.stringify(result));
         });
     });
+});
+
+exports.test = functions.https.onRequest((req, res) => {
+    res.send('Hello World!');
+    console.log('Hello Word console');
 });
