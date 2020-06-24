@@ -188,7 +188,18 @@ exports.createEstafetaShipment = functions.https.onRequest((req, res) => {
     });
 });
 
-exports.test = functions.https.onRequest((req, res) => {
-    res.send('Hello World!');
-    console.log('Hello Word console');
+exports.getEmails = functions.https.onRequest((req, res) => {
+    const getEmail = [];
+    admin
+        .auth()
+        .listUsers()
+        .then(function(listUsersResult) {
+            listUsersResult.users.forEach(function(userRecord) {
+                res.send(userRecord);
+                console.log('user', userRecord.toJSON());
+            });
+        })
+        .catch(function(error) {
+            console.log('Error listing users:', error);
+        });
 });
