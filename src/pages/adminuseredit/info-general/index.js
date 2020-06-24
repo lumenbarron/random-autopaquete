@@ -22,6 +22,10 @@ export default function InfoGeneral({ user }) {
     const [fileFiscal, setFileFiscal] = useState();
     const [fileIne, setFileINE] = useState();
     const [fileDomicilio, setFileAddress] = useState();
+    const [comment, setComment] = useState('');
+    const [showComment, setShowComment] = useState([]);
+
+    const creationDate = new Date();
 
     const statusOptions = [
         { value: 'Aprobado', label: 'Aprobado' },
@@ -36,7 +40,6 @@ export default function InfoGeneral({ user }) {
         setSaldo(user.saldo ? user.saldo : '0');
     }, [user]);
 
-    ///////////////
     const docRef = db.collection('profiles').doc(user.id);
     docRef
         .get()
@@ -63,11 +66,27 @@ export default function InfoGeneral({ user }) {
         }
     };
 
-    console.log('El de domicilio', fileDomicilio);
-    console.log('El de domicilio', fileFiscal);
-    console.log('El de domicilio', fileIne);
-    console.log('El de domicilio', fileActaConstitutiva);
+    useEffect(() => {
+        if (user) {
+            const reloadComments = () => {
+                db.collection('profiles')
+                    .doc(user.id)
+                    .collection('comentarios')
+                    .onSnapshot(handleComments);
+            };
+            reloadComments();
+        }
+    }, []);
 
+    function handleComments(snapshot) {
+        const showComment = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setShowComment(showComment);
+    }
     const editProfile = () => {
         const editProfile = {
             name,
@@ -81,6 +100,16 @@ export default function InfoGeneral({ user }) {
             .doc(user.id)
             .update(editProfile);
 
+        if (comment.trim() === '') {
+            directionsGuiasCollectionAdd
+                .then(function(docRef) {
+                    console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+            return;
+        }
         directionsGuiasCollectionAdd
             .then(function(docRef) {
                 console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
@@ -88,8 +117,21 @@ export default function InfoGeneral({ user }) {
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
+        const addComment = {
+            comment,
+            creation_date: creationDate.toLocaleDateString(),
+        };
+        db.collection('profiles')
+            .doc(user.id)
+            .collection('comentarios')
+            .add(addComment)
+            .then(function(docRef) {
+                console.log('Document written with ID (origen): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
     };
-
     return (
         <>
             <h2>Editar Usuario</h2>
@@ -138,13 +180,14 @@ export default function InfoGeneral({ user }) {
                         rows={2}
                         placeholder="Placeholder Text"
                         className="rainbow-m-vertical_x-medium rainbow-p-horizontal_medium rainbow-m_auto"
+                        onChange={ev => setComment(ev.target.value)}
                     />
-                    <StyledComment>
-                        Comentario 1<span className="date">21/Jun/2020</span>
-                    </StyledComment>
-                    <StyledComment>
-                        Comentario 2<span className="date">23/Jun/2020</span>
-                    </StyledComment>
+                    {showComment.map((comentarios, idx) => (
+                        <StyledComment>
+                            {comentarios.comment}
+                            <span className="date">{comentarios.creation_date}</span>
+                        </StyledComment>
+                    ))}
                     <Button className="btn-confirm" label="Guardar" onClick={editProfile} />
                 </div>
             </div>
