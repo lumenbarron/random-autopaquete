@@ -7,7 +7,14 @@ import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
 import * as firebase from 'firebase';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCamera, faTimes, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCamera,
+    faTimes,
+    faBars,
+    faCheck,
+    faClipboardList,
+    faExclamationCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import moduleName from 'module';
 
@@ -36,7 +43,7 @@ const slideInAnimation = keyframes`
   }
 `;
 
-const Icon = styled.span.attrs(props => {
+const IconAprobado = styled.span.attrs(props => {
     return props.theme.rainbow.palette;
 })`
     ${props =>
@@ -48,6 +55,36 @@ const Icon = styled.span.attrs(props => {
         props.variant === 'outline-brand' &&
         `
             color: #277ceA;
+        `};
+`;
+
+const IconRevision = styled.span.attrs(props => {
+    return props.theme.rainbow.palette;
+})`
+    ${props =>
+        props.variant === 'brand' &&
+        `
+            color: #B1ABA9;
+        `};
+    ${props =>
+        props.variant === 'outline-brand' &&
+        `
+            color: #B1ABA9;
+        `};
+`;
+
+const IconFaltaInfo = styled.span.attrs(props => {
+    return props.theme.rainbow.palette;
+})`
+    ${props =>
+        props.variant === 'brand' &&
+        `
+            color: #fcb654;
+        `};
+    ${props =>
+        props.variant === 'outline-brand' &&
+        `
+            color: #fcb654;
         `};
 `;
 
@@ -227,6 +264,10 @@ export function AccountSidebar() {
     const storageRef = firebase.storage();
     const db = firebase.firestore();
 
+    const aprobado = status === 'Aprobado';
+    const revision = status === 'En Revisión';
+    const faltaInfo = status === 'Falta Información';
+
     useEffect(() => {
         if (sidebarOpen) {
             setContainerClassName(containerClassName => containerClassName.replace('show', 'hide'));
@@ -357,16 +398,52 @@ export function AccountSidebar() {
                     <CameraIcon icon={faCamera} />
                 </div>
 
-                <Chip
-                    className="rainbow-m-around_medium"
-                    variant="outline-brand"
-                    label={
-                        <Icon variant="outline-brand">
-                            <FontAwesomeIcon icon={faCheck} className="rainbow-m-right_xx-small" />
-                            {status}
-                        </Icon>
-                    }
-                />
+                {aprobado && (
+                    <Chip
+                        className="rainbow-m-around_medium chip-aprobado"
+                        variant="outline-brand"
+                        label={
+                            <IconAprobado variant="outline-brand">
+                                <FontAwesomeIcon
+                                    icon={faCheck}
+                                    className="rainbow-m-right_xx-small"
+                                />
+                                {status}
+                            </IconAprobado>
+                        }
+                    />
+                )}
+
+                {revision && (
+                    <Chip
+                        className="rainbow-m-around_medium chip-revision"
+                        variant="outline-brand"
+                        label={
+                            <IconRevision variant="outline-brand">
+                                <FontAwesomeIcon
+                                    icon={faClipboardList}
+                                    className="rainbow-m-right_xx-small"
+                                />
+                                {status}
+                            </IconRevision>
+                        }
+                    />
+                )}
+                {faltaInfo && (
+                    <Chip
+                        className="rainbow-m-around_medium chip-falta-info"
+                        variant="outline-brand"
+                        label={
+                            <IconFaltaInfo variant="outline-brand">
+                                <FontAwesomeIcon
+                                    icon={faExclamationCircle}
+                                    className="rainbow-m-right_xx-small"
+                                />
+                                {status}
+                            </IconFaltaInfo>
+                        }
+                    />
+                )}
 
                 {/* <Status>{}</Status> */}
                 <h5>Créditos</h5>

@@ -30,6 +30,12 @@ export default function InfoGeneral({ user }) {
     const [fileDomicilio, setFileAddress] = useState();
     const [comment, setComment] = useState('');
     const [showComment, setShowComment] = useState([]);
+    const [persona, setPersona] = useState();
+    const [razonSocial, setRazonSocial] = useState('');
+    const [legalName, setLegalName] = useState('');
+
+    const personaFisica = persona === 'Física';
+    const personaMoral = persona === 'Moral';
 
     const creationDate = new Date();
 
@@ -47,8 +53,9 @@ export default function InfoGeneral({ user }) {
         setPhone(user.telefono);
         setRFC(user.RFC);
         setAddress(user.direccion);
-        setDate(user.fecha);
+        setDate(user.Fecha);
         setINENumber(user.INENumero);
+        setPersona(user.persona);
     }, [user]);
 
     const docRef = db.collection('profiles').doc(user.id);
@@ -99,18 +106,34 @@ export default function InfoGeneral({ user }) {
         setShowComment(showComment);
     }
     const editProfile = () => {
-        const editProfile = {
-            name,
-            lastname,
-            status,
-            saldo,
-            direccion: address,
-            telefono: phone,
-            RFC,
-            Fecha: date,
-            INENumero: INEnumber,
-            Comprobante_fiscal: INEnumber,
-        };
+        let editProfile = {};
+        if (persona === 'Física') {
+            editProfile = {
+                name,
+                lastname,
+                status,
+                telefono: phone,
+                RFC,
+                direccion: address,
+                Fecha: date,
+                INENumero: INEnumber,
+            };
+        }
+
+        if (persona === 'Moral') {
+            editProfile = {
+                name,
+                lastname,
+                razon_social: razonSocial,
+                status,
+                telefono: phone,
+                nombreRepresentanteLegal: legalName,
+                direccion: address,
+                RFC,
+                Fecha: date,
+                INENumero: INEnumber,
+            };
+        }
 
         const directionsGuiasCollectionAdd = db
             .collection('profiles')
@@ -154,72 +177,147 @@ export default function InfoGeneral({ user }) {
         <>
             <h2>Editar Usuario</h2>
             <div className="rainbow-flex rainbow-flex_wrap">
-                <div style={{ flex: '1 1' }}>
-                    <Input
-                        id="nombre"
-                        label="Nombre"
-                        className="rainbow-p-around_medium"
-                        style={{ width: '100%' }}
-                        value={name}
-                        onChange={ev => setName(ev.target.value)}
-                    />
-                    <Input
-                        id="apellido"
-                        label="Apellido"
-                        className="rainbow-p-around_medium"
-                        style={{ width: '100%' }}
-                        value={lastname}
-                        onChange={ev => setLastName(ev.target.value)}
-                    />
-                    <Input
-                        id="domicilio"
-                        label="Domicilio"
-                        className="rainbow-p-around_medium"
-                        style={{ width: '100%' }}
-                        value={address}
-                        onChange={ev => setAddress(ev.target.value)}
-                    />
-                    <Input
-                        id="numeroine"
-                        label="Número de INE"
-                        className="rainbow-p-around_medium"
-                        style={{ width: '100%' }}
-                        value={INEnumber}
-                        onChange={ev => setINENumber(ev.target.value)}
-                    />
-                    <Button
-                        label="Descargar Archivos"
-                        style={{ width: '100%', height: '4rem' }}
-                        onClick={downloadFiles}
-                    />
-                </div>
+                {personaFisica && (
+                    <>
+                        <div style={{ flex: '1 1' }}>
+                            <Input
+                                id="nombre"
+                                label="Nombre"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={name}
+                                onChange={ev => setName(ev.target.value)}
+                            />
+                            <Input
+                                id="apellido"
+                                label="Apellido"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={lastname}
+                                onChange={ev => setLastName(ev.target.value)}
+                            />
+                            <Input
+                                id="domicilio"
+                                label="Domicilio"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={address}
+                                onChange={ev => setAddress(ev.target.value)}
+                            />
+                            <Input
+                                id="numeroine"
+                                label="Número de INE"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={INEnumber}
+                                onChange={ev => setINENumber(ev.target.value)}
+                            />
+                            <Button
+                                label="Descargar Archivos"
+                                style={{ width: '100%', height: '4rem' }}
+                                onClick={downloadFiles}
+                            />
+                        </div>
 
-                <div style={{ flex: '1 1' }}>
-                    <Input
-                        id="telefono"
-                        label="Teléfono"
-                        className="rainbow-p-around_medium"
-                        style={{ width: '100%' }}
-                        value={phone}
-                        onChange={ev => setPhone(ev.target.value)}
-                    />
-                    <Input
-                        id="RFC"
-                        label="RFC"
-                        className="rainbow-p-around_medium"
-                        style={{ width: '100%' }}
-                        value={RFC}
-                        onChange={ev => setRFC(ev.target.value)}
-                    />
-                    <Input
-                        id="fecha"
-                        label="Fecha de nacimiento"
-                        className="rainbow-p-around_medium"
-                        style={{ width: '100%' }}
-                        value={date}
-                        onChange={ev => setDate(ev.target.value)}
-                    />
-                </div>
+                        <div style={{ flex: '1 1' }}>
+                            <Input
+                                id="telefono"
+                                label="Teléfono"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={phone}
+                                onChange={ev => setPhone(ev.target.value)}
+                            />
+                            <Input
+                                id="RFC"
+                                label="RFC"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={RFC}
+                                onChange={ev => setRFC(ev.target.value)}
+                            />
+                            <Input
+                                id="fecha"
+                                label="Fecha de nacimiento"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={date}
+                                onChange={ev => setDate(ev.target.value)}
+                            />
+                        </div>
+                    </>
+                )}
+
+                {personaMoral && (
+                    <>
+                        <div style={{ flex: '1 1' }}>
+                            <Input
+                                id="nombre"
+                                label="Nombre"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={name}
+                                onChange={ev => setName(ev.target.value)}
+                            />
+                            <Input
+                                id="apellido"
+                                label="Apellido"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={lastname}
+                                onChange={ev => setLastName(ev.target.value)}
+                            />
+                            <Input
+                                id="domicilio"
+                                label="Domicilio"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={address}
+                                onChange={ev => setAddress(ev.target.value)}
+                            />
+                            <Input
+                                id="razonSocial"
+                                label="Razon social"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={INEnumber}
+                                onChange={ev => setRazonSocial(ev.target.value)}
+                            />
+                            <Button
+                                label="Descargar Archivos"
+                                style={{ width: '100%', height: '4rem' }}
+                                onClick={downloadFiles}
+                            />
+                        </div>
+
+                        <div style={{ flex: '1 1' }}>
+                            <Input
+                                id="telefono"
+                                label="Teléfono"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={phone}
+                                onChange={ev => setPhone(ev.target.value)}
+                            />
+                            <Input
+                                id="RFC"
+                                label="RFC"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={RFC}
+                                onChange={ev => setRFC(ev.target.value)}
+                            />
+                            <Input
+                                id="fecha"
+                                label="Fecha de nacimiento"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={date}
+                                onChange={ev => setDate(ev.target.value)}
+                            />
+                        </div>
+                    </>
+                )}
 
                 <div style={{ flex: '1 1' }}>
                     <RadioGroup

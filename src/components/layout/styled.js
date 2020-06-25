@@ -55,4 +55,15 @@ export const StyledMain = styled.div`
             text-decoration: none;
         }
     }
+    .chip-aprobado {
+        border-color: #277cea;
+    }
+
+    .chip-revision {
+        border-color: #b1aba9;
+    }
+
+    .chip-falta-info {
+        border-color: #fcb654;
+    }
 `;

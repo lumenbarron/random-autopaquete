@@ -30,7 +30,7 @@ export default function Credito({ user }) {
     const [monto, setMonto] = useState('');
     const [comprobante, setComprobante] = useState('');
     const [transacciones, setTransacciones] = useState([]);
-    const [montoTotal, setMontoTotal] = useState();
+    const [saldoActual, setSaldoActual] = useState();
     const [voucherData, setVouncherData] = useState([]);
     const [docRef, setDocRef] = useState();
 
@@ -38,40 +38,52 @@ export default function Credito({ user }) {
     const db = firebase.firestore();
     const userData = db.collection('profiles').where('ID', '==', user.ID);
 
+    const montoTotal = parseInt(monto) + parseInt(saldoActual);
+
+    userData.get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            setDocRef(doc.id);
+            setSaldoActual(doc.data().saldo);
+        });
+    });
+
     const saveVoucher = url => {
         if (user) {
-            docRef.get().then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    setMontoTotal(doc.data());
+            //const docRef = doc.id;
+            const vocherData = {
+                ID: user.ID,
+                voucher: url,
+                saldo: monto,
+                create_date: date,
+            };
+            const voucherCollectionAdd = db.collection('voucher').add(vocherData);
 
-                    const docRef = doc.id;
-                    const vocherData = {
-                        ID: user.ID,
-                        voucher: url,
-                        saldo: monto,
-                        create_date: date,
-                    };
-                    const profilesCollectionAdd = db.collection('voucher').add(vocherData);
-
-                    profilesCollectionAdd
-                        .then(function() {
-                            console.log('Document successfully written!');
-                            setTransacciones(url);
-                        })
-                        .catch(function(error) {
-                            console.error('Error writing document: ', error);
-                        });
+            voucherCollectionAdd
+                .then(function() {
+                    console.log('Document successfully written!');
+                    setTransacciones(url);
+                })
+                .catch(function(error) {
+                    console.error('Error writing document: ', error);
                 });
 
-                const voucherDataProfile = {
-                    saldo: monto,
-                };
-            });
+            const voucherDataProfile = {
+                saldo: montoTotal,
+            };
+            const profilesCollectionAdd = db
+                .collection('profiles')
+                .doc(docRef)
+                .update(voucherDataProfile);
+
+            profilesCollectionAdd
+                .then(function() {
+                    console.log('Document successfully written!');
+                })
+                .catch(function(error) {
+                    console.error('Error writing document: ', error);
+                });
         }
     };
-    useEffect(() => {
-        setMontoTotal(monto + montoTotal);
-    }, [user]);
 
     console.log('Monto total: ', montoTotal);
 
@@ -93,7 +105,7 @@ export default function Credito({ user }) {
         });
         setVouncherData(voucherData);
     }
-    console.log(user.ID);
+
     const inforTransacciones = voucherData.map((voucher, idx) => {
         return {
             date: voucher.create_date,
@@ -170,7 +182,14 @@ export default function Credito({ user }) {
                     <Button className="btn-confirm" label="Confirmar" onClick={addCredit} />
                 </div>
             </div>
-            <StyledTable pageSize={10} keyField="id" data={inforTransacciones} pageSize={10}>
+            <StyledTable
+                pageSize={10}
+                keyField="id"
+                data={inforTransacciones}
+                pageSize={10}
+                emptyTitle="Oh no!"
+                emptyDescription="No hay ningun registro actualmente..."
+            >
                 <StyledColumn header="Fecha " field="date" />
                 <StyledColumn header="Monto" field="monto" component={StatusBadge} onClick={test} />
                 <StyledColumn header="Comprobante" field="comprobante" />

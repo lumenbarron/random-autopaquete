@@ -62,7 +62,14 @@ const AdminUsersPage = () => {
 
                 <div className="rainbow-p-bottom_xx-large">
                     <div>
-                        <StyledTable pageSize={10} keyField="id" data={users} pageSize={10}>
+                        <StyledTable
+                            pageSize={10}
+                            keyField="id"
+                            data={users}
+                            pageSize={10}
+                            emptyTitle="Oh no!"
+                            emptyDescription="No hay ningun registro actualmente..."
+                        >
                             <StyledColumn header="Nombre " field="fullname" />
                             <StyledColumn header="Status" field="status" component={StatusBadge} />
                             <StyledColumn header="Crédito disponible" field="saldo" />

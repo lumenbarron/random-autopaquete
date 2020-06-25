@@ -88,6 +88,8 @@ const RecordPage = () => {
                                     pageSize={10}
                                     keyField="id"
                                     style={containerTableStyles}
+                                    emptyTitle="Oh no!"
+                                    emptyDescription="No hay ningun registro actualmente..."
                                 >
                                     <Column header="Fecha " field="date" />
                                     <Column header="Guía" field="guide" />

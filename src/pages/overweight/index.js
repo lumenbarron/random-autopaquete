@@ -68,6 +68,8 @@ const OverweightPage = () => {
                             data={data}
                             keyField="id"
                             style={containerTableStyles}
+                            emptyTitle="Oh no!"
+                            emptyDescription="No hay ningun registro actualmente..."
                         >
                             <StyledColumn header="Fecha " field="date" />
                             <StyledColumn header="Paquete (Guía)" field="guide" />

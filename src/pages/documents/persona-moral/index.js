@@ -47,7 +47,7 @@ const TabPersonaMoral = () => {
                             direccion: address,
                             telefono: phone,
                             RFC,
-                            type: 'Moral',
+                            persona: 'Moral',
                             files: {
                                 fileActaConstitutiva: fileActaConstitutiva
                                     ? urlActaConstituva

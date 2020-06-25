@@ -76,7 +76,12 @@ const AdminOverweightPage = () => {
 
                 <div className="rainbow-p-bottom_xx-large">
                     <div>
-                        <StyledTable pageSize={10} keyField="id">
+                        <StyledTable
+                            pageSize={10}
+                            keyField="id"
+                            emptyTitle="Oh no!"
+                            emptyDescription="No hay ningun registro actualmente..."
+                        >
                             <StyledColumn header="Número de Guía" field="guide" />
                             <StyledColumn header="Usuario" field="user" />
                             <StyledColumn header="Fecha " field="date" />

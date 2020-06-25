@@ -49,7 +49,7 @@ const TabPersonaFisica = () => {
                             RFC,
                             Fecha: date,
                             INENumero: INEnumber,
-                            type: 'Fisica',
+                            persona: 'Fisica',
                             files: {
                                 fileFiscal: fileFiscal ? urlFiscal : undefined,
                                 fileIne: fileIne ? urlIne : undefined,
