@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Button, RadioGroup, Textarea, Table, Column } from 'react-rainbow-components';
+import {
+    Input,
+    Button,
+    RadioGroup,
+    Textarea,
+    Table,
+    Column,
+    Badge,
+} from 'react-rainbow-components';
 import formatMoney from 'accounting-js/lib/formatMoney.js';
 import FileSelector from '../../../components/react-rainbow-beta/components/FileSelector';
 import styled from 'styled-components';
@@ -14,36 +22,36 @@ const StyledColumn = styled(Column)`
     color: #1de9b6;
 `;
 
+const badgeStyles = { color: 'red' };
+const StatusBadge = ({ value }) => <Badge label={value} variant="lightest" style={badgeStyles} />;
+
 export default function Credito({ user }) {
     const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
     const [monto, setMonto] = useState('');
     const [comprobante, setComprobante] = useState('');
     const [transacciones, setTransacciones] = useState([]);
     const [montoTotal, setMontoTotal] = useState();
+    const [voucherData, setVouncherData] = useState([]);
+    const [docRef, setDocRef] = useState();
 
     const storageRef = firebase.storage();
     const db = firebase.firestore();
+    const userData = db.collection('profiles').where('ID', '==', user.ID);
 
-    useEffect(() => {}, [user]);
-    setMontoTotal(monto + montoTotal);
     const saveVoucher = url => {
         if (user) {
-            const docRef = db.collection('profiles').where('ID', '==', user.ID);
-
             docRef.get().then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    setMontoTotal(monto);
+                    setMontoTotal(doc.data());
 
-                    const DocRef = doc.id;
-                    const userData = {
+                    const docRef = doc.id;
+                    const vocherData = {
+                        ID: user.ID,
                         voucher: url,
-                        saldo: montoTotal,
+                        saldo: monto,
                         create_date: date,
                     };
-                    const profilesCollectionAdd = db
-                        .collection('profiles')
-                        .doc(DocRef)
-                        .update(userData);
+                    const profilesCollectionAdd = db.collection('voucher').add(vocherData);
 
                     profilesCollectionAdd
                         .then(function() {
@@ -54,10 +62,46 @@ export default function Credito({ user }) {
                             console.error('Error writing document: ', error);
                         });
                 });
+
+                const voucherDataProfile = {
+                    saldo: monto,
+                };
             });
         }
     };
-    console.log(montoTotal);
+    useEffect(() => {
+        setMontoTotal(monto + montoTotal);
+    }, [user]);
+
+    console.log('Monto total: ', montoTotal);
+
+    useEffect(() => {
+        const reloadVoucher = () => {
+            db.collection('voucher')
+                .where('ID', '==', user.ID)
+                .onSnapshot(handleVouncher);
+        };
+        reloadVoucher();
+    }, []);
+
+    function handleVouncher(snapshot) {
+        const voucherData = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setVouncherData(voucherData);
+    }
+    console.log(user.ID);
+    const inforTransacciones = voucherData.map((voucher, idx) => {
+        return {
+            date: voucher.create_date,
+            monto: voucher.saldo,
+            comprobante: voucher.voucher,
+        };
+    });
+
     const saveURL = () => {
         storageRef
             .ref(`comprobante/${user.ID}`)
@@ -83,6 +127,10 @@ export default function Credito({ user }) {
                     saveURL();
                 });
         }
+    };
+
+    const test = () => {
+        console.log('Funciona :)');
     };
 
     return (
@@ -122,9 +170,9 @@ export default function Credito({ user }) {
                     <Button className="btn-confirm" label="Confirmar" onClick={addCredit} />
                 </div>
             </div>
-            <StyledTable pageSize={10} keyField="id" data={transacciones} pageSize={10}>
+            <StyledTable pageSize={10} keyField="id" data={inforTransacciones} pageSize={10}>
                 <StyledColumn header="Fecha " field="date" />
-                <StyledColumn header="Monto" field="monto" />
+                <StyledColumn header="Monto" field="monto" component={StatusBadge} onClick={test} />
                 <StyledColumn header="Comprobante" field="comprobante" />
             </StyledTable>
         </>

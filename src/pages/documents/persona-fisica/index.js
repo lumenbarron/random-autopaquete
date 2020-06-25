@@ -43,17 +43,13 @@ const TabPersonaFisica = () => {
 
                     if (uploadedFiles === filesToUpload) {
                         const userData = {
-                            ID: user.uid,
-                            name: userName,
-                            lastname: lastName,
                             nombre_fiscal: name,
                             direccion: address,
                             telefono: phone,
                             RFC,
                             Fecha: date,
                             INENumero: INEnumber,
-                            Comprobante_fiscal: INEnumber,
-                            user_type: 'regular',
+                            type: 'Fisica',
                             files: {
                                 fileFiscal: fileFiscal ? urlFiscal : undefined,
                                 fileIne: fileIne ? urlIne : undefined,

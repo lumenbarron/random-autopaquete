@@ -25,13 +25,13 @@ const SendPage = () => {
         directionData,
         directionGuiaData,
         checkBox,
-        duplicateStreet,
-        streetNumber,
+        duplicateName,
+        name,
     ) => {
         // TODO: Guardar la info de la dirección a firestore (si fue solicitado)
         if (checkBox) {
-            if (duplicateStreet.includes(streetNumber)) {
-                console.log('Necesitas poner una calle diferente');
+            if (duplicateName.includes(name)) {
+                console.log('Necesitas poner un nombre diferente');
                 return;
             }
             db.collection('receiver_addresses')
@@ -59,9 +59,13 @@ const SendPage = () => {
         setCurrentStepName('paquete');
     };
 
-    const savePackagingData = (packageData, packageGuiaData, checkBox) => {
+    const savePackagingData = (packageData, packageGuiaData, checkBox, duplicateName, name) => {
         // TODO: Guardar la info del paquete a firestore (si fue solicitado)
         if (checkBox) {
+            if (duplicateName.includes(name)) {
+                console.log('Necesitas poner un nombre diferente');
+                return;
+            }
             db.collection('package')
                 .add(packageData)
                 .then(function(docRef) {

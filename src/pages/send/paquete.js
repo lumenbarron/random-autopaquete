@@ -58,7 +58,7 @@ export const PaqueteComponent = ({ onSave }) => {
     const [contentValue, setContentValue] = useState('');
 
     const [checkBox, setCheckBox] = useState(true);
-    const [checkBoxSecure, setCheckBoxSecure] = useState(true);
+    const [checkBoxSecure, setCheckBoxSecure] = useState(false);
 
     const creationDate = new Date();
 
@@ -86,6 +86,10 @@ export const PaqueteComponent = ({ onSave }) => {
             value: packages.id,
             label: <PackagingRadioOption key={packages.id} packages={packages} />,
         };
+    });
+
+    const duplicateName = packageData.map((searchName, idx) => {
+        return searchName.name;
     });
 
     useEffect(() => {
@@ -158,7 +162,8 @@ export const PaqueteComponent = ({ onSave }) => {
                     creation_date: creationDate.toLocaleDateString(),
                 },
             };
-            onSave(packageData, packageGuiaData, checkBox);
+
+            onSave(packageData, packageGuiaData, checkBox, duplicateName, name);
         }
     };
     return (

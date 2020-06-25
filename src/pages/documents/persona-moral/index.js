@@ -42,15 +42,12 @@ const TabPersonaMoral = () => {
 
                     if (uploadedFiles === filesToUpload) {
                         const userData = {
-                            ID: user.uid,
-                            name: userName,
-                            lastname: lastName,
                             razon_social: razonSocial,
                             nombreRepresentanteLegal: legalName,
                             direccion: address,
                             telefono: phone,
                             RFC,
-                            user_type: 'regular',
+                            type: 'Moral',
                             files: {
                                 fileActaConstitutiva: fileActaConstitutiva
                                     ? urlActaConstituva

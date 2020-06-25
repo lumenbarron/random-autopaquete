@@ -189,14 +189,13 @@ exports.createEstafetaShipment = functions.https.onRequest((req, res) => {
 });
 
 exports.getEmails = functions.https.onRequest((req, res) => {
-    const getEmail = [];
     admin
         .auth()
         .listUsers()
         .then(function(listUsersResult) {
             listUsersResult.users.forEach(function(userRecord) {
-                res.send(userRecord);
                 console.log('user', userRecord.toJSON());
+                userRecord.forEach(element => console.log(element));
             });
         })
         .catch(function(error) {

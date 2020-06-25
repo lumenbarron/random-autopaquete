@@ -121,11 +121,11 @@ export const OrigenComponent = ({ onSave }) => {
             return;
         }
         if (checkBox) {
-            const duplicateStreet = directionData.map((searchStree, idx) => {
-                return searchStree.street_number;
+            const duplicateName = directionData.map((searchName, idx) => {
+                return searchName.name;
             });
-            if (duplicateStreet.includes(streetNumber)) {
-                console.log('Necesitas poner una calle diferente');
+            if (duplicateName.includes(name)) {
+                console.log('Necesitas poner un nombre diferente');
                 return;
             }
 

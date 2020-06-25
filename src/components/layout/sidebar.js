@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import { Sidebar, SidebarItem, Avatar } from 'react-rainbow-components';
+import { Sidebar, SidebarItem, Avatar, Chip } from 'react-rainbow-components';
 import styled, { keyframes } from 'styled-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
 import * as firebase from 'firebase';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCamera, faTimes, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faTimes, faBars, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import moduleName from 'module';
 
@@ -34,6 +34,21 @@ const slideInAnimation = keyframes`
   to {
     margin-left:0px;
   }
+`;
+
+const Icon = styled.span.attrs(props => {
+    return props.theme.rainbow.palette;
+})`
+    ${props =>
+        props.variant === 'brand' &&
+        `
+            color: #277ceA;
+        `};
+    ${props =>
+        props.variant === 'outline-brand' &&
+        `
+            color: #277ceA;
+        `};
 `;
 
 const SideBarContainer = styled.div.attrs(props => {
@@ -207,6 +222,7 @@ export function AccountSidebar() {
     const [containerClassName, setContainerClassName] = useState(
         'rainbow-p-top_small rainbow-p-bottom_medium',
     );
+    const [status, setStatus] = useState(null);
 
     const storageRef = firebase.storage();
     const db = firebase.firestore();
@@ -312,6 +328,7 @@ export function AccountSidebar() {
                 querySnapshot.forEach(function(doc) {
                     setAvatarURL(doc.data().avatar);
                     setAvatarName(doc.data().name);
+                    setStatus(doc.data().status);
                 });
             });
         }
@@ -339,7 +356,19 @@ export function AccountSidebar() {
                     />
                     <CameraIcon icon={faCamera} />
                 </div>
-                <Status>Activado</Status>
+
+                <Chip
+                    className="rainbow-m-around_medium"
+                    variant="outline-brand"
+                    label={
+                        <Icon variant="outline-brand">
+                            <FontAwesomeIcon icon={faCheck} className="rainbow-m-right_xx-small" />
+                            {status}
+                        </Icon>
+                    }
+                />
+
+                {/* <Status>{}</Status> */}
                 <h5>Créditos</h5>
                 <Link to="/mi-cuenta">
                     <AddCreditButton>Agregar</AddCreditButton>
@@ -463,9 +492,6 @@ export function AdminSidebar() {
             <SidebarHeader>
                 <Logo src="/logo-admin.png" />
                 <h5 style={{ color: '#fff' }}>Administrador</h5>
-                <Link to="/" style={{ display: 'block' }} onClick={logout}>
-                    Cerrar sesión
-                </Link>
             </SidebarHeader>
             <StyledSidebar>
                 <Link to="/admin/usuarios">
@@ -480,6 +506,13 @@ export function AdminSidebar() {
                         icon={<img src="/assets/icon-overweight.png" alt="" />}
                         name="Sobrepeso"
                         label="Sobrepeso"
+                    />
+                </Link>
+                <Link to="/" style={{ display: 'block' }} onClick={logout}>
+                    <StyledSidebarItem
+                        icon={<img src="/assets/icon-exit.png" alt="icon-exit.png" />}
+                        name="Cerrar sesión"
+                        label="Cerrar sesión"
                     />
                 </Link>
             </StyledSidebar>

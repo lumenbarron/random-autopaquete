@@ -141,10 +141,11 @@ export const DestinoComponent = ({ onSave }) => {
                 creation_date: creationDate.toLocaleDateString(),
             },
         };
-        const duplicateStreet = directionDataa.map((searchStree, idx) => {
-            return searchStree.street_number;
+        const duplicateName = directionDataa.map((searchName, idx) => {
+            return searchName.name;
         });
-        onSave(directionData, directionGuiaData, checkBox, duplicateStreet, streetNumber);
+
+        onSave(directionData, directionGuiaData, checkBox, duplicateName, name);
     };
 
     return (

@@ -18,6 +18,12 @@ export default function InfoGeneral({ user }) {
     const db = firebase.firestore();
     const userFirebase = useUser();
 
+    const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
+    const [RFC, setRFC] = useState('');
+    const [date, setDate] = useState('');
+    const [INEnumber, setINENumber] = useState('');
+
     const [fileActaConstitutiva, setFileActaConstitutiva] = useState();
     const [fileFiscal, setFileFiscal] = useState();
     const [fileIne, setFileINE] = useState();
@@ -38,6 +44,11 @@ export default function InfoGeneral({ user }) {
         setLastName(user.lastname);
         setStatus(user.status ? user.status : 'En Revisión');
         setSaldo(user.saldo ? user.saldo : '0');
+        setPhone(user.telefono);
+        setRFC(user.RFC);
+        setAddress(user.direccion);
+        setDate(user.fecha);
+        setINENumber(user.INENumero);
     }, [user]);
 
     const docRef = db.collection('profiles').doc(user.id);
@@ -93,6 +104,12 @@ export default function InfoGeneral({ user }) {
             lastname,
             status,
             saldo,
+            direccion: address,
+            telefono: phone,
+            RFC,
+            Fecha: date,
+            INENumero: INEnumber,
+            Comprobante_fiscal: INEnumber,
         };
 
         const directionsGuiasCollectionAdd = db
@@ -132,6 +149,7 @@ export default function InfoGeneral({ user }) {
                 console.error('Error adding document: ', error);
             });
     };
+
     return (
         <>
             <h2>Editar Usuario</h2>
@@ -153,13 +171,56 @@ export default function InfoGeneral({ user }) {
                         value={lastname}
                         onChange={ev => setLastName(ev.target.value)}
                     />
-
+                    <Input
+                        id="domicilio"
+                        label="Domicilio"
+                        className="rainbow-p-around_medium"
+                        style={{ width: '100%' }}
+                        value={address}
+                        onChange={ev => setAddress(ev.target.value)}
+                    />
+                    <Input
+                        id="numeroine"
+                        label="Número de INE"
+                        className="rainbow-p-around_medium"
+                        style={{ width: '100%' }}
+                        value={INEnumber}
+                        onChange={ev => setINENumber(ev.target.value)}
+                    />
                     <Button
                         label="Descargar Archivos"
                         style={{ width: '100%', height: '4rem' }}
                         onClick={downloadFiles}
                     />
                 </div>
+
+                <div style={{ flex: '1 1' }}>
+                    <Input
+                        id="telefono"
+                        label="Teléfono"
+                        className="rainbow-p-around_medium"
+                        style={{ width: '100%' }}
+                        value={phone}
+                        onChange={ev => setPhone(ev.target.value)}
+                    />
+                    <Input
+                        id="RFC"
+                        label="RFC"
+                        className="rainbow-p-around_medium"
+                        style={{ width: '100%' }}
+                        value={RFC}
+                        onChange={ev => setRFC(ev.target.value)}
+                    />
+                    <Input
+                        id="fecha"
+                        label="Fecha de nacimiento"
+                        className="rainbow-p-around_medium"
+                        style={{ width: '100%' }}
+                        value={date}
+                        onChange={ev => setDate(ev.target.value)}
+                    />
+                </div>
+
                 <div style={{ flex: '1 1' }}>
                     <RadioGroup
                         id="radio-group-status"
@@ -188,6 +249,7 @@ export default function InfoGeneral({ user }) {
                             <span className="date">{comentarios.creation_date}</span>
                         </StyledComment>
                     ))}
+
                     <Button className="btn-confirm" label="Guardar" onClick={editProfile} />
                 </div>
             </div>
