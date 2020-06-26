@@ -5,6 +5,7 @@ import { Input, Textarea } from 'react-rainbow-components';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { createTransport, getTestMessageUrl } from 'nodemailer';
 
 import {
     faClock,
@@ -32,9 +33,13 @@ const ContactPage = () => {
     const [email, setEmail] = useState();
     const [message, setMessage] = useState();
 
-    const sendEmail = () => {
-        console.log('Estamos funcionando');
-    };
+    function sendEmail() {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('GET', '/admin/sendEmail', false);
+        xhr.setRequestHeader('Authorization', 'Bearer ');
+        xhr.send();
+    }
 
     return (
         <StyledContact>
