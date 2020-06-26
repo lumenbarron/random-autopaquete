@@ -14,6 +14,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 const StyledSection = styled(AccordionSection)`
+    color: black;
+
     & section > div:first-child,
     .rainbow-flex.header-divider {
         border: 1px solid gainsboro;
@@ -74,13 +76,9 @@ function TarifarioPorServicio({ label, tarifas, kgExtra }) {
         return (
             <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap" key={key}>
                 <div>
-                    <p>
-                        De {tarifa.min} Hasta {tarifa.max} kg
-                    </p>
+                    De {tarifa.min} Hasta {tarifa.max} kg
                 </div>
-                <div>
-                    <p>{formatMoney(tarifa.precio)}</p>
-                </div>
+                <div>{formatMoney(tarifa.precio)}</div>
                 <div className="actions">
                     <button>
                         <FontAwesomeIcon icon={faPencilAlt} />
@@ -98,14 +96,10 @@ function TarifarioPorServicio({ label, tarifas, kgExtra }) {
             {tarifasMap}
             <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap">
                 <div>
-                    <p>
-                        De <InlineInput type="text" /> Hasta <InlineInput type="text" /> kg
-                    </p>
+                    De <InlineInput type="text" /> Hasta <InlineInput type="text" /> kg
                 </div>
                 <div>
-                    <p>
-                        <InlineInput type="text" />
-                    </p>
+                    <InlineInput type="text" />
                 </div>
                 <div className="actions">
                     <Button label="Confirmar" />
@@ -119,12 +113,8 @@ function TarifarioPorServicio({ label, tarifas, kgExtra }) {
                 <h3>Kg Adicional</h3>
             </div>
             <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap">
-                <div>
-                    <p>{label}</p>
-                </div>
-                <div>
-                    <p>{formatMoney(kgExtra)}</p>
-                </div>
+                <div>{label}</div>
+                <div>{formatMoney(kgExtra)}</div>
                 <div className="actions">
                     <button>
                         <FontAwesomeIcon icon={faPencilAlt} />

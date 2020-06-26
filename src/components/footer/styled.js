@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import theme from '../../theme';
 
 export const StyledFooter = styled.div`
+    margin-top: 5vw;
+
     & > img {
         width: 100%;
         margin-top: -10%;

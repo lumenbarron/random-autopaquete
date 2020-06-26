@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
 export const StyledPrivacy = styled.div`
+    padding-bottom: 6rem;
+
     main {
         padding: 5rem 0;
         flex: 1;

@@ -4,6 +4,10 @@
         "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
         "rewrites": [
             {
+                "source": "/admin/getEmails",
+                "function": "getEmails"
+            },
+            {
                 "source": "**",
                 "destination": "/index.html"
             }

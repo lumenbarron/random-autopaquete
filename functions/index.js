@@ -188,17 +188,60 @@ exports.createEstafetaShipment = functions.https.onRequest((req, res) => {
     });
 });
 
+// Aseguramos que sólo un usuario admin pueda usar una función
+async function secureOnlyAdmin(req) {
+    try {
+        // Obtenemos el idToken que viene en el header del request
+        const authorizationHeader = req.headers.authorization || '';
+        const components = authorizationHeader.split(' ');
+        const idToken = components.length > 1 ? components[1] : '';
+        if (idToken == '') {
+            console.log('No ID Token');
+            return false;
+        }
+        // Lo decodificamos para obtener la info del uid
+        let decodedToken = await admin.auth().verifyIdToken(idToken);
+        var uid = decodedToken.uid;
+        // Vamos a la base de datos a obtener el perfil y vemos si es de tipo admin
+        var db = admin.firestore();
+        var profileQuery = await db
+            .collection('profiles')
+            .where('ID', '==', uid)
+            .get();
+        var profile = profileQuery.docs[0] ? profileQuery.docs[0].data() : null;
+        if (!profile) {
+            console.log('No profile found');
+            return false;
+        }
+        return profile.user_type && profile.user_type === 'admin';
+    } catch (error) {
+        console.log('Error verifying user:', error);
+    }
+}
+
 exports.getEmails = functions.https.onRequest((req, res) => {
-    admin
-        .auth()
-        .listUsers()
-        .then(function(listUsersResult) {
-            listUsersResult.users.forEach(function(userRecord) {
-                console.log('user', userRecord.toJSON());
-                userRecord.forEach(element => console.log(element));
-            });
-        })
-        .catch(function(error) {
-            console.log('Error listing users:', error);
-        });
+    secureOnlyAdmin(req).then(function(isAdmin) {
+        if (!isAdmin) {
+            res.status(403).send('Not allowed.');
+        } else {
+            admin
+                .auth()
+                .listUsers()
+                .then(function(listUsersResult) {
+                    let users = [];
+                    listUsersResult.users.forEach(function(userRecord) {
+                        users.push({
+                            uid: userRecord.uid,
+                            email: userRecord.email,
+                        });
+                    });
+                    res.status(200).send(JSON.stringify(users));
+                })
+                .catch(function(error) {
+                    console.log('Error listing users:', error);
+                    res.status(500).send('Something went wrong. Check the logs for more info.');
+                    return;
+                });
+        }
+    });
 });

@@ -45,6 +45,31 @@ export default function InfoGeneral({ user }) {
         { value: 'Falta Información', label: 'Información Errónea o Faltante' },
     ];
 
+    // Obtiene los emails con la función cloud, que requiere un idToken de un admin
+    useEffect(() => {
+        let cancelXHR = false;
+        userFirebase.getIdToken().then(idToken => {
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = 'json';
+            xhr.onload = event => {
+                if (cancelXHR) {
+                    return;
+                }
+                var emails = xhr.response;
+                if (emails) {
+                    var emailObj = emails.find(obj => user.ID === obj['uid']);
+                    setEmail(emailObj.email);
+                }
+            };
+            xhr.open('GET', '/admin/getEmails');
+            xhr.setRequestHeader('Authorization', 'Bearer ' + idToken);
+            xhr.send();
+        });
+        return () => {
+            cancelXHR = true;
+        };
+    }, [userFirebase]);
+
     useEffect(() => {
         setName(user.name);
         setLastName(user.lastname);
@@ -342,7 +367,7 @@ export default function InfoGeneral({ user }) {
                         onChange={ev => setComment(ev.target.value)}
                     />
                     {showComment.map((comentarios, idx) => (
-                        <StyledComment>
+                        <StyledComment key={'comentario_' + idx}>
                             {comentarios.comment}
                             <span className="date">{comentarios.creation_date}</span>
                         </StyledComment>
