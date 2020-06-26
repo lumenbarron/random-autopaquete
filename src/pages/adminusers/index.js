@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useFirebaseApp } from 'reactfire';
+import { useFirebaseApp, useUser } from 'reactfire';
 
 import { Table, Column, Badge, MenuItem } from 'react-rainbow-components';
 import styled from 'styled-components';
@@ -24,10 +24,53 @@ const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest"
 const AdminUsersPage = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
+    const user = useUser();
 
     const history = useHistory();
 
     const [users, setUsers] = useState([]);
+    const [emails, setEmails] = useState([]);
+    const [loaded, setLoaded] = useState(false);
+
+    // Sincroniza los usuarios de los perfiles con los emails del google auth
+    useEffect(() => {
+        // Si no tenemos usuarios, no tenemos correos o estamos sincronizados, nada que hacer.
+        if (users.length == 0 || emails.length == 0 || loaded) return;
+
+        const modifiedUsers = [...users];
+        emails.forEach(emailData => {
+            const idx = users.findIndex(obj => obj['ID'] === emailData['uid']);
+            if (idx >= 0) {
+                modifiedUsers[idx].email = emailData['email'];
+            }
+        });
+
+        setUsers(modifiedUsers);
+        setLoaded(true);
+    }, [loaded, users, emails]);
+
+    // Obtiene los emails con la función cloud, que requiere un idToken de un admin
+    useEffect(() => {
+        let cancelXHR = false;
+        user.getIdToken().then(idToken => {
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = 'json';
+            xhr.onload = function(event) {
+                if (cancelXHR) {
+                    return;
+                }
+
+                setEmails(xhr.response);
+                setLoaded(false);
+            };
+            xhr.open('GET', '/admin/getEmails');
+            xhr.setRequestHeader('Authorization', 'Bearer ' + idToken);
+            xhr.send();
+        });
+        return () => {
+            cancelXHR = true;
+        };
+    }, [user]);
 
     useEffect(() => {
         const reloadRecords = () => {
@@ -47,12 +90,12 @@ const AdminUsersPage = () => {
             return profile;
         });
         setUsers(data);
+        setLoaded(false);
     }
 
     function editUser(e, profile) {
         e.preventDefault();
         history.push('/admin/usuario/' + profile.ID);
-        console.log(profile.ID);
     }
 
     return (
