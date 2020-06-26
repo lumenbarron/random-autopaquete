@@ -56,6 +56,8 @@ export default function InfoGeneral({ user }) {
         setDate(user.Fecha);
         setINENumber(user.INENumero);
         setPersona(user.persona);
+        setRazonSocial(user.razon_social);
+        setLegalName(user.nombreRepresentanteLegal);
     }, [user]);
 
     const docRef = db.collection('profiles').doc(user.id);
@@ -130,8 +132,6 @@ export default function InfoGeneral({ user }) {
                 nombreRepresentanteLegal: legalName,
                 direccion: address,
                 RFC,
-                Fecha: date,
-                INENumero: INEnumber,
             };
         }
 
@@ -280,7 +280,7 @@ export default function InfoGeneral({ user }) {
                                 label="Razon social"
                                 className="rainbow-p-around_medium"
                                 style={{ width: '100%' }}
-                                value={INEnumber}
+                                value={razonSocial}
                                 onChange={ev => setRazonSocial(ev.target.value)}
                             />
                             <Button
@@ -308,12 +308,12 @@ export default function InfoGeneral({ user }) {
                                 onChange={ev => setRFC(ev.target.value)}
                             />
                             <Input
-                                id="fecha"
-                                label="Fecha de nacimiento"
+                                id="representante"
+                                label="Nombre del representante legal"
                                 className="rainbow-p-around_medium"
                                 style={{ width: '100%' }}
-                                value={date}
-                                onChange={ev => setDate(ev.target.value)}
+                                value={legalName}
+                                onChange={ev => setLegalName(ev.target.value)}
                             />
                         </div>
                     </>

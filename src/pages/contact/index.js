@@ -22,16 +22,16 @@ const inputStyles = {
 };
 
 const containerStyles = {
-    maxWidth: 400,
+    maxWidth: 1200,
 };
 
 const ContactPage = () => {
     return (
         <StyledContact>
-            <div className="back rainbow-align-content_center ">
-                <h1>Contacto</h1>
+            <div className="back rainbow-align-content_left">
+                <h1 className="title">Contacto</h1>
                 <div>
-                    <div className="rainbow-align-content_center rainbow-p-vertical_x-large rainbow-flex_wrap">
+                    <div className="rainbow-align-content_center rainbow-p-vertical_x-large rainbow-flex_wrap contact-form">
                         <Input
                             className="rainbow-p-around_medium"
                             style={inputStyles}
@@ -47,7 +47,7 @@ const ContactPage = () => {
                             icon={<FontAwesomeIcon icon={faUser} />}
                         />
                     </div>
-                    <div className="rainbow-align-content_center rainbow-p-vertical_x-large rainbow-flex_wrap">
+                    <div className="rainbow-align-content_center rainbow-p-vertical_x-large rainbow-flex_wrap contact-form">
                         <Input
                             className="rainbow-p-around_medium"
                             style={inputStyles}
@@ -72,10 +72,12 @@ const ContactPage = () => {
                             label="Mensaje"
                             rows={4}
                             style={containerStyles}
-                            className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                            className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto contact-form"
                         />
-                        ;
                     </div>
+                    <Button className="boton" type="submit">
+                        Enviar
+                    </Button>
                 </div>
 
                 <Container>
