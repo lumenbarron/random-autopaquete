@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import { Input, Textarea } from 'react-rainbow-components';
@@ -26,6 +26,16 @@ const containerStyles = {
 };
 
 const ContactPage = () => {
+    const [name, setName] = useState();
+    const [lastName, setLastName] = useState();
+    const [phone, setPhone] = useState();
+    const [email, setEmail] = useState();
+    const [message, setMessage] = useState();
+
+    const sendEmail = () => {
+        console.log('Estamos funcionando');
+    };
+
     return (
         <StyledContact>
             <div className="back rainbow-align-content_left">
@@ -39,12 +49,14 @@ const ContactPage = () => {
                             icon={
                                 <FontAwesomeIcon icon={faUser} className="rainbow-color_gray-3" />
                             }
+                            onChange={ev => setName(ev.target.value)}
                         />
                         <Input
                             className="rainbow-p-around_medium"
                             style={inputStyles}
                             label="Apellido (s)"
                             icon={<FontAwesomeIcon icon={faUser} />}
+                            onChange={ev => setLastName(ev.target.value)}
                         />
                     </div>
                     <div className="rainbow-align-content_center rainbow-p-vertical_x-large rainbow-flex_wrap contact-form">
@@ -58,12 +70,14 @@ const ContactPage = () => {
                                     className="rainbow-color_gray-3"
                                 />
                             }
+                            onChange={ev => setPhone(ev.target.value)}
                         />
                         <Input
                             className="rainbow-p-around_medium"
                             style={inputStyles}
                             label="Correo"
                             icon={<FontAwesomeIcon icon={faEnvelope} />}
+                            onChange={ev => setEmail(ev.target.value)}
                         />
                     </div>
                     <div>
@@ -73,9 +87,10 @@ const ContactPage = () => {
                             rows={4}
                             style={containerStyles}
                             className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto contact-form"
+                            onChange={ev => setMessage(ev.target.value)}
                         />
                     </div>
-                    <Button className="boton" type="submit">
+                    <Button className="boton" type="submit" onClick={sendEmail}>
                         Enviar
                     </Button>
                 </div>

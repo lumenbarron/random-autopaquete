@@ -186,7 +186,6 @@ export default function Credito({ user }) {
                 pageSize={10}
                 keyField="id"
                 data={inforTransacciones}
-                pageSize={10}
                 emptyTitle="Oh no!"
                 emptyDescription="No hay ningun registro actualmente..."
             >
