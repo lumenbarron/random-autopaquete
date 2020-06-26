@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const StyledConditions = styled.div`
+    padding-bottom: 6rem;
 
     main {
         padding: 5rem 0;
