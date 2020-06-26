@@ -60,7 +60,7 @@ const AdminUsersPage = () => {
                     return;
                 }
 
-                setEmails(xhr.response);
+                setEmails(xhr.response ? xhr.response : []);
                 setLoaded(false);
             };
             xhr.open('GET', '/admin/getEmails');

@@ -13,6 +13,8 @@ import FileSelector from '../../../components/react-rainbow-beta/components/File
 import styled from 'styled-components';
 import * as firebase from 'firebase';
 import { useUser } from 'reactfire';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 const StyledTable = styled(Table)`
     color: #1de9b6;
@@ -24,6 +26,16 @@ const StyledColumn = styled(Column)`
 
 const badgeStyles = { color: 'red' };
 const StatusBadge = ({ value }) => <Badge label={value} variant="lightest" style={badgeStyles} />;
+const DownloadVoucher = ({ value }) => (
+    <Button
+        variant="neutral"
+        className="rainbow-m-around_medium"
+        onClick={() => window.open(value, 'Comprobante')}
+    >
+        Descargar comprobante
+        <FontAwesomeIcon icon={faDownload} className="rainbow-m-left_medium" />
+    </Button>
+);
 
 export default function Credito({ user }) {
     const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
@@ -108,6 +120,7 @@ export default function Credito({ user }) {
 
     const inforTransacciones = voucherData.map((voucher, idx) => {
         return {
+            id: voucher.id,
             date: voucher.create_date,
             monto: voucher.saldo,
             comprobante: voucher.voucher,
@@ -192,7 +205,11 @@ export default function Credito({ user }) {
             >
                 <StyledColumn header="Fecha " field="date" />
                 <StyledColumn header="Monto" field="monto" component={StatusBadge} onClick={test} />
-                <StyledColumn header="Comprobante" field="comprobante" />
+                <StyledColumn
+                    header="Comprobante"
+                    component={DownloadVoucher}
+                    field="comprobante"
+                />
             </StyledTable>
         </>
     );
