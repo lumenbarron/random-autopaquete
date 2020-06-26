@@ -50,6 +50,8 @@ const LoginPage = () => {
                     lastname,
                     user_type: 'regular',
                     ID: user.uid,
+                    status: 'En Revisión',
+                    saldo: 0,
                 });
                 profilesCollectionAdd
                     .then(function(docRef) {

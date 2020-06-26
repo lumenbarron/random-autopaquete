@@ -5,11 +5,11 @@ import { StyledTabContent, StyledForm, StyledSubmit } from '../styled.js';
 import FileSelector from '../../../components/react-rainbow-beta/components/FileSelector';
 
 const TabPersonaMoral = () => {
-    const [razonSocial, setRazonSocial] = useState('');
-    const [legalName, setLegalName] = useState('');
-    const [address, setAdrress] = useState('');
-    const [phone, setPhone] = useState('');
-    const [RFC, setRFC] = useState('');
+    const [razonSocial, setRazonSocial] = useState();
+    const [legalName, setLegalName] = useState();
+    const [address, setAdrress] = useState();
+    const [phone, setPhone] = useState();
+    const [RFC, setRFC] = useState();
 
     const [fileActaConstitutiva, setFileActaConstitutiva] = useState();
     const [fileFiscal, setFileFiscal] = useState();
