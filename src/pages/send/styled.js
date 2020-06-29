@@ -72,6 +72,12 @@ export const StyledLeftPane = styled(StyledPane)`
 
 export const StyledRightPane = styled(StyledPane)`
     flex: 3 3;
+
+    .alert-push {
+        font-size: 5px !important;
+        font-weight: 600;
+        color: #0e0e0e !important;
+    }
 `;
 
 export const StyledRadioGroup = styled(RadioGroup)`

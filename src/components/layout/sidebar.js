@@ -3,8 +3,6 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar, Chip } from 'react-rainbow-components';
 import styled, { keyframes } from 'styled-components';
 import { useFirebaseApp, useUser } from 'reactfire';
-import { useRegularSecurity } from '../../hooks/useRegularSecurity';
-import { useSecurity } from '../../hooks/useSecurity';
 import * as firebase from 'firebase';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -17,6 +15,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 import moduleName from 'module';
+import { useRegularSecurity } from '../../hooks/useRegularSecurity';
+import { useSecurity } from '../../hooks/useSecurity';
 
 // TODO: CAMBIAR ESTO EN CUANTO LIBEREN LA VERSION FINAL DE FileSelector
 import FileSelector from '../../components/react-rainbow-beta/components/FileSelector';

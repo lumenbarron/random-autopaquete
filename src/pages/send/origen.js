@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
+import { Input, CheckboxToggle, Button, Notification } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
@@ -36,6 +36,7 @@ export const OrigenComponent = ({ onSave }) => {
     const db = firebase.firestore();
     const user = useUser();
 
+    const [error, setError] = useState('');
     const [directionData, setDirectionData] = useState([]);
 
     const [value, setValue] = useState();
@@ -117,7 +118,8 @@ export const OrigenComponent = ({ onSave }) => {
             placeRef.trim() === '' ||
             phone.trim() === ''
         ) {
-            console.log('Espacios vacios');
+            // (Alert)console.log('Espacios vacios');
+            setError(true);
             return;
         }
         if (checkBox) {
@@ -287,6 +289,15 @@ export const OrigenComponent = ({ onSave }) => {
                     Continuar
                     <FontAwesomeIcon icon={faArrowRight} className="rainbow-m-left_medium" />
                 </Button>
+                {error && (
+                    <div className="alert-push">
+                        <Notification
+                            title="Requiere completar campos vacíos  "
+                            description="Oh no, parece que falta completar información ."
+                            icon="warning"
+                        />
+                    </div>
+                )}
             </StyledRightPane>
         </StyledPaneContainer>
     );
