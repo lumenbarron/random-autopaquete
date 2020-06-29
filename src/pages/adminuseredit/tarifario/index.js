@@ -71,7 +71,7 @@ const ErrorText = styled.div`
     margin-bottom: 1rem;
 `;
 
-function TarifarioPorServicio({ label, tarifas, kgExtra, user, proveedor, entrega }) {
+function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega }) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const userFirebase = useUser();
@@ -104,8 +104,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, proveedor, entreg
         const addRate = {
             min: minRate,
             max: maxRate,
-            proveedor,
-            Tipo_de_entrega: entrega,
+            entrega,
             precio: cost,
         };
         db.collection('profiles')
@@ -118,10 +117,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, proveedor, entreg
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
-    };
-    const test = () => {
-        console.log(proveedor);
-        console.log(entrega);
     };
 
     return (
@@ -163,6 +158,53 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, proveedor, entreg
 
 export default function Tarifario({ user }) {
     useEffect(() => {}, [user]);
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const userFirebase = useUser();
+
+    const [tarifas, setTarifas] = useState([]);
+
+    useEffect(() => {
+        if (user) {
+            const reloadTarifas = () => {
+                db.collection('profiles')
+                    .doc(user.id)
+                    .collection('comentarios')
+                    .onSnapshot(handleTarifas);
+            };
+            reloadTarifas();
+        }
+    }, []);
+
+    function handleTarifas(snapshot) {
+        const tarifas = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setTarifas(tarifas);
+    }
+
+    let tarifasMap = tarifas.map((tarifa, idx) => {
+        return (
+            <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap" key={tarifa.id}>
+                <div>
+                    De {tarifa.min} Hasta {tarifa.max} kg
+                </div>
+                <div>{formatMoney(tarifa.precio)}</div>
+                <div className="actions">
+                    <button>
+                        <FontAwesomeIcon icon={faPencilAlt} />
+                    </button>
+                    <button>
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                    </button>
+                </div>
+            </div>
+        );
+    });
+
     return (
         <>
             <h2>Tarifario del cliente</h2>
@@ -176,8 +218,7 @@ export default function Tarifario({ user }) {
                     ]}
                     kgExtra="250"
                     user={user}
-                    proveedor="estafeta"
-                    entrega="diaSiguiente"
+                    entrega="estafetaDiaSiguiente"
                 />
                 <TarifarioPorServicio
                     label="Estafeta Terrestre"
@@ -186,8 +227,8 @@ export default function Tarifario({ user }) {
                         { min: '2', max: '3', precio: '150' },
                     ]}
                     kgExtra="150"
-                    proveedor="estafeta"
-                    entrega="terrestre"
+                    user={user}
+                    entrega="estafetaEconómico"
                 />
             </Accordion>
             <h3 style={{ marginTop: '1rem' }}>Fedex</h3>
@@ -199,8 +240,8 @@ export default function Tarifario({ user }) {
                         { min: '2', max: '3', precio: '250' },
                     ]}
                     kgExtra="250"
-                    proveedor="fedex"
-                    entrega="diaSiguiente"
+                    user={user}
+                    entrega="fedexDiaSiguiente"
                 />
                 <TarifarioPorServicio
                     label="Fedex Terrestre"
@@ -209,8 +250,8 @@ export default function Tarifario({ user }) {
                         { min: '2', max: '3', precio: '150' },
                     ]}
                     kgExtra="150"
-                    proveedor="fedex"
-                    entrega="terrestre"
+                    user={user}
+                    entrega="fedexEconomico"
                 />
             </Accordion>
             <p style={{ margin: '1rem' }}>
