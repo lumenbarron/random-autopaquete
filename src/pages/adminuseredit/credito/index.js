@@ -97,8 +97,6 @@ export default function Credito({ user }) {
         }
     };
 
-    console.log('Monto total: ', montoTotal);
-
     useEffect(() => {
         const reloadVoucher = () => {
             db.collection('voucher')

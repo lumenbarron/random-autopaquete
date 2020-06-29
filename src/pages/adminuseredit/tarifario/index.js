@@ -12,6 +12,7 @@ import FileSelector from '../../../components/react-rainbow-beta/components/File
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { useFirebaseApp, useUser } from 'reactfire';
 
 const StyledSection = styled(AccordionSection)`
     color: black;
@@ -70,7 +71,15 @@ const ErrorText = styled.div`
     margin-bottom: 1rem;
 `;
 
-function TarifarioPorServicio({ label, tarifas, kgExtra }) {
+function TarifarioPorServicio({ label, tarifas, kgExtra, user, proveedor, entrega }) {
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const userFirebase = useUser();
+
+    const [minRate, setMinRate] = useState();
+    const [maxRate, setMaxRate] = useState();
+    const [cost, setCost] = useState();
+
     let tarifasMap = tarifas.map((tarifa, idx) => {
         let key = label + idx;
         return (
@@ -91,18 +100,45 @@ function TarifarioPorServicio({ label, tarifas, kgExtra }) {
         );
     });
 
+    const addRate = () => {
+        const addRate = {
+            min: minRate,
+            max: maxRate,
+            proveedor,
+            Tipo_de_entrega: entrega,
+            precio: cost,
+        };
+        db.collection('profiles')
+            .doc(user.id)
+            .collection('rate')
+            .add(addRate)
+            .then(function(docRef) {
+                console.log('Document written with ID (origen): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+    };
+    const test = () => {
+        console.log(proveedor);
+        console.log(entrega);
+    };
+
     return (
         <StyledSection label={label}>
             {tarifasMap}
             <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap">
                 <div>
-                    De <InlineInput type="text" /> Hasta <InlineInput type="text" /> kg
+                    De <InlineInput type="text" onChange={ev => setMinRate(ev.target.value)} />
+                    Hasta
+                    <InlineInput type="text" onChange={ev => setMaxRate(ev.target.value)} />
+                    kg
                 </div>
                 <div>
-                    <InlineInput type="text" />
+                    <InlineInput type="text" onChange={ev => setCost(ev.target.value)} />
                 </div>
                 <div className="actions">
-                    <Button label="Confirmar" />
+                    <Button label="Confirmar" onClick={addRate} />
                 </div>
                 <ErrorText>
                     Error: Los kilogramos que tienes deben estar duplicados o no ser consecutivos,
@@ -127,7 +163,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra }) {
 
 export default function Tarifario({ user }) {
     useEffect(() => {}, [user]);
-
     return (
         <>
             <h2>Tarifario del cliente</h2>
@@ -140,6 +175,9 @@ export default function Tarifario({ user }) {
                         { min: '2', max: '3', precio: '250' },
                     ]}
                     kgExtra="250"
+                    user={user}
+                    proveedor="estafeta"
+                    entrega="diaSiguiente"
                 />
                 <TarifarioPorServicio
                     label="Estafeta Terrestre"
@@ -148,6 +186,8 @@ export default function Tarifario({ user }) {
                         { min: '2', max: '3', precio: '150' },
                     ]}
                     kgExtra="150"
+                    proveedor="estafeta"
+                    entrega="terrestre"
                 />
             </Accordion>
             <h3 style={{ marginTop: '1rem' }}>Fedex</h3>
@@ -159,6 +199,8 @@ export default function Tarifario({ user }) {
                         { min: '2', max: '3', precio: '250' },
                     ]}
                     kgExtra="250"
+                    proveedor="fedex"
+                    entrega="diaSiguiente"
                 />
                 <TarifarioPorServicio
                     label="Fedex Terrestre"
@@ -167,6 +209,8 @@ export default function Tarifario({ user }) {
                         { min: '2', max: '3', precio: '150' },
                     ]}
                     kgExtra="150"
+                    proveedor="fedex"
+                    entrega="terrestre"
                 />
             </Accordion>
             <p style={{ margin: '1rem' }}>
