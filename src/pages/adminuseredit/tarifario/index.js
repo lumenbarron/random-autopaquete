@@ -136,6 +136,20 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
         setIsOpen(false);
     };
 
+    const deleteRate = key => {
+        db.collection('profiles')
+            .doc(user.id)
+            .collection('rate')
+            .doc(key)
+            .delete()
+            .then(function() {
+                console.log('Document successfully deleted!');
+            })
+            .catch(function(error) {
+                console.error('Error removing document: ', error);
+            });
+    };
+
     let tarifasMap = tarifas.map((tarifa, idx) => {
         //let key = label + idx;
 
@@ -155,7 +169,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                             />
                         </button>
                         <button>
-                            <FontAwesomeIcon icon={faTrashAlt} />
+                            <FontAwesomeIcon icon={faTrashAlt} onClick={e => deleteRate(key)} />
                         </button>
                     </div>
                 </div>
