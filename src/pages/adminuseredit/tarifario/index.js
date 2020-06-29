@@ -80,6 +80,9 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega }) {
     const [maxRate, setMaxRate] = useState();
     const [cost, setCost] = useState();
 
+    const editRate = () => {
+        console.log('No aparecen los datos', tarifas.min);
+    };
     let tarifasMap = tarifas.map((tarifa, idx) => {
         let key = label + idx;
         return (
@@ -90,7 +93,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega }) {
                 <div>{formatMoney(tarifa.precio)}</div>
                 <div className="actions">
                     <button>
-                        <FontAwesomeIcon icon={faPencilAlt} />
+                        <FontAwesomeIcon icon={faPencilAlt} onClick={editRate} />
                     </button>
                     <button>
                         <FontAwesomeIcon icon={faTrashAlt} />
@@ -101,7 +104,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega }) {
     });
 
     const addRate = () => {
-        const addRate = {
+        const addRateData = {
             min: minRate,
             max: maxRate,
             entrega,
@@ -110,7 +113,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega }) {
         db.collection('profiles')
             .doc(user.id)
             .collection('rate')
-            .add(addRate)
+            .add(addRateData)
             .then(function(docRef) {
                 console.log('Document written with ID (origen): ', docRef.id);
             })
@@ -169,7 +172,7 @@ export default function Tarifario({ user }) {
             const reloadTarifas = () => {
                 db.collection('profiles')
                     .doc(user.id)
-                    .collection('comentarios')
+                    .collection('rate')
                     .onSnapshot(handleTarifas);
             };
             reloadTarifas();
@@ -186,24 +189,37 @@ export default function Tarifario({ user }) {
         setTarifas(tarifas);
     }
 
-    let tarifasMap = tarifas.map((tarifa, idx) => {
-        return (
-            <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap" key={tarifa.id}>
-                <div>
-                    De {tarifa.min} Hasta {tarifa.max} kg
-                </div>
-                <div>{formatMoney(tarifa.precio)}</div>
-                <div className="actions">
-                    <button>
-                        <FontAwesomeIcon icon={faPencilAlt} />
-                    </button>
-                    <button>
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                    </button>
-                </div>
-            </div>
-        );
-    });
+    const estafetaDiaSiguiente = tarifas
+        .filter(entregaFilter => {
+            return entregaFilter.entrega === 'estafetaDiaSiguiente';
+        })
+        .map((entrega, xid) => {
+            return { max: entrega.max, precio: entrega.precio, min: entrega.min };
+        });
+
+    const estafetaEconomico = tarifas
+        .filter(entregaFilter => {
+            return entregaFilter.entrega === 'estafetaEconómico';
+        })
+        .map((entrega, xid) => {
+            return { max: entrega.max, precio: entrega.precio, min: entrega.min };
+        });
+
+    const fedexDiaSiguiente = tarifas
+        .filter(entregaFilter => {
+            return entregaFilter.entrega === 'fedexDiaSiguiente';
+        })
+        .map((entrega, xid) => {
+            return { max: entrega.max, precio: entrega.precio, min: entrega.min };
+        });
+
+    const fedexEconomico = tarifas
+        .filter(entregaFilter => {
+            return entregaFilter.entrega === 'fedexEconomico';
+        })
+        .map((entrega, xid) => {
+            return { max: entrega.max, precio: entrega.precio, min: entrega.min };
+        });
 
     return (
         <>
@@ -212,20 +228,15 @@ export default function Tarifario({ user }) {
             <Accordion id="accordion-estafeta" multiple={true}>
                 <TarifarioPorServicio
                     label="Estafeta Día Siguiente"
-                    tarifas={[
-                        { min: '0', max: '1', precio: '200' },
-                        { min: '2', max: '3', precio: '250' },
-                    ]}
+                    tarifas={estafetaDiaSiguiente}
                     kgExtra="250"
                     user={user}
                     entrega="estafetaDiaSiguiente"
                 />
+
                 <TarifarioPorServicio
                     label="Estafeta Terrestre"
-                    tarifas={[
-                        { min: '0', max: '1', precio: '120' },
-                        { min: '2', max: '3', precio: '150' },
-                    ]}
+                    tarifas={estafetaEconomico}
                     kgExtra="150"
                     user={user}
                     entrega="estafetaEconómico"
@@ -235,20 +246,14 @@ export default function Tarifario({ user }) {
             <Accordion id="accordion-fedex" multiple={true}>
                 <TarifarioPorServicio
                     label="Fedex Día Siguiente"
-                    tarifas={[
-                        { min: '0', max: '1', precio: '200' },
-                        { min: '2', max: '3', precio: '250' },
-                    ]}
+                    tarifas={fedexDiaSiguiente}
                     kgExtra="250"
                     user={user}
                     entrega="fedexDiaSiguiente"
                 />
                 <TarifarioPorServicio
                     label="Fedex Terrestre"
-                    tarifas={[
-                        { min: '0', max: '1', precio: '120' },
-                        { min: '2', max: '3', precio: '150' },
-                    ]}
+                    tarifas={fedexEconomico}
                     kgExtra="150"
                     user={user}
                     entrega="fedexEconomico"
