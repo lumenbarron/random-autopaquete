@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Input } from 'react-rainbow-components';
+import { Input, FileSelector } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled';
-import FileSelector from '../../../components/react-rainbow-beta/components/FileSelector';
 import * as firebase from 'firebase';
 import 'firebase/storage';
 

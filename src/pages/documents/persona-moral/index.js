@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Input } from 'react-rainbow-components';
+import { Input, FileSelector } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled.js';
-import FileSelector from '../../../components/react-rainbow-beta/components/FileSelector';
 
 const TabPersonaMoral = () => {
     const [razonSocial, setRazonSocial] = useState();

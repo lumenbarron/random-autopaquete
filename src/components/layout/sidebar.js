@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import { Sidebar, SidebarItem, Avatar, Chip } from 'react-rainbow-components';
+import { Sidebar, SidebarItem, Avatar, Chip, FileSelector } from 'react-rainbow-components';
 import styled, { keyframes } from 'styled-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import * as firebase from 'firebase';
@@ -17,9 +17,6 @@ import Modal from 'react-modal';
 import moduleName from 'module';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
-
-// TODO: CAMBIAR ESTO EN CUANTO LIBEREN LA VERSION FINAL DE FileSelector
-import FileSelector from '../../components/react-rainbow-beta/components/FileSelector';
 
 Modal.setAppElement('#root');
 
@@ -143,6 +140,7 @@ const StyledSidebarItem = styled(SidebarItem)`
         background: #f2f2f2;
     }
     & > button {
+        justify-content: flex-start;
         flex-direction: row;
         padding: 10px;
         span {
@@ -179,7 +177,7 @@ const AddCreditButton = styled('button')`
 `;
 
 const CameraIcon = styled(FontAwesomeIcon)`
-    top: 1.6rem;
+    top: 2.5rem;
     position: relative;
     right: 1.2rem;
     background: gainsboro;
@@ -369,7 +367,11 @@ export function AccountSidebar() {
                 querySnapshot.forEach(function(doc) {
                     setAvatarURL(doc.data().avatar);
                     setAvatarName(doc.data().name);
-                    setStatus(doc.data().status);
+                    if (doc.data().status) {
+                        setStatus(doc.data().status);
+                    } else {
+                        setStatus('Falta Información');
+                    }
                 });
             });
         }
@@ -385,7 +387,13 @@ export function AccountSidebar() {
                     <Logo src="/assets/logo.png" />
                 </Link>
                 <div
-                    style={{ position: 'relative', left: '12px', cursor: 'pointer' }}
+                    style={{
+                        position: 'relative',
+                        left: '12px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }}
                     onClick={changeAvatar}
                 >
                     <StyledAvatar
@@ -430,19 +438,26 @@ export function AccountSidebar() {
                     />
                 )}
                 {faltaInfo && (
-                    <Chip
-                        className="rainbow-m-around_medium chip-falta-info"
-                        variant="outline-brand"
-                        label={
-                            <IconFaltaInfo variant="outline-brand">
-                                <FontAwesomeIcon
-                                    icon={faExclamationCircle}
-                                    className="rainbow-m-right_xx-small"
-                                />
-                                {status}
-                            </IconFaltaInfo>
-                        }
-                    />
+                    <div
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                            history.push('/documentacion');
+                        }}
+                    >
+                        <Chip
+                            className="rainbow-m-around_medium chip-falta-info"
+                            variant="outline-brand"
+                            label={
+                                <IconFaltaInfo variant="outline-brand">
+                                    <FontAwesomeIcon
+                                        icon={faExclamationCircle}
+                                        className="rainbow-m-right_xx-small"
+                                    />
+                                    {status}
+                                </IconFaltaInfo>
+                            }
+                        />
+                    </div>
                 )}
 
                 {/* <Status>{}</Status> */}
@@ -497,7 +512,6 @@ export function AccountSidebar() {
             </StyledSidebar>
             <Modal
                 isOpen={modalIsOpen}
-                contentLabel="Example Modal"
                 style={{
                     overlay: {
                         backgroundColor: 'rgba(100,100,100,0.5)',

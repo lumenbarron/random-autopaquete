@@ -3539,10 +3539,10 @@ charenc@~0.0.1:
   resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
   integrity sha1-wKHS86cJLgN3S/qD8UwPxXkKhmc=
 
-chart.js@^2.7.3:
-  version "2.9.3"
-  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.9.3.tgz#ae3884114dafd381bc600f5b35a189138aac1ef7"
-  integrity sha512-+2jlOobSk52c1VU6fzkh3UwqHMdSlgH1xFv9FKMqHiNCpXsGPQa/+81AFa+i3jZ253Mq9aAycPwDjnn1XbRNNw==
+chart.js@2.7.3:
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.7.3.tgz#cdb61618830bf216dc887e2f7b1b3c228b73c57e"
+  integrity sha512-3+7k/DbR92m6BsMUYP6M0dMsMVZpMnwkUyNSAbqolHKsbIzH2Q4LWVEHHYq7v0fmEV8whXE0DrjANulw9j2K5g==
   dependencies:
     chartjs-color "^2.1.0"
     moment "^2.10.2"
@@ -11902,13 +11902,13 @@ react-player@^2.0.1:
     prop-types "^15.7.2"
     react-fast-compare "^3.0.1"
 
-react-rainbow-components@^1.15.0:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/react-rainbow-components/-/react-rainbow-components-1.15.0.tgz#234d16025af1172b40cc25d6f9795f346fc86303"
-  integrity sha512-QGHwuykLfm6BEeMYodAv8XaedKHjmiT2YfD0s2DvAEA3pYyvLtNyJsEySiCrOGdK0x8w5X8Cq3gK/1WJ5vDJFg==
+react-rainbow-components@1.16.0:
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/react-rainbow-components/-/react-rainbow-components-1.16.0.tgz#8749331baf74b24d7b84c5f66549950094ead142"
+  integrity sha512-+1hByKKW3owtowiVATHrlAJdZYsm5tSxskfOLlr6AoZM67POrc+SwDKBJGyvsZK/tJzAy1U4cf+MGcC1cHybWg==
   dependencies:
     autosize "^4.0.2"
-    chart.js "^2.7.3"
+    chart.js "2.7.3"
     clipboard-copy "^2.0.0"
     prop-types "^15.6.2"
     react-async-script-loader "^0.3.0"

@@ -6,9 +6,9 @@ import {
     Textarea,
     Accordion,
     AccordionSection,
+    FileSelector,
 } from 'react-rainbow-components';
 import formatMoney from 'accounting-js/lib/formatMoney';
-import FileSelector from '../../../components/react-rainbow-beta/components/FileSelector';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrashAlt, faTimes } from '@fortawesome/free-solid-svg-icons';

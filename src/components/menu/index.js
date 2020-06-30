@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Nav } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
 import { useUser, useFirebaseApp } from 'reactfire';
@@ -9,9 +9,11 @@ import { faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Menu = () => {
     const [activeMenu, setActiveMenu] = useState(0);
+    const [avatarURL, setAvatarURL] = useState('');
     const user = useUser();
     const history = useHistory();
     const firebase = useFirebaseApp();
+    const db = firebase.firestore();
 
     const configureClick = e => {
         e.preventDefault();
@@ -22,6 +24,18 @@ const Menu = () => {
         e.preventDefault();
         await firebase.auth().signOut();
     };
+
+    useEffect(() => {
+        if (user) {
+            const docRef = db.collection('profiles').where('ID', '==', user.uid);
+
+            docRef.get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    setAvatarURL(doc.data().avatar);
+                });
+            });
+        }
+    }, [user]);
 
     return (
         <StyledMain>
@@ -74,13 +88,14 @@ const Menu = () => {
                 )}
                 {user && (
                     <Nav.Item>
-                        <span>MI CUENTA</span>
+                        <span style={{ verticalAlign: 'top', lineHeight: '42px' }}>MI CUENTA</span>
                         <StyledAvatarMenu
                             className="rainbow-m-horizontal_medium"
                             id="avatar-menu"
                             menuAlignment="right"
                             menuSize="small"
                             avatarSize="medium"
+                            src={avatarURL}
                         >
                             <MenuItem
                                 label="Configuración"

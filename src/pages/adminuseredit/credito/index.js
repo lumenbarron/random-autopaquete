@@ -7,9 +7,9 @@ import {
     Table,
     Column,
     Badge,
+    FileSelector,
 } from 'react-rainbow-components';
 import formatMoney from 'accounting-js/lib/formatMoney.js';
-import FileSelector from '../../../components/react-rainbow-beta/components/FileSelector';
 import styled from 'styled-components';
 import * as firebase from 'firebase';
 import { useUser } from 'reactfire';

@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { Table, Column, Input, Button } from 'react-rainbow-components';
+import { Table, Column, Input, Button, FileSelector } from 'react-rainbow-components';
 import styled from 'styled-components';
-import FileSelector from '../../components/react-rainbow-beta/components/FileSelector';
 
 import { StyledAdminoverweight } from './styled';
 
