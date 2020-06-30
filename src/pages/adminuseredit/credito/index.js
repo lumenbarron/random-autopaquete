@@ -9,10 +9,9 @@ import {
     Badge,
     FileSelector,
 } from 'react-rainbow-components';
-import formatMoney from 'accounting-js/lib/formatMoney.js';
+import formatMoney from 'accounting-js/lib/formatMoney';
 import styled from 'styled-components';
 import * as firebase from 'firebase';
-import { useUser } from 'reactfire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
@@ -24,8 +23,6 @@ const StyledColumn = styled(Column)`
     color: #1de9b6;
 `;
 
-const badgeStyles = { color: 'red' };
-const StatusBadge = ({ value }) => <Badge label={value} variant="lightest" style={badgeStyles} />;
 const DownloadVoucher = ({ value }) => (
     <Button
         variant="neutral"
@@ -120,7 +117,7 @@ export default function Credito({ user }) {
         return {
             id: voucher.id,
             date: voucher.create_date,
-            monto: voucher.saldo,
+            monto: formatMoney(voucher.saldo, 2),
             comprobante: voucher.voucher,
         };
     });
@@ -150,10 +147,6 @@ export default function Credito({ user }) {
                     saveURL();
                 });
         }
-    };
-
-    const test = () => {
-        console.log('Funciona :)');
     };
 
     return (
@@ -201,7 +194,7 @@ export default function Credito({ user }) {
                 emptyDescription="No hay ningun registro actualmente..."
             >
                 <StyledColumn header="Fecha " field="date" />
-                <StyledColumn header="Monto" field="monto" component={StatusBadge} onClick={test} />
+                <StyledColumn header="Monto" field="monto" />
                 <StyledColumn
                     header="Comprobante"
                     component={DownloadVoucher}
