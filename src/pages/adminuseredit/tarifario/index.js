@@ -96,9 +96,13 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
     const [maxRate, setMaxRate] = useState();
     const [cost, setCost] = useState();
     const [modalIsOpen, setIsOpen] = useState(false);
+    const [modalIsOpenExtra, setIsOpenExtra] = useState(false);
     const [minRateModal, setMinRateModal] = useState();
     const [maxRateModal, setMaxRateModal] = useState();
     const [costModal, setCostModal] = useState();
+
+    /// const [entrega, setEntrega] = useState();
+    const [costKgExtra, setCostKgExtra] = useState();
 
     const editRate = key => {
         setIsOpen(true);
@@ -123,6 +127,10 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
+    };
+
+    const openModalExtra = (min, max, precio) => {
+        setIsOpenExtra(true);
     };
 
     const openModal = (min, max, precio) => {
@@ -249,6 +257,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             max: maxRate,
             entrega,
             precio: cost,
+            kg_extra: kgExtra,
         };
         db.collection('profiles')
             .doc(user.id)
@@ -260,6 +269,10 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
+    };
+
+    const addKgExtra = () => {
+        console.log('Vamos agregrear el precio del peso extra');
     };
 
     return (
@@ -291,10 +304,61 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                 <div>{formatMoney(kgExtra)}</div>
                 <div className="actions">
                     <button>
-                        <FontAwesomeIcon icon={faPencilAlt} />
+                        <FontAwesomeIcon icon={faPencilAlt} onClick={openModalExtra} />
                     </button>
                 </div>
             </div>
+            <Modal
+                isOpen={modalIsOpen}
+                contentLabel="Example Modal"
+                style={{
+                    overlay: {
+                        backgroundColor: 'rgba(100,100,100,0.5)',
+                    },
+                    content: {
+                        width: 'fit-content',
+                        height: 'fit-content',
+                        margin: 'auto',
+                        padding: '2rem',
+                        borderRadius: '0.875rem',
+                        color: 'crimson',
+                        boxShadow: '0px 0px 16px -4px rgba(0, 0, 0, 0.75)',
+                        fontFamily: "'Montserrat','sans-serif'",
+                        textAlign: 'center',
+                    },
+                }}
+            >
+                <h2 style={{ fontSize: '1.5rem', textAlign: 'center' }}>Cambia la tarifa</h2>
+                <div className="rainbow-p-horizontal_medium rainbow-m-vertical_large">
+                    Precio
+                    <InlineInput
+                        value={costModal}
+                        type="text"
+                        onChange={ev => setCostModal(ev.target.value)}
+                    />
+                </div>
+                <button
+                    onClick={closeModal}
+                    style={{
+                        border: 'none',
+                        background: 'none',
+                        float: 'right',
+                        marginTop: '-14rem',
+                        marginRight: '-1rem',
+                    }}
+                >
+                    <FontAwesomeIcon icon={faTimes} />
+                </button>
+                <StyledSubmit
+                    type="submit"
+                    onClick={e => {
+                        editRate();
+                        closeModal();
+                    }}
+                >
+                    Continuar
+                </StyledSubmit>
+            </Modal>
         </StyledSection>
     );
 }
@@ -303,10 +367,9 @@ export default function Tarifario({ user }) {
     useEffect(() => {}, [user]);
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
-    const userFirebase = useUser();
 
     const [tarifas, setTarifas] = useState([]);
-    const [value, setValue] = useState();
+    const [kgExtra, setKgExtra] = useState();
 
     useEffect(() => {
         if (user) {
