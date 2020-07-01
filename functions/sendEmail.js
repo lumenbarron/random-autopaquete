@@ -1,8 +1,8 @@
-import { createTransport, getTestMessageUrl } from 'nodemailer';
 const functions = require('firebase-functions');
+const nodemailer = require('nodemailer');
 
-exports.send = functions.http.onRequest(req => {
-    const transporter = createTransport({
+exports.send = functions.https.onRequest(req => {
+    const transporter = nodemailer.createTransport({
         host: 'mail.sitiorandom.com',
         port: 587,
         secure: false, // true for 465, false for other ports
@@ -29,5 +29,5 @@ exports.send = functions.http.onRequest(req => {
 
     console.log('Message sent: %s', info.messageId);
 
-    console.log('Preview URL: %s', getTestMessageUrl(info));
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 });

@@ -8,6 +8,18 @@
                 "function": "getEmails"
             },
             {
+                "source": "/guia/fedex",
+                "function": "fedex-create"
+            },
+            {
+                "source": "/guia/estafeta",
+                "function": "estafeta-create"
+            },
+            {
+                "source": "/contacto/send",
+                "function": "email-send"
+            },
+            {
                 "source": "**",
                 "destination": "/index.html"
             }
