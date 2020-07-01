@@ -101,8 +101,11 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
     const [maxRateModal, setMaxRateModal] = useState();
     const [costModal, setCostModal] = useState();
 
-    /// const [entrega, setEntrega] = useState();
-    const [costKgExtra, setCostKgExtra] = useState();
+    const [extraCost, setExtraCost] = useState();
+    // const [fedexEconomicoExtra, setFedexEconomicoExtra] = useState();
+    // const [fedexExtra, setFedexExtra] = useState();
+    // const [estafetaEconomicoExtra, setEstafetaEconomicoExtra] = useState();
+    // const [estafetaExtra, setEstafetaExtra] = useState();
 
     const editRate = key => {
         setIsOpen(true);
@@ -129,8 +132,12 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             });
     };
 
-    const openModalExtra = (min, max, precio) => {
+    const openModalExtra = () => {
         setIsOpenExtra(true);
+    };
+
+    const closeModalExtra = () => {
+        setIsOpenExtra(false);
     };
 
     const openModal = (min, max, precio) => {
@@ -272,7 +279,25 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
     };
 
     const addKgExtra = () => {
-        console.log('Vamos agregrear el precio del peso extra');
+        const addExtraRate = {
+            extra_cost: extraCost,
+            entrega,
+        };
+
+        const editRateInformation = db
+            .collection('profiles')
+            .doc(user.id)
+            .collection('Kgextra')
+            .doc('test')
+            .set(addExtraRate);
+
+        editRateInformation
+            .then(function(docRef) {
+                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
     };
 
     return (
@@ -309,7 +334,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                 </div>
             </div>
             <Modal
-                isOpen={modalIsOpen}
+                isOpen={modalIsOpenExtra}
                 contentLabel="Example Modal"
                 style={{
                     overlay: {
@@ -332,19 +357,19 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                 <div className="rainbow-p-horizontal_medium rainbow-m-vertical_large">
                     Precio
                     <InlineInput
-                        value={costModal}
+                        value={extraCost}
                         type="text"
-                        onChange={ev => setCostModal(ev.target.value)}
+                        onChange={ev => setExtraCost(ev.target.value)}
                     />
                 </div>
                 <button
-                    onClick={closeModal}
+                    onClick={closeModalExtra}
                     style={{
                         border: 'none',
                         background: 'none',
                         float: 'right',
-                        marginTop: '-14rem',
-                        marginRight: '-1rem',
+                        marginTop: '-9.5rem',
+                        marginRight: '-1.6rem',
                     }}
                 >
                     <FontAwesomeIcon icon={faTimes} />
@@ -352,8 +377,8 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                 <StyledSubmit
                     type="submit"
                     onClick={e => {
-                        editRate();
-                        closeModal();
+                        addKgExtra();
+                        closeModalExtra();
                     }}
                 >
                     Continuar
@@ -435,7 +460,7 @@ export default function Tarifario({ user }) {
                     valor={estafetaDiaSiguiente.value}
                     tarifas={estafetaDiaSiguiente}
                     key={estafetaDiaSiguiente.id}
-                    kgExtra="250"
+                    kgExtra={kgExtra}
                     user={user}
                     entrega="estafetaDiaSiguiente"
                 />
@@ -443,7 +468,7 @@ export default function Tarifario({ user }) {
                 <TarifarioPorServicio
                     label="Estafeta Terrestre"
                     tarifas={estafetaEconomico}
-                    kgExtra="150"
+                    kgExtra={kgExtra}
                     user={user}
                     entrega="estafetaEconómico"
                 />
@@ -453,14 +478,14 @@ export default function Tarifario({ user }) {
                 <TarifarioPorServicio
                     label="Fedex Día Siguiente"
                     tarifas={fedexDiaSiguiente}
-                    kgExtra="250"
+                    kgExtra={kgExtra}
                     user={user}
                     entrega="fedexDiaSiguiente"
                 />
                 <TarifarioPorServicio
                     label="Fedex Terrestre"
                     tarifas={fedexEconomico}
-                    kgExtra="150"
+                    kgExtra={kgExtra}
                     user={user}
                     entrega="fedexEconomico"
                 />

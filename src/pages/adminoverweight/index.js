@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 
-import { Table, Column, Input, Button, FileSelector } from 'react-rainbow-components';
+import {
+    Table,
+    Column,
+    Input,
+    Button,
+    FileSelector,
+    ImportRecordsFlow,
+} from 'react-rainbow-components';
 import styled from 'styled-components';
 
 import { StyledAdminoverweight } from './styled';
-
 import { useFirebaseApp } from 'reactfire';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileImport } from '@fortawesome/free-solid-svg-icons';
 
 const StyledTable = styled(Table)`
     color: #1de9b6;
@@ -27,11 +35,17 @@ const AdminOverweightPage = () => {
     const [realKg, setRealKg] = useState();
     const [charge, setCharge] = useState();
     const [docId, setDocId] = useState();
+
+    const [overWeightInformation, setOverWeightInformation] = useState([]);
+
+    const [isOpen, setIsOpen] = useState(false);
+    const [xlsData, setxlsData] = useState([]);
+
     const creationDate = new Date();
 
     useEffect(() => {
         if (!guia) {
-            console.log('Este valor tiene que tener la guía');
+            console.log('Este valor tiene que tener un valor de guía valida');
         } else {
             const docRef = db.collection('guia').doc(guia);
 
@@ -56,26 +70,98 @@ const AdminOverweightPage = () => {
         }
     }, [guia]);
 
+    useEffect(() => {
+        const reloadOverWeight = () => {
+            db.collection('overweights').onSnapshot(handleOverWeight);
+        };
+        reloadOverWeight();
+    }, []);
+
+    function handleOverWeight(snapshot) {
+        const overWeightInformation = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setOverWeightInformation(overWeightInformation);
+    }
+
+    const openModal = () => {
+        setIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsOpen(false);
+    };
+
     const addOverWeight = () => {
         const addOverWeightData = {
             ID: userId,
             usuario: name,
-            cargo: charge,
             fecha: creationDate.toLocaleDateString(),
             guia,
             kilos_declarados: kgDeclarados,
             kilos_reales: realKg,
         };
 
-        db.collection('overweights')
-            .add(addOverWeightData)
-            .then(function(docRef) {
-                console.log('Document written with ID (origen): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
+        xlsData.data.map(function(overWeight, idx) {
+            db.collection('overweights')
+                .add({
+                    ID: 'test',
+                    usuario: overWeight.usuario,
+                    fecha: overWeight.date.toLocaleDateString(),
+                    guia: 'test',
+                    kilos_declarados: overWeight.kilos_declarados,
+                    kilos_reales: overWeight.kilos_reales,
+                })
+                .then(function(docRef) {
+                    console.log('Document written with ID (origen): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+        });
     };
+    console.log(xlsData.data);
+
+    const schema = {
+        collection: 'overWeight',
+        attributes: {
+            titulo: {
+                type: String,
+                required: true,
+            },
+            usuario: {
+                type: String,
+                required: true,
+            },
+            kilos_declarados: {
+                type: String,
+                required: true,
+            },
+            kilos_reales: {
+                type: String,
+                required: true,
+            },
+            charge: {
+                type: Number,
+                required: true,
+            },
+            date: Date,
+        },
+    };
+
+    const infoOverWeight = overWeightInformation.map((overWeight, idx) => {
+        return {
+            guide: overWeight.guia,
+            user: overWeight.usuario,
+            date: overWeight.fecha,
+            kdeclared: overWeight.kilos_declarados,
+            kreal: overWeight.kilos_reales,
+            cadd: overWeight.cargo,
+        };
+    });
 
     return (
         <StyledAdminoverweight>
@@ -133,12 +219,22 @@ const AdminOverweightPage = () => {
                             readOnly
                         />
                         <div style={{ flex: '1 1 100%', height: '0' }}></div>
-                        <FileSelector
-                            className="rainbow-p-horizontal_medium rainbow-m_auto"
-                            label="Archivo XLS de Sobrepesos"
-                            placeholder="Sube o arrastra tu archivo aquí"
-                            style={{ flex: '1 1 50%' }}
-                        />
+                        <div>
+                            <Button variant="neutral" onClick={openModal}>
+                                <FontAwesomeIcon
+                                    icon={faFileImport}
+                                    className="rainbow-m-right_x-small"
+                                />
+                                Selecciona el archivo a importar
+                            </Button>
+                            <ImportRecordsFlow
+                                isOpen={isOpen}
+                                onRequestClose={closeModal}
+                                schema={schema}
+                                onComplete={data => setxlsData(data)}
+                                actionType="add-records"
+                            />
+                        </div>
                         <Button
                             label="Confirmar"
                             style={{ flex: '1 1 50%' }}
@@ -152,6 +248,7 @@ const AdminOverweightPage = () => {
                         <StyledTable
                             pageSize={10}
                             keyField="id"
+                            data={infoOverWeight}
                             emptyTitle="Oh no!"
                             emptyDescription="No hay ningun registro actualmente..."
                         >
