@@ -22,6 +22,15 @@ export const StyledLoginPage = styled.div`
         color: #fff;
     }
 
+    .alert-error {
+    margin-bottom: 1rem!important ;
+    color: crimson;
+    }
+
+    .remember-pass {
+        margin-left:1rem;
+    }
+
     .boton:hover {
         background-color: #c94141;
         color: white;

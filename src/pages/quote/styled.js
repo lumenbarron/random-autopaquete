@@ -35,7 +35,7 @@ export const StyledQuote = styled.div`
         border-radius: 20px;
         padding: 0.5rem;
         color: white;
-        margin: 1rem 0;
+        margin: 2rem 0;
         text-transform: uppercase;
     }
 

@@ -37,6 +37,10 @@ export const DirectionContainer = styled.div`
 
     }
 
+    .alert-error {
+        margin-bottom: .7rem;
+    }
+
     .btn-new:hover {
     background-color: #C94141;
     color: white;

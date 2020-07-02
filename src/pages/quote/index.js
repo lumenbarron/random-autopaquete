@@ -3,7 +3,7 @@ import { StyledQuote } from './styled';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Input } from 'react-rainbow-components';
+import { Input, Select } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faPhoneAlt,
@@ -12,7 +12,18 @@ import {
     faBoxOpen,
     faBuilding,
 } from '@fortawesome/free-solid-svg-icons';
+
+const containerStyles = {
+    maxWidth: 700,
+};
+
 const QuotePage = () => {
+    const options = [
+        { value: 'ocasionalmente', label: 'Hago envíos ocasionalmente' },
+        { value: 'de20a100', label: 'Hago de 20 a 100 envíos al mes' },
+        { value: 'de100a200', label: 'Hago de 100 a 200 envíos al mes' },
+        { value: 'mayorDe200', label: 'Hago más de 200 envíos al mes' },
+    ];
     return (
         <StyledQuote>
             <div>
@@ -74,13 +85,13 @@ const QuotePage = () => {
 
                                     <div>
                                         <label htmlFor="ClientRealizasMasDe20EnviosAlMes">
-                                            ¿Realizas más de 20 envíos al mes?
+                                            Volumen de Envíos al Mes
                                         </label>
-                                        <Input
-                                            name="data[Client][realizas_mas_de_20_envios_al_mes]"
-                                            type="text"
-                                            id="ClientRealizasMasDe20EnviosAlMes"
-                                            icon={<FontAwesomeIcon icon={faBoxOpen} />}
+                                        <Select
+                                            options={options}
+                                            id="example-select-1"
+                                            style={containerStyles}
+                                            className="rainbow-p-horizontal_medium rainbow-m_auto test"
                                         />
                                     </div>
 

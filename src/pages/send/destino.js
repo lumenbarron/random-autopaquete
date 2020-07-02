@@ -39,6 +39,8 @@ export const DestinoComponent = ({ onSave }) => {
     const db = firebase.firestore();
     const user = useUser();
 
+    const [error, setError] = useState(false);
+
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
@@ -112,7 +114,7 @@ export const DestinoComponent = ({ onSave }) => {
             placeRef.trim() === '' ||
             phone.trim() === ''
         ) {
-            console.log('Espacios vacios');
+            setError(true);
             return;
         }
 
@@ -246,6 +248,9 @@ export const DestinoComponent = ({ onSave }) => {
                         />
                     </div>
                 </div>
+                {error && (
+                    <div className="alert-error">Todos los campos necesitan estar llenos</div>
+                )}
                 <Button
                     variant="brand"
                     className="rainbow-m-around_medium"

@@ -22,6 +22,11 @@ const LoginPage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [name, setName] = useState('');
     const [lastname, setLastName] = useState('');
+
+    const [errorLogIn, setErrorLogIn] = useState(false);
+    const [errorPass, setErrorPass] = useState(false);
+    const [errorRegister, setErrorRegister] = useState(false);
+
     const firebase = useFirebaseApp();
     const history = useHistory();
     const user = useUser();
@@ -36,7 +41,7 @@ const LoginPage = () => {
             name.trim() === '' ||
             lastname.trim() === ''
         ) {
-            console.log('Espacios vacios');
+            setErrorRegister(true);
             return;
         }
         firebase
@@ -67,7 +72,7 @@ const LoginPage = () => {
     const login = async e => {
         e.preventDefault();
         if (email.trim() === '' || password.trim() === '') {
-            console.log('Espacios vacios');
+            setErrorLogIn(true);
             return;
         }
 
@@ -100,7 +105,7 @@ const LoginPage = () => {
     const restorePass = async e => {
         e.preventDefault();
         if (email.trim() === '') {
-            console.log('Espacios vacios');
+            setErrorPass(true);
             return;
         }
         firebase.auth().sendPasswordResetEmail(email);
@@ -129,10 +134,17 @@ const LoginPage = () => {
                         onChange={ev => setPassword(ev.target.value)}
                     />
 
+                    {errorLogIn && (
+                        <div className="alert-error">
+                            Necesitas ingresar tu contraseña y correo para iniciar sesión
+                        </div>
+                    )}
+                    {errorPass && <div className="alert-error">Necesitas ingresar tu correo</div>}
                     <Button className="boton" type="submit" onClick={login}>
                         Iniciar sesión
                     </Button>
-                    <a href="/login" onClick={restorePass}>
+
+                    <a className="remember-pass" href="/login" onClick={restorePass}>
                         ¿Olvidaste tu constraseña?
                     </a>
                 </form>
@@ -186,12 +198,16 @@ const LoginPage = () => {
                                 icon={<FontAwesomeIcon icon={faKey} />}
                             />
                         </div>
+                        {errorRegister && (
+                            <div className="alert-error">Necesitas llenar todos los campos</div>
+                        )}
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <p style={{ fontSize: '0.9rem' }}>
                                 Al darle Unirse estás aceptando nuestro
                                 <a href="/aviso-de-privacidad">Aviso de privacidad</a> y nuestros{' '}
                                 <a href="/terminos-y-condiciones">Términos y condiciones.</a>
                             </p>
+
                             <Button
                                 className="boton rainbow-m-around_medium"
                                 type="submit"

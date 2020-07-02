@@ -22,6 +22,8 @@ export default function DirectionPage() {
     const db = firebase.firestore();
     const user = useUser();
 
+    const [error, setError] = useState(false);
+
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
@@ -91,7 +93,7 @@ export default function DirectionPage() {
             placeRef.trim() === '' ||
             phone.trim() === ''
         ) {
-            console.log('Espacios vacios');
+            setError(true);
             return;
         }
         const duplicateStreet = data.map((searchStree, idx) => {
@@ -218,6 +220,11 @@ export default function DirectionPage() {
                                         style={{ width: '100%' }}
                                         onChange={e => setPhone(e.target.value)}
                                     />
+                                    {error && (
+                                        <div className="alert-error">
+                                            Todos los campos necesitan estar llenos
+                                        </div>
+                                    )}
                                     <Button className="btn-new" onClick={registerDirecction}>
                                         Guardar
                                     </Button>

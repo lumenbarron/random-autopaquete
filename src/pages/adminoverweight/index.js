@@ -40,10 +40,7 @@ const AdminOverweightPage = () => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [xlsData, setxlsData] = useState([]);
-
-    const [a, setA] = useState([]);
-    const [b, setB] = useState([]);
-
+    console.log(xlsData);
     const creationDate = new Date();
 
     useEffect(() => {
@@ -61,29 +58,6 @@ const AdminOverweightPage = () => {
                         setUserId(doc.data().ID);
                         setDate(doc.data().creation_date);
                         setKgdeclarados(doc.data().package.weight);
-                    } else {
-                        // doc.data() will be undefined in this case
-                        console.log('No such document!');
-                    }
-                })
-                .catch(function(error) {
-                    console.log('Error getting document:', error);
-                });
-            console.log('Vamos a mostrar los datos del usuario');
-        }
-    }, [guia]);
-
-    useEffect(() => {
-        if (!guia) {
-            console.log('Este valor tiene que tener un valor de guía valida');
-        } else {
-            const docRef = db.collection('guia').doc(a);
-
-            docRef
-                .get()
-                .then(function(doc) {
-                    if (doc.exists) {
-                        setB(doc.data().ID);
                     } else {
                         // doc.data() will be undefined in this case
                         console.log('No such document!');
@@ -122,36 +96,70 @@ const AdminOverweightPage = () => {
     };
 
     const addOverWeight = () => {
-        const addOverWeightData = {
-            ID: userId,
-            usuario: name,
-            fecha: creationDate.toLocaleDateString(),
-            guia,
-            kilos_declarados: kgDeclarados,
-            kilos_reales: realKg,
-        };
-
-        xlsData.data.map(function(overWeight, idx) {
-            setA(overWeight.guia);
+        //Datos manualmente
+        if (name) {
+            const addOverWeightData = {
+                ID: userId,
+                usuario: name,
+                fecha: creationDate.toLocaleDateString(),
+                guia,
+                kilos_declarados: kgDeclarados,
+                kilos_reales: realKg,
+            };
             db.collection('overweights')
-                .add({
-                    ID: b,
-                    usuario: overWeight.usuario,
-                    fecha: creationDate.toLocaleDateString(),
-                    guia: overWeight.guia,
-                    kilos_declarados: overWeight.kilos_declarados,
-                    kilos_reales: overWeight.kilos_reales,
-                })
+                .add(addOverWeightData)
                 .then(function(docRef) {
                     console.log('Document written with ID (origen): ', docRef.id);
                 })
                 .catch(function(error) {
                     console.error('Error adding document: ', error);
                 });
+            console.log('Esto no debe de aparecer');
+        }
+        //Datos cuando se agregan por medio de csv
+        if (xlsData.length === 0) {
+            console.log('El csv esta vacío');
+            return;
+        }
+        xlsData.data.map(function(overWeight, idx) {
+            if (!overWeight.guia) {
+                console.log('Este valor tiene que tener un valor de guía valida');
+            } else {
+                const docRef = db.collection('guia').doc(overWeight.guia);
+                docRef
+                    .get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            setUserId(doc.data().ID);
+                        } else {
+                            // doc.data() will be undefined in this case
+                            console.log('No such document!');
+                        }
+
+                        db.collection('overweights')
+                            .add({
+                                ID: doc.data().ID,
+                                usuario: doc.data().name,
+                                fecha: creationDate.toLocaleDateString(),
+                                guia: overWeight.guia,
+                                kilos_declarados: doc.data().package.weight,
+                                kilos_reales: overWeight.kilos_reales,
+                                cargo: overWeight.kilos_reales + 50,
+                            })
+                            .then(function(docRef) {
+                                console.log('Document written with ID (origen): ', docRef.id);
+                            })
+                            .catch(function(error) {
+                                console.error('Error adding document: ', error);
+                            });
+                    })
+                    .catch(function(error) {
+                        console.log('Error getting document:', error);
+                    });
+                console.log('Vamos a mostrar los datos del usuario');
+            }
         });
     };
-    console.log(xlsData.data);
-    console.log(a);
 
     const schema = {
         collection: 'overWeight',
@@ -160,19 +168,7 @@ const AdminOverweightPage = () => {
                 type: String,
                 required: true,
             },
-            usuario: {
-                type: String,
-                required: true,
-            },
-            kilos_declarados: {
-                type: String,
-                required: true,
-            },
             kilos_reales: {
-                type: String,
-                required: true,
-            },
-            cargo: {
                 type: Number,
                 required: true,
             },

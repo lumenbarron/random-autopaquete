@@ -47,6 +47,8 @@ export const PaqueteComponent = ({ onSave }) => {
     const db = firebase.firestore();
     const user = useUser();
 
+    const [error, setError] = useState(false);
+
     const [name, setName] = useState('');
     const [height, setHeight] = useState('');
     const [width, setWidth] = useState('');
@@ -128,7 +130,7 @@ export const PaqueteComponent = ({ onSave }) => {
             contentDescription.trim() === '' ||
             quantity.trim() === ''
         ) {
-            console.log('Espacios vacios');
+            setError(true);
         } else if (checkBoxSecure && contentValue.trim() === '') {
             console.log('Espacios vacios (valor del contenido)');
         } else {
@@ -291,6 +293,9 @@ export const PaqueteComponent = ({ onSave }) => {
                         onChange={e => setCheckBox(e.target.checked)}
                     />
                 </div>
+                {error && (
+                    <div className="alert-error">Todos los campos necesitan estar llenos</div>
+                )}
                 <Button
                     variant="brand"
                     className="rainbow-m-around_medium"

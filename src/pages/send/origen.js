@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Input, CheckboxToggle, Button, Notification } from 'react-rainbow-components';
+import { Input, CheckboxToggle, Button, HelpText } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
 import SendPage from '../send/index';
-
 const AddressRadioOption = ({ directions }) => {
     const {
         neighborhood,
@@ -36,7 +35,7 @@ export const OrigenComponent = ({ onSave }) => {
     const db = firebase.firestore();
     const user = useUser();
 
-    const [error, setError] = useState('');
+    const [error, setError] = useState(false);
     const [directionData, setDirectionData] = useState([]);
 
     const [value, setValue] = useState();
@@ -50,6 +49,8 @@ export const OrigenComponent = ({ onSave }) => {
     const [phone, setPhone] = useState('');
 
     const [checkBox, setCheckBox] = useState(true);
+
+    const [userName, setUserName] = useState('');
 
     const creationDate = new Date();
 
@@ -83,6 +84,7 @@ export const OrigenComponent = ({ onSave }) => {
         };
     });
 
+    //Se obtienen las direcciones guardadas
     useEffect(() => {
         if (value) {
             const docRef = db.collection('sender_addresses').doc(value);
@@ -107,6 +109,21 @@ export const OrigenComponent = ({ onSave }) => {
                 });
         }
     }, [value]);
+
+    //Se obtiene el nombre dle usuario
+    if (user) {
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    setUserName(doc.data().name);
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+    }
 
     const registerDirecction = () => {
         if (
@@ -154,6 +171,7 @@ export const OrigenComponent = ({ onSave }) => {
 
         const directionsGuiasCollectionAdd = db.collection('guia').add({
             ID: user.uid,
+            name: userName,
             creation_date: creationDate.toLocaleDateString(),
             status: 'incomplete',
             sender_addresses: {
@@ -281,6 +299,11 @@ export const OrigenComponent = ({ onSave }) => {
                         />
                     </div>
                 </div>
+
+                {error && (
+                    <div className="alert-error">Todos los campos necesitan estar llenos</div>
+                )}
+
                 <Button
                     variant="brand"
                     className="rainbow-m-around_medium"
@@ -289,15 +312,6 @@ export const OrigenComponent = ({ onSave }) => {
                     Continuar
                     <FontAwesomeIcon icon={faArrowRight} className="rainbow-m-left_medium" />
                 </Button>
-                {error && (
-                    <div className="alert-push">
-                        <Notification
-                            title="Requiere completar campos vacíos  "
-                            description="Oh no, parece que falta completar información ."
-                            icon="warning"
-                        />
-                    </div>
-                )}
             </StyledRightPane>
         </StyledPaneContainer>
     );
