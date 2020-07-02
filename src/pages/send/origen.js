@@ -40,6 +40,8 @@ export const OrigenComponent = ({ onSave }) => {
 
     const [value, setValue] = useState();
 
+    const [filter, setFilter] = useState(null);
+
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
@@ -77,12 +79,30 @@ export const OrigenComponent = ({ onSave }) => {
         setDirectionData(directionData);
     }
 
-    const options = directionData.map((directions, idx) => {
-        return {
-            value: directions.id + '',
-            label: <AddressRadioOption key={directions.id} directions={directions} />,
-        };
-    });
+    const options = directionData
+        .filter(directions => {
+            if (filter === null) {
+                return directions;
+            } else if (
+                directions.name.includes(filter) ||
+                directions.street_number.includes(filter)
+            ) {
+                return directions;
+            }
+        })
+        .map(directions => {
+            return {
+                value: directions.id + '',
+                label: <AddressRadioOption key={directions.id} directions={directions} />,
+            };
+        });
+    console.log(filter);
+    // const options = directionData.map((directions, idx) => {
+    //     return {
+    //         value: directions.id + '',
+    //         label: <AddressRadioOption key={directions.id} directions={directions} />,
+    //     };
+    // });
 
     //Se obtienen las direcciones guardadas
     useEffect(() => {
@@ -201,14 +221,21 @@ export const OrigenComponent = ({ onSave }) => {
             });
     };
 
+    const search = e => {
+        let keyword = e.target.value;
+        setFilter(keyword);
+    };
+
     return (
         <StyledPaneContainer>
             <StyledLeftPane>
                 <h4>Mis direcciones</h4>
                 <Input
+                    value={filter}
                     placeholder="Buscar"
                     iconPosition="right"
                     icon={<FontAwesomeIcon icon={faSearch} />}
+                    onChange={e => search(e)}
                 />
                 <StyledRadioGroup
                     id="radio-group-component-1"
