@@ -41,6 +41,9 @@ const AdminOverweightPage = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [xlsData, setxlsData] = useState([]);
 
+    const [a, setA] = useState([]);
+    const [b, setB] = useState([]);
+
     const creationDate = new Date();
 
     useEffect(() => {
@@ -58,6 +61,29 @@ const AdminOverweightPage = () => {
                         setUserId(doc.data().ID);
                         setDate(doc.data().creation_date);
                         setKgdeclarados(doc.data().package.weight);
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log('No such document!');
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Error getting document:', error);
+                });
+            console.log('Vamos a mostrar los datos del usuario');
+        }
+    }, [guia]);
+
+    useEffect(() => {
+        if (!guia) {
+            console.log('Este valor tiene que tener un valor de guía valida');
+        } else {
+            const docRef = db.collection('guia').doc(a);
+
+            docRef
+                .get()
+                .then(function(doc) {
+                    if (doc.exists) {
+                        setB(doc.data().ID);
                     } else {
                         // doc.data() will be undefined in this case
                         console.log('No such document!');
@@ -106,12 +132,13 @@ const AdminOverweightPage = () => {
         };
 
         xlsData.data.map(function(overWeight, idx) {
+            setA(overWeight.guia);
             db.collection('overweights')
                 .add({
-                    ID: 'test',
+                    ID: b,
                     usuario: overWeight.usuario,
-                    fecha: overWeight.date.toLocaleDateString(),
-                    guia: 'test',
+                    fecha: creationDate.toLocaleDateString(),
+                    guia: overWeight.guia,
                     kilos_declarados: overWeight.kilos_declarados,
                     kilos_reales: overWeight.kilos_reales,
                 })
@@ -124,11 +151,12 @@ const AdminOverweightPage = () => {
         });
     };
     console.log(xlsData.data);
+    console.log(a);
 
     const schema = {
         collection: 'overWeight',
         attributes: {
-            titulo: {
+            guia: {
                 type: String,
                 required: true,
             },
@@ -144,11 +172,10 @@ const AdminOverweightPage = () => {
                 type: String,
                 required: true,
             },
-            charge: {
+            cargo: {
                 type: Number,
                 required: true,
             },
-            date: Date,
         },
     };
 
