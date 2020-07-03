@@ -40,6 +40,7 @@ export const DestinoComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState(false);
+    const [filter, setFilter] = useState(null);
 
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
@@ -72,12 +73,29 @@ export const DestinoComponent = ({ onSave }) => {
         setDirectionDataa(directionDataa);
     }
 
-    const options = directionDataa.map((directions, idx) => {
-        return {
-            value: directions.id,
-            label: <AddressRadioOption key={directions.id} directions={directions} />,
-        };
-    });
+    const options = directionDataa
+        .filter(directions => {
+            if (filter === null) {
+                return directions;
+            } else if (
+                directions.name.includes(filter) ||
+                directions.street_number.includes(filter)
+            ) {
+                return directions;
+            }
+        })
+        .map(directions => {
+            return {
+                value: directions.id + '',
+                label: <AddressRadioOption key={directions.id} directions={directions} />,
+            };
+        });
+    console.log(filter);
+
+    const search = e => {
+        let keyword = e.target.value;
+        setFilter(keyword);
+    };
 
     useEffect(() => {
         if (value) {
@@ -155,9 +173,11 @@ export const DestinoComponent = ({ onSave }) => {
             <StyledLeftPane>
                 <h4>Mis direcciones</h4>
                 <Input
+                    value={filter}
                     placeholder="Buscar"
                     iconPosition="right"
                     icon={<FontAwesomeIcon icon={faSearch} />}
+                    onChange={e => search(e)}
                 />
                 <StyledRadioGroup
                     id="radio-group-component-1"

@@ -48,6 +48,7 @@ export const PaqueteComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState(false);
+    const [filter, setFilter] = useState(null);
 
     const [name, setName] = useState('');
     const [height, setHeight] = useState('');
@@ -82,13 +83,25 @@ export const PaqueteComponent = ({ onSave }) => {
         });
         setPackageData(packageData);
     }
+    const options = packageData
+        .filter(packages => {
+            if (filter === null) {
+                return packages;
+            } else if (packages.name.includes(filter)) {
+                return packages;
+            }
+        })
+        .map(packages => {
+            return {
+                value: packages.id,
+                label: <PackagingRadioOption key={packages.id} packages={packages} />,
+            };
+        });
 
-    const options = packageData.map((packages, idx) => {
-        return {
-            value: packages.id,
-            label: <PackagingRadioOption key={packages.id} packages={packages} />,
-        };
-    });
+    const search = e => {
+        let keyword = e.target.value;
+        setFilter(keyword);
+    };
 
     const duplicateName = packageData.map((searchName, idx) => {
         return searchName.name;

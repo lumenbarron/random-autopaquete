@@ -96,7 +96,6 @@ export const OrigenComponent = ({ onSave }) => {
                 label: <AddressRadioOption key={directions.id} directions={directions} />,
             };
         });
-    console.log(filter);
     // const options = directionData.map((directions, idx) => {
     //     return {
     //         value: directions.id + '',
