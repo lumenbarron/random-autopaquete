@@ -41,6 +41,11 @@ export const DirectionContainer = styled.div`
         margin-bottom: .7rem;
     }
 
+    .direction-accordion{
+        background:#EFF1F5;
+        margin-top:2rem;
+    }
+
     .btn-new:hover {
     background-color: #C94141;
     color: white;

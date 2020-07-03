@@ -24,13 +24,18 @@ const LoginPage = () => {
     const [lastname, setLastName] = useState('');
 
     const [errorLogIn, setErrorLogIn] = useState(false);
-    const [errorPass, setErrorPass] = useState(false);
+    const [errorEmptyLogIn, setErrorEmptyLogIn] = useState(false);
+    const [errorRestorePass, setErrorRestorePass] = useState(false);
+    const [errorEmptyRestorePass, setErrorEmptyRestorePass] = useState(false);
     const [errorRegister, setErrorRegister] = useState(false);
 
     const firebase = useFirebaseApp();
     const history = useHistory();
     const user = useUser();
     const db = firebase.firestore();
+
+    const [message, setMessage] = useState(false);
+    const [messegeClass, setMessegeClass] = useState(false);
 
     // Crear usuario con correo y contraseña
     const register = e => {
@@ -72,43 +77,37 @@ const LoginPage = () => {
     const login = async e => {
         e.preventDefault();
         if (email.trim() === '' || password.trim() === '') {
-            setErrorLogIn(true);
+            setErrorEmptyLogIn(true);
             return;
         }
 
         await firebase
             .auth()
             .signInWithEmailAndPassword(email, password)
-            .then(({ user }) => {
-                const docRef = db.collection('profiles').where('ID', '==', user.uid);
-                docRef
-                    .get()
-                    .then(function(querySnapshot) {
-                        querySnapshot.forEach(function(doc) {
-                            console.log(doc.data().user_type);
-                            if (doc.data().user_type === 'regular') {
-                                history.push('/mi-cuenta');
-                            }
-                            if (doc.data().user_type === 'admin') {
-                                history.push('/admin/usuarios');
-                            }
-
-                            // revisar si el usuario tiene perfil en firestore y si es de tipo admin
-                        });
-                    })
-                    .catch(function(error) {
-                        console.log('Error getting documents: ', error);
-                    });
+            .catch(function(error) {
+                setErrorLogIn(true);
             });
     };
 
     const restorePass = async e => {
         e.preventDefault();
         if (email.trim() === '') {
-            setErrorPass(true);
+            setErrorEmptyRestorePass(true);
             return;
         }
-        firebase.auth().sendPasswordResetEmail(email);
+        firebase
+            .auth()
+            .sendPasswordResetEmail(email)
+            .then(function() {
+                setErrorRestorePass(true);
+                setMessage('El correo de recuperción se envío correctamente');
+                setMessegeClass('restore-pass');
+            })
+            .catch(function(error) {
+                setErrorRestorePass(true);
+                setMessage('Correo incorrecto');
+                setMessegeClass('alert-error');
+            });
     };
 
     useBlockSecurity();
@@ -134,12 +133,18 @@ const LoginPage = () => {
                         onChange={ev => setPassword(ev.target.value)}
                     />
 
-                    {errorLogIn && (
+                    {errorEmptyLogIn && (
                         <div className="alert-error">
-                            Necesitas ingresar tu contraseña y correo para iniciar sesión
+                            Necesitas ingresar tu correo y contraseña para iniciar sesión
                         </div>
                     )}
-                    {errorPass && <div className="alert-error">Necesitas ingresar tu correo</div>}
+                    {errorLogIn && (
+                        <div className="alert-error">Correo o contraseña incorrectos</div>
+                    )}
+                    {errorEmptyRestorePass && (
+                        <div className="alert-error">Ingresa tu correo electrónico</div>
+                    )}
+                    {errorRestorePass && <div className={messegeClass}>{message}</div>}
                     <Button className="boton" type="submit" onClick={login}>
                         Iniciar sesión
                     </Button>
@@ -199,7 +204,7 @@ const LoginPage = () => {
                             />
                         </div>
                         {errorRegister && (
-                            <div className="alert-error">Necesitas llenar todos los campos</div>
+                            <div className="alert-error">Necesitas completar todos los campos</div>
                         )}
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <p style={{ fontSize: '0.9rem' }}>

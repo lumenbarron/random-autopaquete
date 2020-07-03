@@ -24,8 +24,15 @@ export const StyledLoginPage = styled.div`
 
     .alert-error {
     margin-bottom: 1rem!important ;
+    margin-left: 1.2rem;
     color: crimson;
     }
+
+    .restore-pass{
+    margin-bottom: 1rem!important ;
+    margin-left: 1.2rem;
+    color: #54d561;
+    } 
 
     .remember-pass {
         margin-left:1rem;

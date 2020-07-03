@@ -6,7 +6,7 @@ import firebase from './components/firebase/firebase';
 
 ReactDOM.render(
     <FirebaseAppProvider firebaseConfig={firebase}>
-        <Suspense fallback="Conectando con  la app...">
+        <Suspense fallback="">
             <App />
         </Suspense>
     </FirebaseAppProvider>,

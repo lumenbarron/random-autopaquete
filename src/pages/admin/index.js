@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyledAdmin } from './styled';
 import 'firebase/auth';
 import * as firebase from 'firebase';
+import { useBlockSecurity } from '../../hooks/useBlockSecurity';
 
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
@@ -47,6 +48,7 @@ const AdminPage = () => {
                     });
             });
     };
+    useBlockSecurity();
 
     return (
         <StyledAdmin>

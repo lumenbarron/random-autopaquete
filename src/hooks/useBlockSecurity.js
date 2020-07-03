@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useUser } from 'reactfire';
 import * as firebase from 'firebase';
 
-export function useBlockSecurity(type) {
+export function useBlockSecurity() {
     const user = useUser();
     const history = useHistory();
     const db = firebase.firestore();
@@ -22,13 +22,10 @@ export function useBlockSecurity(type) {
                     if (doc.data().user_type === 'admin') {
                         history.push('/admin/usuarios');
                     }
-
-                    // revisar si el usuario tiene perfil en firestore y si es de tipo admin
                 });
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
             });
     }
-    // Validar si el usuario no esta loggeado
 }

@@ -23,6 +23,7 @@ export default function DirectionPage() {
     const user = useUser();
 
     const [error, setError] = useState(false);
+    const [filter, setFilter] = useState(null);
 
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
@@ -81,7 +82,34 @@ export default function DirectionPage() {
         };
     }
 
-    const data = senderAddresses.map(mapAddresses).concat(receiverAddresses.map(mapAddresses));
+    const data = senderAddresses
+        .filter(address => {
+            if (filter === null) {
+                return address;
+            } else if (address.name.includes(filter) || address.street_number.includes(filter)) {
+                return address;
+            }
+        })
+        .map(mapAddresses)
+        .concat(
+            receiverAddresses
+                .filter(address => {
+                    if (filter === null) {
+                        return address;
+                    } else if (
+                        address.name.includes(filter) ||
+                        address.street_number.includes(filter)
+                    ) {
+                        return address;
+                    }
+                })
+                .map(mapAddresses),
+        );
+
+    const search = e => {
+        let keyword = e.target.value;
+        setFilter(keyword);
+    };
 
     const registerDirecction = () => {
         if (
@@ -154,12 +182,13 @@ export default function DirectionPage() {
     return (
         <StyledDirection>
             <DirectionContainer>
-                <div>
+                <div className="directions-table">
                     <div>
                         <h1>Mis direcciones</h1>
 
                         <div>
                             <Input
+                                value={filter}
                                 className="rainbow-p-around_medium"
                                 placeholder="Buscar"
                                 icon={
@@ -168,6 +197,7 @@ export default function DirectionPage() {
                                         className="rainbow-color_gray-3"
                                     />
                                 }
+                                onChange={e => search(e)}
                             />
                         </div>
 
@@ -195,7 +225,7 @@ export default function DirectionPage() {
                 </div>
                 <div>
                     <Accordion id="accordion-1">
-                        <AccordionSection label="Agregar Dirección">
+                        <AccordionSection label="Agregar Dirección" className="direction-accordion">
                             <div
                                 className="rainbow-align_end rainbow-flex"
                                 style={{ flexWrap: 'wrap-reverse' }}

@@ -90,7 +90,6 @@ const ErrorText = styled.div`
 function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
-    const userFirebase = useUser();
 
     const [minRate, setMinRate] = useState();
     const [maxRate, setMaxRate] = useState();
@@ -115,6 +114,8 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             max: maxRateModal,
             precio: costModal,
         };
+
+        console.log(key);
 
         const editRateInformation = db
             .collection('profiles')
@@ -264,7 +265,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             max: maxRate,
             entrega,
             precio: cost,
-            kg_extra: kgExtra,
         };
         db.collection('profiles')
             .doc(user.id)
@@ -299,7 +299,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                 console.error('Error adding document: ', error);
             });
     };
-
     return (
         <StyledSection label={label}>
             {tarifasMap}
@@ -326,7 +325,10 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             </div>
             <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap">
                 <div>{label}</div>
-                <div>{formatMoney(kgExtra)}</div>
+                {kgExtra.map((kgExtra, idx) => (
+                    <div>{formatMoney(kgExtra.kgExtra)}</div>
+                ))}
+
                 <div className="actions">
                     <button>
                         <FontAwesomeIcon icon={faPencilAlt} onClick={openModalExtra} />
@@ -394,7 +396,6 @@ export default function Tarifario({ user }) {
     const db = firebase.firestore();
 
     const [tarifas, setTarifas] = useState([]);
-    const [kgExtra, setKgExtra] = useState();
 
     useEffect(() => {
         if (user) {
@@ -423,7 +424,13 @@ export default function Tarifario({ user }) {
             return entregaFilter.entrega === 'estafetaDiaSiguiente';
         })
         .map((entrega, xid) => {
-            return { key: entrega.id, max: entrega.max, precio: entrega.precio, min: entrega.min };
+            return {
+                key: entrega.id,
+                max: entrega.max,
+                precio: entrega.precio,
+                min: entrega.min,
+                kgExtra: entrega.kgExtra,
+            };
         });
 
     const estafetaEconomico = tarifas
@@ -431,7 +438,13 @@ export default function Tarifario({ user }) {
             return entregaFilter.entrega === 'estafetaEconómico';
         })
         .map((entrega, xid) => {
-            return { key: entrega.id, max: entrega.max, precio: entrega.precio, min: entrega.min };
+            return {
+                key: entrega.id,
+                max: entrega.max,
+                precio: entrega.precio,
+                min: entrega.min,
+                kgExtra: entrega.kgExtra,
+            };
         });
 
     const fedexDiaSiguiente = tarifas
@@ -439,7 +452,13 @@ export default function Tarifario({ user }) {
             return entregaFilter.entrega === 'fedexDiaSiguiente';
         })
         .map((entrega, xid) => {
-            return { key: entrega.id, max: entrega.max, precio: entrega.precio, min: entrega.min };
+            return {
+                key: entrega.id,
+                max: entrega.max,
+                precio: entrega.precio,
+                min: entrega.min,
+                kgExtra: entrega.kgExtra,
+            };
         });
 
     const fedexEconomico = tarifas
@@ -449,6 +468,64 @@ export default function Tarifario({ user }) {
         .map((entrega, xid) => {
             return { key: entrega.id, max: entrega.max, precio: entrega.precio, min: entrega.min };
         });
+
+    //////////////////////////
+    const estafetaDiaSiguienteExtra = tarifas
+        .filter(entregaFilterExtra => {
+            return entregaFilterExtra.type === 'estafetaDiaSiguienteExtra';
+        })
+        .map((kgExtra, xid) => {
+            return {
+                kgExtra: kgExtra.kgExtra,
+            };
+        });
+
+    const estafetaEconomicoExtra = tarifas
+        .filter(entregaFilterExtra => {
+            return entregaFilterExtra.type === 'estafetaEconómicoExtra';
+        })
+        .map((kgExtra, xid) => {
+            return {
+                kgExtra: kgExtra.kgExtra,
+            };
+        });
+
+    const fedexDiaSiguienteExtra = tarifas
+        .filter(entregaFilterExtra => {
+            return entregaFilterExtra.type === 'fedexDiaSiguienteExtra';
+        })
+        .map((kgExtra, xid) => {
+            return {
+                kgExtra: kgExtra.kgExtra,
+            };
+        });
+
+    const fedexEconomicoExtra = tarifas
+        .filter(entregaFilterExtra => {
+            return entregaFilterExtra.type === 'fedexEconomicoExtra';
+        })
+        .map((kgExtra, xid) => {
+            return {
+                kgExtra: kgExtra.kgExtra,
+            };
+        });
+
+    // const docRef = db
+    //     .collection('profiles')
+    //     .doc(user.id)
+    //     .collection('rate')
+    //     .where('type', '==', 'kgExtra');
+
+    // docRef
+    //     .get()
+    //     .then(function(querySnapshot) {
+    //         querySnapshot.forEach(function(doc) {
+    //             console.log(doc.id, ' => ', doc.data());
+    //         });
+    //     })
+    //     .catch(function(error) {
+    //         console.log('Error getting documents: ', error);
+    //     });
 
     return (
         <>
@@ -460,15 +537,16 @@ export default function Tarifario({ user }) {
                     valor={estafetaDiaSiguiente.value}
                     tarifas={estafetaDiaSiguiente}
                     key={estafetaDiaSiguiente.id}
-                    kgExtra={kgExtra}
+                    kgExtra={estafetaDiaSiguienteExtra}
                     user={user}
+                    entregaExtra="estafetaDiaSiguienteExtra"
                     entrega="estafetaDiaSiguiente"
                 />
 
                 <TarifarioPorServicio
                     label="Estafeta Terrestre"
                     tarifas={estafetaEconomico}
-                    kgExtra={kgExtra}
+                    kgExtra={estafetaEconomicoExtra}
                     user={user}
                     entrega="estafetaEconómico"
                 />
@@ -478,14 +556,14 @@ export default function Tarifario({ user }) {
                 <TarifarioPorServicio
                     label="Fedex Día Siguiente"
                     tarifas={fedexDiaSiguiente}
-                    kgExtra={kgExtra}
+                    kgExtra={fedexDiaSiguienteExtra}
                     user={user}
                     entrega="fedexDiaSiguiente"
                 />
                 <TarifarioPorServicio
                     label="Fedex Terrestre"
                     tarifas={fedexEconomico}
-                    kgExtra={kgExtra}
+                    kgExtra={fedexEconomicoExtra}
                     user={user}
                     entrega="fedexEconomico"
                 />

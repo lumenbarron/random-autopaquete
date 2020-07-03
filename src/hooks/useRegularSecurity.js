@@ -11,7 +11,7 @@ export function useRegularSecurity() {
         const docRef = db.collection('profiles').where('ID', '==', user.uid);
         docRef.get().then(querySnapshot => {
             querySnapshot.forEach(doc => {
-                if (doc.data().user_type !== 'regular' && doc.data().user_type !== 'admin') {
+                if (doc.data().user_type !== 'regular' || doc.data().user_type !== 'admin') {
                     history.push('/');
                 }
             });
