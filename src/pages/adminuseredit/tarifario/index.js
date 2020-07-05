@@ -280,60 +280,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
 
     const addExtraRate = () => {};
 
-    const docRef = db
-        .collection('profiles')
-        .doc(user.id)
-        .collection('rate')
-        .where('type', '==', 'estafetaDiaSiguienteExtra');
-
-    docRef
-        .get()
-        .then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                setEstafetaDiaSiguienteExtraId(doc.id);
-            });
-        })
-        .catch(function(error) {
-            console.log('Error getting documents: ', error);
-        })
-        .then(function(estafetaDiaSiguienteExtraId) {
-            if (estafetaDiaSiguienteExtraId === '') {
-                db.collection('profiles')
-                    .doc(user.id)
-                    .collection('rate')
-                    .add({
-                        kgExtra: 130,
-                        type: 'estafetaDiaSiguienteExtra',
-                    })
-                    .then(function() {
-                        console.log('Document successfully written!');
-                    })
-                    .catch(function(error) {
-                        console.error('Error writing document: ', error);
-                    });
-            } else {
-                const editRateInformation = db
-                    .collection('profiles')
-                    .doc(user.id)
-                    .collection('rate')
-                    .doc(estafetaDiaSiguienteExtraId)
-                    .update({
-                        kgExtra: 150,
-                        type: 'estafetaDiaSiguienteExtra',
-                    });
-
-                editRateInformation
-                    .then(function(docRef) {
-                        console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
-                    })
-                    .catch(function(error) {
-                        console.error('Error adding document: ', error);
-                    });
-            }
-        });
-
-    console.log(estafetaDiaSiguienteExtraId);
-
     return (
         <StyledSection label={label}>
             {tarifasMap}
