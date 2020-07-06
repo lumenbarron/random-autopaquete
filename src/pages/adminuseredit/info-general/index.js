@@ -160,6 +160,14 @@ export default function InfoGeneral({ user }) {
             };
         }
 
+        if (persona !== 'Moral' && persona !== 'Física') {
+            editProfile = {
+                status,
+            };
+        }
+
+        console.log(editProfile);
+
         const directionsGuiasCollectionAdd = db
             .collection('profiles')
             .doc(user.id)
@@ -168,16 +176,16 @@ export default function InfoGeneral({ user }) {
         if (comment.trim() === '') {
             directionsGuiasCollectionAdd
                 .then(function(docRef) {
-                    console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+                    console.log('Se cumplio! Document written with ID (profile): ', docRef.id);
                 })
                 .catch(function(error) {
-                    console.error('Error adding document: ', error);
+                    console.error('No se encontro el documento: ', error);
                 });
             return;
         }
         directionsGuiasCollectionAdd
             .then(function(docRef) {
-                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+                console.log('Se cumplio! Document written with ID (profile): ', docRef.id);
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
@@ -186,6 +194,11 @@ export default function InfoGeneral({ user }) {
             comment,
             creation_date: creationDate.toLocaleDateString(),
         };
+
+        if (comment.trim() === '') {
+            console.log('No hay comentarios por el momento');
+        }
+
         db.collection('profiles')
             .doc(user.id)
             .collection('comentarios')

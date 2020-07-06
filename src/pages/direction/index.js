@@ -250,14 +250,6 @@ export default function DirectionPage() {
                                         style={{ width: '100%' }}
                                         onChange={e => setPhone(e.target.value)}
                                     />
-                                    {error && (
-                                        <div className="alert-error">
-                                            Todos los campos necesitan estar llenos
-                                        </div>
-                                    )}
-                                    <Button className="btn-new" onClick={registerDirecction}>
-                                        Guardar
-                                    </Button>
                                 </div>
                                 <div style={{ flex: '1 1' }}>
                                     <h2>Dirección</h2>
@@ -307,6 +299,14 @@ export default function DirectionPage() {
                                         style={{ flex: '1 1' }}
                                         onChange={e => setPlaceRef(e.target.value)}
                                     />
+                                    {error && (
+                                        <div className="alert-error">
+                                            Todos los campos necesitan estar llenos
+                                        </div>
+                                    )}
+                                    <Button className="btn-new" onClick={registerDirecction}>
+                                        Guardar
+                                    </Button>
                                 </div>
                             </div>
                         </AccordionSection>

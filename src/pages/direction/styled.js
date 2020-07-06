@@ -34,7 +34,7 @@ export const DirectionContainer = styled.div`
     color: #fff;
     border-radius: 25px;
     padding: 8px 16px;
-
+    float:right;
     }
 
     .alert-error {

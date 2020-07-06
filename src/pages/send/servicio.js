@@ -86,15 +86,18 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
                 setPhoneReceiver(doc.data().receiver_addresses.phone);
                 // Get snapshot to receive package information
-                setNamePackage(doc.data().package.name);
-                setHeight(doc.data().package.height);
-                setWidth(doc.data().package.width);
-                setDepth(doc.data().package.depth);
-                setWeight(doc.data().package.weight);
-                setQuantity(doc.data().package.quantity);
-                setContentValue(doc.data().package.content_value);
+                if (doc.data().package) {
+                    setNamePackage(doc.data().package.name);
+                    setHeight(doc.data().package.height);
+                    setWidth(doc.data().package.width);
+                    setDepth(doc.data().package.depth);
+                    setWeight(doc.data().package.weight);
+                    setQuantity(doc.data().package.quantity);
+                    setContentValue(doc.data().package.content_value);
+                }
             });
     }, []);
+    console.log('De aquí se tiene que obtener la info ', idGuiaGlobal);
 
     useEffect(() => {
         if (weight === '') return;
@@ -153,7 +156,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         }
 
                         // Anotamos los cargos de kg extra, por si los necesitamos
-                        if (kgExtra) {
+                        if (kgExtra && entrega) {
                             kgsExtraTarifas[entrega.slice(0, entrega.indexOf('Extra'))] = parseInt(
                                 kgExtra,
                                 10,
