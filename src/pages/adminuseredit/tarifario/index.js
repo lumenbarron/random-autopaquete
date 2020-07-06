@@ -103,8 +103,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
             precio: costModal,
         };
 
-        console.log(key);
-
         const editRateInformation = db
             .collection('profiles')
             .doc(user.id)
@@ -248,7 +246,46 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         );
     });
 
+    const [min, setMin] = useState([]);
+    const [max, setMax] = useState([]);
+    const [addKgError, setAddKgError] = useState(false);
+
     const addRate = () => {
+        db.collection('profiles')
+            .doc(user.id)
+            .collection('rate')
+            .where('entrega', '==', 'estafetaDiaSiguiente')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    setMin(doc.data().min);
+                    setMax(doc.data().max);
+
+                    console.log('doc.data().min', doc.data().min);
+                    console.log('doc.data().max', doc.data().max);
+                    console.log('minRate', minRate);
+                    console.log('maxRate', maxRate);
+
+                    if (parseInt(minRate) >= parseInt(maxRate)) {
+                        setAddKgError(true);
+                        return;
+                    }
+                    if (
+                        parseInt(doc.data().min) >= minRate &&
+                        parseInt(doc.data().max) <= maxRate
+                    ) {
+                        console.log('Se tiene que seleccionar una cantidad valida');
+                        setAddKgError(true);
+                        return;
+                    }
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+
+        setAddKgError(false);
+
         const addRateData = {
             min: minRate,
             max: maxRate,
@@ -325,10 +362,12 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                 <div className="actions">
                     <Button label="Confirmar" onClick={addRate} />
                 </div>
-                <ErrorText>
-                    Error: Los kilogramos que tienes deben estar duplicados o no ser consecutivos,
-                    favor de revisar
-                </ErrorText>
+                {addKgError && (
+                    <ErrorText>
+                        Error: Los kilogramos que tienes deben estar duplicados o no ser
+                        consecutivos, favor de revisar
+                    </ErrorText>
+                )}
             </div>
             <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap header-divider">
                 <h3>Kg Adicional</h3>
