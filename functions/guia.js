@@ -1,13 +1,26 @@
-const functions = require('firebase-functions');
-const admin = require('./admin').admin;
+const { admin } = require('./admin');
 
-async function getGuiaById(db, uid, guiaId) {
-    var db = admin.firestore();
-    var query = await db
+async function getGuiaById(uid, guiaId) {
+    const db = admin.firestore();
+    const query = await db
         .collection('guia')
-        .where('ID', '==', uid)
-        .where('id', '==', guiaId)
+        .doc(guiaId)
         .get();
-    var guia = query.docs[0] ? query.docs[0].data() : null;
-    return guia;
+    const guia = query ? query.data() : null;
+
+    if (guia.ID === uid) {
+        return guia;
+    }
+    return null;
 }
+
+async function saveLabel(guiaId, pdf) {
+    const db = admin.firestore();
+    await db
+        .collection('guia')
+        .doc(guiaId)
+        .update({ label: pdf });
+}
+
+exports.getGuiaById = getGuiaById;
+exports.saveLabel = saveLabel;

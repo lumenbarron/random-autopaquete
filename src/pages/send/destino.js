@@ -1,10 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
+import { Input, CheckboxToggle, Button, Picklist, Option } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
 import * as firebase from 'firebase';
 import { useFirebaseApp, useUser } from 'reactfire';
+
+const StatePicklistOptions = () => {
+    return (
+        <>
+            <Option value="AG" name="Aguascalientes" label="Aguascalientes" />
+            <Option value="BC" name="Baja California" label="Baja California" />
+            <Option value="BS" name="Baja California Sur" label="Baja California Sur" />
+            <Option value="CM" name="Campeche" label="Campeche" />
+            <Option value="CS" name="Chiapas" label="Chiapas" />
+            <Option value="CH" name="Chihuahua" label="Chihuahua" />
+            <Option value="CO" name="Coahuila" label="Coahuila" />
+            <Option value="CL" name="Colima" label="Colima" />
+            <Option value="DF" name="Ciudad de México" label="Ciudad de México" />
+            <Option value="DG" name="Durango" label="Durango" />
+            <Option value="GT" name="Guanajuato" label="Guanajuato" />
+            <Option value="GR" name="Guerrero" label="Guerrero" />
+            <Option value="HG" name="Hidalgo" label="Hidalgo" />
+            <Option value="JA" name="Jalisco" label="Jalisco" />
+            <Option value="EM" name="Estado de México" label="Estado de México" />
+            <Option value="MI" name="Michoacán" label="Michoacán" />
+            <Option value="MO" name="Morelos" label="Morelos" />
+            <Option value="NA" name="Nayarit" label="Nayarit" />
+            <Option value="NL" name="Nuevo León" label="Nuevo León" />
+            <Option value="OA" name="Oaxaca" label="Oaxaca" />
+            <Option value="PU" name="Puebla" label="Puebla" />
+            <Option value="QE" name="Querétaro" label="Querétaro" />
+            <Option value="QR" name="Quintana Roo" label="Quintana Roo" />
+            <Option value="SL" name="San Luis Potosí" label="San Luis Potosí" />
+            <Option value="SI" name="Sinaloa" label="Sinaloa" />
+            <Option value="SO" name="Sonora" label="Sonora" />
+            <Option value="TB" name="Tabasco" label="Tabasco" />
+            <Option value="TM" name="Tamaulipas" label="Tamaulipas" />
+            <Option value="TL" name="Tlaxcala" label="Tlaxcala" />
+            <Option value="VE" name="Veracruz" label="Veracruz" />
+            <Option value="YU" name="Yucatán" label="Yucatán" />
+            <Option value="ZA" name="Zacatecas" label="Zacatecas" />
+        </>
+    );
+};
 
 const AddressRadioOption = ({ directions }) => {
     const {
@@ -13,6 +52,7 @@ const AddressRadioOption = ({ directions }) => {
         phone,
         street_number,
         country,
+        state,
         codigo_postal,
         name,
     } = directions;
@@ -24,7 +64,9 @@ const AddressRadioOption = ({ directions }) => {
             </span>
             <p>{street_number}</p>
             <p>{neighborhood}</p>
-            <p>{country}</p>
+            <p>
+                {country}, {state}
+            </p>
             <p>C.P. {codigo_postal}</p>
             <p>Tel {phone}</p>
         </>
@@ -40,12 +82,13 @@ export const DestinoComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState(false);
-    const [filter, setFilter] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
     const [country, setCountry] = useState('');
+    const [state, setState] = useState('');
     const [streetNumber, setStreetNumber] = useState('');
     const [placeRef, setPlaceRef] = useState('');
     const [phone, setPhone] = useState('');
@@ -108,6 +151,7 @@ export const DestinoComponent = ({ onSave }) => {
                         setCP(doc.data().codigo_postal);
                         setNeighborhood(doc.data().neighborhood);
                         setCountry(doc.data().country);
+                        setState({ value: doc.data().state });
                         setStreetNumber(doc.data().street_number);
                         setPlaceRef(doc.data().place_reference);
                         setPhone(doc.data().phone);
@@ -128,6 +172,7 @@ export const DestinoComponent = ({ onSave }) => {
             CP.trim() === '' ||
             neighborhood.trim() === '' ||
             country.trim() === '' ||
+            state.value.trim() === '' ||
             streetNumber.trim() === '' ||
             placeRef.trim() === '' ||
             phone.trim() === ''
@@ -141,6 +186,7 @@ export const DestinoComponent = ({ onSave }) => {
             codigo_postal: CP,
             neighborhood,
             country,
+            state: state.value,
             street_number: streetNumber,
             place_reference: placeRef,
             phone,
@@ -154,6 +200,7 @@ export const DestinoComponent = ({ onSave }) => {
                 codigo_postal: CP,
                 neighborhood,
                 country,
+                state: state.value,
                 street_number: streetNumber,
                 place_reference: placeRef,
                 phone,
@@ -211,26 +258,6 @@ export const DestinoComponent = ({ onSave }) => {
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
-                        id="colonia"
-                        label="Colonia"
-                        name="colonia"
-                        value={neighborhood}
-                        className="rainbow-p-around_medium"
-                        style={{ flex: '1 1' }}
-                        onChange={e => setNeighborhood(e.target.value)}
-                    />
-                    <Input
-                        id="ciudad"
-                        label="Ciudad y Estado"
-                        name="ciudad"
-                        value={country}
-                        className="rainbow-p-around_medium"
-                        style={{ flex: '1 1' }}
-                        onChange={e => setCountry(e.target.value)}
-                    />
-                </div>
-                <div className="rainbow-align-content_center rainbow-flex_wrap">
-                    <Input
                         id="domicilio"
                         label="Calle y Número"
                         name="domicilio"
@@ -240,23 +267,55 @@ export const DestinoComponent = ({ onSave }) => {
                         onChange={e => setStreetNumber(e.target.value)}
                     />
                     <Input
+                        id="colonia"
+                        label="Colonia"
+                        name="colonia"
+                        value={neighborhood}
+                        className="rainbow-p-around_medium"
+                        style={{ flex: '1 1' }}
+                        onChange={e => setNeighborhood(e.target.value)}
+                    />
+                </div>
+                <div className="rainbow-align-content_center rainbow-flex_wrap">
+                    <Input
+                        id="ciudad"
+                        label="Ciudad"
+                        name="ciudad"
+                        value={country}
+                        className="rainbow-p-around_medium"
+                        style={{ flex: '1 1' }}
+                        onChange={e => setCountry(e.target.value)}
+                    />
+                    <Picklist
+                        id="estado"
+                        label="Estado"
+                        name="estado"
+                        value={state}
+                        className="rainbow-p-around_medium"
+                        style={{ flex: '1 1' }}
+                        onChange={value => setState(value)}
+                        required
+                    >
+                        <StatePicklistOptions />
+                    </Picklist>
+                </div>
+                <div className="rainbow-align-content_center rainbow-flex_wrap">
+                    <Input
                         id="referencia"
                         label="Referencias del Lugar"
                         name="referencia"
                         value={placeRef}
                         className="rainbow-p-around_medium"
-                        style={{ flex: '1 1' }}
+                        style={{ flex: '2 2' }}
                         onChange={e => setPlaceRef(e.target.value)}
                     />
-                </div>
-                <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
                         id="telefono"
                         label="Telefono"
                         name="telefono"
                         value={phone}
                         className="rainbow-p-around_medium"
-                        style={{ width: '50%' }}
+                        style={{ flex: '2 2' }}
                         onChange={e => setPhone(e.target.value)}
                     />
                     <div style={{ flex: '1 1', textAlign: 'right' }}>

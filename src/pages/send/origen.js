@@ -1,10 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { Input, CheckboxToggle, Button, HelpText } from 'react-rainbow-components';
+import { Input, CheckboxToggle, Button, Picklist, Option } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
-import SendPage from '../send/index';
+
+const states = {
+    AG: 'Aguascalientes',
+    BC: 'Baja California',
+    BS: 'Baja California Sur',
+    CM: 'Campeche',
+    CS: 'Chiapas',
+    CH: 'Chihuahua',
+    CO: 'Coahuila',
+    CL: 'Colima',
+    DF: 'Ciudad de México',
+    DG: 'Durango',
+    GT: 'Guanajuato',
+    GR: 'Guerrero',
+    HG: 'Hidalgo',
+    JA: 'Jalisco',
+    EM: 'Estado de México',
+    MI: 'Michoacán',
+    MO: 'Morelos',
+    NA: 'Nayarit',
+    NL: 'Nuevo León',
+    OA: 'Oaxaca',
+    PU: 'Puebla',
+    QE: 'Queretaro',
+    QR: 'Quintana Roo',
+    SL: 'San Luis Potosi',
+    SI: 'Sinaloa',
+    SO: 'Sonora',
+    TB: 'Tabasco',
+    TM: 'Tamaulipas',
+    TL: 'Tlaxcala',
+    VE: 'Veracruz',
+    YU: 'Yucatán',
+    ZA: 'Zacatecas',
+};
+
+const StatePicklistOptions = () => {
+    const allStates = Object.keys(states).map(code => {
+        return <Option key={code} value={code} name={states[code]} label={states[code]} />;
+    });
+
+    return allStates;
+};
+
 const AddressRadioOption = ({ directions }) => {
     const {
         neighborhood,
@@ -12,6 +55,7 @@ const AddressRadioOption = ({ directions }) => {
         Telefono,
         street_number,
         country,
+        state,
         codigo_postal,
         name,
     } = directions;
@@ -23,7 +67,9 @@ const AddressRadioOption = ({ directions }) => {
             </span>
             <p>{street_number}</p>
             <p>{neighborhood}</p>
-            <p>{country}</p>
+            <p>
+                {country}, {state}
+            </p>
             <p>C.P. {codigo_postal}</p>
             <p>Tel {Telefono}</p>
         </>
@@ -40,12 +86,13 @@ export const OrigenComponent = ({ onSave }) => {
 
     const [value, setValue] = useState();
 
-    const [filter, setFilter] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
     const [country, setCountry] = useState('');
+    const [state, setState] = useState({ label: '', value: '' });
     const [streetNumber, setStreetNumber] = useState('');
     const [placeRef, setPlaceRef] = useState('');
     const [phone, setPhone] = useState('');
@@ -115,6 +162,7 @@ export const OrigenComponent = ({ onSave }) => {
                         setCP(doc.data().codigo_postal);
                         setNeighborhood(doc.data().neighborhood);
                         setCountry(doc.data().country);
+                        setState({ value: doc.data().state, label: states[doc.data().state] });
                         setStreetNumber(doc.data().street_number);
                         setPlaceRef(doc.data().place_reference);
                         setPhone(doc.data().phone);
@@ -150,6 +198,7 @@ export const OrigenComponent = ({ onSave }) => {
             CP.trim() === '' ||
             neighborhood.trim() === '' ||
             country.trim() === '' ||
+            state.value.trim() === '' ||
             streetNumber.trim() === '' ||
             placeRef.trim() === '' ||
             phone.trim() === ''
@@ -172,6 +221,7 @@ export const OrigenComponent = ({ onSave }) => {
                 codigo_postal: CP,
                 neighborhood,
                 country,
+                state: state.value,
                 street_number: streetNumber,
                 place_reference: placeRef,
                 phone,
@@ -198,6 +248,7 @@ export const OrigenComponent = ({ onSave }) => {
                 codigo_postal: CP,
                 neighborhood,
                 country,
+                state: state.value,
                 street_number: streetNumber,
                 place_reference: placeRef,
                 phone,
@@ -268,26 +319,6 @@ export const OrigenComponent = ({ onSave }) => {
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
-                        id="colonia"
-                        label="Colonia"
-                        name="colonia"
-                        value={neighborhood}
-                        className="rainbow-p-around_medium"
-                        style={{ flex: '1 1' }}
-                        onChange={e => setNeighborhood(e.target.value)}
-                    />
-                    <Input
-                        id="ciudad"
-                        label="Ciudad y Estado"
-                        name="ciudad"
-                        value={country}
-                        className="rainbow-p-around_medium"
-                        style={{ flex: '1 1' }}
-                        onChange={e => setCountry(e.target.value)}
-                    />
-                </div>
-                <div className="rainbow-align-content_center rainbow-flex_wrap">
-                    <Input
                         id="domicilio"
                         label="Calle y Número"
                         name="domicilio"
@@ -297,23 +328,55 @@ export const OrigenComponent = ({ onSave }) => {
                         onChange={e => setStreetNumber(e.target.value)}
                     />
                     <Input
+                        id="colonia"
+                        label="Colonia"
+                        name="colonia"
+                        value={neighborhood}
+                        className="rainbow-p-around_medium"
+                        style={{ flex: '1 1' }}
+                        onChange={e => setNeighborhood(e.target.value)}
+                    />
+                </div>
+                <div className="rainbow-align-content_center rainbow-flex_wrap">
+                    <Input
+                        id="ciudad"
+                        label="Ciudad"
+                        name="ciudad"
+                        value={country}
+                        className="rainbow-p-around_medium"
+                        style={{ flex: '1 1' }}
+                        onChange={e => setCountry(e.target.value)}
+                    />
+                    <Picklist
+                        id="estado"
+                        label="Estado"
+                        name="estado"
+                        value={state}
+                        className="rainbow-p-around_medium"
+                        style={{ flex: '1 1' }}
+                        onChange={value => setState(value)}
+                        required
+                    >
+                        <StatePicklistOptions />
+                    </Picklist>
+                </div>
+                <div className="rainbow-align-content_center rainbow-flex_wrap">
+                    <Input
                         id="referencia"
                         label="Referencias del Lugar"
                         name="referencia"
                         value={placeRef}
                         className="rainbow-p-around_medium"
-                        style={{ flex: '1 1' }}
+                        style={{ flex: '2 2' }}
                         onChange={e => setPlaceRef(e.target.value)}
                     />
-                </div>
-                <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
                         id="telefono"
                         label="Telefono"
                         name="telefono"
                         value={phone}
                         className="rainbow-p-around_medium"
-                        style={{ width: '50%' }}
+                        style={{ flex: '2 2' }}
                         onChange={e => setPhone(e.target.value)}
                     />
                     <div style={{ flex: '1 1', textAlign: 'right' }}>

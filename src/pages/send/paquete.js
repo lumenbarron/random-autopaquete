@@ -48,7 +48,7 @@ export const PaqueteComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState(false);
-    const [filter, setFilter] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const [name, setName] = useState('');
     const [height, setHeight] = useState('');

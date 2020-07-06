@@ -45,6 +45,7 @@ const AppRoutes = () => {
                         <Route path="/mi-cuenta/sobrepeso" component={OverweightPage} />
                         <Route path="/mi-cuenta/direcciones" component={DirectionPage} />
                         <Route path="/mi-cuenta/contacto" component={ContactPage} />
+                        <Route path="/mi-cuenta/enviar/:idGuia/:step" component={SendPage} />
                         <Route path="/mi-cuenta/enviar" component={SendPage} />
                         <Route path="/mi-cuenta/" component={AccountPage} />
                         <Redirect to="/login" />

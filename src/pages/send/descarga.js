@@ -1,25 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'react-rainbow-components';
-import { DownloadContainer } from './styled';
+import { useFirebaseApp } from 'reactfire';
 import styled from 'styled-components';
+import { DownloadContainer } from './styled';
 
 const DetailsLabel = styled.p`
     margin-bottom: 1.2rem;
 `;
 
-export const DescargaComponent = () => {
+export const DescargaComponent = ({ idGuiaGlobal }) => {
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const [pdf, setPDF] = useState(false);
+
+    useEffect(() => {
+        const prepareDownload = () => {
+            db.collection('guia')
+                .doc(idGuiaGlobal)
+                .get()
+                .then(doc => {
+                    setPDF(doc.data().label);
+                });
+        };
+        prepareDownload();
+    }, []);
+
     return (
         <DownloadContainer>
             <h2>Guía</h2>
-            <img src="/assets/icon-pdf.png" alt="Icono de PDF" nopin="nopin" />
-            <DetailsLabel>Imprímela y pégala en tu paquete</DetailsLabel>
-            <Button
-                label="Descargar"
-                variant="brand"
-                onClick={() => {
-                    console.log('DESCARGANDO.. ');
-                }}
-            />
+            <a href={`data:application/pdf;base64,${pdf}`} download="guia.pdf">
+                <img src="/assets/icon-pdf.png" alt="Icono de PDF" nopin="nopin" />
+                <DetailsLabel>Imprímela y pégala en tu paquete</DetailsLabel>
+                Descargar
+            </a>
         </DownloadContainer>
     );
 };

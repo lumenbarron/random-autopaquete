@@ -46,7 +46,7 @@ async function secureOnlyAdmin(req) {
 async function secureUser(req) {
     try {
         const profile = await getProfileByToken(req);
-        return profile && profile.user_type;
+        return profile;
     } catch (error) {
         console.log('Error verifying user:', error);
         return false;

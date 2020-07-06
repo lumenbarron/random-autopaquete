@@ -1,22 +1,22 @@
 const functions = require('firebase-functions');
 const secure = require('./secure');
-const admin = require('./admin').admin;
+const { getGuiaById, saveLabel } = require('./guia');
 
-exports.create = functions.https.onRequest((req, res) => {
+exports.create = functions.https.onRequest(async (req, res) => {
     const contentType = req.get('content-type');
-    if (!contentType && contentType != 'application/json') {
+    if (!contentType && contentType !== 'application/json') {
         res.status(400).send('Bad Request: Expected JSON');
         return;
     }
 
-    const profile = secure.user(admin, req);
+    const profile = await secure.user(req);
     if (!profile) {
         res.status(403).send('Not authorized');
         return;
     }
 
-    const { guiaId } = req.body;
-    const guia = getGuiaById(profile.ID, guiaId);
+    const { guiaId } = JSON.parse(req.body);
+    const guia = await getGuiaById(profile.ID, guiaId);
     if (!profile) {
         res.status(400).send('Guia Id not found');
         return;

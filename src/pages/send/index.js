@@ -1,18 +1,30 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ProgressIndicator, ProgressStep } from 'react-rainbow-components';
-import { StyledSendPage } from './styled';
+import { useFirebaseApp, useUser } from 'reactfire';
+import { useParams } from 'react-router-dom';
+
 import { OrigenComponent } from './origen';
 import { DestinoComponent } from './destino';
 import { PaqueteComponent } from './paquete';
 import { ServicioComponent } from './servicio';
 import { DescargaComponent } from './descarga';
-import { useFirebaseApp } from 'reactfire';
+import { StyledSendPage } from './styled';
 
 const SendPage = () => {
     const [currentStepName, setCurrentStepName] = useState('origen');
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const idGuiaGlobal = useRef(null);
+    const user = useUser();
+    const { idGuia: idGuiaParam, step: stepParam } = useParams();
+
+    useEffect(() => {
+        if (stepParam) setCurrentStepName(stepParam);
+    }, [stepParam]);
+
+    useEffect(() => {
+        if (idGuiaParam) idGuiaGlobal.current = idGuiaParam;
+    }, [idGuiaParam]);
 
     const saveOriginData = ({ idGuia }) => {
         // TODO: Guardar la info de la dirección a firestore (si fue solicitado)
@@ -94,29 +106,36 @@ const SendPage = () => {
     const saveServiceData = supplierData => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
 
-        db.collection('supplier')
-            .add(supplierData)
-            .then(function(docRef) {
-                console.log('Document written with ID (destino): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
-
         const directionsGuiasCollectionAdd = db
             .collection('guia')
             .doc(idGuiaGlobal.current)
             .update({ status: 'completed', supplierData });
 
+        let servicioUrl;
+        if (supplierData.Supplier.indexOf('estafeta') >= 0) {
+            servicioUrl = '/guia/estafeta';
+        } else {
+            servicioUrl = '/guia/fedex';
+        }
+
         directionsGuiasCollectionAdd
             .then(function(docRef) {
+                user.getIdToken().then(idToken => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.responseType = 'json';
+                    xhr.contentType = 'application/json';
+                    xhr.onload = () => {
+                        setCurrentStepName('descarga');
+                    };
+                    xhr.open('POST', servicioUrl);
+                    xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+                    xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+                });
                 console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
-
-        setCurrentStepName('descarga');
     };
 
     return (
@@ -138,7 +157,9 @@ const SendPage = () => {
                         idGuiaGlobal={idGuiaGlobal.current}
                     />
                 )}
-                {currentStepName === 'descarga' && <DescargaComponent />}
+                {currentStepName === 'descarga' && (
+                    <DescargaComponent idGuiaGlobal={idGuiaGlobal.current} />
+                )}
             </StyledSendPage>
         </>
     );

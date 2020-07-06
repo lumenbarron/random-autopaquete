@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Input,
-    Button,
-    RadioGroup,
-    Textarea,
-    Accordion,
-    AccordionSection,
-    FileSelector,
-} from 'react-rainbow-components';
+import { Input, Button, Accordion, AccordionSection } from 'react-rainbow-components';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrashAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useFirebaseApp, useUser } from 'reactfire';
+import { useFirebaseApp } from 'reactfire';
 import Modal from 'react-modal';
 
 const StyledSubmit = styled.button.attrs(props => {
@@ -87,7 +79,7 @@ const ErrorText = styled.div`
     margin-bottom: 1rem;
 `;
 
-function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
+function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
 
@@ -101,10 +93,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
     const [costModal, setCostModal] = useState();
 
     const [extraCost, setExtraCost] = useState();
-    // const [fedexEconomicoExtra, setFedexEconomicoExtra] = useState();
-    // const [fedexExtra, setFedexExtra] = useState();
-    // const [estafetaEconomicoExtra, setEstafetaEconomicoExtra] = useState();
-    const [estafetaDiaSiguienteExtraId, setEstafetaDiaSiguienteExtraId] = useState();
 
     const editRate = key => {
         setIsOpen(true);
@@ -166,8 +154,8 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             });
     };
 
-    let tarifasMap = tarifas.map((tarifa, idx) => {
-        //let key = label + idx;
+    const tarifasMap = tarifas.map(tarifa => {
+        // let key = label + idx;
 
         const { min, max, precio, key } = tarifa;
         return (
@@ -178,14 +166,14 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                     </div>
                     <div>{formatMoney(tarifa.precio)}</div>
                     <div className="actions">
-                        <button>
+                        <button type="button">
                             <FontAwesomeIcon
                                 icon={faPencilAlt}
-                                onClick={e => openModal(min, max, precio)}
+                                onClick={() => openModal(min, max, precio)}
                             />
                         </button>
-                        <button>
-                            <FontAwesomeIcon icon={faTrashAlt} onClick={e => deleteRate(key)} />
+                        <button type="button">
+                            <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteRate(key)} />
                         </button>
                     </div>
                 </div>
@@ -234,6 +222,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                         />
                     </div>
                     <button
+                        type="button"
                         onClick={closeModal}
                         style={{
                             border: 'none',
@@ -247,7 +236,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                     </button>
                     <StyledSubmit
                         type="submit"
-                        onClick={e => {
+                        onClick={() => {
                             editRate(key);
                             closeModal();
                         }}
@@ -278,7 +267,47 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
             });
     };
 
-    const addExtraRate = () => {};
+    const editKgExtra = () => {
+        const editRateInformation = db
+            .collection('profiles')
+            .doc(user.id)
+            .collection('rate')
+            .doc(kgExtra[0].id)
+            .update({ kgExtra: extraCost });
+
+        editRateInformation
+            .then(function(docRef) {
+                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+    };
+
+    const addKgExtra = () => {
+        if (kgExtra.length > 0 && kgExtra[0].id) {
+            editKgExtra();
+            return;
+        }
+        const addExtraRate = {
+            kgExtra: extraCost,
+            entrega: `${entrega}Extra`,
+        };
+
+        const editRateInformation = db
+            .collection('profiles')
+            .doc(user.id)
+            .collection('rate')
+            .add(addExtraRate);
+
+        editRateInformation
+            .then(function(docRef) {
+                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            });
+    };
 
     return (
         <StyledSection label={label}>
@@ -311,7 +340,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                 ))}
 
                 <div className="actions">
-                    <button>
+                    <button type="button">
                         <FontAwesomeIcon icon={faPencilAlt} onClick={openModalExtra} />
                     </button>
                 </div>
@@ -336,7 +365,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                     },
                 }}
             >
-                <h2 style={{ fontSize: '1.5rem', textAlign: 'center' }}>Cambia la tarifa</h2>
+                <h2 style={{ fontSize: '1.5rem', textAlign: 'center' }}>Kilogramo Extra</h2>
                 <div className="rainbow-p-horizontal_medium rainbow-m-vertical_large">
                     Precio
                     <InlineInput
@@ -347,6 +376,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                 </div>
                 <button
                     onClick={closeModalExtra}
+                    type="button"
                     style={{
                         border: 'none',
                         background: 'none',
@@ -359,7 +389,8 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
                 </button>
                 <StyledSubmit
                     type="submit"
-                    onClick={e => {
+                    onClick={() => {
+                        addKgExtra();
                         closeModalExtra();
                     }}
                 >
@@ -371,11 +402,20 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, user, entrega, key }) {
 }
 
 export default function Tarifario({ user }) {
-    useEffect(() => {}, [user]);
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
 
     const [tarifas, setTarifas] = useState([]);
+
+    function handleTarifas(snapshot) {
+        const tarifasMap = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setTarifas(tarifasMap);
+    }
 
     useEffect(() => {
         if (user) {
@@ -389,163 +429,78 @@ export default function Tarifario({ user }) {
         }
     }, []);
 
-    function handleTarifas(snapshot) {
-        const tarifas = snapshot.docs.map(doc => {
-            return {
-                id: doc.id,
-                ...doc.data(),
-            };
-        });
-        setTarifas(tarifas);
-    }
+    const getTarifasDeServicio = nombre => {
+        const tarifaNormal = tarifas
+            .filter(entregaFilter => {
+                return entregaFilter.entrega === nombre;
+            })
+            .map(entrega => {
+                return {
+                    key: entrega.id,
+                    max: entrega.max,
+                    precio: entrega.precio,
+                    min: entrega.min,
+                };
+            });
+        const tarifaExtra = tarifas
+            .filter(entregaFilterExtra => {
+                return entregaFilterExtra.entrega === `${nombre}Extra`;
+            })
+            .map(kgExtra => {
+                return {
+                    id: kgExtra.id,
+                    kgExtra: kgExtra.kgExtra,
+                };
+            });
+        return [tarifaNormal, tarifaExtra];
+    };
 
-    const estafetaDiaSiguiente = tarifas
-        .filter(entregaFilter => {
-            return entregaFilter.entrega === 'estafetaDiaSiguiente';
-        })
-        .map((entrega, xid) => {
-            return {
-                key: entrega.id,
-                max: entrega.max,
-                precio: entrega.precio,
-                min: entrega.min,
-                kgExtra: entrega.kgExtra,
-            };
-        });
+    const [estafetaDiaSiguiente, estafetaDiaSiguienteExtra] = getTarifasDeServicio(
+        'estafetaDiaSiguiente',
+    );
 
-    const estafetaEconomico = tarifas
-        .filter(entregaFilter => {
-            return entregaFilter.entrega === 'estafetaEconómico';
-        })
-        .map((entrega, xid) => {
-            return {
-                key: entrega.id,
-                max: entrega.max,
-                precio: entrega.precio,
-                min: entrega.min,
-                kgExtra: entrega.kgExtra,
-            };
-        });
+    const [estafetaEconomico, estafetaEconomicoExtra] = getTarifasDeServicio('estafetaEconómico');
 
-    const fedexDiaSiguiente = tarifas
-        .filter(entregaFilter => {
-            return entregaFilter.entrega === 'fedexDiaSiguiente';
-        })
-        .map((entrega, xid) => {
-            return {
-                key: entrega.id,
-                max: entrega.max,
-                precio: entrega.precio,
-                min: entrega.min,
-                kgExtra: entrega.kgExtra,
-            };
-        });
+    const [fedexDiaSiguiente, fedexDiaSiguienteExtra] = getTarifasDeServicio('fedexDiaSiguiente');
 
-    const fedexEconomico = tarifas
-        .filter(entregaFilter => {
-            return entregaFilter.entrega === 'fedexEconomico';
-        })
-        .map((entrega, xid) => {
-            return { key: entrega.id, max: entrega.max, precio: entrega.precio, min: entrega.min };
-        });
-
-    //////////////////////////
-    const estafetaDiaSiguienteExtra = tarifas
-        .filter(entregaFilterExtra => {
-            return entregaFilterExtra.type === 'estafetaDiaSiguienteExtra';
-        })
-        .map((kgExtra, xid) => {
-            return {
-                kgExtra: kgExtra.kgExtra,
-            };
-        });
-
-    const estafetaEconomicoExtra = tarifas
-        .filter(entregaFilterExtra => {
-            return entregaFilterExtra.type === 'estafetaEconómicoExtra';
-        })
-        .map((kgExtra, xid) => {
-            return {
-                kgExtra: kgExtra.kgExtra,
-            };
-        });
-
-    const fedexDiaSiguienteExtra = tarifas
-        .filter(entregaFilterExtra => {
-            return entregaFilterExtra.type === 'fedexDiaSiguienteExtra';
-        })
-        .map((kgExtra, xid) => {
-            return {
-                kgExtra: kgExtra.kgExtra,
-            };
-        });
-
-    const fedexEconomicoExtra = tarifas
-        .filter(entregaFilterExtra => {
-            return entregaFilterExtra.type === 'fedexEconomicoExtra';
-        })
-        .map((kgExtra, xid) => {
-            return {
-                kgExtra: kgExtra.kgExtra,
-            };
-        });
-
-    // const docRef = db
-    //     .collection('profiles')
-    //     .doc(user.id)
-    //     .collection('rate')
-    //     .where('type', '==', 'kgExtra');
-
-    // docRef
-    //     .get()
-    //     .then(function(querySnapshot) {
-    //         querySnapshot.forEach(function(doc) {
-    //             console.log(doc.id, ' => ', doc.data());
-    //         });
-    //     })
-    //     .catch(function(error) {
-    //         console.log('Error getting documents: ', error);
-    //     });
+    const [fedexEconomico, fedexEconomicoExtra] = getTarifasDeServicio('fedexEconomico');
 
     return (
         <>
             <h2>Tarifario del cliente</h2>
             <h3 style={{ marginTop: '1rem' }}>Estafeta</h3>
-            <Accordion id="accordion-estafeta" multiple={true}>
+            <Accordion id="accordion-estafeta" multiple>
                 <TarifarioPorServicio
                     label="Estafeta Día Siguiente"
-                    valor={estafetaDiaSiguiente.value}
                     tarifas={estafetaDiaSiguiente}
-                    key={estafetaDiaSiguiente.id}
                     kgExtra={estafetaDiaSiguienteExtra}
-                    user={user}
-                    entregaExtra="estafetaDiaSiguienteExtra"
                     entrega="estafetaDiaSiguiente"
+                    user={user}
                 />
 
                 <TarifarioPorServicio
                     label="Estafeta Terrestre"
                     tarifas={estafetaEconomico}
                     kgExtra={estafetaEconomicoExtra}
-                    user={user}
                     entrega="estafetaEconómico"
+                    user={user}
                 />
             </Accordion>
             <h3 style={{ marginTop: '1rem' }}>Fedex</h3>
-            <Accordion id="accordion-fedex" multiple={true}>
+            <Accordion id="accordion-fedex" multiple>
                 <TarifarioPorServicio
                     label="Fedex Día Siguiente"
                     tarifas={fedexDiaSiguiente}
                     kgExtra={fedexDiaSiguienteExtra}
-                    user={user}
                     entrega="fedexDiaSiguiente"
+                    user={user}
                 />
                 <TarifarioPorServicio
                     label="Fedex Terrestre"
                     tarifas={fedexEconomico}
                     kgExtra={fedexEconomicoExtra}
-                    user={user}
                     entrega="fedexEconomico"
+                    user={user}
                 />
             </Accordion>
             <p style={{ margin: '1rem' }}>

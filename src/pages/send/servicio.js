@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Card, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
@@ -9,82 +10,224 @@ const DetailsLabel = styled.p`
 `;
 
 export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
-    const [fedex, setFedex] = useState('Fedex');
-    const [supplierCostFedex, setSupplierConst] = useState('100');
+    const [supplierCostFedexDiaS, setSupplierCostFedexDiaS] = useState(false);
+    const [supplierCostFedexEcon, setSupplierCostFedexEcon] = useState(false);
 
-    const [estafeta, setEstafeta] = useState('Fedex');
-    const [supplierCostEstafeta, setSupplierCostEstafeta] = useState('150');
+    const [supplierCostEstafetaDiaS, setSupplierCostEstafetaDiaS] = useState(false);
+    const [supplierCostEstafetaEcon, setSupplierCostEstafetaEcon] = useState(false);
 
     const user = useUser();
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
 
-    //Sender states
+    // Sender states
     const [nameSender, setNameSender] = useState();
     const [CPSender, setCPSender] = useState('');
     const [neighborhoodSender, setNeighborhoodSender] = useState('');
     const [countrySender, setCountrySender] = useState('');
     const [streetNumberSender, setStreetNumberSender] = useState('');
     const [phoneSender, setPhoneSender] = useState('');
-    //Receiver states
+    // Receiver states
     const [nameReceiver, setNameReceiver] = useState();
     const [CPReceiver, setCPReceiver] = useState('');
     const [neighborhoodReceiver, setNeighborhoodReceiver] = useState('');
     const [countryReceiver, setCountryReceiver] = useState('');
     const [streetNumberReceiver, setStreetNumberReceiver] = useState('');
     const [phoneReceiver, setPhoneReceiver] = useState('');
-    //Package information
+    // Package information
     const [namePackage, setNamePackage] = useState('');
     const [height, setHeight] = useState('');
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
+    const [quantity, setQuantity] = useState('');
+    const [contentValue, setContentValue] = useState('');
 
-    const registerFedex = () => {
-        const supplierData = {
-            ID: user.uid,
-            Supplier: fedex,
-            Supplier_cost: supplierCostFedex,
-        };
+    const registerService = (supplier, type, { id, precio, ...cargos }) => {
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(profile => {
+                profile.docs[0].ref
+                    .collection('rate')
+                    .doc(id)
+                    .get()
+                    .then(doc => {
+                        const tarifa = doc.data();
+                        const supplierData = {
+                            ID: user.uid,
+                            Supplier: `estafeta${type}`,
+                            Supplier_cost: precio,
+                            tarifa,
+                            cargos,
+                        };
 
-        onSave(supplierData);
+                        onSave(supplierData);
+                    });
+            });
     };
 
-    const registerEstafeta = () => {
-        const supplierData = {
-            ID: user.uid,
-            Supplier: estafeta,
-            Supplier_cost: supplierCostEstafeta,
-        };
+    useEffect(() => {
+        db.collection('guia')
+            .doc(idGuiaGlobal)
+            .onSnapshot(function getGuia(doc) {
+                // Get snapshot sender information
+                setNameSender(doc.data().sender_addresses.name);
+                setCPSender(doc.data().sender_addresses.codigo_postal);
+                setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
+                setCountrySender(doc.data().sender_addresses.country);
+                setStreetNumberSender(doc.data().sender_addresses.street_number);
+                setPhoneSender(doc.data().sender_addresses.phone);
+                // Get snapshot to receive Receiver information
+                setNameReceiver(doc.data().receiver_addresses.name);
+                setCPReceiver(doc.data().receiver_addresses.codigo_postal);
+                setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
+                setCountryReceiver(doc.data().receiver_addresses.country);
+                setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
+                setPhoneReceiver(doc.data().receiver_addresses.phone);
+                // Get snapshot to receive package information
+                setNamePackage(doc.data().package.name);
+                setHeight(doc.data().package.height);
+                setWidth(doc.data().package.width);
+                setDepth(doc.data().package.depth);
+                setWeight(doc.data().package.weight);
+                setQuantity(doc.data().package.quantity);
+                setContentValue(doc.data().package.content_value);
+            });
+    }, []);
 
-        onSave(supplierData);
-    };
+    useEffect(() => {
+        if (weight === '') return;
+        let pricedWeight = weight;
+        const volumetricWeight = Math.ceil((height * width * depth) / 5000);
+        if (volumetricWeight > weight) {
+            pricedWeight = volumetricWeight;
+        }
+        const insurancePrice = contentValue !== '' ? 40 + parseInt(contentValue, 10) * 0.02 : 0;
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(profile => {
+                profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
+                    const segundaMejorTarifa = {};
+                    const kgsExtraTarifas = {};
+                    querySnapshot.forEach(doc => {
+                        const { entrega, precio, max, min, kgExtra } = doc.data();
 
-    db.collection('guia')
-        .doc(idGuiaGlobal)
-        .onSnapshot(function(doc) {
-            console.log('dsadsa', doc.data());
-            //Get snapshot sender information
-            setNameSender(doc.data().sender_addresses.name);
-            setCPSender(doc.data().sender_addresses.codigo_postal);
-            setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
-            setCountrySender(doc.data().sender_addresses.country);
-            setStreetNumberSender(doc.data().sender_addresses.street_number);
-            setPhoneSender(doc.data().sender_addresses.phone);
-            //Get snapshot to receive Receiver information
-            setNameReceiver(doc.data().receiver_addresses.name);
-            setCPReceiver(doc.data().receiver_addresses.codigo_postal);
-            setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
-            setCountryReceiver(doc.data().receiver_addresses.country);
-            setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
-            setPhoneReceiver(doc.data().receiver_addresses.phone);
-            //Get snapshot to receive package information
-            setNamePackage(doc.data().package.name);
-            setHeight(doc.data().package.height);
-            setWidth(doc.data().package.width);
-            setDepth(doc.data().package.depth);
-            setWeight(doc.data().package.weight);
-        });
+                        // Encontramos si hay tarifas que apliquen directo al paquete
+                        if (
+                            !kgExtra &&
+                            parseInt(min, 10) <= parseInt(pricedWeight, 10) &&
+                            parseInt(max, 10) >= parseInt(pricedWeight, 10)
+                        ) {
+                            const precioTotal = parseInt(precio, 10) * quantity;
+                            if (entrega === 'fedexDiaSiguiente')
+                                setSupplierCostFedexDiaS({
+                                    id: doc.id,
+                                    precio: precioTotal + insurancePrice,
+                                    seguro: insurancePrice,
+                                    guia: precioTotal,
+                                });
+                            if (entrega === 'fedexEconomico')
+                                setSupplierCostFedexEcon({
+                                    id: doc.id,
+                                    precio: precioTotal + insurancePrice,
+                                    seguro: insurancePrice,
+                                    guia: precioTotal,
+                                });
+                            if (entrega === 'estafetaDiaSiguiente')
+                                setSupplierCostEstafetaDiaS({
+                                    id: doc.id,
+                                    precio: precioTotal + insurancePrice,
+                                    seguro: insurancePrice,
+                                    guia: precioTotal,
+                                });
+                            if (entrega === 'estafetaEconómico')
+                                setSupplierCostEstafetaEcon({
+                                    id: doc.id,
+                                    precio: precioTotal + insurancePrice,
+                                    seguro: insurancePrice,
+                                    guia: precioTotal,
+                                });
+                            return;
+                        }
+
+                        // Anotamos los cargos de kg extra, por si los necesitamos
+                        if (kgExtra) {
+                            kgsExtraTarifas[entrega.slice(0, entrega.indexOf('Extra'))] = parseInt(
+                                kgExtra,
+                                10,
+                            );
+                            return;
+                        }
+
+                        // Si el mínimo de kgs de la tarifa es mayor al peso, no aplica
+                        if (parseInt(min, 10) > parseInt(pricedWeight, 10)) {
+                            return;
+                        }
+
+                        // Esto ocurre si el máximo es menor y el mínimo es menor que el peso,
+                        // es decir, nos sobran kilos
+                        const diferencia =
+                            (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
+                        if (
+                            !segundaMejorTarifa[entrega] ||
+                            segundaMejorTarifa[entrega].diferencia > diferencia
+                        ) {
+                            const precioTotal = parseInt(precio, 10) * quantity;
+                            segundaMejorTarifa[entrega] = {
+                                id: doc.id,
+                                precio: precioTotal + insurancePrice,
+                                guia: precioTotal,
+                                seguro: insurancePrice,
+                                diferencia,
+                            };
+                        }
+                    });
+                    Object.keys(segundaMejorTarifa).forEach(entrega => {
+                        const tarifa = segundaMejorTarifa[entrega];
+                        const { guia } = tarifa;
+                        const precio =
+                            tarifa.guia +
+                            tarifa.diferencia * kgsExtraTarifas[entrega] +
+                            insurancePrice;
+                        const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
+                        if (entrega === 'fedexDiaSiguiente')
+                            setSupplierCostFedexDiaS({
+                                id: tarifa.id,
+                                precio,
+                                seguro: insurancePrice,
+                                cargoExtra,
+                                guia,
+                            });
+                        if (entrega === 'fedexEconomico')
+                            setSupplierCostFedexEcon({
+                                id: tarifa.id,
+                                precio,
+                                seguro: insurancePrice,
+                                cargoExtra,
+                                guia,
+                            });
+                        if (entrega === 'estafetaDiaSiguiente')
+                            setSupplierCostEstafetaDiaS({
+                                id: tarifa.id,
+                                precio,
+                                seguro: insurancePrice,
+                                cargoExtra,
+                                guia,
+                            });
+                        if (entrega === 'estafetaEconómico')
+                            setSupplierCostEstafetaEcon({
+                                id: tarifa.id,
+                                precio,
+                                seguro: insurancePrice,
+                                cargoExtra,
+                                guia,
+                            });
+                    });
+                });
+            });
+    }, [weight, quantity, contentValue]);
 
     return (
         <>
@@ -113,10 +256,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <span>
                         <b>{namePackage}</b>
                     </span>
+                    <p>Cantidad: {quantity} pzas.</p>
                     <p>
                         Dimensiones: {height}x{width}x{depth} cm
                     </p>
                     <p>Peso: {weight} kgs</p>
+                    {contentValue !== '' && <p>Valor asegurado: ${contentValue}</p>}
                 </StyledDetails>
             </StyledDirectiosDetails>
             <StyledPaneContainer style={{ justifyContent: 'center' }}>
@@ -126,8 +271,29 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <DetailsLabel>Día siguiente</DetailsLabel>
                     <h4>Detalles</h4>
                     <DetailsLabel>Entrega a Domicilio</DetailsLabel>
-                    <h1> $ 200</h1>
-                    <Button label="Elegir" variant="brand" onClick={registerFedex} />
+                    {supplierCostFedexDiaS && (
+                        <>
+                            {supplierCostFedexDiaS.cargoExtra && (
+                                <DetailsLabel>
+                                    Cargo por KGs Extra: ${supplierCostFedexDiaS.cargoExtra}
+                                </DetailsLabel>
+                            )}
+                            {supplierCostFedexDiaS.seguro > 0 && (
+                                <DetailsLabel>
+                                    Cargo por Seguro: ${supplierCostFedexDiaS.seguro}
+                                </DetailsLabel>
+                            )}
+                            <DetailsLabel>Guía: ${supplierCostFedexDiaS.guia}</DetailsLabel>
+                            <h1> ${supplierCostFedexDiaS.precio}</h1>
+                            <Button
+                                label="Elegir"
+                                variant="brand"
+                                onClick={() =>
+                                    registerService('fedex', 'DiaSiguiente', supplierCostFedexDiaS)
+                                }
+                            />
+                        </>
+                    )}
                 </Card>
                 <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
                     <h3>Fedex</h3>
@@ -135,28 +301,104 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <DetailsLabel>3 a 5 días hábiles</DetailsLabel>
                     <h4>Detalles</h4>
                     <DetailsLabel>Entrega a Domicilio</DetailsLabel>
-                    <h1> $ 100</h1>
-                    <Button label="Elegir" variant="brand" onClick={registerFedex} />
+                    {supplierCostFedexEcon && (
+                        <>
+                            {supplierCostFedexEcon.cargoExtra && (
+                                <DetailsLabel>
+                                    Cargo por KGs Extra: ${supplierCostFedexEcon.cargoExtra}
+                                </DetailsLabel>
+                            )}
+                            {supplierCostFedexEcon.seguro > 0 && (
+                                <DetailsLabel>
+                                    Cargo por Seguro: ${supplierCostFedexEcon.seguro}
+                                </DetailsLabel>
+                            )}
+                            <DetailsLabel>Guía: ${supplierCostFedexEcon.guia}</DetailsLabel>
+                            <h1> ${supplierCostFedexEcon.precio}</h1>
+                            <Button
+                                label="Elegir"
+                                variant="brand"
+                                onClick={() =>
+                                    registerService('fedex', 'Economico', supplierCostFedexEcon)
+                                }
+                            />
+                        </>
+                    )}
                 </Card>
                 <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
                     <h3>Estafeta</h3>
                     <h4>Entrega Estimada</h4>
                     <DetailsLabel>Día siguiente</DetailsLabel>
-                    <h4>Entrega Estimada</h4>
+                    <h4>Detalles</h4>
                     <DetailsLabel>Entrega a Domicilio</DetailsLabel>
-                    <h1>$ 300</h1>
-                    <Button label="Elegir" variant="brand" onClick={registerEstafeta} />
+                    {supplierCostEstafetaDiaS && (
+                        <>
+                            {supplierCostEstafetaDiaS.cargoExtra && (
+                                <DetailsLabel>
+                                    Cargo por KGs Extra: ${supplierCostEstafetaDiaS.cargoExtra}
+                                </DetailsLabel>
+                            )}
+                            {supplierCostEstafetaDiaS.seguro > 0 && (
+                                <DetailsLabel>
+                                    Cargo por Seguro: ${supplierCostEstafetaDiaS.seguro}
+                                </DetailsLabel>
+                            )}
+                            <DetailsLabel>Guía: ${supplierCostEstafetaDiaS.guia}</DetailsLabel>
+                            <h1>${supplierCostEstafetaDiaS.precio}</h1>
+                            <Button
+                                label="Elegir"
+                                variant="brand"
+                                onClick={() =>
+                                    registerService(
+                                        'estafeta',
+                                        'DiaSiguiente',
+                                        supplierCostEstafetaDiaS,
+                                    )
+                                }
+                            />
+                        </>
+                    )}
                 </Card>
                 <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
                     <h3>Estafeta</h3>
                     <h4>Entrega Estimada</h4>
                     <DetailsLabel>3 a 5 días hábiles</DetailsLabel>
-                    <h4>Entrega Estimada</h4>
+                    <h4>Detalles</h4>
                     <DetailsLabel>Entrega a Domicilio</DetailsLabel>
-                    <h1>$ 150</h1>
-                    <Button label="Elegir" variant="brand" onClick={registerEstafeta} />
+                    {supplierCostEstafetaEcon && (
+                        <>
+                            {supplierCostEstafetaEcon.cargoExtra && (
+                                <DetailsLabel>
+                                    Cargo por KGs Extra: ${supplierCostEstafetaEcon.cargoExtra}
+                                </DetailsLabel>
+                            )}
+                            {supplierCostEstafetaEcon.seguro > 0 && (
+                                <DetailsLabel>
+                                    Cargo por Seguro: ${supplierCostEstafetaEcon.seguro}
+                                </DetailsLabel>
+                            )}
+                            <DetailsLabel>Guía: ${supplierCostEstafetaEcon.guia}</DetailsLabel>
+                            <h1>${supplierCostEstafetaEcon.precio}</h1>
+                            <Button
+                                label="Elegir"
+                                variant="brand"
+                                onClick={() =>
+                                    registerService(
+                                        'estafeta',
+                                        'Económico',
+                                        supplierCostEstafetaEcon,
+                                    )
+                                }
+                            />
+                        </>
+                    )}
                 </Card>
             </StyledPaneContainer>
         </>
     );
+};
+
+ServicioComponent.propTypes = {
+    onSave: PropTypes.func.isRequired,
+    idGuiaGlobal: PropTypes.string.isRequired,
 };
