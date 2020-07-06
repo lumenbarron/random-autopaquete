@@ -6,43 +6,47 @@ import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup 
 import * as firebase from 'firebase';
 import { useFirebaseApp, useUser } from 'reactfire';
 
+const states = {
+    AG: 'Aguascalientes',
+    BC: 'Baja California',
+    BS: 'Baja California Sur',
+    CM: 'Campeche',
+    CS: 'Chiapas',
+    CH: 'Chihuahua',
+    CO: 'Coahuila',
+    CL: 'Colima',
+    DF: 'Ciudad de México',
+    DG: 'Durango',
+    GT: 'Guanajuato',
+    GR: 'Guerrero',
+    HG: 'Hidalgo',
+    JA: 'Jalisco',
+    EM: 'Estado de México',
+    MI: 'Michoacán',
+    MO: 'Morelos',
+    NA: 'Nayarit',
+    NL: 'Nuevo León',
+    OA: 'Oaxaca',
+    PU: 'Puebla',
+    QE: 'Queretaro',
+    QR: 'Quintana Roo',
+    SL: 'San Luis Potosi',
+    SI: 'Sinaloa',
+    SO: 'Sonora',
+    TB: 'Tabasco',
+    TM: 'Tamaulipas',
+    TL: 'Tlaxcala',
+    VE: 'Veracruz',
+    YU: 'Yucatán',
+    ZA: 'Zacatecas',
+};
+
 const StatePicklistOptions = () => {
-    return (
-        <>
-            <Option value="AG" name="Aguascalientes" label="Aguascalientes" />
-            <Option value="BC" name="Baja California" label="Baja California" />
-            <Option value="BS" name="Baja California Sur" label="Baja California Sur" />
-            <Option value="CM" name="Campeche" label="Campeche" />
-            <Option value="CS" name="Chiapas" label="Chiapas" />
-            <Option value="CH" name="Chihuahua" label="Chihuahua" />
-            <Option value="CO" name="Coahuila" label="Coahuila" />
-            <Option value="CL" name="Colima" label="Colima" />
-            <Option value="DF" name="Ciudad de México" label="Ciudad de México" />
-            <Option value="DG" name="Durango" label="Durango" />
-            <Option value="GT" name="Guanajuato" label="Guanajuato" />
-            <Option value="GR" name="Guerrero" label="Guerrero" />
-            <Option value="HG" name="Hidalgo" label="Hidalgo" />
-            <Option value="JA" name="Jalisco" label="Jalisco" />
-            <Option value="EM" name="Estado de México" label="Estado de México" />
-            <Option value="MI" name="Michoacán" label="Michoacán" />
-            <Option value="MO" name="Morelos" label="Morelos" />
-            <Option value="NA" name="Nayarit" label="Nayarit" />
-            <Option value="NL" name="Nuevo León" label="Nuevo León" />
-            <Option value="OA" name="Oaxaca" label="Oaxaca" />
-            <Option value="PU" name="Puebla" label="Puebla" />
-            <Option value="QE" name="Querétaro" label="Querétaro" />
-            <Option value="QR" name="Quintana Roo" label="Quintana Roo" />
-            <Option value="SL" name="San Luis Potosí" label="San Luis Potosí" />
-            <Option value="SI" name="Sinaloa" label="Sinaloa" />
-            <Option value="SO" name="Sonora" label="Sonora" />
-            <Option value="TB" name="Tabasco" label="Tabasco" />
-            <Option value="TM" name="Tamaulipas" label="Tamaulipas" />
-            <Option value="TL" name="Tlaxcala" label="Tlaxcala" />
-            <Option value="VE" name="Veracruz" label="Veracruz" />
-            <Option value="YU" name="Yucatán" label="Yucatán" />
-            <Option value="ZA" name="Zacatecas" label="Zacatecas" />
-        </>
-    );
+    const allStates = Object.keys(states).map(code => {
+        return <Option key={code} value={code} name={states[code]} label={states[code]} />;
+    });
+
+    return allStates;
 };
 
 const AddressRadioOption = ({ directions }) => {
@@ -151,7 +155,7 @@ export const DestinoComponent = ({ onSave }) => {
                         setCP(doc.data().codigo_postal);
                         setNeighborhood(doc.data().neighborhood);
                         setCountry(doc.data().country);
-                        setState({ value: doc.data().state });
+                        setState({ value: doc.data().state, label: states[doc.data().state] });
                         setStreetNumber(doc.data().street_number);
                         setPlaceRef(doc.data().place_reference);
                         setPhone(doc.data().phone);
