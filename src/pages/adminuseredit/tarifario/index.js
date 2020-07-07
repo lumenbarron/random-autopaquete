@@ -253,6 +253,16 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
     });
 
     const hasValidRateWeights = (currentRates, fromBase, toBase) => {
+        if (fromBase % 1 !== 0 || toBase % 1 !== 0) {
+            return false;
+        }
+        console.log(fromBase);
+        console.log(toBase);
+
+        if (fromBase >= toBase) {
+            return false;
+        }
+
         const foundInvalidRates = currentRates.filter(currentRate => {
             const baseLowerWeight = parseInt(currentRate.min);
             const baseHigherWeight = parseInt(currentRate.max);
@@ -273,15 +283,11 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
 
     const addRate = () => {
         if (hasValidRateWeights(tarifas, minRate, maxRate)) {
-            if (parseInt(minRate) >= parseInt(maxRate)) {
-                setAddKgError(true);
-                return;
-            }
             setAddKgError(false);
 
             const addRateData = {
-                min: minRate,
-                max: maxRate,
+                min: parseInt(minRate),
+                max: parseInt(maxRate),
                 entrega,
                 precio: cost,
             };
