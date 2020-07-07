@@ -190,7 +190,6 @@ const HomePage = () => {
                     </li>
                 </ul>
             </div>
-            //Test
             <div className="backsilder">
                 <h1 className="nclients">Nuestros clientes</h1>
                 <div className="wrapper">

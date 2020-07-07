@@ -94,7 +94,11 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
 
     const [extraCost, setExtraCost] = useState();
 
-    const editRate = key => {
+    const [keyRate, setKeyRate] = useState();
+
+    const [addKgError, setAddKgError] = useState(false);
+
+    const editRate = () => {
         setIsOpen(true);
 
         const editRate = {
@@ -107,7 +111,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
             .collection('profiles')
             .doc(user.id)
             .collection('rate')
-            .doc(key)
+            .doc(keyRate)
             .update(editRate);
 
         editRateInformation
@@ -127,8 +131,9 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         setIsOpenExtra(false);
     };
 
-    const openModal = (min, max, precio) => {
+    const openModal = (min, max, precio, key) => {
         setIsOpen(true);
+        setKeyRate(key);
         setMinRateModal(min);
         setMaxRateModal(max);
         setCostModal(precio);
@@ -156,6 +161,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         // let key = label + idx;
 
         const { min, max, precio, key } = tarifa;
+
         return (
             <>
                 <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap" key={key}>
@@ -167,7 +173,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                         <button type="button">
                             <FontAwesomeIcon
                                 icon={faPencilAlt}
-                                onClick={() => openModal(min, max, precio)}
+                                onClick={() => openModal(min, max, precio, key)}
                             />
                         </button>
                         <button type="button">
@@ -235,7 +241,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                     <StyledSubmit
                         type="submit"
                         onClick={() => {
-                            editRate(key);
+                            editRate();
                             closeModal();
                         }}
                     >
@@ -246,62 +252,52 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         );
     });
 
-    const [min, setMin] = useState([]);
-    const [max, setMax] = useState([]);
-    const [addKgError, setAddKgError] = useState(false);
+    const hasValidRateWeights = (currentRates, fromBase, toBase) => {
+        const foundInvalidRates = currentRates.filter(currentRate => {
+            const baseLowerWeight = parseInt(currentRate.min);
+            const baseHigherWeight = parseInt(currentRate.max);
+
+            if (fromBase >= baseLowerWeight && fromBase <= baseHigherWeight) {
+                return true;
+            }
+
+            if (toBase >= baseLowerWeight && toBase <= baseHigherWeight) {
+                return true;
+            }
+
+            return false;
+        });
+
+        return !foundInvalidRates.length;
+    };
 
     const addRate = () => {
-        db.collection('profiles')
-            .doc(user.id)
-            .collection('rate')
-            .where('entrega', '==', 'estafetaDiaSiguiente')
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    setMin(doc.data().min);
-                    setMax(doc.data().max);
+        if (hasValidRateWeights(tarifas, minRate, maxRate)) {
+            if (parseInt(minRate) >= parseInt(maxRate)) {
+                setAddKgError(true);
+                return;
+            }
+            setAddKgError(false);
 
-                    console.log('doc.data().min', doc.data().min);
-                    console.log('doc.data().max', doc.data().max);
-                    console.log('minRate', minRate);
-                    console.log('maxRate', maxRate);
-
-                    if (parseInt(minRate) >= parseInt(maxRate)) {
-                        setAddKgError(true);
-                        return;
-                    }
-                    if (
-                        parseInt(doc.data().min) >= minRate &&
-                        parseInt(doc.data().max) <= maxRate
-                    ) {
-                        console.log('Se tiene que seleccionar una cantidad valida');
-                        setAddKgError(true);
-                        return;
-                    }
+            const addRateData = {
+                min: minRate,
+                max: maxRate,
+                entrega,
+                precio: cost,
+            };
+            db.collection('profiles')
+                .doc(user.id)
+                .collection('rate')
+                .add(addRateData)
+                .then(function(docRef) {
+                    console.log('Document written with ID (origen): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
                 });
-            })
-            .catch(function(error) {
-                console.log('Error getting documents: ', error);
-            });
-
-        setAddKgError(false);
-
-        const addRateData = {
-            min: minRate,
-            max: maxRate,
-            entrega,
-            precio: cost,
-        };
-        db.collection('profiles')
-            .doc(user.id)
-            .collection('rate')
-            .add(addRateData)
-            .then(function(docRef) {
-                console.log('Document written with ID (origen): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
+        } else {
+            setAddKgError(true);
+        }
     };
 
     const editKgExtra = () => {
@@ -357,7 +353,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                     kg
                 </div>
                 <div>
-                    <InlineInput type="text" onChange={ev => setCost(ev.target.value)} />
+                    $<InlineInput type="text" onChange={ev => setCost(ev.target.value)} />
                 </div>
                 <div className="actions">
                     <Button label="Confirmar" onClick={addRate} />

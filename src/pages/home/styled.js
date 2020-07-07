@@ -136,8 +136,9 @@ export const StyledHome = styled.div`
         font-size: 3rem;
         font-weight: 600;
         text-align: center;
-        padding-top: 8rem;
-    }
+        padding-top: 3.5rem;
+        margin: -100px;
+    } 
     .wrapper {
         width: auto;
         height: 500px;
