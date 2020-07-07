@@ -40,9 +40,11 @@ const AdminOverweightPage = () => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [xlsData, setxlsData] = useState([]);
-    console.log(xlsData);
-    const creationDate = new Date();
 
+    const creationDate = new Date();
+    const cargo = (realKg - kgDeclarados) * 2;
+
+    //Guide data
     useEffect(() => {
         if (!guia) {
             console.log('Este valor tiene que tener un valor de guía valida');
@@ -70,6 +72,14 @@ const AdminOverweightPage = () => {
         }
     }, [guia]);
 
+    //Overweight data
+    const extraOverWeight = overWeightInformation.map((overWeight, idx) => {
+        return {
+            kgExtra: overWeight.kgExtra,
+        };
+    });
+
+    console.log(extraOverWeight);
     useEffect(() => {
         const reloadOverWeight = () => {
             db.collection('overweights').onSnapshot(handleOverWeight);
@@ -236,7 +246,7 @@ const AdminOverweightPage = () => {
                         <Input
                             id="cargo"
                             label="Cargo"
-                            value={charge}
+                            value={cargo}
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
                             readOnly

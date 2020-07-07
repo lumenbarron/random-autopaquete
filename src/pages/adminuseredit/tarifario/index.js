@@ -97,31 +97,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
     const [keyRate, setKeyRate] = useState();
 
     const [addKgError, setAddKgError] = useState(false);
-
-    const editRate = () => {
-        setIsOpen(true);
-
-        const editRate = {
-            min: minRateModal,
-            max: maxRateModal,
-            precio: costModal,
-        };
-
-        const editRateInformation = db
-            .collection('profiles')
-            .doc(user.id)
-            .collection('rate')
-            .doc(keyRate)
-            .update(editRate);
-
-        editRateInformation
-            .then(function(docRef) {
-                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
-    };
+    const [addKgErrorModal, setAddKgErrorModal] = useState();
 
     const openModalExtra = () => {
         setIsOpenExtra(true);
@@ -225,9 +201,12 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                             onChange={ev => setCostModal(ev.target.value)}
                         />
                     </div>
+                    {addKgErrorModal && (
+                        <ErrorText>Error: Es necesario ingresar datos validos</ErrorText>
+                    )}
                     <button
                         type="button"
-                        onClick={closeModal}
+                        onClick={e => closeModal()}
                         style={{
                             border: 'none',
                             background: 'none',
@@ -242,7 +221,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                         type="submit"
                         onClick={() => {
                             editRate();
-                            closeModal();
                         }}
                     >
                         Continuar
@@ -256,8 +234,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         if (fromBase % 1 !== 0 || toBase % 1 !== 0) {
             return false;
         }
-        console.log(fromBase);
-        console.log(toBase);
 
         if (fromBase >= toBase) {
             return false;
@@ -289,7 +265,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                 min: parseInt(minRate),
                 max: parseInt(maxRate),
                 entrega,
-                precio: cost,
+                precio: parseInt(cost),
             };
             db.collection('profiles')
                 .doc(user.id)
@@ -303,6 +279,58 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                 });
         } else {
             setAddKgError(true);
+        }
+    };
+
+    const hasValidRateWeightsModal = (currentRates, fromBase, toBase) => {
+        if (fromBase % 1 !== 0 || toBase % 1 !== 0) {
+            return false;
+        }
+
+        if (fromBase >= toBase) {
+            return false;
+        }
+        console.log(currentRates);
+        console.log(fromBase);
+        console.log(toBase);
+
+        const foundInvalidRates = currentRates.filter(currentRate => {
+            const baseLowerWeight = parseInt(currentRate.min);
+            const baseHigherWeight = parseInt(currentRate.max);
+
+            return false;
+        });
+
+        return !foundInvalidRates.length;
+    };
+
+    const editRate = () => {
+        if (hasValidRateWeightsModal(tarifas, minRateModal, maxRateModal)) {
+            setAddKgErrorModal(false);
+
+            const editRate = {
+                min: parseInt(minRateModal),
+                max: parseInt(maxRateModal),
+                precio: parseInt(costModal),
+            };
+
+            const editRateInformation = db
+                .collection('profiles')
+                .doc(user.id)
+                .collection('rate')
+                .doc(keyRate)
+                .update(editRate);
+
+            editRateInformation
+                .then(function(docRef) {
+                    console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+            closeModal();
+        } else {
+            setAddKgErrorModal(true);
         }
     };
 
