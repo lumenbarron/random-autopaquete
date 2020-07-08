@@ -41,6 +41,10 @@ const AdminOverweightPage = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [xlsData, setxlsData] = useState([]);
 
+    const [kgExtra, setKgExtra] = useState([]);
+
+    const [overweightRatesBase, setOverweightRatesBase] = useState([]);
+
     const creationDate = new Date();
     const cargo = (realKg - kgDeclarados) * 2;
 
@@ -68,18 +72,51 @@ const AdminOverweightPage = () => {
                 .catch(function(error) {
                     console.log('Error getting document:', error);
                 });
-            console.log('Vamos a mostrar los datos del usuario');
+            //  console.log('Vamos a mostrar los datos del usuario');
         }
     }, [guia]);
 
-    //Overweight data
-    const extraOverWeight = overWeightInformation.map((overWeight, idx) => {
-        return {
-            kgExtra: overWeight.kgExtra,
-        };
-    });
+    //overWeight data
+    useEffect(() => {
+        if (!userId) {
+            console.log('Este valor tiene que tener un valor de guía valida');
+        } else {
+            db.collection('profiles')
+                .where('ID', '==', userId)
+                .get()
+                .then(function(profilesSnapshot) {
+                    profilesSnapshot.forEach(function(profileDoc) {
+                        db.collection(`profiles/${profileDoc.id}/rate`)
+                            .get()
+                            .then(function(ratesSnapshot) {
+                                const tmpOverweightRatesBase = [];
 
-    console.log(extraOverWeight);
+                                ratesSnapshot.forEach(function(rateDoc) {
+                                    tmpOverweightRatesBase.push(rateDoc.data());
+                                });
+
+                                setOverweightRatesBase(tmpOverweightRatesBase);
+                            })
+                            .catch(function(error) {
+                                console.log('rates not found');
+                            });
+                    });
+                })
+                .catch(function(error) {
+                    console.log('profile not found');
+                });
+        }
+    }, [guia, userId]);
+
+    // display new prices according to overweight rate base change
+    useEffect(() => {
+        console.log(overweightRatesBase);
+    }, [overweightRatesBase]);
+
+    // console.log(userId);
+
+    console.log('Kg extra', kgExtra);
+
     useEffect(() => {
         const reloadOverWeight = () => {
             db.collection('overweights').onSnapshot(handleOverWeight);
