@@ -43,6 +43,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
 
+    const [docId, setDocId] = useState();
+
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         db.collection('profiles')
             .where('ID', '==', user.uid)
@@ -97,7 +99,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 }
             });
     }, []);
-    console.log('De aquí se tiene que obtener la info ', idGuiaGlobal);
 
     useEffect(() => {
         if (weight === '') return;
@@ -156,7 +157,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         }
 
                         // Anotamos los cargos de kg extra, por si los necesitamos
-                        if (kgExtra && entrega) {
+                        if (kgExtra) {
                             kgsExtraTarifas[entrega.slice(0, entrega.indexOf('Extra'))] = parseInt(
                                 kgExtra,
                                 10,
@@ -173,11 +174,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         // es decir, nos sobran kilos
                         const diferencia =
                             (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
+
+                        console.log('Diferencia Variable', diferencia);
                         if (
                             !segundaMejorTarifa[entrega] ||
                             segundaMejorTarifa[entrega].diferencia > diferencia
                         ) {
                             const precioTotal = parseInt(precio, 10) * quantity;
+
                             segundaMejorTarifa[entrega] = {
                                 id: doc.id,
                                 precio: precioTotal + insurancePrice,
@@ -195,6 +199,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             tarifa.diferencia * kgsExtraTarifas[entrega] +
                             insurancePrice;
                         const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
+                        console.log('Tarifa', tarifa);
+                        console.log('kgsExtraTarifas', kgsExtraTarifas);
                         if (entrega === 'fedexDiaSiguiente')
                             setSupplierCostFedexDiaS({
                                 id: tarifa.id,
@@ -388,7 +394,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 onClick={() =>
                                     registerService(
                                         'estafeta',
-                                        'Económico',
+                                        'Economico',
                                         supplierCostEstafetaEcon,
                                     )
                                 }

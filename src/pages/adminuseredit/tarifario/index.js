@@ -528,7 +528,7 @@ export default function Tarifario({ user }) {
         'estafetaDiaSiguiente',
     );
 
-    const [estafetaEconomico, estafetaEconomicoExtra] = getTarifasDeServicio('estafetaEconómico');
+    const [estafetaEconomico, estafetaEconomicoExtra] = getTarifasDeServicio('estafetaEconomico');
 
     const [fedexDiaSiguiente, fedexDiaSiguienteExtra] = getTarifasDeServicio('fedexDiaSiguiente');
 
@@ -551,7 +551,7 @@ export default function Tarifario({ user }) {
                     label="Estafeta Terrestre"
                     tarifas={estafetaEconomico}
                     kgExtra={estafetaEconomicoExtra}
-                    entrega="estafetaEconómico"
+                    entrega="estafetaEconomico"
                     user={user}
                 />
             </Accordion>

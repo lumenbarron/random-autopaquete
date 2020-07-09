@@ -41,40 +41,14 @@ const AdminOverweightPage = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [xlsData, setxlsData] = useState([]);
 
-    const [kgExtra, setKgExtra] = useState([]);
+    const [kgExtra, setKgExtra] = useState();
+    const [supplier, setSupplier] = useState([]);
 
     const [overweightRatesBase, setOverweightRatesBase] = useState([]);
 
     const creationDate = new Date();
-    const cargo = (realKg - kgDeclarados) * 2;
-
-    //Guide data
-    useEffect(() => {
-        if (!guia) {
-            console.log('Este valor tiene que tener un valor de guía valida');
-        } else {
-            const docRef = db.collection('guia').doc(guia);
-
-            docRef
-                .get()
-                .then(function(doc) {
-                    if (doc.exists) {
-                        setDocId(doc.id);
-                        setName(doc.data().name);
-                        setUserId(doc.data().ID);
-                        setDate(doc.data().creation_date);
-                        setKgdeclarados(doc.data().package.weight);
-                    } else {
-                        // doc.data() will be undefined in this case
-                        console.log('No such document!');
-                    }
-                })
-                .catch(function(error) {
-                    console.log('Error getting document:', error);
-                });
-            //  console.log('Vamos a mostrar los datos del usuario');
-        }
-    }, [guia]);
+    let constKgExtra = [];
+    const cargo = (realKg - kgDeclarados) * parseInt(constKgExtra[0]);
 
     //overWeight data
     useEffect(() => {
@@ -110,12 +84,45 @@ const AdminOverweightPage = () => {
 
     // display new prices according to overweight rate base change
     useEffect(() => {
-        console.log(overweightRatesBase);
+        constKgExtra = overweightRatesBase
+            .filter(kgExtraFilter => {
+                return kgExtraFilter.entrega === `${supplier}Extra`;
+            })
+            .map(getCostkgExtra => {
+                return getCostkgExtra.kgExtra;
+            });
+        console.log(constKgExtra[0]);
     }, [overweightRatesBase]);
 
-    // console.log(userId);
+    //Guide data
+    useEffect(() => {
+        if (!guia) {
+            console.log('Este valor tiene que tener un valor de guía valida');
+        } else {
+            const docRef = db.collection('guia').doc(guia);
 
-    console.log('Kg extra', kgExtra);
+            docRef
+                .get()
+                .then(function(doc) {
+                    if (doc.exists) {
+                        setDocId(doc.id);
+                        setName(doc.data().name);
+                        setUserId(doc.data().ID);
+                        setDate(doc.data().creation_date);
+                        setKgdeclarados(doc.data().package.weight);
+                        setKgExtra(doc.data().supplierData.cargos.cargoExtra);
+                        setSupplier(doc.data().supplierData.tarifa.entrega);
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log('No such document!');
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Error getting document:', error);
+                });
+            //  console.log('Vamos a mostrar los datos del usuario');
+        }
+    }, [guia]);
 
     useEffect(() => {
         const reloadOverWeight = () => {

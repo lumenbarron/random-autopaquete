@@ -133,7 +133,6 @@ export const DestinoComponent = ({ onSave }) => {
                 label: <AddressRadioOption key={directions.id} directions={directions} />,
             };
         });
-    console.log(filter);
 
     const search = e => {
         let keyword = e.target.value;
