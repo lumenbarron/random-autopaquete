@@ -94,32 +94,10 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
 
     const [extraCost, setExtraCost] = useState();
 
-    const editRate = key => {
-        setIsOpen(true);
+    const [keyRate, setKeyRate] = useState();
 
-        const editRate = {
-            min: minRateModal,
-            max: maxRateModal,
-            precio: costModal,
-        };
-
-        console.log(key);
-
-        const editRateInformation = db
-            .collection('profiles')
-            .doc(user.id)
-            .collection('rate')
-            .doc(key)
-            .update(editRate);
-
-        editRateInformation
-            .then(function(docRef) {
-                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
-    };
+    const [addKgError, setAddKgError] = useState(false);
+    const [addKgErrorModal, setAddKgErrorModal] = useState();
 
     const openModalExtra = () => {
         setIsOpenExtra(true);
@@ -129,8 +107,9 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         setIsOpenExtra(false);
     };
 
-    const openModal = (min, max, precio) => {
+    const openModal = (min, max, precio, key) => {
         setIsOpen(true);
+        setKeyRate(key);
         setMinRateModal(min);
         setMaxRateModal(max);
         setCostModal(precio);
@@ -158,6 +137,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         // let key = label + idx;
 
         const { min, max, precio, key } = tarifa;
+
         return (
             <>
                 <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap" key={key}>
@@ -169,7 +149,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                         <button type="button">
                             <FontAwesomeIcon
                                 icon={faPencilAlt}
-                                onClick={() => openModal(min, max, precio)}
+                                onClick={() => openModal(min, max, precio, key)}
                             />
                         </button>
                         <button type="button">
@@ -221,9 +201,12 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                             onChange={ev => setCostModal(ev.target.value)}
                         />
                     </div>
+                    {addKgErrorModal && (
+                        <ErrorText>Error: Es necesario ingresar datos validos</ErrorText>
+                    )}
                     <button
                         type="button"
-                        onClick={closeModal}
+                        onClick={e => closeModal()}
                         style={{
                             border: 'none',
                             background: 'none',
@@ -237,8 +220,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                     <StyledSubmit
                         type="submit"
                         onClick={() => {
-                            editRate(key);
-                            closeModal();
+                            editRate();
                         }}
                     >
                         Continuar
@@ -248,23 +230,108 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         );
     });
 
+    const hasValidRateWeights = (currentRates, fromBase, toBase) => {
+        if (fromBase % 1 !== 0 || toBase % 1 !== 0) {
+            return false;
+        }
+
+        if (fromBase >= toBase) {
+            return false;
+        }
+
+        const foundInvalidRates = currentRates.filter(currentRate => {
+            const baseLowerWeight = parseInt(currentRate.min);
+            const baseHigherWeight = parseInt(currentRate.max);
+
+            if (fromBase >= baseLowerWeight && fromBase <= baseHigherWeight) {
+                return true;
+            }
+
+            if (toBase >= baseLowerWeight && toBase <= baseHigherWeight) {
+                return true;
+            }
+
+            return false;
+        });
+
+        return !foundInvalidRates.length;
+    };
+
     const addRate = () => {
-        const addRateData = {
-            min: minRate,
-            max: maxRate,
-            entrega,
-            precio: cost,
-        };
-        db.collection('profiles')
-            .doc(user.id)
-            .collection('rate')
-            .add(addRateData)
-            .then(function(docRef) {
-                console.log('Document written with ID (origen): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
+        if (hasValidRateWeights(tarifas, minRate, maxRate)) {
+            setAddKgError(false);
+
+            const addRateData = {
+                min: parseInt(minRate),
+                max: parseInt(maxRate),
+                entrega,
+                precio: parseInt(cost),
+            };
+            db.collection('profiles')
+                .doc(user.id)
+                .collection('rate')
+                .add(addRateData)
+                .then(function(docRef) {
+                    console.log('Document written with ID (origen): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+        } else {
+            setAddKgError(true);
+        }
+    };
+
+    const hasValidRateWeightsModal = (currentRates, fromBase, toBase) => {
+        if (fromBase % 1 !== 0 || toBase % 1 !== 0) {
+            return false;
+        }
+
+        if (fromBase >= toBase) {
+            return false;
+        }
+        console.log(currentRates);
+        console.log(fromBase);
+        console.log(toBase);
+
+        const foundInvalidRates = currentRates.filter(currentRate => {
+            const baseLowerWeight = parseInt(currentRate.min);
+            const baseHigherWeight = parseInt(currentRate.max);
+
+            return false;
+        });
+
+        return !foundInvalidRates.length;
+    };
+
+    const editRate = () => {
+        if (hasValidRateWeightsModal(tarifas, minRateModal, maxRateModal)) {
+            setAddKgErrorModal(false);
+
+            const editRate = {
+                min: parseInt(minRateModal),
+                max: parseInt(maxRateModal),
+                precio: parseInt(costModal),
+            };
+
+            const editRateInformation = db
+                .collection('profiles')
+                .doc(user.id)
+                .collection('rate')
+                .doc(keyRate)
+                .update(editRate);
+
+            editRateInformation
+                .then(function(docRef) {
+                    console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+            closeModal();
+        } else {
+            setAddKgErrorModal(true);
+        }
     };
 
     const editKgExtra = () => {
@@ -320,15 +387,17 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                     kg
                 </div>
                 <div>
-                    <InlineInput type="text" onChange={ev => setCost(ev.target.value)} />
+                    $<InlineInput type="text" onChange={ev => setCost(ev.target.value)} />
                 </div>
                 <div className="actions">
                     <Button label="Confirmar" onClick={addRate} />
                 </div>
-                <ErrorText>
-                    Error: Los kilogramos que tienes deben estar duplicados o no ser consecutivos,
-                    favor de revisar
-                </ErrorText>
+                {addKgError && (
+                    <ErrorText>
+                        Error: Los kilogramos que tienes deben estar duplicados o no ser
+                        consecutivos, favor de revisar
+                    </ErrorText>
+                )}
             </div>
             <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap header-divider">
                 <h3>Kg Adicional</h3>
@@ -459,7 +528,7 @@ export default function Tarifario({ user }) {
         'estafetaDiaSiguiente',
     );
 
-    const [estafetaEconomico, estafetaEconomicoExtra] = getTarifasDeServicio('estafetaEconómico');
+    const [estafetaEconomico, estafetaEconomicoExtra] = getTarifasDeServicio('estafetaEconomico');
 
     const [fedexDiaSiguiente, fedexDiaSiguienteExtra] = getTarifasDeServicio('fedexDiaSiguiente');
 
@@ -482,7 +551,7 @@ export default function Tarifario({ user }) {
                     label="Estafeta Terrestre"
                     tarifas={estafetaEconomico}
                     kgExtra={estafetaEconomicoExtra}
-                    entrega="estafetaEconómico"
+                    entrega="estafetaEconomico"
                     user={user}
                 />
             </Accordion>

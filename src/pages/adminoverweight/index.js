@@ -40,9 +40,61 @@ const AdminOverweightPage = () => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [xlsData, setxlsData] = useState([]);
-    console.log(xlsData);
-    const creationDate = new Date();
 
+    const [kgExtra, setKgExtra] = useState();
+    const [supplier, setSupplier] = useState([]);
+
+    const [overweightRatesBase, setOverweightRatesBase] = useState([]);
+
+    const creationDate = new Date();
+    let constKgExtra = [];
+    const cargo = (realKg - kgDeclarados) * parseInt(constKgExtra[0]);
+
+    //overWeight data
+    useEffect(() => {
+        if (!userId) {
+            console.log('Este valor tiene que tener un valor de guía valida');
+        } else {
+            db.collection('profiles')
+                .where('ID', '==', userId)
+                .get()
+                .then(function(profilesSnapshot) {
+                    profilesSnapshot.forEach(function(profileDoc) {
+                        db.collection(`profiles/${profileDoc.id}/rate`)
+                            .get()
+                            .then(function(ratesSnapshot) {
+                                const tmpOverweightRatesBase = [];
+
+                                ratesSnapshot.forEach(function(rateDoc) {
+                                    tmpOverweightRatesBase.push(rateDoc.data());
+                                });
+
+                                setOverweightRatesBase(tmpOverweightRatesBase);
+                            })
+                            .catch(function(error) {
+                                console.log('rates not found');
+                            });
+                    });
+                })
+                .catch(function(error) {
+                    console.log('profile not found');
+                });
+        }
+    }, [guia, userId]);
+
+    // display new prices according to overweight rate base change
+    useEffect(() => {
+        constKgExtra = overweightRatesBase
+            .filter(kgExtraFilter => {
+                return kgExtraFilter.entrega === `${supplier}Extra`;
+            })
+            .map(getCostkgExtra => {
+                return getCostkgExtra.kgExtra;
+            });
+        console.log(constKgExtra[0]);
+    }, [overweightRatesBase]);
+
+    //Guide data
     useEffect(() => {
         if (!guia) {
             console.log('Este valor tiene que tener un valor de guía valida');
@@ -58,6 +110,8 @@ const AdminOverweightPage = () => {
                         setUserId(doc.data().ID);
                         setDate(doc.data().creation_date);
                         setKgdeclarados(doc.data().package.weight);
+                        setKgExtra(doc.data().supplierData.cargos.cargoExtra);
+                        setSupplier(doc.data().supplierData.tarifa.entrega);
                     } else {
                         // doc.data() will be undefined in this case
                         console.log('No such document!');
@@ -66,7 +120,7 @@ const AdminOverweightPage = () => {
                 .catch(function(error) {
                     console.log('Error getting document:', error);
                 });
-            console.log('Vamos a mostrar los datos del usuario');
+            //  console.log('Vamos a mostrar los datos del usuario');
         }
     }, [guia]);
 
@@ -236,7 +290,7 @@ const AdminOverweightPage = () => {
                         <Input
                             id="cargo"
                             label="Cargo"
-                            value={charge}
+                            value={cargo}
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
                             readOnly

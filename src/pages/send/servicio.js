@@ -43,6 +43,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
 
+    const [docId, setDocId] = useState();
+
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         db.collection('profiles')
             .where('ID', '==', user.uid)
@@ -86,13 +88,15 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
                 setPhoneReceiver(doc.data().receiver_addresses.phone);
                 // Get snapshot to receive package information
-                setNamePackage(doc.data().package.name);
-                setHeight(doc.data().package.height);
-                setWidth(doc.data().package.width);
-                setDepth(doc.data().package.depth);
-                setWeight(doc.data().package.weight);
-                setQuantity(doc.data().package.quantity);
-                setContentValue(doc.data().package.content_value);
+                if (doc.data().package) {
+                    setNamePackage(doc.data().package.name);
+                    setHeight(doc.data().package.height);
+                    setWidth(doc.data().package.width);
+                    setDepth(doc.data().package.depth);
+                    setWeight(doc.data().package.weight);
+                    setQuantity(doc.data().package.quantity);
+                    setContentValue(doc.data().package.content_value);
+                }
             });
     }, []);
 
@@ -170,11 +174,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         // es decir, nos sobran kilos
                         const diferencia =
                             (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
+
+                        console.log('Diferencia Variable', diferencia);
                         if (
                             !segundaMejorTarifa[entrega] ||
                             segundaMejorTarifa[entrega].diferencia > diferencia
                         ) {
                             const precioTotal = parseInt(precio, 10) * quantity;
+
                             segundaMejorTarifa[entrega] = {
                                 id: doc.id,
                                 precio: precioTotal + insurancePrice,
@@ -192,6 +199,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             tarifa.diferencia * kgsExtraTarifas[entrega] +
                             insurancePrice;
                         const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
+                        console.log('Tarifa', tarifa);
+                        console.log('kgsExtraTarifas', kgsExtraTarifas);
                         if (entrega === 'fedexDiaSiguiente')
                             setSupplierCostFedexDiaS({
                                 id: tarifa.id,
@@ -385,7 +394,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 onClick={() =>
                                     registerService(
                                         'estafeta',
-                                        'Económico',
+                                        'Economico',
                                         supplierCostEstafetaEcon,
                                     )
                                 }

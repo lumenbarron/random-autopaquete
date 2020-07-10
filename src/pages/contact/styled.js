@@ -53,6 +53,7 @@ export const StyledContact = styled.div`
         background-color: #ab0000;
         border: none;
         border-radius: 25px;
+        float: right;
     }
 
     .message {
