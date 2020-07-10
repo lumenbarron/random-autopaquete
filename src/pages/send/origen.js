@@ -143,12 +143,6 @@ export const OrigenComponent = ({ onSave }) => {
                 label: <AddressRadioOption key={directions.id} directions={directions} />,
             };
         });
-    // const options = directionData.map((directions, idx) => {
-    //     return {
-    //         value: directions.id + '',
-    //         label: <AddressRadioOption key={directions.id} directions={directions} />,
-    //     };
-    // });
 
     //Se obtienen las direcciones guardadas
     useEffect(() => {

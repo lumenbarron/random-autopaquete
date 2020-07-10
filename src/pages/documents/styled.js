@@ -35,6 +35,12 @@ export const StyledForm = styled.form.attrs(props => {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+
+    .alert-error {
+        margin-bottom: 1rem !important ;
+
+        color: crimson;
+    }
 `;
 
 export const StyledSubmit = styled.button.attrs(props => {

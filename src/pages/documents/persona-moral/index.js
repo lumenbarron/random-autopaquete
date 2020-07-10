@@ -4,16 +4,18 @@ import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled.js';
 
 const TabPersonaMoral = () => {
-    const [razonSocial, setRazonSocial] = useState();
-    const [legalName, setLegalName] = useState();
-    const [address, setAdrress] = useState();
-    const [phone, setPhone] = useState();
-    const [RFC, setRFC] = useState();
+    const [razonSocial, setRazonSocial] = useState('');
+    const [legalName, setLegalName] = useState('');
+    const [address, setAdrress] = useState('');
+    const [phone, setPhone] = useState('');
+    const [RFC, setRFC] = useState('');
 
     const [fileActaConstitutiva, setFileActaConstitutiva] = useState();
     const [fileFiscal, setFileFiscal] = useState();
     const [fileIne, setFileINE] = useState();
     const [fileDomicilio, setFileAddress] = useState();
+
+    const [error, setError] = useState(false);
 
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -114,6 +116,20 @@ const TabPersonaMoral = () => {
 
     const register = e => {
         e.preventDefault();
+
+        if (
+            razonSocial.trim() === '' ||
+            legalName.trim() === '' ||
+            address.trim() === '' ||
+            RFC.trim() === '' ||
+            phone.trim() === ''
+        ) {
+            setError(true);
+            return;
+        }
+
+        setError(false);
+
         let fileName = '';
         let filePath = '';
 
@@ -261,6 +277,9 @@ const TabPersonaMoral = () => {
                         Al enviar tu documentación aceptas los términos y condiciones y el aviso de
                         privacidad
                     </h5>
+                    {error && (
+                        <div className="alert-error">Todos los campos necesitan estar llenos</div>
+                    )}
                     <StyledSubmit
                         className="rainbow-m-around_medium"
                         type="submit"

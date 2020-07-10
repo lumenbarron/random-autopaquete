@@ -54,7 +54,7 @@ const LoginPage = () => {
             .createUserWithEmailAndPassword(newEmail, newPassword)
             .then(({ user }) => {
                 user.sendEmailVerification();
-                history.push('/mi-cuenta');
+                history.push('/documentacion');
                 const profilesCollectionAdd = db.collection('profiles').add({
                     name,
                     lastname,

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Input, FileSelector } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled';
@@ -17,8 +18,11 @@ const TabPersonaFisica = () => {
     const [fileIne, setFileINE] = useState();
     const [fileDomicilio, setFileAddress] = useState();
 
+    const [error, setError] = useState(false);
+
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
+    const history = useHistory();
 
     const storage = firebase.storage();
 
@@ -68,6 +72,8 @@ const TabPersonaFisica = () => {
                             .catch(function(error) {
                                 console.error('Error writing document: ', error);
                             });
+
+                        history.push('/mi-cuenta');
                     }
                 });
             });
@@ -105,6 +111,20 @@ const TabPersonaFisica = () => {
 
     const register = e => {
         e.preventDefault();
+
+        if (
+            name.trim() === '' ||
+            INEnumber.trim() === '' ||
+            address.trim() === '' ||
+            RFC.trim() === '' ||
+            date.trim() === '' ||
+            phone.trim() === ''
+        ) {
+            setError(true);
+            return;
+        }
+
+        setError(false);
 
         let fileName = '';
         let filePath = '';
@@ -244,6 +264,9 @@ const TabPersonaFisica = () => {
                         Al enviar tu documentación aceptas los términos y condiciones y el aviso de
                         privacidad
                     </h5>
+                    {error && (
+                        <div className="alert-error">Todos los campos necesitan estar llenos</div>
+                    )}
                     <StyledSubmit className="rainbow-m-around_medium" type="submit">
                         Continuar
                     </StyledSubmit>

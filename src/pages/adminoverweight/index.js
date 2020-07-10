@@ -41,14 +41,13 @@ const AdminOverweightPage = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [xlsData, setxlsData] = useState([]);
 
-    const [kgExtra, setKgExtra] = useState();
     const [supplier, setSupplier] = useState([]);
 
     const [overweightRatesBase, setOverweightRatesBase] = useState([]);
 
     const creationDate = new Date();
-    let constKgExtra = [];
-    const cargo = (realKg - kgDeclarados) * parseInt(constKgExtra[0]);
+    const [rateKgExtra, setRateKgExtra] = useState();
+    const cargo = (realKg - kgDeclarados) * parseInt(rateKgExtra, 10);
 
     //overWeight data
     useEffect(() => {
@@ -79,20 +78,24 @@ const AdminOverweightPage = () => {
                 .catch(function(error) {
                     console.log('profile not found');
                 });
+            console.log('Id usuario', userId);
         }
-    }, [guia, userId]);
+    }, [guia, userId, xlsData]);
 
     // display new prices according to overweight rate base change
     useEffect(() => {
-        constKgExtra = overweightRatesBase
-            .filter(kgExtraFilter => {
-                return kgExtraFilter.entrega === `${supplier}Extra`;
-            })
-            .map(getCostkgExtra => {
-                return getCostkgExtra.kgExtra;
-            });
-        console.log(constKgExtra[0]);
-    }, [overweightRatesBase]);
+        console.log(supplier);
+        setRateKgExtra(
+            overweightRatesBase
+                .filter(kgExtraFilter => {
+                    return kgExtraFilter.entrega === `${supplier}Extra`;
+                })
+                .map(getCostkgExtra => {
+                    return getCostkgExtra.kgExtra;
+                }),
+        );
+    }, [overweightRatesBase, guia, xlsData]);
+    console.log(rateKgExtra);
 
     //Guide data
     useEffect(() => {
@@ -110,7 +113,6 @@ const AdminOverweightPage = () => {
                         setUserId(doc.data().ID);
                         setDate(doc.data().creation_date);
                         setKgdeclarados(doc.data().package.weight);
-                        setKgExtra(doc.data().supplierData.cargos.cargoExtra);
                         setSupplier(doc.data().supplierData.tarifa.entrega);
                     } else {
                         // doc.data() will be undefined in this case
@@ -159,6 +161,7 @@ const AdminOverweightPage = () => {
                 guia,
                 kilos_declarados: kgDeclarados,
                 kilos_reales: realKg,
+                cargo,
             };
             db.collection('overweights')
                 .add(addOverWeightData)
@@ -180,37 +183,81 @@ const AdminOverweightPage = () => {
                 console.log('Este valor tiene que tener un valor de guía valida');
             } else {
                 const docRef = db.collection('guia').doc(overWeight.guia);
+
+                function getCostkgExtra(getCostkgExtra) {
+                    return getCostkgExtra.kgExtra;
+                }
+
                 docRef
                     .get()
                     .then(function(doc) {
                         if (doc.exists) {
                             setUserId(doc.data().ID);
+
+                            // db.collection('profiles')
+                            //     .where('ID', '==', doc.data().ID)
+                            //     .get()
+                            //     .then(function(profilesSnapshot) {
+                            //         profilesSnapshot.forEach(function(profileDoc) {
+                            //             db.collection(`profiles/${profileDoc.id}/rate`)
+                            //                 .get()
+                            //                 .then(function(ratesSnapshot) {
+                            //                     const tmpOverweightRatesBase = [];
+
+                            //                     ratesSnapshot.forEach(function(rateDoc) {
+                            //                         tmpOverweightRatesBase.push(rateDoc.data());
+                            //                     });
+
+                            //                     setRateKgExtraXls(tmpOverweightRatesBase);
+                            //                 })
+                            //                 .catch(function(error) {
+                            //                     console.log('rates not found');
+                            //                 });
+
+                            //             setRateKgExtraXls2(
+                            //                 rateKgExtraXls
+                            //                     .filter(kgExtraFilter => {
+                            //                         return (
+                            //                             kgExtraFilter.entrega === `${supplier}Extra`
+                            //                         );
+                            //                     })
+                            //                     .map(getCostkgExtra => {
+                            //                         return getCostkgExtra.kgExtra;
+                            //                     }),
+                            //             );
+                            //     });
+                            // })
+                            // .catch(function(error) {
+                            //     console.log('profile not found');
+                            // });
+
+                            db.collection('overweights')
+                                .add({
+                                    ID: doc.data().ID,
+                                    usuario: doc.data().name,
+                                    fecha: creationDate.toLocaleDateString(),
+                                    guia: overWeight.guia,
+                                    kilos_declarados: doc.data().package.weight,
+                                    kilos_reales: overWeight.kilos_reales,
+                                    cargo:
+                                        (parseInt(overWeight.kilos_reales, 10) -
+                                            parseInt(doc.data().package.weight, 10)) *
+                                        parseInt(rateKgExtra, 10),
+                                })
+                                .then(function(docRef) {
+                                    console.log(docRef);
+                                })
+                                .catch(function(error) {
+                                    console.error('Error adding document: ', error);
+                                });
                         } else {
                             // doc.data() will be undefined in this case
                             console.log('No such document!');
                         }
-
-                        db.collection('overweights')
-                            .add({
-                                ID: doc.data().ID,
-                                usuario: doc.data().name,
-                                fecha: creationDate.toLocaleDateString(),
-                                guia: overWeight.guia,
-                                kilos_declarados: doc.data().package.weight,
-                                kilos_reales: overWeight.kilos_reales,
-                                cargo: overWeight.kilos_reales + 50,
-                            })
-                            .then(function(docRef) {
-                                console.log('Document written with ID (origen): ', docRef.id);
-                            })
-                            .catch(function(error) {
-                                console.error('Error adding document: ', error);
-                            });
                     })
                     .catch(function(error) {
                         console.log('Error getting document:', error);
                     });
-                console.log('Vamos a mostrar los datos del usuario');
             }
         });
     };
