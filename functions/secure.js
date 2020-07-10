@@ -1,4 +1,4 @@
-const admin = require('./admin').admin;
+const { admin } = require('./admin');
 
 async function getProfileByToken(req) {
     try {
@@ -6,20 +6,20 @@ async function getProfileByToken(req) {
         const authorizationHeader = req.headers.authorization || '';
         const components = authorizationHeader.split(' ');
         const idToken = components.length > 1 ? components[1] : '';
-        if (idToken == '') {
+        if (idToken === '') {
             console.log('No ID Token');
             return false;
         }
         // Lo decodificamos para obtener la info del uid
-        let decodedToken = await admin.auth().verifyIdToken(idToken);
-        var uid = decodedToken.uid;
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        const { uid } = decodedToken;
         // Vamos a la base de datos a obtener el perfil y vemos si es de tipo admin
-        var db = admin.firestore();
-        var profileQuery = await db
+        const db = admin.firestore();
+        const profileQuery = await db
             .collection('profiles')
             .where('ID', '==', uid)
             .get();
-        var profile = profileQuery.docs[0] ? profileQuery.docs[0].data() : null;
+        const profile = profileQuery.docs[0] ? profileQuery.docs[0].data() : null;
         if (!profile) {
             console.log('No profile found');
             return false;

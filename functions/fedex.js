@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const { soap } = require('strong-soap');
 const secure = require('./secure');
 const { getGuiaById, saveLabel } = require('./guia');
 
@@ -30,10 +31,33 @@ exports.create = functions.https.onRequest(async (req, res) => {
     const receiverAddress = guia.receiver_addresses;
     const packaging = guia.package;
 
-    var soap = require('strong-soap').soap;
-    var url = './ShipService_v25.wsdl';
+    const quantity = parseInt(packaging.quantity, 10);
 
-    var requestArgs = {
+    if (Number.isNaN(quantity) || quantity === 0) {
+        res.status(400).send('Quantity not a number larger than 0');
+        return;
+    }
+
+    const packageLineItems = [];
+    for (let i = 1; i <= quantity; i += 1) {
+        packageLineItems.push({
+            SequenceNumber: `${i}`,
+            Weight: {
+                Units: 'KG',
+                Value: packaging.weight,
+            },
+            Dimensions: {
+                Length: packaging.depth,
+                Width: packaging.width,
+                Height: packaging.height,
+                Units: 'CM',
+            },
+        });
+    }
+
+    const url = './ShipService_v25.wsdl';
+
+    const requestArgs = {
         ProcessShipmentRequest: {
             WebAuthenticationDetail: {
                 UserCredential: {
@@ -101,32 +125,20 @@ exports.create = functions.https.onRequest(async (req, res) => {
                     LabelStockType: 'PAPER_7X4.75',
                 },
                 RateRequestTypes: 'LIST',
-                PackageCount: '1',
-                RequestedPackageLineItems: {
-                    SequenceNumber: '1',
-                    Weight: {
-                        Units: 'KG',
-                        Value: packaging.weight,
-                    },
-                    Dimensions: {
-                        Length: packaging.length,
-                        Width: packaging.width,
-                        Height: packaging.height,
-                        Units: 'CM',
-                    },
-                },
+                PackageCount: packaging.quantity,
+                RequestedPackageLineItems: packageLineItems,
             },
         },
     };
 
+    console.log(packageLineItems);
+
     soap.createClient(url, {}, function(err, client) {
-        client.ShipService.ShipServicePort.processShipment(requestArgs, function(
-            err,
-            result,
-            envelope,
-            soapHeader,
-        ) {
-            res.status(200).send(JSON.stringify(result));
+        client.ShipService.ShipServicePort.processShipment(requestArgs, function(err1, result) {
+            const pdf = '';
+            const guias = [];
+            saveLabel(guiaId, pdf, guias, JSON.parse(JSON.stringify(result)));
+            res.status(200).send('OK');
         });
     });
 });

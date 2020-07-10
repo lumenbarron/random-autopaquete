@@ -11902,7 +11902,7 @@ react-player@^2.0.1:
     prop-types "^15.7.2"
     react-fast-compare "^3.0.1"
 
-react-rainbow-components@1.16.0:
+react-rainbow-components@^1.16.0:
   version "1.16.0"
   resolved "https://registry.yarnpkg.com/react-rainbow-components/-/react-rainbow-components-1.16.0.tgz#8749331baf74b24d7b84c5f66549950094ead142"
   integrity sha512-+1hByKKW3owtowiVATHrlAJdZYsm5tSxskfOLlr6AoZM67POrc+SwDKBJGyvsZK/tJzAy1U4cf+MGcC1cHybWg==

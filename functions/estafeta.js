@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const { soap } = require('strong-soap');
 const secure = require('./secure');
 const { getGuiaById, saveLabel } = require('./guia');
 
@@ -30,10 +31,16 @@ exports.create = functions.https.onRequest(async (req, res) => {
     const receiverAddress = guia.receiver_addresses;
     const packaging = guia.package;
 
-    var soap = require('strong-soap').soap;
-    var url = 'https://labelqa.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
+    const quantity = parseInt(packaging.quantity, 10);
 
-    var requestArgs = {
+    if (Number.isNaN(quantity) || quantity === 0) {
+        res.status(400).send('Quantity not a number larger than 0');
+        return;
+    }
+
+    const url = 'https://labelqa.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
+
+    const requestArgs = {
         in0: {
             customerNumber: '0000000',
             labelDescriptionList: {
@@ -53,7 +60,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 },
                 destinationCountryId: 'MX',
                 deliveryToEstafetaOffice: 'False',
-                numberOfLabels: '1',
+                numberOfLabels: quantity,
                 officeNum: '130',
                 originInfo: {
                     customerNumber: '0000000',
@@ -87,14 +94,15 @@ exports.create = functions.https.onRequest(async (req, res) => {
 
     soap.createClient(url, {}, function(err, client) {
         client.EstafetaLabelService.EstafetaLabelWS.createLabel(requestArgs, function(
-            err,
+            err1,
             result,
-            envelope,
-            soapHeader,
         ) {
             const pdf = result.createLabelReturn.labelPDF.$value;
-            saveLabel(guiaId, pdf);
-            res.status(200).send(JSON.stringify(result));
+            const guias = result.createLabelReturn.labelResultList.labelResultList.resultDescription.$value.split(
+                '|',
+            );
+            saveLabel(guiaId, pdf, guias, result);
+            res.status(200).send('OK');
         });
     });
 });

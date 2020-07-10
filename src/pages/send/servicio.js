@@ -58,7 +58,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         const tarifa = doc.data();
                         const supplierData = {
                             ID: user.uid,
-                            Supplier: `estafeta${type}`,
+                            Supplier: `${supplier}${type}`,
                             Supplier_cost: precio,
                             tarifa,
                             cargos,

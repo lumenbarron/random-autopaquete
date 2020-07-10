@@ -14,12 +14,12 @@ async function getGuiaById(uid, guiaId) {
     return null;
 }
 
-async function saveLabel(guiaId, pdf) {
+async function saveLabel(guiaId, label, rastreo, APIResponse) {
     const db = admin.firestore();
     await db
         .collection('guia')
         .doc(guiaId)
-        .update({ label: pdf });
+        .update({ label, APIResponse, rastreo });
 }
 
 exports.getGuiaById = getGuiaById;

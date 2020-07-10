@@ -17,13 +17,12 @@ export const DescargaComponent = ({ idGuiaGlobal }) => {
         const prepareDownload = () => {
             db.collection('guia')
                 .doc(idGuiaGlobal)
-                .get()
-                .then(doc => {
+                .onSnapshot(doc => {
                     setPDF(doc.data().label);
                 });
         };
         prepareDownload();
-    }, []);
+    }, [idGuiaGlobal]);
 
     return (
         <DownloadContainer>
