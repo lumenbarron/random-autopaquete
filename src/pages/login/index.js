@@ -83,9 +83,14 @@ const LoginPage = () => {
 
         await firebase
             .auth()
-            .signInWithEmailAndPassword(email, password)
+            .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+            .then(function() {
+                return firebase.auth().signInWithEmailAndPassword(email, password);
+            })
             .catch(function(error) {
-                setErrorLogIn(true);
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
             });
     };
 
