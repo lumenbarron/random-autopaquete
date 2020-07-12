@@ -4,8 +4,8 @@ import Row from 'react-bootstrap/Row';
 import { Input, Textarea } from 'react-rainbow-components';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
+import { useUser } from 'reactfire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { createTransport, getTestMessageUrl } from 'nodemailer';
 
 import {
     faClock,
@@ -13,7 +13,6 @@ import {
     faPhoneAlt,
     faLocationArrow,
     faComment,
-    faSearch,
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { StyledContact } from './styled';
@@ -32,13 +31,25 @@ const ContactPage = () => {
     const [phone, setPhone] = useState();
     const [email, setEmail] = useState();
     const [message, setMessage] = useState();
+    const [sent, setSent] = useState(false);
+    const [sending, setSending] = useState(true);
+
+    const user = useUser();
 
     function sendEmail() {
-        var xhr = new XMLHttpRequest();
-
-        xhr.open('GET', '/admin/sendEmail', false);
-        xhr.setRequestHeader('Authorization', 'Bearer ');
-        xhr.send();
+        setSending(true);
+        user.getIdToken().then(idToken => {
+            const xhr = new XMLHttpRequest();
+            xhr.responseType = 'json';
+            xhr.contentType = 'application/json';
+            xhr.onload = () => {
+                setSent(true);
+                setSending(false);
+            };
+            xhr.open('POST', '/admin/sendEmail');
+            xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+            xhr.send(JSON.stringify({ name, lastName, phone, email, message }));
+        });
     }
 
     return (
@@ -95,9 +106,10 @@ const ContactPage = () => {
                             onChange={ev => setMessage(ev.target.value)}
                         />
                     </div>
-                    <Button className="boton" type="submit" onClick={sendEmail}>
+                    <Button className="boton" type="submit" onClick={sendEmail} disabled={!sending}>
                         Enviar
                     </Button>
+                    {sent && <p>Mensaje enviado, ¡Gracias!</p>}
                 </div>
 
                 <Container>

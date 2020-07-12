@@ -1,7 +1,22 @@
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
+const secure = require('./secure');
 
-exports.send = functions.https.onRequest(req => {
+exports.send = functions.https.onRequest(async (req, res) => {
+    const contentType = req.get('content-type');
+    if (!contentType && contentType !== 'application/json') {
+        res.status(400).send('Bad Request: Expected JSON');
+        return;
+    }
+
+    const profile = await secure.user(req);
+    if (!profile) {
+        res.status(403).send('Not authorized');
+        return;
+    }
+
+    const { name, lastName, phone, email, message } = req.body;
+
     const transporter = nodemailer.createTransport({
         host: 'mail.sitiorandom.com',
         port: 587,
@@ -12,22 +27,18 @@ exports.send = functions.https.onRequest(req => {
         },
     });
 
-    let info = transporter.sendMail({
-        from: 'Holi 👻' + req.body.email, // sender address
-        to: 'programacion@sitiorandom.com, programacionrandom@gmail.com', // list of receivers
-        subject: name + req.body.lastName, // Subject line
-        text: phone + message, // plain text body
-        html: `<b>Hello world?</b><h1>${message}</h1> `,
-    });
+    try {
+        const info = await transporter.sendMail({
+            from: `"${name} ${lastName}" <${email}>`, // sender address
+            replyTo: `"${name} ${lastName}" <${email}>`,
+            to: 'programacion@sitiorandom.com, programacionrandom@gmail.com', // list of receivers
+            subject: 'Contacto a través del sitio', // Subject line
+            text: `Telefono: ${phone} Mensaje: ${message}`, // plain text body
+            html: `<p><b>Contacto a través del sitio</b></p><div>Telefono: ${phone}</div><div>Mensaje: ${message}</div> `,
+        });
 
-    transporter.sendMail(info, (err, callback) => {
-        if (err) {
-            console.log('No se envio :(');
-        }
-        console.log('Se envio :)');
-    });
-
-    console.log('Message sent: %s', info.messageId);
-
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        console.log('Message sent: %s', info.messageId);
+    } catch (err) {
+        console.log(`Message Error ${err}`);
+    }
 });
