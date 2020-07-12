@@ -31,6 +31,11 @@ async function getProfileByToken(req) {
     }
 }
 
+async function getEmailByUid(uid) {
+    const user = await admin.auth().getUser(uid);
+    return user.email;
+}
+
 // Aseguramos que sólo un usuario admin pueda usar una función
 async function secureOnlyAdmin(req) {
     try {
@@ -55,3 +60,4 @@ async function secureUser(req) {
 
 exports.onlyAdmin = secureOnlyAdmin;
 exports.user = secureUser;
+exports.getEmailByUid = getEmailByUid;

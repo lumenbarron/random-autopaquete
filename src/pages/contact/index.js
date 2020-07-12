@@ -29,7 +29,6 @@ const ContactPage = () => {
     const [name, setName] = useState();
     const [lastName, setLastName] = useState();
     const [phone, setPhone] = useState();
-    const [email, setEmail] = useState();
     const [message, setMessage] = useState();
     const [sent, setSent] = useState(false);
     const [sending, setSending] = useState(true);
@@ -46,9 +45,9 @@ const ContactPage = () => {
                 setSent(true);
                 setSending(false);
             };
-            xhr.open('POST', '/admin/sendEmail');
+            xhr.open('POST', '/contacto/send');
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-            xhr.send(JSON.stringify({ name, lastName, phone, email, message }));
+            xhr.send(JSON.stringify({ name, lastName, phone, message }));
         });
     }
 
@@ -87,13 +86,6 @@ const ContactPage = () => {
                                 />
                             }
                             onChange={ev => setPhone(ev.target.value)}
-                        />
-                        <Input
-                            className="rainbow-p-around_medium"
-                            style={inputStyles}
-                            label="Correo"
-                            icon={<FontAwesomeIcon icon={faEnvelope} />}
-                            onChange={ev => setEmail(ev.target.value)}
                         />
                     </div>
                     <div>
