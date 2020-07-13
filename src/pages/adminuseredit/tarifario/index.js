@@ -290,9 +290,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         if (fromBase >= toBase) {
             return false;
         }
-        console.log(currentRates);
-        console.log(fromBase);
-        console.log(toBase);
 
         const foundInvalidRates = currentRates.filter(currentRate => {
             const baseLowerWeight = parseInt(currentRate.min);

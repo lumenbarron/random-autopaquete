@@ -46,7 +46,8 @@ const AdminOverweightPage = () => {
     const [overweightRatesBase, setOverweightRatesBase] = useState([]);
     const [overweightRatesBaseXls, setOverweightRatesBaseXls] = useState([]);
 
-    const [cargo, setCargo] = useState();
+    const [cargo, setCargo] = useState(0);
+    console.log(cargo);
 
     const creationDate = new Date();
     const [rateKgExtra, setRateKgExtra] = useState();
@@ -94,7 +95,6 @@ const AdminOverweightPage = () => {
                 }),
         );
     }, [overweightRatesBase]);
-    console.log('El manual', rateKgExtra);
 
     // Calculo para el Kilo extra
     useEffect(() => {
