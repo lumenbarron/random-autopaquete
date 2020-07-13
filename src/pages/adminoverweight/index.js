@@ -13,7 +13,7 @@ import styled from 'styled-components';
 import { StyledAdminoverweight } from './styled';
 import { useFirebaseApp } from 'reactfire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImport } from '@fortawesome/free-solid-svg-icons';
+import { faFileImport, faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 const StyledTable = styled(Table)`
     color: #1de9b6;
@@ -95,7 +95,6 @@ const AdminOverweightPage = () => {
                 }),
         );
     }, [overweightRatesBase, guia, xlsData]);
-    console.log(rateKgExtra);
 
     //Guide data
     useEffect(() => {
@@ -163,6 +162,26 @@ const AdminOverweightPage = () => {
                 kilos_reales: realKg,
                 cargo,
             };
+            // const idOverWeightDoc = overWeightInformation
+            //     .filter(upDateOverWeight => {
+            //         return upDateOverWeight.guia === guia;
+            //     })
+            //     .map((upDateOverWeight, idx) => {
+            //         return upDateOverWeight.id;
+            //     });
+
+            // overWeightInformation.map((upDateOverWeight, idx) => {
+            //     if (upDateOverWeight.id.indexOf(idOverWeightDoc) > -1) {
+            //         console.log('1');
+            //         console.log('Donde se esta comparando', upDateOverWeight.id);
+            //         console.log('Donde se esta comparando', idOverWeightDoc);
+            //         // db.collection('overweight')
+            //         //     .doc(upDateOverWeight.id)
+            //         //     .update(addOverWeightData);
+            //         return;
+            //     }
+            // });
+
             db.collection('overweights')
                 .add(addOverWeightData)
                 .then(function(docRef) {
@@ -171,65 +190,36 @@ const AdminOverweightPage = () => {
                 .catch(function(error) {
                     console.error('Error adding document: ', error);
                 });
-            console.log('Esto no debe de aparecer');
         }
         //Datos cuando se agregan por medio de csv
         if (xlsData.length === 0) {
             console.log('El csv esta vacío');
             return;
         }
+
         xlsData.data.map(function(overWeight, idx) {
             if (!overWeight.guia) {
                 console.log('Este valor tiene que tener un valor de guía valida');
             } else {
+                const test = overweightRatesBase
+                    .filter(kgExtraFilter => {
+                        return kgExtraFilter.entrega === `${supplier}Extra`;
+                    })
+                    .map(getCostkgExtra => {
+                        return getCostkgExtra.kgExtra;
+                    });
+                console.log('El test ', test);
+
                 const docRef = db.collection('guia').doc(overWeight.guia);
 
                 function getCostkgExtra(getCostkgExtra) {
                     return getCostkgExtra.kgExtra;
                 }
-
                 docRef
                     .get()
                     .then(function(doc) {
                         if (doc.exists) {
                             setUserId(doc.data().ID);
-
-                            // db.collection('profiles')
-                            //     .where('ID', '==', doc.data().ID)
-                            //     .get()
-                            //     .then(function(profilesSnapshot) {
-                            //         profilesSnapshot.forEach(function(profileDoc) {
-                            //             db.collection(`profiles/${profileDoc.id}/rate`)
-                            //                 .get()
-                            //                 .then(function(ratesSnapshot) {
-                            //                     const tmpOverweightRatesBase = [];
-
-                            //                     ratesSnapshot.forEach(function(rateDoc) {
-                            //                         tmpOverweightRatesBase.push(rateDoc.data());
-                            //                     });
-
-                            //                     setRateKgExtraXls(tmpOverweightRatesBase);
-                            //                 })
-                            //                 .catch(function(error) {
-                            //                     console.log('rates not found');
-                            //                 });
-
-                            //             setRateKgExtraXls2(
-                            //                 rateKgExtraXls
-                            //                     .filter(kgExtraFilter => {
-                            //                         return (
-                            //                             kgExtraFilter.entrega === `${supplier}Extra`
-                            //                         );
-                            //                     })
-                            //                     .map(getCostkgExtra => {
-                            //                         return getCostkgExtra.kgExtra;
-                            //                     }),
-                            //             );
-                            //     });
-                            // })
-                            // .catch(function(error) {
-                            //     console.log('profile not found');
-                            // });
 
                             db.collection('overweights')
                                 .add({
@@ -242,7 +232,7 @@ const AdminOverweightPage = () => {
                                     cargo:
                                         (parseInt(overWeight.kilos_reales, 10) -
                                             parseInt(doc.data().package.weight, 10)) *
-                                        parseInt(rateKgExtra, 10),
+                                        parseInt(test, 10),
                                 })
                                 .then(function(docRef) {
                                     console.log(docRef);
@@ -276,6 +266,24 @@ const AdminOverweightPage = () => {
         },
     };
 
+    const editOverWeight = idGuia => {
+        setGuia(idGuia);
+        console.log('No tenemos que entrar aquí');
+    };
+
+    const deleteOverWeight = idDoc => {
+        console.log('Id del documento a eliminar', idDoc);
+        db.collection('overweight')
+            .doc(idDoc)
+            .delete()
+            .then(function() {
+                console.log('Document successfully deleted!', idDoc);
+            })
+            .catch(function(error) {
+                console.error('Error removing document: ', error);
+            });
+    };
+
     const infoOverWeight = overWeightInformation.map((overWeight, idx) => {
         return {
             guide: overWeight.guia,
@@ -284,6 +292,18 @@ const AdminOverweightPage = () => {
             kdeclared: overWeight.kilos_declarados,
             kreal: overWeight.kilos_reales,
             cadd: overWeight.cargo,
+            edit: (
+                <FontAwesomeIcon
+                    icon={faPencilAlt}
+                    onClick={() => editOverWeight(overWeight.guia)}
+                />
+            ),
+            delete: (
+                <FontAwesomeIcon
+                    icon={faTrashAlt}
+                    onClick={() => deleteOverWeight(overWeight.id)}
+                />
+            ),
         };
     });
 
@@ -297,6 +317,7 @@ const AdminOverweightPage = () => {
                     <div className="rainbow-flex rainbow-flex_wrap rainbow-flex_row">
                         <Input
                             id="guia"
+                            value={guia}
                             label="Numero de guia"
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
@@ -382,6 +403,7 @@ const AdminOverweightPage = () => {
                             <StyledColumn header="Kilos Declarados" field="kdeclared" />
                             <StyledColumn header="Kilos reales" field="kreal" />
                             <StyledColumn header="Cargos Adicionales" field="cadd" />
+                            <StyledColumn header="" field="delete" />
                         </StyledTable>
                     </div>
                 </div>
