@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import { StyledAccount } from './styled';
 import { useFirebaseApp, useUser } from 'reactfire';
-import formatMoney from 'accounting-js/lib/formatMoney.js';
+import formatMoney from 'accounting-js/lib/formatMoney';
+import { StyledAccount } from './styled';
 
 const AccountPage = () => {
     const user = useUser();
@@ -17,12 +17,15 @@ const AccountPage = () => {
         if (user) {
             const docRef = db.collection('profiles').where('ID', '==', user.uid);
 
-            docRef.get().then(function(querySnapshot) {
+            const cancelSnapshot = docRef.onSnapshot(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     setCreditAmount(doc.data().saldo);
                 });
             });
+
+            return cancelSnapshot;
         }
+        return null;
     }, [creditAmount]);
 
     return (

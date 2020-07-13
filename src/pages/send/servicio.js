@@ -146,7 +146,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     seguro: insurancePrice,
                                     guia: precioTotal,
                                 });
-                            if (entrega === 'estafetaEconómico')
+                            if (entrega === 'estafetaEconomico')
                                 setSupplierCostEstafetaEcon({
                                     id: doc.id,
                                     precio: precioTotal + insurancePrice,
@@ -225,7 +225,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 cargoExtra,
                                 guia,
                             });
-                        if (entrega === 'estafetaEconómico')
+                        if (entrega === 'estafetaEconomico')
                             setSupplierCostEstafetaEcon({
                                 id: tarifa.id,
                                 precio,

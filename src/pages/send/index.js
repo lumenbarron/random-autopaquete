@@ -119,19 +119,16 @@ const SendPage = () => {
         }
 
         directionsGuiasCollectionAdd
-            .then(function(docRef) {
+            .then(function() {
                 user.getIdToken().then(idToken => {
                     const xhr = new XMLHttpRequest();
                     xhr.responseType = 'json';
                     xhr.contentType = 'application/json';
-                    xhr.onload = () => {
-                        setCurrentStepName('descarga');
-                    };
                     xhr.open('POST', servicioUrl);
                     xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                     xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+                    setCurrentStepName('descarga');
                 });
-                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);

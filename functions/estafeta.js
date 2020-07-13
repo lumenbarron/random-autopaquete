@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const { soap } = require('strong-soap');
 const secure = require('./secure');
-const { getGuiaById, saveLabel } = require('./guia');
+const { getGuiaById, saveLabel, checkBalance } = require('./guia');
 
 exports.create = functions.https.onRequest(async (req, res) => {
     const contentType = req.get('content-type');
@@ -24,6 +24,10 @@ exports.create = functions.https.onRequest(async (req, res) => {
     }
     if (guia.status !== 'completed') {
         res.status(400).send('Guia not completed');
+        return;
+    }
+    if (!checkBalance(guiaId, false)) {
+        res.status(400).send('Not enough balance');
         return;
     }
 

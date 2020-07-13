@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const { soap } = require('strong-soap');
 const secure = require('./secure');
-const { getGuiaById, saveLabel } = require('./guia');
+const { getGuiaById, saveLabel, checkBalance } = require('./guia');
 
 exports.create = functions.https.onRequest(async (req, res) => {
     const contentType = req.get('content-type');
@@ -24,6 +24,10 @@ exports.create = functions.https.onRequest(async (req, res) => {
     }
     if (guia.status !== 'completed') {
         res.status(400).send('Guia not completed');
+        return;
+    }
+    if (!checkBalance(guiaId, false)) {
+        res.status(400).send('Not enough balance');
         return;
     }
 
@@ -131,13 +135,16 @@ exports.create = functions.https.onRequest(async (req, res) => {
         },
     };
 
-    console.log(packageLineItems);
-
     soap.createClient(url, {}, function(err, client) {
         client.ShipService.ShipServicePort.processShipment(requestArgs, function(err1, result) {
-            const pdf = '';
+            const apiResult = JSON.parse(JSON.stringify(result));
+            const packageDetail = apiResult.CompletedShipmentDetail.CompletedPackageDetails[0];
+            const pdf = packageDetail.Label.Parts[0].Image;
             const guias = [];
-            saveLabel(guiaId, pdf, guias, JSON.parse(JSON.stringify(result)));
+            for (let i = 0; i < packageDetail.TrackingIds.length; i += 1) {
+                guias.push(packageDetail.TrackingIds[i].TrackingNumber);
+            }
+            saveLabel(guiaId, pdf, guias, apiResult);
             res.status(200).send('OK');
         });
     });

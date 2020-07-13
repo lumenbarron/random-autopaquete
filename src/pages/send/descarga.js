@@ -26,12 +26,17 @@ export const DescargaComponent = ({ idGuiaGlobal }) => {
 
     return (
         <DownloadContainer>
-            <h2>Guía</h2>
-            <a href={`data:application/pdf;base64,${pdf}`} download="guia.pdf">
-                <img src="/assets/icon-pdf.png" alt="Icono de PDF" nopin="nopin" />
-                <DetailsLabel>Imprímela y pégala en tu paquete</DetailsLabel>
-                Descargar
-            </a>
+            {pdf && (
+                <>
+                    <h2>Guía</h2>
+                    <a href={`data:application/pdf;base64,${pdf}`} download="guia.pdf">
+                        <img src="/assets/icon-pdf.png" alt="Icono de PDF" nopin="nopin" />
+                        <DetailsLabel>Imprímela y pégala en tu paquete</DetailsLabel>
+                        Descargar
+                    </a>
+                </>
+            )}
+            {!pdf && <h2>Generando guía, espera un minuto... </h2>}
         </DownloadContainer>
     );
 };

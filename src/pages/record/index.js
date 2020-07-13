@@ -1,17 +1,47 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Column, Badge, TableWithBrowserPagination, Input } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
-import { StyledRecord, RecordContainer } from './styled';
 import { useHistory } from 'react-router-dom';
-import OrigenComponent from '../../pages/send/origen';
+import { StyledRecord, RecordContainer } from './styled';
 
 const StyledBadge = styled(Badge)`
     color: #09d3ac;
 `;
+const StyledTable = styled(TableWithBrowserPagination)`
+    td[data-label='Guía'] {
+        > div {
+            line-height: 1.2rem;
+            > span {
+                white-space: break-spaces;
+                font-size: 12px;
+            }
+        }
+    }
+`;
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
+StatusBadge.propTypes = {
+    value: PropTypes.string.isRequired,
+};
+
+const DownloadLabel = ({ value }) => (
+    <a
+        download="guia"
+        href={`data:application/pdf;base64,${value}`}
+        title="Descargar etiqueta"
+        variant="neutral"
+        className="rainbow-m-around_medium"
+    >
+        <FontAwesomeIcon icon={faDownload} className="rainbow-m-left_medium" />
+    </a>
+);
+DownloadLabel.propTypes = {
+    value: PropTypes.string.isRequired,
+};
+
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 356 };
 
@@ -24,7 +54,16 @@ const RecordPage = () => {
     const [filter, setFilter] = useState(null);
 
     const [recordsData, setRecordsData] = useState([]);
-    const [supplier, setSupplier] = useState([]);
+
+    function handleRecods(snapshot) {
+        const recordsMap = snapshot.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data(),
+            };
+        });
+        setRecordsData(recordsMap);
+    }
 
     useEffect(() => {
         const reloadRecords = () => {
@@ -35,16 +74,6 @@ const RecordPage = () => {
         };
         reloadRecords();
     }, []);
-
-    function handleRecods(snapshot) {
-        const recordsData = snapshot.docs.map(doc => {
-            return {
-                id: doc.id,
-                ...doc.data(),
-            };
-        });
-        setRecordsData(recordsData);
-    }
 
     const data = recordsData
         .filter(historyRecord => {
@@ -60,13 +89,14 @@ const RecordPage = () => {
         .map(historyRecord => {
             return {
                 date: historyRecord.sender_addresses.creation_date,
-                guide: '#',
+                guide: historyRecord.rastreo ? historyRecord.rastreo.join(' ') : 'N/D',
                 origin: historyRecord.sender_addresses.name,
                 Destination: historyRecord.receiver_addresses.name,
                 weight: historyRecord.package.weight,
                 service: historyRecord.supplierData.Supplier,
                 status: 'Finalizado',
                 cost: historyRecord.supplierData.Supplier_cost,
+                label: historyRecord.label,
             };
         });
 
@@ -103,13 +133,15 @@ const RecordPage = () => {
 
                         <div className="rainbow-p-bottom_xx-large">
                             <div style={containerStyles}>
-                                <TableWithBrowserPagination
+                                <StyledTable
                                     data={data}
                                     pageSize={10}
                                     keyField="id"
                                     style={containerTableStyles}
                                     emptyTitle="Oh no!"
                                     emptyDescription="No hay ningun registro actualmente..."
+                                    sortedBy="date"
+                                    sortDirection="desc"
                                 >
                                     <Column header="Fecha " field="date" />
                                     <Column header="Guía" field="guide" />
@@ -123,7 +155,12 @@ const RecordPage = () => {
                                         component={StatusBadge}
                                     />
                                     <Column header="Costo" field="cost" />
-                                </TableWithBrowserPagination>
+                                    <Column
+                                        header="Etiqueta"
+                                        component={DownloadLabel}
+                                        field="label"
+                                    />
+                                </StyledTable>
                             </div>
                         </div>
                     </div>
