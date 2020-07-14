@@ -10,10 +10,11 @@ import {
 } from 'react-rainbow-components';
 import styled from 'styled-components';
 
-import { StyledAdminoverweight } from './styled';
+import formatMoney from 'accounting-js/lib/formatMoney';
 import { useFirebaseApp } from 'reactfire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport, faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { StyledAdminoverweight } from './styled';
 
 const StyledTable = styled(Table)`
     color: #1de9b6;
@@ -42,19 +43,19 @@ const AdminOverweightPage = () => {
     const [xlsData, setxlsData] = useState([]);
 
     const [supplier, setSupplier] = useState([]);
+    const [errorGuia, setErrorGuia] = useState(false);
 
     const [overweightRatesBase, setOverweightRatesBase] = useState([]);
     const [overweightRatesBaseXls, setOverweightRatesBaseXls] = useState([]);
 
-    const [cargo, setCargo] = useState(0);
-    console.log(cargo);
+    const [cargo, setCargo] = useState();
 
     const creationDate = new Date();
     const [rateKgExtra, setRateKgExtra] = useState();
+
     //overWeight data
     useEffect(() => {
         if (!userId) {
-            console.log('Este valor tiene que tener un valor de guía valida');
         } else {
             db.collection('profiles')
                 .where('ID', '==', userId)
@@ -83,6 +84,16 @@ const AdminOverweightPage = () => {
         }
     }, [guia, userId, xlsData]);
 
+    useEffect(() => {
+        if (!userId) {
+            setErrorGuia(false);
+            console.log(1);
+        } else {
+            console.log(2);
+            setErrorGuia(false);
+        }
+    }, [guia]);
+
     // display new prices according to overweight rate base change
     useEffect(() => {
         setRateKgExtra(
@@ -100,6 +111,10 @@ const AdminOverweightPage = () => {
     useEffect(() => {
         setCargo((realKg - kgDeclarados) * parseInt(rateKgExtra, 10));
     }, [realKg, kgDeclarados, rateKgExtra, xlsData]);
+
+    if (isNaN(cargo)) {
+        setCargo(0);
+    }
 
     //Guide data
     useEffect(() => {
@@ -315,11 +330,9 @@ const AdminOverweightPage = () => {
 
     const editOverWeight = idGuia => {
         setGuia(idGuia);
-        console.log('No tenemos que entrar aquí');
     };
 
     const deleteOverWeight = idDoc => {
-        console.log('Id del documento a eliminar', idDoc);
         db.collection('overweights')
             .doc(idDoc)
             .delete()
@@ -338,7 +351,7 @@ const AdminOverweightPage = () => {
             date: overWeight.fecha,
             kdeclared: overWeight.kilos_declarados,
             kreal: overWeight.kilos_reales,
-            cadd: overWeight.cargo,
+            cadd: formatMoney(overWeight.cargo),
             edit: (
                 <FontAwesomeIcon
                     icon={faPencilAlt}
@@ -405,14 +418,21 @@ const AdminOverweightPage = () => {
                         <Input
                             id="cargo"
                             label="Cargo"
-                            value={cargo}
+                            value={formatMoney(cargo)}
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
                             readOnly
                         />
+                        {errorGuia && (
+                            <div style={{ flex: '1 1 100%', height: '0' }}>
+                                <div className="alert-error">
+                                    Necesitas completar todos los campos
+                                </div>
+                            </div>
+                        )}
                         <div style={{ flex: '1 1 100%', height: '0' }}></div>
                         <div>
-                            <Button variant="neutral" onClick={openModal}>
+                            <Button variant="neutral" onClick={openModal} className="btn-import">
                                 <FontAwesomeIcon
                                     icon={faFileImport}
                                     className="rainbow-m-right_x-small"
@@ -427,13 +447,16 @@ const AdminOverweightPage = () => {
                                 actionType="add-records"
                             />
                         </div>
+                        <div style={{ flex: '1 1 33%', height: '0' }} className="empty-espace" />
                         <Button
                             label="Confirmar"
-                            style={{ flex: '1 1 50%' }}
+                            style={{ flex: '1 1 33%' }}
                             onClick={addOverWeight}
+                            className="btn-confirmar"
                         />
                     </div>
                 </div>
+                <div className="app-spacer height-1" />
 
                 <div className="rainbow-p-bottom_xx-large">
                     <div>

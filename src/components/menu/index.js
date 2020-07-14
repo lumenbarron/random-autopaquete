@@ -86,7 +86,7 @@ const Menu = () => {
                         </Link>
                     </Nav.Item>
                 )}
-                {user && (
+                {/* {user && (
                     <Nav.Item>
                         <span style={{ verticalAlign: 'top', lineHeight: '42px' }}>MI CUENTA</span>
                         <StyledAvatarMenu
@@ -118,7 +118,7 @@ const Menu = () => {
                             />
                         </StyledAvatarMenu>
                     </Nav.Item>
-                )}
+                )} */}
             </Nav>
         </StyledMain>
     );

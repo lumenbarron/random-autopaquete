@@ -19,10 +19,10 @@ const containerStyles = {
 
 const QuotePage = () => {
     const options = [
-        { value: 'ocasionalmente', label: 'Hago envíos ocasionalmente' },
-        { value: 'de20a100', label: 'Hago de 20 a 100 envíos al mes' },
-        { value: 'de100a200', label: 'Hago de 100 a 200 envíos al mes' },
-        { value: 'mayorDe200', label: 'Hago más de 200 envíos al mes' },
+        { value: 'Hago envíos ocasionalmente', label: 'Hago envíos ocasionalmente' },
+        { value: 'Hago de 20 a 100 envíos al mes', label: 'Hago de 20 a 100 envíos al mes' },
+        { value: 'Hago de 100 a 200 envíos al mes', label: 'Hago de 100 a 200 envíos al mes' },
+        { value: 'Hago más de 200 envíos al mes', label: 'Hago más de 200 envíos al mes' },
     ];
     return (
         <StyledQuote>
@@ -33,78 +33,127 @@ const QuotePage = () => {
                 <Row>
                     <Col>
                         <div>
-                            <div>
-                                <form
-                                    className="formulario"
-                                    action="https://incrementacrm.com/api/widget/web-form/c38333ae647c560bc985f8bcb1ecc96bea72c0fc"
-                                    method="post"
-                                    id="ClientWebFormForm"
-                                    acceptCharset="utf-8"
-                                >
-                                    <div>
-                                        <input type="hidden" name="_method" value="POST" />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="ClientFirstName">Nombre(s)</label>
-                                        <Input
-                                            name="data[Client][first_name]"
-                                            type="text"
-                                            id="ClientFirstName"
-                                            icon={<FontAwesomeIcon icon={faUser} />}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="ClientCompanyName">Empresa</label>
-                                        <Input
-                                            name="data[Client][company_name]"
-                                            type="text"
-                                            id="ClientCompanyName"
-                                            icon={<FontAwesomeIcon icon={faBuilding} />}
-                                        />
-                                    </div>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <div>
+                                            <div>
+                                                <form
+                                                    className="formulario"
+                                                    action="https://incrementacrm.com/api/widget/web-form/c38333ae647c560bc985f8bcb1ecc96bea72c0fc"
+                                                    method="post"
+                                                    id="ClientWebFormForm"
+                                                    acceptCharset="utf-8"
+                                                >
+                                                    <div>
+                                                        <input
+                                                            type="hidden"
+                                                            name="_method"
+                                                            value="POST"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label htmlFor="ClientFirstName">
+                                                            Nombre(s)
+                                                        </label>
+                                                        <Input
+                                                            name="data[Client][first_name]"
+                                                            type="text"
+                                                            id="ClientFirstName"
+                                                            icon={<FontAwesomeIcon icon={faUser} />}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label htmlFor="ClientCompanyName">
+                                                            Empresa
+                                                        </label>
+                                                        <Input
+                                                            name="data[Client][company_name]"
+                                                            type="text"
+                                                            id="ClientCompanyName"
+                                                            icon={
+                                                                <FontAwesomeIcon
+                                                                    icon={faBuilding}
+                                                                />
+                                                            }
+                                                        />
+                                                    </div>
 
-                                    <div>
-                                        <label htmlFor="ClientPhone">Teléfono</label>
-                                        <Input
-                                            name="data[Client][phone]"
-                                            type="tel"
-                                            id="ClientPhone"
-                                            icon={<FontAwesomeIcon icon={faPhoneAlt} />}
-                                        />
-                                    </div>
+                                                    <div>
+                                                        <label htmlFor="ClientPhone">
+                                                            Teléfono
+                                                        </label>
+                                                        <Input
+                                                            name="data[Client][phone]"
+                                                            type="tel"
+                                                            id="ClientPhone"
+                                                            icon={
+                                                                <FontAwesomeIcon
+                                                                    icon={faPhoneAlt}
+                                                                />
+                                                            }
+                                                        />
+                                                    </div>
 
-                                    <div>
-                                        <label htmlFor="ClientEmail">Email</label>
-                                        <Input
-                                            name="data[Client][email]"
-                                            type="email"
-                                            id="ClientEmail"
-                                            icon={<FontAwesomeIcon icon={faEnvelope} />}
-                                        />
-                                    </div>
+                                                    <div>
+                                                        <label htmlFor="ClientEmail">Email</label>
+                                                        <Input
+                                                            name="data[Client][email]"
+                                                            type="email"
+                                                            id="ClientEmail"
+                                                            icon={
+                                                                <FontAwesomeIcon
+                                                                    icon={faEnvelope}
+                                                                />
+                                                            }
+                                                        />
+                                                    </div>
 
-                                    <div>
-                                        <label htmlFor="ClientRealizasMasDe20EnviosAlMes">
-                                            Volumen de Envíos al Mes
-                                        </label>
-                                        <Select
-                                            options={options}
-                                            id="example-select-1"
-                                            style={containerStyles}
-                                            className="rainbow-p-horizontal_medium rainbow-m_auto test"
-                                        />
-                                    </div>
+                                                    <div>
+                                                        <label for="ClientVolumenDeEnviosAlMes">
+                                                            Volumen de Envíos al Mes
+                                                        </label>
+                                                        <select
+                                                            className="volumen-envios"
+                                                            name="data[Client][volumen_de_envios_al_mes]"
+                                                            placeholder="Volumen de Envíos al Mes"
+                                                            id="ClientVolumenDeEnviosAlMes"
+                                                            label="Select Label"
+                                                        >
+                                                            <option value="Hago Envíos Ocasionalmente">
+                                                                Hago Envíos Ocasionalmente
+                                                            </option>
+                                                            <option value="Hago de 20 a 100 Envíos al Mes">
+                                                                Hago de 20 a 100 Envíos al Mes
+                                                            </option>
+                                                            <option value="Hago de 100 a 200 Envíos al Mes">
+                                                                Hago de 100 a 200 Envíos al Mes
+                                                            </option>
+                                                            <option value="Hago Más de 200 Envíos al Mes">
+                                                                Hago Más de 200 Envíos al Mes
+                                                            </option>
+                                                        </select>
+                                                    </div>
 
-                                    <div>
-                                        <input className="boton" type="submit" value="Enviar" />
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div>
-                            <img src="./assets/quote.png" alt="Cotización.png" />
+                                                    <div>
+                                                        <input
+                                                            className="boton"
+                                                            type="submit"
+                                                            value="Enviar"
+                                                        />
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </Col>
+                                    <Col>
+                                        <div>
+                                            <img src="./assets/quote.png" alt="Cotización.png" />
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Container>
+                            <div className="white-space" />
                         </div>
                     </Col>
                 </Row>

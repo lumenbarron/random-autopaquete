@@ -49,6 +49,14 @@ export const StyledQuote = styled.div`
         min-width: 600px;
     }
 
+    .volumen-envios {
+        width: 24rem;
+        border-radius: 1rem;
+        font-size: 17px;
+        height: 2.5rem;
+        padding: 7px;
+    }
+
     .white-space {
         height: 100px;
     }

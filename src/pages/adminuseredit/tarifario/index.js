@@ -231,11 +231,14 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
     });
 
     const hasValidRateWeights = (currentRates, fromBase, toBase) => {
-        if (fromBase % 1 !== 0 || toBase % 1 !== 0) {
+        const fromBaseVal = parseInt(fromBase, 10);
+        const toBaseVal = parseInt(toBase, 10);
+
+        if (fromBaseVal % 1 !== 0 || toBaseVal % 1 !== 0) {
             return false;
         }
 
-        if (fromBase >= toBase) {
+        if (fromBaseVal >= toBaseVal) {
             return false;
         }
 
@@ -243,11 +246,15 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
             const baseLowerWeight = parseInt(currentRate.min);
             const baseHigherWeight = parseInt(currentRate.max);
 
-            if (fromBase >= baseLowerWeight && fromBase <= baseHigherWeight) {
+            if (fromBaseVal >= baseLowerWeight && fromBaseVal <= baseHigherWeight) {
                 return true;
             }
 
-            if (toBase >= baseLowerWeight && toBase <= baseHigherWeight) {
+            if (fromBaseVal <= baseLowerWeight && toBaseVal >= baseHigherWeight) {
+                return true;
+            }
+
+            if (toBaseVal >= baseLowerWeight && toBaseVal <= baseHigherWeight) {
                 return true;
             }
 
@@ -283,11 +290,14 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
     };
 
     const hasValidRateWeightsModal = (currentRates, fromBase, toBase) => {
-        if (fromBase % 1 !== 0 || toBase % 1 !== 0) {
+        const fromBaseVal = parseInt(fromBase, 10);
+        const toBaseVal = parseInt(toBase, 10);
+
+        if (fromBaseVal % 1 !== 0 || toBaseVal % 1 !== 0) {
             return false;
         }
 
-        if (fromBase >= toBase) {
+        if (fromBaseVal >= toBaseVal) {
             return false;
         }
 

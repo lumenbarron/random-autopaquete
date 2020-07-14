@@ -82,6 +82,7 @@ export const OrigenComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState(false);
+    const [errorCredits, setErrorCredits] = useState(false);
     const [directionData, setDirectionData] = useState([]);
 
     const [value, setValue] = useState();
@@ -100,6 +101,8 @@ export const OrigenComponent = ({ onSave }) => {
     const [checkBox, setCheckBox] = useState(true);
 
     const [userName, setUserName] = useState('');
+    const [credits, setCredits] = useState();
+    const [status, setStatus] = useState();
 
     const creationDate = new Date();
 
@@ -171,21 +174,24 @@ export const OrigenComponent = ({ onSave }) => {
         }
     }, [value]);
 
-    //Se obtiene el nombre dle usuario
-    if (user) {
-        db.collection('profiles')
-            .where('ID', '==', user.uid)
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    setUserName(doc.data().name);
+    //Se obtiene el nombre del usuario
+    useEffect(() => {
+        if (user) {
+            db.collection('profiles')
+                .where('ID', '==', user.uid)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        setUserName(doc.data().name);
+                        setCredits(parseFloat(doc.data().saldo));
+                        setStatus(doc.data().status);
+                    });
+                })
+                .catch(function(error) {
+                    console.log('Error getting documents: ', error);
                 });
-            })
-            .catch(function(error) {
-                console.log('Error getting documents: ', error);
-            });
-    }
-
+        }
+    }, []);
     const registerDirecction = () => {
         if (
             name.trim() === '' ||
@@ -200,7 +206,15 @@ export const OrigenComponent = ({ onSave }) => {
             // (Alert)console.log('Espacios vacios');
             setError(true);
             return;
+        } else {
+            setError(false);
         }
+
+        if (credits < 10000 || status !== 'Aprobado') {
+            setErrorCredits(true);
+            return;
+        }
+
         if (checkBox) {
             const duplicateName = directionData.map((searchName, idx) => {
                 return searchName.name;
@@ -385,6 +399,12 @@ export const OrigenComponent = ({ onSave }) => {
 
                 {error && (
                     <div className="alert-error">Todos los campos necesitan estar llenos</div>
+                )}
+                {errorCredits && (
+                    <div className="alert-error">
+                        Es necesario tener un mínimo de $10,000 o tener un estatus apobatorio para
+                        relizar envíos
+                    </div>
                 )}
 
                 <Button
