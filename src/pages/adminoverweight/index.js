@@ -44,6 +44,7 @@ const AdminOverweightPage = () => {
 
     const [supplier, setSupplier] = useState([]);
     const [errorGuia, setErrorGuia] = useState(false);
+    const [xlsToUpLoad, setXlsToUpLoad] = useState(false);
 
     const [overweightRatesBase, setOverweightRatesBase] = useState([]);
     const [overweightRatesBaseXls, setOverweightRatesBaseXls] = useState([]);
@@ -83,16 +84,6 @@ const AdminOverweightPage = () => {
                 });
         }
     }, [guia, userId, xlsData]);
-
-    useEffect(() => {
-        if (!userId) {
-            setErrorGuia(false);
-            console.log(1);
-        } else {
-            console.log(2);
-            setErrorGuia(false);
-        }
-    }, [guia]);
 
     // display new prices according to overweight rate base change
     useEffect(() => {
@@ -135,7 +126,7 @@ const AdminOverweightPage = () => {
                         setSupplier(doc.data().supplierData.tarifa.entrega);
                     } else {
                         // doc.data() will be undefined in this case
-                        console.log('No such document!');
+                        setErrorGuia(true);
                     }
                 })
                 .catch(function(error) {
@@ -143,6 +134,7 @@ const AdminOverweightPage = () => {
                 });
             //  console.log('Vamos a mostrar los datos del usuario');
         }
+        setErrorGuia(false);
     }, [guia]);
 
     function handleOverWeight(snapshot) {
@@ -169,6 +161,7 @@ const AdminOverweightPage = () => {
 
     const closeModal = () => {
         setIsOpen(false);
+        setXlsToUpLoad(true);
     };
 
     const addOverWeight = () => {
@@ -184,27 +177,6 @@ const AdminOverweightPage = () => {
                 cargo,
             };
 
-            // Actualizar duplicados
-            // const idOverWeightDoc = overWeightInformation
-            //     .filter(upDateOverWeight => {
-            //         return upDateOverWeight.guia === guia;
-            //     })
-            //     .map((upDateOverWeight, idx) => {
-            //         return upDateOverWeight.id;
-            //     });
-
-            //   const overWeightDocId = overWeightInformation.map((upDateOverWeight, idx) => {
-            //     if (upDateOverWeight.id.indexOf(idOverWeightDoc) > -1) {
-            //         console.log('1');
-            //         console.log('Donde se esta comparando', upDateOverWeight.id);
-            //         console.log('Donde se esta comparando', idOverWeightDoc);
-            //         // db.collection('overweight')
-            //         //     .doc(upDateOverWeight.id)
-            //         //     .update(addOverWeightData);
-            //         return;
-            //     }
-            // });
-
             db.collection('overweights')
                 .add(addOverWeightData)
                 .then(function(docRef) {
@@ -213,6 +185,8 @@ const AdminOverweightPage = () => {
                 .catch(function(error) {
                     console.error('Error adding document: ', error);
                 });
+        } else {
+            console.log('object');
         }
         //Datos cuando se agregan por medio de csv
         if (xlsData.length === 0) {
@@ -224,14 +198,6 @@ const AdminOverweightPage = () => {
             if (!overWeight.guia) {
                 console.log('Este valor tiene que tener un valor de guía valida');
             } else {
-                // const overWeightDocId = overweightRatesBase
-                //     .filter(kgExtraFilter => {
-                //         return kgExtraFilter.entrega === `${supplier}Extra`;
-                //     })
-                //     .map(getCostkgExtra => {
-                //         return getCostkgExtra.kgExtra;
-                //     });
-
                 const docRef = db.collection('guia').doc(overWeight.guia);
 
                 docRef
@@ -424,11 +390,22 @@ const AdminOverweightPage = () => {
                             readOnly
                         />
                         {errorGuia && (
-                            <div style={{ flex: '1 1 100%', height: '0' }}>
-                                <div className="alert-error">
-                                    Necesitas completar todos los campos
+                            <>
+                                <div style={{ flex: '1 1 100%' }}>
+                                    <div className="alert-error">Número de guía inválido</div>
                                 </div>
-                            </div>
+                                <div className="app-spacer height-1 height-2" />
+                            </>
+                        )}
+                        {xlsToUpLoad && (
+                            <>
+                                <div style={{ flex: '1 1 100%' }}>
+                                    <div className="alert-import">
+                                        Excel importado con exito! Confirmar la importación
+                                    </div>
+                                </div>
+                                <div className="app-spacer height-1 height-2" />
+                            </>
                         )}
                         <div style={{ flex: '1 1 100%', height: '0' }}></div>
                         <div>

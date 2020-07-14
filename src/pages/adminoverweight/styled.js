@@ -50,6 +50,10 @@ export const StyledAdminoverweight = styled.div`
         }
     }
 
+    .alert-import{
+        color: green;
+    }
+
     @media (max-width: 1408px) {
 
     .empty-espace{
