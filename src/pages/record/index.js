@@ -51,7 +51,7 @@ const RecordPage = () => {
     const user = useUser();
     const history = useHistory();
 
-    const [filter, setFilter] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const [recordsData, setRecordsData] = useState([]);
 
@@ -88,6 +88,7 @@ const RecordPage = () => {
         })
         .map(historyRecord => {
             return {
+                id: historyRecord.id,
                 date: historyRecord.sender_addresses.creation_date,
                 guide: historyRecord.rastreo ? historyRecord.rastreo.join(' ') : 'N/D',
                 origin: historyRecord.sender_addresses.name,

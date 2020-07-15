@@ -65,7 +65,7 @@ const Menu = () => {
                 <Nav.Item>
                     <Link to="/cotizacion">
                         <StyledButton
-                            label="Cotizacion"
+                            label="Cotización"
                             variant={activeMenu === 2 ? 'brand' : 'base'}
                             onClick={() => setActiveMenu(2)}
                             wide

@@ -4,6 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { StyledHome, StyledCard } from './styled';
+import { Link } from 'react-router-dom';
 
 const HomePage = () => {
     return (
@@ -18,12 +19,14 @@ const HomePage = () => {
                             Autopaquete es la plataforma gratuita que te permitirá gestionar tus
                             envíos al mejor precio y de una manera muy sencilla.
                         </p>
-                        <Button
-                            className="rainbow-m-vertical_medium"
-                            shaded
-                            label="¡Comienza ya!"
-                            variant="brand"
-                        />
+                        <Link to="/login">
+                            <Button
+                                className="rainbow-m-vertical_medium"
+                                shaded
+                                label="¡Comienza ya!"
+                                variant="brand"
+                            />
+                        </Link>
                     </Col>
 
                     <Col>

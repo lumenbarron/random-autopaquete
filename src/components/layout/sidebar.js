@@ -383,9 +383,7 @@ export function AccountSidebar() {
         <SideBarContainer className={containerClassName}>
             <SidebarResponsiveBars icon={faBars} onClick={toggleSidebar} />
             <SidebarHeader>
-                <Link to="/">
-                    <Logo src="/assets/logo.png" />
-                </Link>
+                <Logo src="/assets/logo.png" />
                 <div
                     style={{
                         position: 'relative',

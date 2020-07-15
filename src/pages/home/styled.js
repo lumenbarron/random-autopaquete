@@ -73,7 +73,7 @@ export const StyledHome = styled.div`
 
     .tcontent {
       background:linear-gradient(45deg, #bb1b1f, #7c0004);
-      margin: 1rem 5rem;
+      margin: 8rem 5rem;
       padding: 1rem 3rem;
       text-align: center;
       flex: 1 1;
@@ -97,7 +97,7 @@ export const StyledHome = styled.div`
     }
 
     .timeline li:not(:first-child) .tcontent  {
-      margin: 3rem 5rem;
+      margin: 12rem 5rem;
     }
 
     ..timeline li:not(:first-child) .tcontent + div {

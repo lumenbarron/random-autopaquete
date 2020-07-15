@@ -57,7 +57,6 @@ export const PaqueteComponent = ({ onSave }) => {
     const [weight, setWeight] = useState('');
 
     const [contentDescription, setContentDescription] = useState('');
-    const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
 
     const [checkBox, setCheckBox] = useState(true);
@@ -140,8 +139,7 @@ export const PaqueteComponent = ({ onSave }) => {
             width.trim() === '' ||
             depth.trim() === '' ||
             weight.trim() === '' ||
-            contentDescription.trim() === '' ||
-            quantity.trim() === ''
+            contentDescription.trim() === ''
         ) {
             setError(true);
         } else if (checkBoxSecure && contentValue.trim() === '') {
@@ -158,7 +156,7 @@ export const PaqueteComponent = ({ onSave }) => {
                 depth,
                 weight,
                 content_description: contentDescription,
-                quantity,
+                quantity: 1,
                 content_value: contentValue,
                 creation_date: creationDate.toLocaleDateString(),
             };
@@ -172,7 +170,7 @@ export const PaqueteComponent = ({ onSave }) => {
                     depth,
                     weight,
                     content_description: contentDescription,
-                    quantity,
+                    quantity: 1,
                     content_value: contentValue,
                     creation_date: creationDate.toLocaleDateString(),
                 },
@@ -260,15 +258,6 @@ export const PaqueteComponent = ({ onSave }) => {
                     />
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
-                    <Input
-                        id="cantidad"
-                        label="Cantidad"
-                        name="cantidad"
-                        value={quantity}
-                        className="rainbow-p-around_medium"
-                        style={{ flex: '1 1' }}
-                        onChange={e => setQuantity(e.target.value)}
-                    />
                     <CheckboxToggle
                         id="asegurar"
                         label="¿Desea asegurar?"

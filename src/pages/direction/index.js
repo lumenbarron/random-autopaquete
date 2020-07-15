@@ -6,6 +6,8 @@ import {
     TableWithBrowserPagination,
     Input,
     Button,
+    Picklist,
+    Option,
 } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,6 +15,49 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledDirection, DirectionContainer } from './styled';
 import OrigenComponent from '../../pages/send/origen';
+
+const states = {
+    AG: 'Aguascalientes',
+    BC: 'Baja California',
+    BS: 'Baja California Sur',
+    CM: 'Campeche',
+    CS: 'Chiapas',
+    CH: 'Chihuahua',
+    CO: 'Coahuila',
+    CL: 'Colima',
+    DF: 'Ciudad de México',
+    DG: 'Durango',
+    GT: 'Guanajuato',
+    GR: 'Guerrero',
+    HG: 'Hidalgo',
+    JA: 'Jalisco',
+    EM: 'Estado de México',
+    MI: 'Michoacán',
+    MO: 'Morelos',
+    NA: 'Nayarit',
+    NL: 'Nuevo León',
+    OA: 'Oaxaca',
+    PU: 'Puebla',
+    QE: 'Queretaro',
+    QR: 'Quintana Roo',
+    SL: 'San Luis Potosi',
+    SI: 'Sinaloa',
+    SO: 'Sonora',
+    TB: 'Tabasco',
+    TM: 'Tamaulipas',
+    TL: 'Tlaxcala',
+    VE: 'Veracruz',
+    YU: 'Yucatán',
+    ZA: 'Zacatecas',
+};
+
+const StatePicklistOptions = () => {
+    const allStates = Object.keys(states).map(code => {
+        return <Option key={code} value={code} name={states[code]} label={states[code]} />;
+    });
+
+    return allStates;
+};
 
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 356 };
@@ -23,7 +68,7 @@ export default function DirectionPage() {
     const user = useUser();
 
     const [error, setError] = useState(false);
-    const [filter, setFilter] = useState(null);
+    const [filter, setFilter] = useState('');
 
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
@@ -32,6 +77,7 @@ export default function DirectionPage() {
     const [streetNumber, setStreetNumber] = useState('');
     const [placeRef, setPlaceRef] = useState('');
     const [phone, setPhone] = useState('');
+    const [state, setState] = useState();
 
     const [senderAddresses, setSenderAddresses] = useState([]);
     const [receiverAddresses, setReceiverAddresses] = useState([]);
@@ -72,6 +118,7 @@ export default function DirectionPage() {
 
     function mapAddresses(address, idx) {
         return {
+            id: address.id,
             date: address.creation_date,
             name: address.name,
             codigo_postal: address.codigo_postal,
@@ -137,6 +184,7 @@ export default function DirectionPage() {
             codigo_postal: CP,
             neighborhood,
             country,
+            state: state.value,
             street_number: streetNumber,
             place_reference: placeRef,
             phone,
@@ -178,7 +226,6 @@ export default function DirectionPage() {
                 console.error('Error adding document: ', error);
             });
     };
-
     return (
         <StyledDirection>
             <DirectionContainer>
@@ -225,7 +272,10 @@ export default function DirectionPage() {
                 </div>
                 <div>
                     <Accordion id="accordion-1">
-                        <AccordionSection label="Agregar Dirección" className="direction-accordion">
+                        <AccordionSection
+                            label="Agregar Dirección de origen"
+                            className="direction-accordion"
+                        >
                             <div
                                 className="rainbow-align_end rainbow-flex"
                                 style={{ flexWrap: 'wrap-reverse' }}
@@ -250,13 +300,25 @@ export default function DirectionPage() {
                                         style={{ width: '100%' }}
                                         onChange={e => setPhone(e.target.value)}
                                     />
+                                    <Picklist
+                                        id="estado"
+                                        label="Estado"
+                                        name="estado"
+                                        value={state}
+                                        className="rainbow-p-around_medium"
+                                        style={{ flex: '1 1' }}
+                                        onChange={value => setState(value)}
+                                        required
+                                    >
+                                        <StatePicklistOptions />
+                                    </Picklist>
                                 </div>
                                 <div style={{ flex: '1 1' }}>
                                     <h2>Dirección</h2>
                                     <div className="rainbow-align-content_center rainbow-flex_wrap">
                                         <Input
                                             id="ciudad"
-                                            label="Ciudad y Estado"
+                                            label="Ciudad"
                                             name="ciudad"
                                             value={country}
                                             className="rainbow-p-around_medium"
@@ -305,7 +367,7 @@ export default function DirectionPage() {
                                         </div>
                                     )}
                                     <Button className="btn-new" onClick={registerDirecction}>
-                                        Guardar
+                                        <span>Guardar</span>
                                     </Button>
                                 </div>
                             </div>
