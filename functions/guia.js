@@ -55,6 +55,18 @@ async function saveLabel(guiaId, label, rastreo, APIResponse) {
     await checkBalance(guiaId, true);
 }
 
+async function saveError(guiaId, APIResponse, error) {
+    const response = APIResponse || false;
+    const db = admin.firestore();
+    await db
+        .collection('guia')
+        .doc(guiaId)
+        .update({ status: 'error', APIResponse: response, error });
+
+    await checkBalance(guiaId, true);
+}
+
 exports.getGuiaById = getGuiaById;
 exports.saveLabel = saveLabel;
+exports.saveError = saveError;
 exports.checkBalance = checkBalance;

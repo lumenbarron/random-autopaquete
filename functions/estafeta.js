@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const { soap } = require('strong-soap');
 const secure = require('./secure');
-const { getGuiaById, saveLabel, checkBalance } = require('./guia');
+const { getGuiaById, saveLabel, saveError, checkBalance } = require('./guia');
 
 exports.create = functions.https.onRequest(async (req, res) => {
     const contentType = req.get('content-type');
@@ -101,6 +101,11 @@ exports.create = functions.https.onRequest(async (req, res) => {
             err1,
             result,
         ) {
+            if (err1 || !result) {
+                saveError(guiaId, result, err1);
+                res.status(200).send('NOT OK');
+                return;
+            }
             const pdf = result.createLabelReturn.labelPDF.$value;
             const guias = result.createLabelReturn.labelResultList.labelResultList.resultDescription.$value.split(
                 '|',

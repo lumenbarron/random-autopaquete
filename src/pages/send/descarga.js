@@ -12,17 +12,26 @@ export const DescargaComponent = ({ idGuiaGlobal }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [pdf, setPDF] = useState(false);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         const prepareDownload = () => {
             db.collection('guia')
                 .doc(idGuiaGlobal)
                 .onSnapshot(doc => {
-                    setPDF(doc.data().label);
+                    const data = doc.data();
+                    if (data.label) {
+                        setPDF(doc.data().label);
+                    }
+                    if (data.status === 'error') {
+                        setError(true);
+                    }
                 });
         };
         prepareDownload();
     }, [idGuiaGlobal]);
+
+    const loading = !pdf && !error;
 
     return (
         <DownloadContainer>
@@ -36,7 +45,13 @@ export const DescargaComponent = ({ idGuiaGlobal }) => {
                     </a>
                 </>
             )}
-            {!pdf && <h2>Generando guía, espera un minuto... </h2>}
+            {error && (
+                <h2>
+                    Hubo un problema al generar tu guía, verifica que las direcciones y datos del
+                    paquete sean válidos e intenta de nuevo.
+                </h2>
+            )}
+            {loading && <h2>Generando guía, espera un minuto... </h2>}
         </DownloadContainer>
     );
 };

@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const { soap } = require('strong-soap');
 const secure = require('./secure');
-const { getGuiaById, saveLabel, checkBalance } = require('./guia');
+const { getGuiaById, saveLabel, saveError, checkBalance } = require('./guia');
 
 exports.create = functions.https.onRequest(async (req, res) => {
     const contentType = req.get('content-type');
@@ -138,6 +138,11 @@ exports.create = functions.https.onRequest(async (req, res) => {
     soap.createClient(url, {}, function(err, client) {
         client.ShipService.ShipServicePort.processShipment(requestArgs, function(err1, result) {
             const apiResult = JSON.parse(JSON.stringify(result));
+            if (err1 || !result) {
+                saveError(guiaId, result, err1);
+                res.status(200).send('NOT OK');
+                return;
+            }
             const packageDetail = apiResult.CompletedShipmentDetail.CompletedPackageDetails[0];
             const pdf = packageDetail.Label.Parts[0].Image;
             const guias = [];
