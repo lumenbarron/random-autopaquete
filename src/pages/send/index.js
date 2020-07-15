@@ -11,7 +11,7 @@ import { DescargaComponent } from './descarga';
 import { StyledSendPage } from './styled';
 
 const SendPage = () => {
-    const [currentStepName, setCurrentStepName] = useState('paquete');
+    const [currentStepName, setCurrentStepName] = useState('origen');
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const idGuiaGlobal = useRef(null);

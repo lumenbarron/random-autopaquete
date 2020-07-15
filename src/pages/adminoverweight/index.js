@@ -15,7 +15,6 @@ import { useFirebaseApp } from 'reactfire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport, faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { StyledAdminoverweight } from './styled';
-import { doc } from 'prettier';
 
 const StyledTable = styled(Table)`
     color: #1de9b6;
