@@ -101,7 +101,6 @@ export const OrigenComponent = ({ onSave }) => {
     const [checkBox, setCheckBox] = useState(true);
 
     const [userName, setUserName] = useState('');
-    const [credits, setCredits] = useState();
     const [status, setStatus] = useState();
 
     const creationDate = new Date();
@@ -183,7 +182,6 @@ export const OrigenComponent = ({ onSave }) => {
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
                         setUserName(doc.data().name);
-                        setCredits(parseFloat(doc.data().saldo));
                         setStatus(doc.data().status);
                     });
                 })
@@ -210,7 +208,7 @@ export const OrigenComponent = ({ onSave }) => {
             setError(false);
         }
 
-        if (credits < 10000 || status !== 'Aprobado') {
+        if (status !== 'Aprobado') {
             setErrorCredits(true);
             return;
         }

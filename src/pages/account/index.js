@@ -54,7 +54,13 @@ const AccountPage = () => {
                                     <h3>Pago en banco o transferencia</h3>
                                     <p>
                                         INFORMACIÓN BANCARIA AUTOPAQUETE SERVICIOS SA DE CV BBVA
-                                        BANCOMER CIB: 012320001136203875 Cuenta: 0113620387
+                                        BANCOMER
+                                        <br />
+                                        CIB: 012320001136203875
+                                        <br />
+                                        Cuenta: 0113620387
+                                        <br />
+                                        La cantidad mínima para realizar un deposito es de $10,000
                                     </p>
                                 </Col>
                             </Row>

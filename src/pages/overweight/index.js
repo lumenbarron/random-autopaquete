@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Table, Column } from 'react-rainbow-components';
 import styled from 'styled-components';
 
+import formatMoney from 'accounting-js/lib/formatMoney';
+
 import { StyledOverweight } from './styled';
 
 import { useFirebaseApp, useUser } from 'reactfire';
@@ -48,11 +50,11 @@ const OverweightPage = () => {
         console.log(overWeight);
         return {
             date: overWeight.fecha,
-            guide: overWeight.guia,
+            guide: overWeight.rastreo,
             kdeclared: overWeight.kilos_declarados,
             kreal: overWeight.kilos_reales,
             Kcollected: overWeight.kilos_reales - overWeight.kilos_declarados,
-            charge: overWeight.cargo,
+            charge: formatMoney(overWeight.cargo),
         };
     });
 

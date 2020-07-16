@@ -36,6 +36,7 @@ const AdminOverweightPage = () => {
     const [realKg, setRealKg] = useState();
     const [charge, setCharge] = useState();
     const [docId, setDocId] = useState();
+    const [trackingNumber, setTrackingNumber] = useState();
 
     const [overWeightInformation, setOverWeightInformation] = useState([]);
 
@@ -108,6 +109,7 @@ const AdminOverweightPage = () => {
     }
 
     const getIdGuia = trackingNumber => {
+        setTrackingNumber(trackingNumber);
         db.collection('guia')
             .where('rastreo', 'array-contains', trackingNumber)
             .get()
@@ -188,6 +190,7 @@ const AdminOverweightPage = () => {
                 usuario: name,
                 fecha: creationDate.toLocaleDateString(),
                 guia,
+                rastreo: trackingNumber,
                 kilos_declarados: kgDeclarados,
                 kilos_reales: realKg,
                 cargo,
@@ -259,17 +262,14 @@ const AdminOverweightPage = () => {
                                                                     return getCostkgExtra.kgExtra;
                                                                 });
 
-                                                            console.log(
-                                                                'Cargo extra',
-                                                                overweightRatesBaseXls,
-                                                            );
                                                             const cargo = db
                                                                 .collection('overweights')
                                                                 .add({
                                                                     ID: doc.data().ID,
                                                                     usuario: doc.data().name,
                                                                     fecha: creationDate.toLocaleDateString(),
-                                                                    guia: overWeight.guia,
+                                                                    guia: IdGuiaXls,
+                                                                    rastreo: overWeight.guia,
                                                                     kilos_declarados: doc.data()
                                                                         .package.weight,
                                                                     kilos_reales:
@@ -348,7 +348,7 @@ const AdminOverweightPage = () => {
     const infoOverWeight = overWeightInformation.map((overWeight, idx) => {
         return {
             id: overWeight.id,
-            guide: overWeight.guia,
+            guide: overWeight.rastreo,
             user: overWeight.usuario,
             date: overWeight.fecha,
             kdeclared: overWeight.kilos_declarados,

@@ -461,7 +461,7 @@ export function AccountSidebar() {
                 {/* <Status>{}</Status> */}
                 <h5>Créditos</h5>
                 <Link to="/mi-cuenta">
-                    <AddCreditButton>Agregar</AddCreditButton>
+                    <AddCreditButton>Inicio</AddCreditButton>
                 </Link>
             </SidebarHeader>
             <StyledSidebar>

@@ -291,39 +291,15 @@ export default function DirectionPage() {
                                         style={{ width: '100%' }}
                                         onChange={e => setName(e.target.value)}
                                     />
-                                    <Input
-                                        id="telefono"
-                                        label="Telefono"
-                                        name="telefono"
-                                        value={phone}
-                                        className="rainbow-p-around_medium"
-                                        style={{ width: '100%' }}
-                                        onChange={e => setPhone(e.target.value)}
-                                    />
-                                    <Picklist
-                                        id="estado"
-                                        label="Estado"
-                                        name="estado"
-                                        value={state}
-                                        className="rainbow-p-around_medium"
-                                        style={{ flex: '1 1' }}
-                                        onChange={value => setState(value)}
-                                        required
-                                    >
-                                        <StatePicklistOptions />
-                                    </Picklist>
-                                </div>
-                                <div style={{ flex: '1 1' }}>
-                                    <h2>Dirección</h2>
                                     <div className="rainbow-align-content_center rainbow-flex_wrap">
                                         <Input
-                                            id="ciudad"
-                                            label="Ciudad"
-                                            name="ciudad"
-                                            value={country}
+                                            id="domicilio"
+                                            label="Calle y Número"
+                                            name="domicilio"
+                                            value={streetNumber}
                                             className="rainbow-p-around_medium"
-                                            style={{ width: '70%' }}
-                                            onChange={e => setCountry(e.target.value)}
+                                            style={{ flex: '70%' }}
+                                            onChange={e => setStreetNumber(e.target.value)}
                                         />
                                         <Input
                                             id="cp"
@@ -341,16 +317,43 @@ export default function DirectionPage() {
                                         name="colonia"
                                         value={neighborhood}
                                         className="rainbow-p-around_medium"
+                                        style={{ width: '1 1' }}
                                         onChange={e => setNeighborhood(e.target.value)}
                                     />
+                                </div>
+                                <div style={{ flex: '1 1' }}>
+                                    <h2>Dirección</h2>
+                                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                                        <Input
+                                            id="ciudad"
+                                            label="Ciudad"
+                                            name="ciudad"
+                                            value={country}
+                                            className="rainbow-p-around_medium"
+                                            style={{ width: '50%' }}
+                                            onChange={e => setCountry(e.target.value)}
+                                        />
+                                        <Picklist
+                                            id="estado"
+                                            label="Estado"
+                                            name="estado"
+                                            value={state}
+                                            className="rainbow-p-around_medium"
+                                            style={{ flex: '50%' }}
+                                            onChange={value => setState(value)}
+                                            required
+                                        >
+                                            <StatePicklistOptions />
+                                        </Picklist>
+                                    </div>
                                     <Input
-                                        id="domicilio"
-                                        label="Calle y Número"
-                                        name="domicilio"
-                                        value={streetNumber}
+                                        id="telefono"
+                                        label="Telefono"
+                                        name="telefono"
+                                        value={phone}
                                         className="rainbow-p-around_medium"
-                                        style={{ flex: '1 1' }}
-                                        onChange={e => setStreetNumber(e.target.value)}
+                                        style={{ width: '100%' }}
+                                        onChange={e => setPhone(e.target.value)}
                                     />
                                     <Input
                                         id="referencia"
