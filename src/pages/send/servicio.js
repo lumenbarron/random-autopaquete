@@ -107,7 +107,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (volumetricWeight > weight) {
             pricedWeight = volumetricWeight;
         }
-        const insurancePrice = contentValue !== '' ? parseInt(contentValue, 10) * 0.02 : 0;
+        const insurancePrice = contentValue !== '' ? 40 + parseInt(contentValue, 10) * 0.02 : 0;
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
