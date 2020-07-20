@@ -23,6 +23,12 @@ export const StyledDirectiosDetails = styled.div`
     }
 `;
 
+export const StyledError = styled.div`
+    color: crimson;
+    margin-left: 14rem;
+    margin-bottom: -2rem;
+`;
+
 export const StyledDetails = styled.div`
     flex-basis: 22%
     margin-right: 10px;

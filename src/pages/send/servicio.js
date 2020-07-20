@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Card, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
-import { StyledPaneContainer, StyledDirectiosDetails, StyledDetails } from './styled';
+import { StyledPaneContainer, StyledDirectiosDetails, StyledDetails, StyledError } from './styled';
 
 const DetailsLabel = styled.p`
     margin-bottom: 1.2rem;
@@ -42,6 +42,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [weight, setWeight] = useState('');
     const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
+    const [error, setError] = useState(false);
 
     const [docId, setDocId] = useState();
 
@@ -49,23 +50,37 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
-            .then(profile => {
-                profile.docs[0].ref
-                    .collection('rate')
-                    .doc(id)
-                    .get()
-                    .then(doc => {
-                        const tarifa = doc.data();
-                        const supplierData = {
-                            ID: user.uid,
-                            Supplier: `${supplier}${type}`,
-                            Supplier_cost: precio,
-                            tarifa,
-                            cargos,
-                        };
-
-                        onSave(supplierData);
-                    });
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    if (parseFloat(precio) > parseFloat(doc.data().saldo)) {
+                        setError(true);
+                    } else {
+                        db.collection('profiles')
+                            .where('ID', '==', user.uid)
+                            .get()
+                            .then(profile => {
+                                profile.docs[0].ref
+                                    .collection('rate')
+                                    .doc(id)
+                                    .get()
+                                    .then(doc => {
+                                        setError(false);
+                                        const tarifa = doc.data();
+                                        const supplierData = {
+                                            ID: user.uid,
+                                            Supplier: `${supplier}${type}`,
+                                            Supplier_cost: precio,
+                                            tarifa,
+                                            cargos,
+                                        };
+                                        onSave(supplierData);
+                                    });
+                            });
+                    }
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
             });
     };
 
@@ -273,6 +288,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     {contentValue !== '' && <p>Valor asegurado: ${contentValue}</p>}
                 </StyledDetails>
             </StyledDirectiosDetails>
+            <StyledError>
+                {error && <div className="alert-error">No tienes el saldo suficiente</div>}
+            </StyledError>
             <StyledPaneContainer style={{ justifyContent: 'center' }}>
                 <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
                     <h3>Fedex</h3>
