@@ -193,7 +193,7 @@ const TabPersonaFisica = () => {
                         />
                         <Input
                             id="domicilio"
-                            label="Domicilio"
+                            label="Nombre de la calle, número exterior e interior"
                             name="domicilio"
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}

@@ -86,7 +86,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         db.collection('guia')
-            .doc(idGuiaGlobal)
+            .doc('GLP4f8kro5PxB7lZYlQ8')
             .onSnapshot(function getGuia(doc) {
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
@@ -298,11 +298,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <DetailsLabel>Día siguiente</DetailsLabel>
                     <h4>Detalles</h4>
                     <DetailsLabel>Entrega a Domicilio</DetailsLabel>
+                    <DetailsLabel>Guía: ${supplierCostFedexDiaS.guia}</DetailsLabel>
                     {supplierCostFedexDiaS && (
                         <>
                             {supplierCostFedexDiaS.cargoExtra && (
                                 <DetailsLabel>
-                                    Cargo por KGs Extra: ${supplierCostFedexDiaS.cargoExtra}
+                                    Kg adicionales: ${supplierCostFedexDiaS.cargoExtra}
                                 </DetailsLabel>
                             )}
                             {supplierCostFedexDiaS.seguro > 0 && (
@@ -310,7 +311,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     Cargo por Seguro: ${supplierCostFedexDiaS.seguro}
                                 </DetailsLabel>
                             )}
-                            <DetailsLabel>Guía: ${supplierCostFedexDiaS.guia}</DetailsLabel>
                             <h1> ${supplierCostFedexDiaS.precio}</h1>
                             <Button
                                 label="Elegir"
@@ -328,11 +328,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <DetailsLabel>3 a 5 días hábiles</DetailsLabel>
                     <h4>Detalles</h4>
                     <DetailsLabel>Entrega a Domicilio</DetailsLabel>
+                    <DetailsLabel>Guía: ${supplierCostFedexEcon.guia}</DetailsLabel>
                     {supplierCostFedexEcon && (
                         <>
                             {supplierCostFedexEcon.cargoExtra && (
                                 <DetailsLabel>
-                                    Cargo por KGs Extra: ${supplierCostFedexEcon.cargoExtra}
+                                    Kg adicionales: ${supplierCostFedexEcon.cargoExtra}
                                 </DetailsLabel>
                             )}
                             {supplierCostFedexEcon.seguro > 0 && (
@@ -340,7 +341,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     Cargo por Seguro: ${supplierCostFedexEcon.seguro}
                                 </DetailsLabel>
                             )}
-                            <DetailsLabel>Guía: ${supplierCostFedexEcon.guia}</DetailsLabel>
                             <h1> ${supplierCostFedexEcon.precio}</h1>
                             <Button
                                 label="Elegir"
@@ -358,11 +358,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <DetailsLabel>Día siguiente</DetailsLabel>
                     <h4>Detalles</h4>
                     <DetailsLabel>Entrega a Domicilio</DetailsLabel>
+                    <DetailsLabel>Guía: ${supplierCostEstafetaDiaS.guia}</DetailsLabel>
                     {supplierCostEstafetaDiaS && (
                         <>
                             {supplierCostEstafetaDiaS.cargoExtra && (
                                 <DetailsLabel>
-                                    Cargo por KGs Extra: ${supplierCostEstafetaDiaS.cargoExtra}
+                                    Kg adicionales: ${supplierCostEstafetaDiaS.cargoExtra}
                                 </DetailsLabel>
                             )}
                             {supplierCostEstafetaDiaS.seguro > 0 && (
@@ -370,7 +371,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     Cargo por Seguro: ${supplierCostEstafetaDiaS.seguro}
                                 </DetailsLabel>
                             )}
-                            <DetailsLabel>Guía: ${supplierCostEstafetaDiaS.guia}</DetailsLabel>
                             <h1>${supplierCostEstafetaDiaS.precio}</h1>
                             <Button
                                 label="Elegir"
@@ -392,11 +392,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <DetailsLabel>3 a 5 días hábiles</DetailsLabel>
                     <h4>Detalles</h4>
                     <DetailsLabel>Entrega a Domicilio</DetailsLabel>
+                    <DetailsLabel>Guía: ${supplierCostEstafetaEcon.guia}</DetailsLabel>
                     {supplierCostEstafetaEcon && (
                         <>
                             {supplierCostEstafetaEcon.cargoExtra && (
                                 <DetailsLabel>
-                                    Cargo por KGs Extra: ${supplierCostEstafetaEcon.cargoExtra}
+                                    Kg adicionales: ${supplierCostEstafetaEcon.cargoExtra}
                                 </DetailsLabel>
                             )}
                             {supplierCostEstafetaEcon.seguro > 0 && (
@@ -404,7 +405,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     Cargo por Seguro: ${supplierCostEstafetaEcon.seguro}
                                 </DetailsLabel>
                             )}
-                            <DetailsLabel>Guía: ${supplierCostEstafetaEcon.guia}</DetailsLabel>
                             <h1>${supplierCostEstafetaEcon.precio}</h1>
                             <Button
                                 label="Elegir"

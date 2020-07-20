@@ -326,7 +326,7 @@ export const OrigenComponent = ({ onSave }) => {
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
                         id="domicilio"
-                        label="Calle y Número"
+                        label="Nombre de la calle, número exterior e interior"
                         name="domicilio"
                         value={streetNumber}
                         className="rainbow-p-around_medium"

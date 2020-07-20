@@ -119,7 +119,6 @@ export const PaqueteComponent = ({ onSave }) => {
                         setDepth(doc.data().depth);
                         setWeight(doc.data().weight);
                         setContentDescription(doc.data().content_description);
-                        setContentValue(doc.data().content_value);
                         setCheckBox(false);
                     } else {
                         // doc.data() will be undefined in this case
@@ -270,7 +269,6 @@ export const PaqueteComponent = ({ onSave }) => {
                             id="valor"
                             label="Valor del Contenido"
                             name="valor"
-                            value={contentValue}
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
                             onChange={e => setContentValue(e.target.value)}

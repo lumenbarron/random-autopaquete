@@ -27,6 +27,9 @@ export const StyledTabContent = styled.div.attrs(props => {
 export const StyledTabset = styled(Tabset)`
     width: 70vw;
     margin: 0 auto;
+    background: #f0f3f4 !important;
+    .tabsets {
+    }
 `;
 
 export const StyledForm = styled.form.attrs(props => {
@@ -49,6 +52,7 @@ export const StyledSubmit = styled.button.attrs(props => {
     background-color: #ab0000;
     border: none;
     border-radius: 25px;
+
     padding: 0.5rem 2rem;
     color: white;
 

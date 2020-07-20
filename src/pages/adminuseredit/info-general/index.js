@@ -236,7 +236,7 @@ export default function InfoGeneral({ user }) {
                             />
                             <Input
                                 id="domicilio"
-                                label="Domicilio"
+                                label="Nombre de la calle, número exterior e interior"
                                 className="rainbow-p-around_medium"
                                 style={{ width: '100%' }}
                                 value={address}

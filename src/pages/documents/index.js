@@ -20,8 +20,20 @@ const DocumentsPage = () => {
                     setSelectedTab(selected);
                 }}
             >
-                <Tab label="Persona Física" name="pfisica" id="pfisica" ariaControls="pfisicaTab" />
-                <Tab label="Persona Moral" name="pmoral" id="pmoral" ariaControls="pmoralTab" />
+                <Tab
+                    label="Persona Física"
+                    name="pfisica"
+                    id="pfisica"
+                    ariaControls="pfisicaTab"
+                    className="tabsets"
+                />
+                <Tab
+                    label="Persona Moral"
+                    name="pmoral"
+                    id="pmoral"
+                    ariaControls="pmoralTab"
+                    className="tabsets"
+                />
             </StyledTabset>
 
             {selectedTab === 'pfisica' && <TabPersonaFisica />}
