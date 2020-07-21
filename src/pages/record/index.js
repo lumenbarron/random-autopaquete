@@ -145,23 +145,24 @@ const RecordPage = () => {
                                     sortDirection="desc"
                                     className="direction-table"
                                 >
-                                    <Column header="Fecha " field="date" />
-                                    <Column header="Guía" field="guide" />
+                                    <Column header="Fecha " field="date" defaultWidth={105} />
+                                    <Column header="Guía" field="guide" defaultWidth={275} />
                                     <Column header="Origen" field="origin" />
                                     <Column header="Destino" field="Destination" />
-                                    <Column header="Peso" field="weight" />
+                                    <Column header="Peso" field="weight" defaultWidth={75} />
                                     <Column header="Servicio" field="service" />
                                     <Column
                                         header="Status"
                                         field="status"
                                         component={StatusBadge}
                                     />
-                                    <Column header="Costo" field="cost" />
+                                    <Column header="Costo" field="cost" defaultWidth={75} />
                                     <Column
                                         header="Etiqueta"
                                         component={DownloadLabel}
                                         field="label"
                                         style={{ width: '10px!important' }}
+                                        defaultWidth={100}
                                     />
                                 </StyledTable>
                             </div>

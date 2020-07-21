@@ -56,12 +56,13 @@ const QuotePage = () => {
                                                         <label htmlFor="ClientFirstName">
                                                             Nombre(s)
                                                         </label>
+
                                                         <Input
+                                                            icon={<FontAwesomeIcon icon={faUser} />}
                                                             name="data[Client][first_name]"
                                                             type="text"
                                                             id="ClientFirstName"
                                                             iconPosition="right"
-                                                            icon={<FontAwesomeIcon icon={faUser} />}
                                                         />
                                                     </div>
                                                     <div>

@@ -20,7 +20,7 @@ export const StyledQuote = styled.div`
 
     input {
         width: 100%;
-        padding: 0.5rem;
+        padding: 0.5rem 2.4rem 0.5rem 0.5rem;
         font-size: 18px;
         border-radius: 35px;
     }

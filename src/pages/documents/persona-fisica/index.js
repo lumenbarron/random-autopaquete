@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Input, FileSelector } from 'react-rainbow-components';
+import { Input, FileSelector, DatePicker } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled';
 import * as firebase from 'firebase';
@@ -27,6 +27,7 @@ const TabPersonaFisica = () => {
     const storage = firebase.storage();
 
     const user = useUser();
+    const dateBorn = new Date(date.date);
 
     let uploadedFiles = 0;
     let filesToUpload = 0;
@@ -50,7 +51,7 @@ const TabPersonaFisica = () => {
                             direccion: address,
                             telefono: phone,
                             RFC,
-                            Fecha: date,
+                            Fecha: dateBorn.toLocaleDateString(),
                             INENumero: INEnumber,
                             persona: 'Física',
                             files: {
@@ -174,6 +175,8 @@ const TabPersonaFisica = () => {
         }
     };
 
+    console.log();
+
     return (
         <StyledTabContent
             aria-labelledby="pfisica"
@@ -219,15 +222,16 @@ const TabPersonaFisica = () => {
                         />
                     </div>
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
-                        <Input
+                        <DatePicker
                             id="fechaNacimiento"
-                            label="Fecha de nacimiento"
                             name="fechaNacimiento"
-                            type="date"
                             className="rainbow-p-around_medium"
+                            value={date.date}
+                            label="Fecha de nacimiento"
+                            onChange={value => setDate({ date: value })}
                             style={{ width: '90%' }}
-                            onChange={ev => setDate(ev.target.value)}
                         />
+
                         <Input
                             id="numeroINE"
                             label="Número de INE"

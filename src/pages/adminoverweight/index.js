@@ -504,13 +504,17 @@ const AdminOverweightPage = () => {
                             emptyTitle="Oh no!"
                             emptyDescription="No hay ningun registro actualmente..."
                         >
-                            <StyledColumn header="Número de Guía" field="guide" />
+                            <StyledColumn
+                                header="Número de Guía"
+                                field="guide"
+                                defaultWidth={250}
+                            />
                             <StyledColumn header="Usuario" field="user" />
                             <StyledColumn header="Fecha " field="date" />
                             <StyledColumn header="Kilos Declarados" field="kdeclared" />
                             <StyledColumn header="Kilos reales" field="kreal" />
                             <StyledColumn header="Cargos Adicionales" field="cadd" />
-                            <StyledColumn header="" field="delete" />
+                            <StyledColumn header="" field="delete" defaultWidth={75} />
                         </StyledTable>
                     </div>
                 </div>
