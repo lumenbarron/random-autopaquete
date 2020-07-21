@@ -86,7 +86,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         db.collection('guia')
-            .doc('GLP4f8kro5PxB7lZYlQ8')
+            .doc(idGuiaGlobal)
             .onSnapshot(function getGuia(doc) {
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
@@ -122,7 +122,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (volumetricWeight > weight) {
             pricedWeight = volumetricWeight;
         }
-        const insurancePrice = contentValue !== '' ? 40 + parseInt(contentValue, 10) * 0.02 : 0;
+
+        const getInsurancePrice = company => {
+            const baseValue = contentValue !== '' ? parseInt(contentValue, 10) * 0.02 : 0;
+            const extraValue = company == 'fedex' ? 40 : 0;
+            return baseValue + extraValue;
+        };
+
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
@@ -132,7 +138,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     const kgsExtraTarifas = {};
                     querySnapshot.forEach(doc => {
                         const { entrega, precio, max, min, kgExtra } = doc.data();
-
                         // Encontramos si hay tarifas que apliquen directo al paquete
                         if (
                             !kgExtra &&
@@ -143,29 +148,29 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             if (entrega === 'fedexDiaSiguiente')
                                 setSupplierCostFedexDiaS({
                                     id: doc.id,
-                                    precio: precioTotal + insurancePrice,
-                                    seguro: insurancePrice,
+                                    precio: precioTotal + getInsurancePrice('fedex'),
+                                    seguro: getInsurancePrice('fedex'),
                                     guia: precioTotal,
                                 });
                             if (entrega === 'fedexEconomico')
                                 setSupplierCostFedexEcon({
                                     id: doc.id,
-                                    precio: precioTotal + insurancePrice,
-                                    seguro: insurancePrice,
+                                    precio: precioTotal + getInsurancePrice('fedex'),
+                                    seguro: getInsurancePrice('fedex'),
                                     guia: precioTotal,
                                 });
                             if (entrega === 'estafetaDiaSiguiente')
                                 setSupplierCostEstafetaDiaS({
                                     id: doc.id,
-                                    precio: precioTotal + insurancePrice,
-                                    seguro: insurancePrice,
+                                    precio: precioTotal + getInsurancePrice(),
+                                    seguro: getInsurancePrice(),
                                     guia: precioTotal,
                                 });
                             if (entrega === 'estafetaEconomico')
                                 setSupplierCostEstafetaEcon({
                                     id: doc.id,
-                                    precio: precioTotal + insurancePrice,
-                                    seguro: insurancePrice,
+                                    precio: precioTotal + getInsurancePrice(),
+                                    seguro: getInsurancePrice(),
                                     guia: precioTotal,
                                 });
                             return;
@@ -199,9 +204,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
                             segundaMejorTarifa[entrega] = {
                                 id: doc.id,
-                                precio: precioTotal + insurancePrice,
+                                precio: precioTotal + getInsurancePrice(),
                                 guia: precioTotal,
-                                seguro: insurancePrice,
+                                seguro: getInsurancePrice(),
                                 diferencia,
                             };
                         }
@@ -212,7 +217,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         const precio =
                             tarifa.guia +
                             tarifa.diferencia * kgsExtraTarifas[entrega] +
-                            insurancePrice;
+                            getInsurancePrice();
                         const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
                         console.log('Tarifa', tarifa);
                         console.log('kgsExtraTarifas', kgsExtraTarifas);
@@ -220,7 +225,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             setSupplierCostFedexDiaS({
                                 id: tarifa.id,
                                 precio,
-                                seguro: insurancePrice,
+                                seguro: getInsurancePrice('fedex'),
                                 cargoExtra,
                                 guia,
                             });
@@ -228,7 +233,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             setSupplierCostFedexEcon({
                                 id: tarifa.id,
                                 precio,
-                                seguro: insurancePrice,
+                                seguro: getInsurancePrice('fedex'),
                                 cargoExtra,
                                 guia,
                             });
@@ -236,7 +241,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             setSupplierCostEstafetaDiaS({
                                 id: tarifa.id,
                                 precio,
-                                seguro: insurancePrice,
+                                seguro: getInsurancePrice(),
                                 cargoExtra,
                                 guia,
                             });
@@ -244,7 +249,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             setSupplierCostEstafetaEcon({
                                 id: tarifa.id,
                                 precio,
-                                seguro: insurancePrice,
+                                seguro: getInsurancePrice(),
                                 cargoExtra,
                                 guia,
                             });

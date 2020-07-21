@@ -400,8 +400,7 @@ export const OrigenComponent = ({ onSave }) => {
                 )}
                 {errorCredits && (
                     <div className="alert-error">
-                        Es necesario tener un mínimo de $10,000 o tener un estatus apobatorio para
-                        relizar envíos
+                        Es necesario tener un estatus apobatorio para relizar envíos
                     </div>
                 )}
 

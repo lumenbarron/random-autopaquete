@@ -143,6 +143,7 @@ const RecordPage = () => {
                                     emptyDescription="No hay ningun registro actualmente..."
                                     sortedBy="date"
                                     sortDirection="desc"
+                                    className="direction-table"
                                 >
                                     <Column header="Fecha " field="date" />
                                     <Column header="Guía" field="guide" />
@@ -160,6 +161,7 @@ const RecordPage = () => {
                                         header="Etiqueta"
                                         component={DownloadLabel}
                                         field="label"
+                                        style={{ width: '10px!important' }}
                                     />
                                 </StyledTable>
                             </div>

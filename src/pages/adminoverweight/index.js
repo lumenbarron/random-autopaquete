@@ -36,6 +36,8 @@ const AdminOverweightPage = () => {
     const [realKg, setRealKg] = useState();
     const [charge, setCharge] = useState();
     const [docId, setDocId] = useState();
+    const [saldo, setSaldo] = useState();
+    const [profileDocId, setProfileDocId] = useState();
     const [trackingNumber, setTrackingNumber] = useState();
 
     const [overWeightInformation, setOverWeightInformation] = useState([]);
@@ -54,7 +56,7 @@ const AdminOverweightPage = () => {
 
     const creationDate = new Date();
     const [rateKgExtra, setRateKgExtra] = useState();
-
+    console.log('ID document', profileDocId);
     //overWeight data
     useEffect(() => {
         if (!userId) {
@@ -64,6 +66,8 @@ const AdminOverweightPage = () => {
                 .get()
                 .then(function(profilesSnapshot) {
                     profilesSnapshot.forEach(function(profileDoc) {
+                        setSaldo(profileDoc.data().saldo);
+                        setProfileDocId(profileDoc.id);
                         db.collection(`profiles/${profileDoc.id}/rate`)
                             .get()
                             .then(function(ratesSnapshot) {
@@ -128,7 +132,13 @@ const AdminOverweightPage = () => {
     //Guide data
     useEffect(() => {
         if (!guia) {
-            console.log('Este valor tiene que tener un valor de guía valida');
+            console.log('Variables reseteadas');
+            setDocId('');
+            setName('');
+            setUserId('');
+            setDate('');
+            setKgdeclarados('');
+            setSupplier('');
         } else {
             const docRef = db.collection('guia').doc(guia);
 
@@ -154,7 +164,7 @@ const AdminOverweightPage = () => {
         }
         setErrorGuia(false);
     }, [guia, getIdGuia]);
-
+    console.log(name);
     function handleOverWeight(snapshot) {
         const overWeightInformation = snapshot.docs.map(doc => {
             return {
@@ -178,6 +188,10 @@ const AdminOverweightPage = () => {
     };
 
     const closeModal = () => {
+        setIsOpen(false);
+    };
+
+    const closeModalImported = () => {
         setIsOpen(false);
         setXlsToUpLoad(true);
     };
@@ -203,6 +217,12 @@ const AdminOverweightPage = () => {
                 })
                 .catch(function(error) {
                     console.error('Error adding document: ', error);
+                });
+
+            db.collection('profiles')
+                .doc(profileDocId)
+                .update({
+                    saldo: parseFloat(saldo) - parseFloat(cargo),
                 });
         } else {
         }
@@ -262,6 +282,14 @@ const AdminOverweightPage = () => {
                                                                     return getCostkgExtra.kgExtra;
                                                                 });
 
+                                                            const cargoOverweight =
+                                                                (overWeight.kilos_reales -
+                                                                    doc.data().package.weight) *
+                                                                parseInt(
+                                                                    overweightRatesBaseXls,
+                                                                    10,
+                                                                );
+                                                            console.log(cargoOverweight);
                                                             const cargo = db
                                                                 .collection('overweights')
                                                                 .add({
@@ -274,14 +302,7 @@ const AdminOverweightPage = () => {
                                                                         .package.weight,
                                                                     kilos_reales:
                                                                         overWeight.kilos_reales,
-                                                                    cargo:
-                                                                        (overWeight.kilos_reales -
-                                                                            doc.data().package
-                                                                                .weight) *
-                                                                        parseInt(
-                                                                            overweightRatesBaseXls,
-                                                                            10,
-                                                                        ),
+                                                                    cargo: cargoOverweight,
                                                                 })
                                                                 .then(function(docRef) {
                                                                     console.log(docRef);
@@ -291,6 +312,13 @@ const AdminOverweightPage = () => {
                                                                         'Error adding document: ',
                                                                         error,
                                                                     );
+                                                                });
+                                                            db.collection('profiles')
+                                                                .doc(profileDoc.id)
+                                                                .update({
+                                                                    saldo:
+                                                                        profileDoc.data().saldo -
+                                                                        cargoOverweight,
                                                                 });
                                                         })
                                                         .catch(function(error) {
@@ -449,7 +477,10 @@ const AdminOverweightPage = () => {
                                 isOpen={isOpen}
                                 onRequestClose={closeModal}
                                 schema={schema}
-                                onComplete={data => setxlsData(data)}
+                                onComplete={data => {
+                                    setxlsData(data);
+                                    closeModalImported();
+                                }}
                                 actionType="add-records"
                             />
                         </div>

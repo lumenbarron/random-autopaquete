@@ -37,6 +37,7 @@ export const RecordContainer = styled.div`
 
     }
 
+
     .btn-new:hover {
     background-color: #C94141;
     color: white;

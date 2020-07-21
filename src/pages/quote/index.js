@@ -60,6 +60,7 @@ const QuotePage = () => {
                                                             name="data[Client][first_name]"
                                                             type="text"
                                                             id="ClientFirstName"
+                                                            iconPosition="right"
                                                             icon={<FontAwesomeIcon icon={faUser} />}
                                                         />
                                                     </div>
@@ -71,6 +72,7 @@ const QuotePage = () => {
                                                             name="data[Client][company_name]"
                                                             type="text"
                                                             id="ClientCompanyName"
+                                                            iconPosition="right"
                                                             icon={
                                                                 <FontAwesomeIcon
                                                                     icon={faBuilding}
@@ -87,6 +89,7 @@ const QuotePage = () => {
                                                             name="data[Client][phone]"
                                                             type="tel"
                                                             id="ClientPhone"
+                                                            iconPosition="right"
                                                             icon={
                                                                 <FontAwesomeIcon
                                                                     icon={faPhoneAlt}
@@ -101,6 +104,7 @@ const QuotePage = () => {
                                                             name="data[Client][email]"
                                                             type="email"
                                                             id="ClientEmail"
+                                                            iconPosition="right"
                                                             icon={
                                                                 <FontAwesomeIcon
                                                                     icon={faEnvelope}
