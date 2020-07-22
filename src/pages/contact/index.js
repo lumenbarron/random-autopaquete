@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import { Input, Textarea } from 'react-rainbow-components';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
-import { useUser } from 'reactfire';
+import { useUser, useFirebaseApp } from 'reactfire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import {
@@ -26,6 +26,9 @@ const containerStyles = {
 };
 
 const ContactPage = () => {
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+
     const [name, setName] = useState();
     const [lastName, setLastName] = useState();
     const [phone, setPhone] = useState();
@@ -33,7 +36,27 @@ const ContactPage = () => {
     const [sent, setSent] = useState(false);
     const [sending, setSending] = useState(true);
 
+    const [host, setHost] = useState();
+    const [receiverEmail, setReceiverEmail] = useState();
+    const [pass, setPass] = useState();
+
     const user = useUser();
+
+    useEffect(() => {
+        db.collection('email_configuration')
+            .where('email', '==', 'contacto@autopaquete.com.mx')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    setHost(doc.data().host);
+                    setReceiverEmail(doc.data().email);
+                    setPass(doc.data().password);
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+    }, []);
 
     function sendEmail() {
         setSending(true);
@@ -47,7 +70,7 @@ const ContactPage = () => {
             };
             xhr.open('POST', '/contacto/send');
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-            xhr.send(JSON.stringify({ name, lastName, phone, message }));
+            xhr.send(JSON.stringify({ name, lastName, phone, message, host, receiverEmail, pass }));
         });
     }
 
