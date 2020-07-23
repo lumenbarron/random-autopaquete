@@ -21,16 +21,28 @@ exports.send = functions.https.onRequest(async (req, res) => {
 
     // TODO: Agregar un servidor SMTP Válido
     const transporter = nodemailer.createTransport({
+        //name: 'autopaquete.com.mx',
         host: 'mail.autopaquete.com.mx',
         port: 587,
         secure: false,
+        ignoreTLS: true,
+        tls: {
+            rejectUnauthorized: false,
+            //     servername: 'smtp.mailtrap.io',
+        },
+        secure: false,
         auth: {
             user: 'contacto@autopaquete.com.mx',
-            pass: '.Q2G9KV}@.=t',
+            pass: '2a$?[l}3vg_[',
         },
-        // tls: {
-        //     servername: 'smtp.mailtrap.io',
-        // },
+    });
+
+    transporter.verify((error, success) => {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Server is ready to take messages');
+        }
     });
 
     const mailOptions = {
