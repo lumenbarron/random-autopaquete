@@ -124,6 +124,7 @@ const QuotePage = () => {
                                                             placeholder="Volumen de Envíos al Mes"
                                                             id="ClientVolumenDeEnviosAlMes"
                                                             label="Select Label"
+                                                            style={{ width: 'auto' }}
                                                         >
                                                             <option value="Hago Envíos Ocasionalmente">
                                                                 Hago Envíos Ocasionalmente
