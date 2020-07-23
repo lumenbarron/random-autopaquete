@@ -2,6 +2,7 @@ const functions = require('firebase-functions');
 const { soap } = require('strong-soap');
 const secure = require('./secure');
 const { getGuiaById, saveLabel, saveError, checkBalance } = require('./guia');
+const { admin } = require('./admin');
 
 exports.create = functions.https.onRequest(async (req, res) => {
     const contentType = req.get('content-type');
@@ -42,11 +43,30 @@ exports.create = functions.https.onRequest(async (req, res) => {
         return;
     }
 
-    const url = 'https://labelqa.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
+    const db = admin.firestore();
+    const supplierQuery = await db
+        .collection('suppliers_configuration')
+        .where('supplier', '==', 'estafeta')
+        .get();
+
+    const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
+    if (!supplierData) {
+        res.status(500).send('Missing estafeta config');
+        return;
+    }
+    const isProd = supplierData.type === 'prod';
+
+    let url;
+
+    if (isProd) {
+        url = 'https://label.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
+    } else {
+        url = 'https://labelqa.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
+    }
 
     const requestArgs = {
         in0: {
-            customerNumber: '0000000',
+            customerNumber: supplierData.customerNumber,
             labelDescriptionList: {
                 content: packaging.content_description,
                 destinationInfo: {
@@ -65,7 +85,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 destinationCountryId: 'MX',
                 deliveryToEstafetaOffice: 'False',
                 numberOfLabels: quantity,
-                officeNum: '130',
+                officeNum: supplierData.officeNum,
                 originInfo: {
                     customerNumber: '0000000',
                     address1: senderAddress.street_number,
@@ -80,16 +100,16 @@ exports.create = functions.https.onRequest(async (req, res) => {
                     zipCode: senderAddress.codigo_postal,
                 },
                 originZipCodeForRouting: senderAddress.codigo_postal,
-                serviceTypeId: '70',
+                serviceTypeId: supplierData.serviceTypeId,
                 valid: 'True',
                 returnDocument: 'False',
                 parcelTypeId: '1',
                 weight: packaging.weight,
             },
             labelDescriptionListCount: '1',
-            login: 'prueba1',
-            password: 'lAbeL_K_11',
-            suscriberId: '28',
+            login: supplierData.user,
+            password: supplierData.pass,
+            suscriberId: supplierData.suscriberId,
             valid: 'True',
             paperType: '1',
             quadrant: '0',
@@ -106,12 +126,17 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 res.status(200).send('NOT OK');
                 return;
             }
-            const pdf = result.createLabelReturn.labelPDF.$value;
-            const guias = result.createLabelReturn.labelResultList.labelResultList.resultDescription.$value.split(
-                '|',
-            );
-            saveLabel(guiaId, pdf, guias, result);
-            res.status(200).send('OK');
+            try {
+                const pdf = result.createLabelReturn.labelPDF.$value;
+                const guias = result.createLabelReturn.labelResultList.labelResultList.resultDescription.$value.split(
+                    '|',
+                );
+                saveLabel(guiaId, pdf, guias, result);
+                res.status(200).send('OK');
+            } catch (error) {
+                saveError(guiaId, result, JSON.parse(JSON.stringify(error)));
+                res.status(200).send('NOT OK');
+            }
         });
     });
 });

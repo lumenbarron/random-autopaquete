@@ -2,6 +2,7 @@ const functions = require('firebase-functions');
 const { soap } = require('strong-soap');
 const secure = require('./secure');
 const { getGuiaById, saveLabel, saveError, checkBalance } = require('./guia');
+const { admin } = require('./admin');
 
 exports.create = functions.https.onRequest(async (req, res) => {
     const contentType = req.get('content-type');
@@ -59,19 +60,49 @@ exports.create = functions.https.onRequest(async (req, res) => {
         });
     }
 
-    const url = './ShipService_v25.wsdl';
+    let supplier;
+    if (guia.supplierData.Supplier === 'fedexEconomico') {
+        if (parseInt(packaging.weight, 10) > 15) {
+            supplier = 'fedexEconomicoPesado';
+        } else {
+            supplier = 'fedexEconomico';
+        }
+    } else if (guia.supplierData.Supplier === 'fedexDiaSiguiente') {
+        supplier = 'fedexOvernight';
+    }
+
+    const db = admin.firestore();
+    const supplierQuery = await db
+        .collection('suppliers_configuration')
+        .where('supplier', '==', supplier)
+        .get();
+
+    const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
+    if (!supplierData) {
+        res.status(500).send('Missing fedex config');
+        return;
+    }
+    const isProd = supplierData.type === 'prod';
+
+    let url;
+
+    if (isProd) {
+        url = './ShipService_v25_prod.wsdl';
+    } else {
+        url = './ShipService_v25.wsdl';
+    }
 
     const requestArgs = {
         ProcessShipmentRequest: {
             WebAuthenticationDetail: {
                 UserCredential: {
-                    Key: '4otzuKjLzVkx5qdQ',
-                    Password: 'AyaldeyfISXNQW9YZ7ctDk2jA',
+                    Key: supplierData.key,
+                    Password: supplierData.pass,
                 },
             },
             ClientDetail: {
-                AccountNumber: '510087780',
-                MeterNumber: '119126102',
+                AccountNumber: supplierData.account,
+                MeterNumber: supplierData.meter,
             },
             Version: {
                 ServiceId: 'ship',
@@ -82,7 +113,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
             RequestedShipment: {
                 ShipTimestamp: new Date().toISOString(),
                 DropoffType: 'BUSINESS_SERVICE_CENTER',
-                ServiceType: 'FEDEX_EXPRESS_SAVER',
+                ServiceType: supplierData.serviceType,
                 PackagingType: 'YOUR_PACKAGING',
                 PreferredCurrency: 'NMP',
                 Shipper: {
@@ -115,7 +146,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                     PaymentType: 'SENDER',
                     Payor: {
                         ResponsibleParty: {
-                            AccountNumber: '510087780',
+                            AccountNumber: supplierData.account,
                             Contact: {
                                 ContactId: '12345',
                                 PersonName: senderAddress.name,
@@ -143,14 +174,19 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 res.status(200).send('NOT OK');
                 return;
             }
-            const packageDetail = apiResult.CompletedShipmentDetail.CompletedPackageDetails[0];
-            const pdf = packageDetail.Label.Parts[0].Image;
-            const guias = [];
-            for (let i = 0; i < packageDetail.TrackingIds.length; i += 1) {
-                guias.push(packageDetail.TrackingIds[i].TrackingNumber);
+            try {
+                const packageDetail = apiResult.CompletedShipmentDetail.CompletedPackageDetails[0];
+                const pdf = packageDetail.Label.Parts[0].Image;
+                const guias = [];
+                for (let i = 0; i < packageDetail.TrackingIds.length; i += 1) {
+                    guias.push(packageDetail.TrackingIds[i].TrackingNumber);
+                }
+                saveLabel(guiaId, pdf, guias, apiResult);
+                res.status(200).send('OK');
+            } catch (error) {
+                saveError(guiaId, result, JSON.parse(JSON.stringify(error)));
+                res.status(200).send('NOT OK');
             }
-            saveLabel(guiaId, pdf, guias, apiResult);
-            res.status(200).send('OK');
         });
     });
 });
