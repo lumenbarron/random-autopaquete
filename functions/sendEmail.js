@@ -22,7 +22,7 @@ exports.send = functions.https.onRequest(async (req, res) => {
     // TODO: Agregar un servidor SMTP Válido
     const transporter = nodemailer.createTransport({
         //name: 'autopaquete.com.mx',
-        host: 'mail.autopaquete.com.mx',
+        host: host,
         port: 587,
         secure: false,
         ignoreTLS: true,
@@ -32,8 +32,8 @@ exports.send = functions.https.onRequest(async (req, res) => {
         },
         secure: false,
         auth: {
-            user: 'contacto@autopaquete.com.mx',
-            pass: '2a$?[l}3vg_[',
+            user: receiverEmail,
+            pass: pass,
         },
     });
 

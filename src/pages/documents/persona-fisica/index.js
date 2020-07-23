@@ -110,7 +110,8 @@ const TabPersonaFisica = () => {
             });
     };
 
-    const register = () => {
+    const register = e => {
+        e.preventDefault();
         if (
             name.trim() === '' ||
             INEnumber.trim() === '' ||
