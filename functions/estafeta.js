@@ -131,8 +131,13 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 const guias = result.createLabelReturn.labelResultList.labelResultList.resultDescription.$value.split(
                     '|',
                 );
-                saveLabel(guiaId, pdf, guias, result);
-                res.status(200).send('OK');
+                if (pdf) {
+                    saveLabel(guiaId, pdf, guias, result);
+                    res.status(200).send('OK');
+                } else {
+                    saveError(guiaId, result, 'Label not created');
+                    res.status(200).send('NOT OK');
+                }
             } catch (error) {
                 saveError(guiaId, result, JSON.parse(JSON.stringify(error)));
                 res.status(200).send('NOT OK');
