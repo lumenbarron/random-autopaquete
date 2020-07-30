@@ -62,14 +62,5 @@ exports.send = functions.https.onRequest(async (req, res) => {
         }
     });
 
-    // try {
-    //     const info = await transporter.sendMail(mailOptions);
-
-    //     console.log('Message sent: %s', info.messageId);
-    //     res.status(200).send('OK');
-    // } catch (err) {
-    //     console.log(`Message Error ${err.message}`);
-    //     res.status(500).send('Server Error');
-    // }
     transporter.close();
 });

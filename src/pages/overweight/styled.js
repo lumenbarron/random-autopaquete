@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const StyledOverweight = styled.div`
     flex: 1 1;
-    background-color: #f7ece2;
+    background-color: #f7f7f7;
 
     & .back {
         background: white;

@@ -4,7 +4,7 @@ export const StyledAccount = styled.div`
     flex: 1 1;
 
     .back {
-        background-color: #f7ece2;
+        background-color: #f7f7f7;
         padding: 3rem;
         min-height: 100vh;
     }

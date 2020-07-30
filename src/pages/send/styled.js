@@ -5,7 +5,7 @@ export const StyledSendPage = styled.div`
     flex: 1 1;
     padding: 3rem;
 
-    background-color: #f7ece2;
+    background-color: #f7f7f7;
     min-height: 100vh;
 
     @media (max-width: 768px) {
