@@ -31,7 +31,6 @@ async function checkBalance(guiaId, commit) {
         let newBalance =
             parseFloat(profile.saldo, 10) - parseFloat(guia.supplierData.Supplier_cost, 10);
         if (newBalance < 0) {
-            console.log(1);
             return false;
         }
         newBalance = Math.round((newBalance + Number.EPSILON) * 100) / 100;
@@ -63,8 +62,6 @@ async function saveError(guiaId, APIResponse, error) {
         .collection('guia')
         .doc(guiaId)
         .update({ status: 'error', APIResponse: response, error });
-
-    await checkBalance(guiaId, true);
 }
 
 exports.getGuiaById = getGuiaById;
