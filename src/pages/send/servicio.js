@@ -3,13 +3,30 @@ import PropTypes from 'prop-types';
 import { Card, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
+import formatMoney from 'accounting-js/lib/formatMoney';
 import { StyledPaneContainer, StyledDirectiosDetails, StyledDetails, StyledError } from './styled';
 
-const DetailsLabel = styled.p`
-    margin-bottom: 1.2rem;
+const PriceContainer = styled.div`
+    display: flex;
+    margin-bottom: 0.5rem;
+    flex-direction: row;
+    width: 50%;
+    min-width: 170px;
+`;
+
+const PriceLabel = styled.div`
+    display: flex;
+    flex: '1 1';
+`;
+
+const PriceNumber = styled.div`
+    text-align: right;
+    flex: '1 1';
 `;
 
 export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
+    const [supplierAvailability, setSupplierAvailability] = useState(false);
+
     const [supplierCostFedexDiaS, setSupplierCostFedexDiaS] = useState(false);
     const [supplierCostFedexEcon, setSupplierCostFedexEcon] = useState(false);
 
@@ -85,6 +102,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     useEffect(() => {
+        user.getIdToken().then(idToken => {
+            const xhr = new XMLHttpRequest();
+            xhr.responseType = 'json';
+            xhr.contentType = 'application/json';
+            xhr.open('POST', '/guia/cotizar');
+            xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+            xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    setSupplierAvailability(xhr.response);
+                }
+            };
+        });
+    }, []);
+
+    useEffect(() => {
         db.collection('guia')
             .doc(idGuiaGlobal)
             .onSnapshot(function getGuia(doc) {
@@ -117,6 +150,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         if (weight === '') return;
+        if (!supplierAvailability) return;
         let pricedWeight = weight;
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
         if (volumetricWeight > weight) {
@@ -124,13 +158,16 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         }
 
         const getInsurancePrice = company => {
-            const baseValue = contentValue !== '' ? parseInt(contentValue, 10) * 0.02 : 0;
+            if (contentValue === '') return 0;
+            const baseValue = parseInt(contentValue, 10) * 0.02;
             const extraValue = 40;
-            if (company == 'fedexDiaSiguiente' || company == 'fedexEconomico') {
+            if (company === 'fedexDiaSiguiente' || company === 'fedexEconomico') {
                 return baseValue + extraValue;
-            } else if (company == 'estafetaDiaSiguiente' || company == 'estafetaEconomico') {
+            }
+            if (company === 'estafetaDiaSiguiente' || company === 'estafetaEconomico') {
                 return baseValue;
             }
+            return 0;
         };
         db.collection('profiles')
             .where('ID', '==', user.uid)
@@ -151,30 +188,59 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             if (entrega === 'fedexDiaSiguiente')
                                 setSupplierCostFedexDiaS({
                                     id: doc.id,
-                                    precio: precioTotal + getInsurancePrice('fedexDiaSiguiente'),
+                                    precio:
+                                        precioTotal +
+                                        getInsurancePrice('fedexDiaSiguiente') +
+                                        (typeof supplierAvailability.fedexDiaSiguiente
+                                            .zonaExtendida !== 'undefined'
+                                            ? 150
+                                            : 0),
                                     seguro: getInsurancePrice('fedexDiaSiguiente'),
                                     guia: precioTotal,
+                                    zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
                                 });
                             if (entrega === 'fedexEconomico')
                                 setSupplierCostFedexEcon({
                                     id: doc.id,
-                                    precio: precioTotal + getInsurancePrice('fedexEconomico'),
+                                    precio:
+                                        precioTotal +
+                                        getInsurancePrice('fedexEconomico') +
+                                        (typeof supplierAvailability.fedexEconomico
+                                            .zonaExtendida !== 'undefined'
+                                            ? 150
+                                            : 0),
                                     seguro: getInsurancePrice('fedexEconomico'),
                                     guia: precioTotal,
+                                    zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
                                 });
                             if (entrega === 'estafetaDiaSiguiente')
                                 setSupplierCostEstafetaDiaS({
                                     id: doc.id,
-                                    precio: precioTotal + getInsurancePrice('estafetaDiaSiguiente'),
+                                    precio:
+                                        precioTotal +
+                                        getInsurancePrice('estafetaDiaSiguiente') +
+                                        (typeof supplierAvailability.estafetaDiaSiguiente
+                                            .zonaExtendida !== 'undefined'
+                                            ? 150
+                                            : 0),
                                     seguro: getInsurancePrice('estafetaDiaSiguiente'),
                                     guia: precioTotal,
+                                    zonaExt: !!supplierAvailability.estafetaDiaSiguiente
+                                        .zonaExtendida,
                                 });
                             if (entrega === 'estafetaEconomico')
                                 setSupplierCostEstafetaEcon({
                                     id: doc.id,
-                                    precio: precioTotal + getInsurancePrice('estafetaEconomico'),
+                                    precio:
+                                        precioTotal +
+                                        getInsurancePrice('estafetaEconomico') +
+                                        (typeof supplierAvailability.estafetaEconomico
+                                            .zonaExtendida !== 'undefined'
+                                            ? 150
+                                            : 0),
                                     seguro: getInsurancePrice('estafetaEconomico'),
                                     guia: precioTotal,
+                                    zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
                                 });
                             return;
                         }
@@ -226,39 +292,136 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         if (entrega === 'fedexDiaSiguiente')
                             setSupplierCostFedexDiaS({
                                 id: tarifa.id,
-                                precio: precio + getInsurancePrice('fedexDiaSiguiente'),
+                                precio:
+                                    precio +
+                                    getInsurancePrice('fedexDiaSiguiente') +
+                                    (typeof supplierAvailability.fedexDiaSiguiente.zonaExtendida !==
+                                    'undefined'
+                                        ? 150
+                                        : 0),
                                 seguro: getInsurancePrice('fedexDiaSiguiente'),
                                 cargoExtra,
                                 guia,
+                                zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
                             });
                         if (entrega === 'fedexEconomico')
                             setSupplierCostFedexEcon({
                                 id: tarifa.id,
-                                precio: precio + getInsurancePrice('fedexEconomico'),
+                                precio:
+                                    precio +
+                                    getInsurancePrice('fedexEconomico') +
+                                    (typeof supplierAvailability.fedexEconomico.zonaExtendida !==
+                                    'undefined'
+                                        ? 150
+                                        : 0),
                                 seguro: getInsurancePrice('fedexEconomico'),
                                 cargoExtra,
                                 guia,
+                                zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
                             });
                         if (entrega === 'estafetaDiaSiguiente')
                             setSupplierCostEstafetaDiaS({
                                 id: tarifa.id,
-                                precio: precio + getInsurancePrice('estafetaDiaSiguiente'),
+                                precio:
+                                    precio +
+                                    getInsurancePrice('estafetaDiaSiguiente') +
+                                    (typeof supplierAvailability.estafetaDiaSiguiente
+                                        .zonaExtendida !== 'undefined'
+                                        ? 150
+                                        : 0),
                                 seguro: getInsurancePrice('estafetaDiaSiguiente'),
                                 cargoExtra,
                                 guia,
+                                zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
                             });
                         if (entrega === 'estafetaEconomico')
                             setSupplierCostEstafetaEcon({
                                 id: tarifa.id,
-                                precio: precio + getInsurancePrice('estafetaEconomico'),
+                                precio:
+                                    precio +
+                                    getInsurancePrice('estafetaEconomico') +
+                                    (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
+                                    'undefined'
+                                        ? 150
+                                        : 0),
                                 seguro: getInsurancePrice('estafetaEconomico'),
                                 cargoExtra,
                                 guia,
+                                zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
                             });
                     });
                 });
             });
-    }, [weight, quantity, contentValue]);
+    }, [weight, quantity, contentValue, supplierAvailability]);
+
+    const supplierCard = (proveedor, tipoEnvio, entrega, costos) => (
+        <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
+            {proveedor === 'fedex' && <img src="/assets/fedex.png" alt="Fedex" />}
+            {proveedor === 'estafeta' && <img src="/assets/estafeta.png" alt="Estafeta" />}
+            <h6
+                style={{
+                    color: 'gray',
+                    fontWeight: 'bold',
+                    marginTop: '2rem',
+                    marginBottom: '0.5rem',
+                }}
+            >
+                Entrega Estimada
+            </h6>
+            <p>{entrega}</p>
+            <h6
+                style={{
+                    color: 'gray',
+                    fontWeight: 'bold',
+                    marginTop: '0.5rem',
+                    marginBottom: '0.5rem',
+                }}
+            >
+                Detalles
+            </h6>
+            <PriceContainer>
+                <PriceLabel>Tarifa Base:</PriceLabel>
+                <PriceNumber>{formatMoney(costos.guia)}</PriceNumber>
+            </PriceContainer>
+            {costos && (
+                <>
+                    {costos.cargoExtra && (
+                        <PriceContainer>
+                            <PriceLabel>Kg adicionales:</PriceLabel>
+                            <PriceNumber>{formatMoney(costos.cargoExtra)}</PriceNumber>
+                        </PriceContainer>
+                    )}
+                    {costos.seguro > 0 && (
+                        <PriceContainer>
+                            <PriceLabel>Cargo por Seguro:</PriceLabel>
+                            <PriceNumber>{formatMoney(costos.seguro)}</PriceNumber>
+                        </PriceContainer>
+                    )}
+                    {costos.zonaExt && (
+                        <PriceContainer>
+                            <PriceLabel>Zona Extendida:</PriceLabel>
+                            <PriceNumber>{formatMoney(150)}</PriceNumber>
+                        </PriceContainer>
+                    )}
+                    <br />
+                    <PriceContainer>
+                        <PriceLabel>Subtotal:</PriceLabel>
+                        <PriceNumber>{formatMoney(costos.precio * 0.862)}</PriceNumber>
+                    </PriceContainer>
+                    <PriceContainer>
+                        <PriceLabel>IVA:</PriceLabel>
+                        <PriceNumber>{formatMoney(costos.precio * 0.138)}</PriceNumber>
+                    </PriceContainer>
+                    <h1> {formatMoney(costos.precio)}</h1>
+                    <Button
+                        label="Elegir"
+                        variant="brand"
+                        onClick={() => registerService(proveedor, tipoEnvio, costos)}
+                    />
+                </>
+            )}
+        </Card>
+    );
 
     return (
         <>
@@ -298,136 +461,43 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             <StyledError>
                 {error && <div className="alert-error">No tienes el saldo suficiente</div>}
             </StyledError>
-            <StyledPaneContainer style={{ justifyContent: 'center' }}>
-                <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
-                    <h3>Fedex</h3>
-                    <h4>Entrega Estimada</h4>
-                    <DetailsLabel>Día siguiente</DetailsLabel>
-                    <h4>Detalles</h4>
-                    <DetailsLabel>Entrega a Domicilio</DetailsLabel>
-                    <DetailsLabel>Guía: ${supplierCostFedexDiaS.guia}</DetailsLabel>
-                    {supplierCostFedexDiaS && (
-                        <>
-                            {supplierCostFedexDiaS.cargoExtra && (
-                                <DetailsLabel>
-                                    Kg adicionales: ${supplierCostFedexDiaS.cargoExtra}
-                                </DetailsLabel>
-                            )}
-                            {supplierCostFedexDiaS.seguro > 0 && (
-                                <DetailsLabel>
-                                    Cargo por Seguro: ${supplierCostFedexDiaS.seguro}
-                                </DetailsLabel>
-                            )}
-                            <h1> ${supplierCostFedexDiaS.precio}</h1>
-                            <Button
-                                label="Elegir"
-                                variant="brand"
-                                onClick={() =>
-                                    registerService('fedex', 'DiaSiguiente', supplierCostFedexDiaS)
-                                }
-                            />
-                        </>
-                    )}
-                </Card>
-                <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
-                    <h3>Fedex</h3>
-                    <h4>Entrega Estimada</h4>
-                    <DetailsLabel>3 a 5 días hábiles</DetailsLabel>
-                    <h4>Detalles</h4>
-                    <DetailsLabel>Entrega a Domicilio</DetailsLabel>
-                    <DetailsLabel>Guía: ${supplierCostFedexEcon.guia}</DetailsLabel>
-                    {supplierCostFedexEcon && (
-                        <>
-                            {supplierCostFedexEcon.cargoExtra && (
-                                <DetailsLabel>
-                                    Kg adicionales: ${supplierCostFedexEcon.cargoExtra}
-                                </DetailsLabel>
-                            )}
-                            {supplierCostFedexEcon.seguro > 0 && (
-                                <DetailsLabel>
-                                    Cargo por Seguro: ${supplierCostFedexEcon.seguro}
-                                </DetailsLabel>
-                            )}
-                            <h1> ${supplierCostFedexEcon.precio}</h1>
-                            <Button
-                                label="Elegir"
-                                variant="brand"
-                                onClick={() =>
-                                    registerService('fedex', 'Economico', supplierCostFedexEcon)
-                                }
-                            />
-                        </>
-                    )}
-                </Card>
-                <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
-                    <h3>Estafeta</h3>
-                    <h4>Entrega Estimada</h4>
-                    <DetailsLabel>Día siguiente</DetailsLabel>
-                    <h4>Detalles</h4>
-                    <DetailsLabel>Entrega a Domicilio</DetailsLabel>
-                    <DetailsLabel>Guía: ${supplierCostEstafetaDiaS.guia}</DetailsLabel>
-                    {supplierCostEstafetaDiaS && (
-                        <>
-                            {supplierCostEstafetaDiaS.cargoExtra && (
-                                <DetailsLabel>
-                                    Kg adicionales: ${supplierCostEstafetaDiaS.cargoExtra}
-                                </DetailsLabel>
-                            )}
-                            {supplierCostEstafetaDiaS.seguro > 0 && (
-                                <DetailsLabel>
-                                    Cargo por Seguro: ${supplierCostEstafetaDiaS.seguro}
-                                </DetailsLabel>
-                            )}
-                            <h1>${supplierCostEstafetaDiaS.precio}</h1>
-                            <Button
-                                label="Elegir"
-                                variant="brand"
-                                onClick={() =>
-                                    registerService(
-                                        'estafeta',
-                                        'DiaSiguiente',
-                                        supplierCostEstafetaDiaS,
-                                    )
-                                }
-                            />
-                        </>
-                    )}
-                </Card>
-                <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
-                    <h3>Estafeta</h3>
-                    <h4>Entrega Estimada</h4>
-                    <DetailsLabel>3 a 5 días hábiles</DetailsLabel>
-                    <h4>Detalles</h4>
-                    <DetailsLabel>Entrega a Domicilio</DetailsLabel>
-                    <DetailsLabel>Guía: ${supplierCostEstafetaEcon.guia}</DetailsLabel>
-                    {supplierCostEstafetaEcon && (
-                        <>
-                            {supplierCostEstafetaEcon.cargoExtra && (
-                                <DetailsLabel>
-                                    Kg adicionales: ${supplierCostEstafetaEcon.cargoExtra}
-                                </DetailsLabel>
-                            )}
-                            {supplierCostEstafetaEcon.seguro > 0 && (
-                                <DetailsLabel>
-                                    Cargo por Seguro: ${supplierCostEstafetaEcon.seguro}
-                                </DetailsLabel>
-                            )}
-                            <h1>${supplierCostEstafetaEcon.precio}</h1>
-                            <Button
-                                label="Elegir"
-                                variant="brand"
-                                onClick={() =>
-                                    registerService(
-                                        'estafeta',
-                                        'Economico',
-                                        supplierCostEstafetaEcon,
-                                    )
-                                }
-                            />
-                        </>
-                    )}
-                </Card>
-            </StyledPaneContainer>
+            {!supplierAvailability && <h1>Obteniendo precios...</h1>}
+            {supplierAvailability && (
+                <StyledPaneContainer style={{ justifyContent: 'center' }}>
+                    {supplierAvailability.fedexDiaSiguiente &&
+                        supplierCostFedexDiaS.guia &&
+                        supplierCard(
+                            'fedex',
+                            'DiaSiguiente',
+                            'Día Siguiente',
+                            supplierCostFedexDiaS,
+                        )}
+                    {supplierAvailability.fedexEconomico &&
+                        supplierCostFedexEcon.guia &&
+                        supplierCard(
+                            'fedex',
+                            'Economico',
+                            '3 a 5 días hábiles',
+                            supplierCostFedexEcon,
+                        )}
+                    {supplierAvailability.estafetaDiaSiguiente &&
+                        supplierCostEstafetaDiaS.guia &&
+                        supplierCard(
+                            'estafeta',
+                            'DiaSiguiente',
+                            'Día Siguiente',
+                            supplierCostEstafetaDiaS,
+                        )}
+                    {supplierAvailability.estafetaEconomico &&
+                        supplierCostEstafetaEcon.guia &&
+                        supplierCard(
+                            'estafeta',
+                            'Economico',
+                            '3 a 5 días hábiles',
+                            supplierCostEstafetaEcon,
+                        )}
+                </StyledPaneContainer>
+            )}
         </>
     );
 };

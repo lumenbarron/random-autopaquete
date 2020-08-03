@@ -16,6 +16,10 @@
                 "function": "estafeta-create"
             },
             {
+                "source": "/guia/cotizar",
+                "function": "cotizarGuia"
+            },
+            {
                 "source": "/contacto/send",
                 "function": "email-send"
             },

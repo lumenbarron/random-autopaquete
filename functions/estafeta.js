@@ -4,6 +4,102 @@ const secure = require('./secure');
 const { getGuiaById, saveLabel, saveError, checkBalance } = require('./guia');
 const { admin } = require('./admin');
 
+exports.rate = async function rateEstafeta(uid, guiaId) {
+    const guia = await getGuiaById(uid, guiaId);
+    if (!guia) {
+        return false;
+    }
+    if (guia.status !== 'completed') {
+        return false;
+    }
+
+    const senderAddress = guia.sender_addresses;
+    const receiverAddress = guia.receiver_addresses;
+    const packaging = guia.package;
+
+    const quantity = parseInt(packaging.quantity, 10);
+
+    if (Number.isNaN(quantity) || quantity === 0) {
+        return false;
+    }
+
+    const db = admin.firestore();
+    const supplierQuery = await db
+        .collection('suppliers_configuration')
+        .where('supplier', '==', 'estafeta')
+        .get();
+
+    const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
+    if (!supplierData) {
+        return false;
+    }
+    const isProd = supplierData.type === 'prod';
+
+    let url;
+
+    if (isProd) {
+        url = 'https://frecuenciacotizador.estafeta.com/Service.asmx?WSDL';
+    } else {
+        url = 'https://frecuenciacotizador.estafeta.com/Service.asmx?WSDL';
+    }
+
+    const requestArgs = {
+        idusuario: '1',
+        usuario: 'AdminUser',
+        contra: ',1,B(vVi',
+        esFrecuencia: true,
+        esLista: true,
+        tipoEnvio: {
+            esPaquete: true,
+            Largo: packaging.depth,
+            Peso: packaging.weight,
+            Alto: packaging.height,
+            Ancho: packaging.width,
+        },
+        datosOrigen: {
+            string: senderAddress.codigo_postal,
+        },
+        datosDestino: {
+            string: receiverAddress.codigo_postal,
+        },
+    };
+
+    const clientPromise = new Promise(resolve => {
+        soap.createClient(url, {}, function soapReq(err, client) {
+            resolve(client);
+        });
+    });
+
+    const client = await clientPromise;
+
+    const result = await client.Service.ServiceSoap.FrecuenciaCotizador(requestArgs);
+
+    const { result: jsonResult } = JSON.parse(JSON.stringify(result));
+    const {
+        FrecuenciaCotizadorResult: { Respuesta },
+    } = jsonResult;
+
+    const notSupported = Respuesta[0].Error !== '000';
+    if (notSupported) {
+        return { estafetaEconomico: false, estafetaDiaSiguiente: false };
+    }
+    const { TipoServicio: servicios } = Respuesta[0].TipoServicio;
+    const terrestre = servicios.find(servicio => servicio.DescripcionServicio === 'Terrestre');
+    const diaSig = servicios.find(servicio => servicio.DescripcionServicio === 'Dia Sig.');
+    const zonaExt = Respuesta[0].CostoReexpedicion !== 'No';
+    if (zonaExt) {
+        return {
+            estafetaEconomico: terrestre ? { zonaExtendida: true } : false,
+            estafetaDiaSiguiente: diaSig ? { zonaExtendida: true } : false,
+        };
+    }
+
+    return {
+        estafetaEconomico: typeof terrestre !== 'undefined',
+        estafetaDiaSiguiente: typeof diaSig !== 'undefined',
+    };
+};
+
 exports.create = functions.https.onRequest(async (req, res) => {
     const contentType = req.get('content-type');
     if (!contentType && contentType !== 'application/json') {
