@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const StyledContact = styled.div`
     flex: 1 1;
-    background-color: #f7ece2;
+    background-color: #f7f7f7;
     display: flex;
     -ms-flex-pack: left;
     justify-content: left;
