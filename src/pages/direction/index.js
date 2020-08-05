@@ -11,7 +11,7 @@ import {
 } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledDirection, DirectionContainer } from './styled';
 import OrigenComponent from '../../pages/send/origen';
@@ -116,6 +116,18 @@ export default function DirectionPage() {
         setReceiverAddresses(data);
     }
 
+    const deleteAddress = idDoc => {
+        db.collection('sender_addresses')
+            .doc(idDoc)
+            .delete()
+            .then(function() {
+                console.log('Document successfully deleted!', idDoc);
+            })
+            .catch(function(error) {
+                console.error('Error removing document: ', error);
+            });
+    };
+
     function mapAddresses(address, idx) {
         return {
             id: address.id,
@@ -126,6 +138,7 @@ export default function DirectionPage() {
             neighborhood: address.neighborhood,
             street_number: address.street_number,
             phone: address.phone,
+            delete: <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteAddress(address.id)} />,
         };
     }
 
@@ -265,6 +278,7 @@ export default function DirectionPage() {
                                     <Column header="Colonia" field="neighborhood" />
                                     <Column header="Direccion" field="street_number" />
                                     <Column header="Telefono" field="phone" />
+                                    <Column header="" field="delete" defaultWidth={75} />
                                 </TableWithBrowserPagination>
                             </div>
                         </div>

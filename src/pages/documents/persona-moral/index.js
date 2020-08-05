@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Input, FileSelector } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
+import { useHistory } from 'react-router-dom';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled.js';
 
 const TabPersonaMoral = () => {
@@ -20,6 +21,7 @@ const TabPersonaMoral = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const storage = firebase.storage();
+    const history = useHistory();
 
     const user = useUser();
 
@@ -71,6 +73,7 @@ const TabPersonaMoral = () => {
                             .catch(function(error) {
                                 console.error('Error writing document: ', error);
                             });
+                        history.push('/mi-cuenta');
                     }
                 });
             });

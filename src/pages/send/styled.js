@@ -45,6 +45,10 @@ export const StyledPaneContainer = styled.div`
     flex-wrap: wrap;
     margin: 3rem;
 
+    .content-value {
+        justify-content: left !important;
+    }
+
     @media (max-width: 768px) {
         margin: 3rem auto;
     }

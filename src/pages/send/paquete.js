@@ -48,6 +48,7 @@ export const PaqueteComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState(false);
+    const [errorContentValue, setErrorContentValue] = useState(false);
     const [filter, setFilter] = useState('');
 
     const [name, setName] = useState('');
@@ -147,6 +148,11 @@ export const PaqueteComponent = ({ onSave }) => {
             if (!checkBoxSecure) {
                 setContentValue(0);
             }
+            if (contentValue > 100000) {
+                console.log('El monto máximo para asegurar un contenido es de $100,000');
+                setErrorContentValue(true);
+                return;
+            }
             const packageData = {
                 ID: user.uid,
                 name,
@@ -174,6 +180,7 @@ export const PaqueteComponent = ({ onSave }) => {
                     creation_date: creationDate.toLocaleDateString(),
                 },
             };
+            setErrorContentValue(false);
 
             onSave(packageData, packageGuiaData, checkBox, duplicateName, name);
         }
@@ -256,11 +263,16 @@ export const PaqueteComponent = ({ onSave }) => {
                         onChange={e => setContentDescription(e.target.value)}
                     />
                 </div>
-                <div className="rainbow-align-content_center rainbow-flex_wrap">
+                <div className="rainbow-align-content_center  rainbow-flex_wrap content-value">
                     <CheckboxToggle
                         id="asegurar"
                         label="¿Desea asegurar?"
-                        style={{ display: 'flex', flexDirection: 'column-reverse' }}
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column-reverse',
+                        }}
+                        className="checkbox-toggle"
+                        // style={{ flex: '1 1' }}
                         value={checkBoxSecure}
                         onChange={e => setCheckBoxSecure(e.target.checked)}
                     />
@@ -295,6 +307,11 @@ export const PaqueteComponent = ({ onSave }) => {
                 </div>
                 {error && (
                     <div className="alert-error">Todos los campos necesitan estar llenos</div>
+                )}
+                {errorContentValue && (
+                    <div className="alert-error">
+                        El monto máximo para asegurar un contenido es de $100,000
+                    </div>
                 )}
                 <Button
                     variant="brand"
