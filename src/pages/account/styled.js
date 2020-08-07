@@ -55,4 +55,9 @@ export const StyledAccount = styled.div`
     .whitespace {
         height: 25px;
     }
+
+    .alert-error {
+        color: red;
+        padding-left: 100px;
+    }
 `;

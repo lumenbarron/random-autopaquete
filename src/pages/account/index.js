@@ -12,6 +12,7 @@ const AccountPage = () => {
     const db = firebase.firestore();
 
     const [creditAmount, setCreditAmount] = useState();
+    const [creditAmountError, setCreditAmountError] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -25,7 +26,18 @@ const AccountPage = () => {
 
             return cancelSnapshot;
         }
+
         return null;
+    }, [creditAmount]);
+
+    //Mostrar mensaje cuando se tiene menos de $2000 en la cuenta
+    useEffect(() => {
+        if (creditAmount < 2000) {
+            setCreditAmountError(true);
+            console.log('Necesitas más feria morro');
+        } else {
+            setCreditAmountError(false);
+        }
     }, [creditAmount]);
 
     return (
@@ -35,6 +47,9 @@ const AccountPage = () => {
                     <h1>Créditos</h1>
                     <h2>Saldo Actual</h2>
                     <h2>{formatMoney(creditAmount, 2)}</h2>
+                    {creditAmountError && (
+                        <div className="alert-error">Su saldo esta por agotarse</div>
+                    )}
                 </div>
                 <Container className="imgtext">
                     <Row>
