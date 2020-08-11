@@ -81,6 +81,10 @@ export const StyledHome = styled.div`
       position:relative;
     }
 
+    .tiny > img{
+        width: 75%!important;
+    }
+
     li:nth-child(odd) .tcontent::after {
         content: url(/assets/timeline-dot.svg);
         position: absolute;
@@ -100,8 +104,8 @@ export const StyledHome = styled.div`
       margin: 12rem 5rem;
     }
 
-    ..timeline li:not(:first-child) .tcontent + div {
-      margin: 3rem 5rem;
+    .timeline li:not(:first-child) .tcontent + div {
+      margin: 4rem 5rem;
     }
 
     .tcontent + div {

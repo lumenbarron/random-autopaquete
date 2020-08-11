@@ -12,6 +12,12 @@ export const StyledQuote = styled.div`
         padding: 2rem;
     }
 
+    @media (min-width: 992px) {
+        .formulario {
+            padding: 2rem 2rem 2rem 5rem;
+        }
+    }
+
     label {
         padding: 1rem 0 0.25rem;
         font-size: 14px;
@@ -23,6 +29,7 @@ export const StyledQuote = styled.div`
         padding: 0.5rem 2.4rem 0.5rem 0.5rem;
         font-size: 18px;
         border-radius: 35px;
+        min-width: 338px;
     }
 
     input:hover {
@@ -35,7 +42,7 @@ export const StyledQuote = styled.div`
         border-radius: 20px;
         padding: 0.5rem;
         color: white;
-        margin: 2rem 0;
+        margin: 2.5rem 0;
         text-transform: uppercase;
     }
 
@@ -49,12 +56,15 @@ export const StyledQuote = styled.div`
         min-width: 600px;
     }
 
+    .envios {
+        padding-bottom: 1.3rem;
+    }
+
     .volumen-envios {
-        width: 24rem;
+        width: 100%;
         border-radius: 1rem;
         font-size: 17px;
         height: 2.5rem;
-        padding: 7px;
     }
 
     .white-space {

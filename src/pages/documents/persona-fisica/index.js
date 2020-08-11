@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Input, FileSelector, DatePicker } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
@@ -35,6 +35,26 @@ const TabPersonaFisica = () => {
     let urlDomicilio = '';
     let urlIne = '';
     let urlFiscal = '';
+
+    useEffect(() => {
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    setName(doc.data().nombre_fiscal);
+                    setAddress(doc.data().direccion);
+                    setPhone(doc.data().telefono);
+                    setRFC(doc.data().RFC);
+                    // setDate(doc.data().Fecha);
+                    setINENumber(doc.data().INENumero);
+                    console.log(doc.id, ' => ', doc.data());
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+    }, []);
 
     const saveData = () => {
         if (user) {
@@ -189,6 +209,7 @@ const TabPersonaFisica = () => {
                             id="nombreCompleto"
                             label="Nombre Completo"
                             name="nombreCompleto"
+                            value={name}
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
                             onChange={ev => setName(ev.target.value)}
@@ -197,6 +218,7 @@ const TabPersonaFisica = () => {
                             id="domicilio"
                             label="Nombre de la calle, número exterior e interior"
                             name="domicilio"
+                            value={address}
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
                             onChange={ev => setAddress(ev.target.value)}
@@ -207,6 +229,7 @@ const TabPersonaFisica = () => {
                             id="telefono"
                             label="Telefono"
                             name="telefono"
+                            value={phone}
                             className="rainbow-p-around_medium"
                             style={{ width: '45%' }}
                             onChange={ev => setPhone(ev.target.value)}
@@ -215,6 +238,7 @@ const TabPersonaFisica = () => {
                             id="rfc"
                             label="RFC"
                             name="rfc"
+                            value={RFC}
                             className="rainbow-p-around_medium"
                             style={{ width: '45%' }}
                             onChange={ev => setRFC(ev.target.value)}
@@ -235,6 +259,7 @@ const TabPersonaFisica = () => {
                             id="numeroINE"
                             label="Número de INE"
                             name="numeroINE"
+                            value={INEnumber}
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
                             onChange={ev => setINENumber(ev.target.value)}

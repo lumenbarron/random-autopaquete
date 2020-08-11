@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, FileSelector } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
@@ -32,6 +32,25 @@ const TabPersonaMoral = () => {
     let urlIne = '';
     let urlFiscal = '';
     let urlActaConstituva = '';
+
+    useEffect(() => {
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    setRazonSocial(doc.data().razon_social);
+                    setLegalName(doc.data().nombreRepresentanteLegal);
+                    setAdrress(doc.data().direccion);
+                    setPhone(doc.data().telefono);
+                    setRFC(doc.data().RFC);
+                    console.log(doc.id, ' => ', doc.data());
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+    }, []);
 
     const saveData = () => {
         if (user) {
@@ -207,6 +226,7 @@ const TabPersonaMoral = () => {
                             id="razonSocial"
                             label="Razón Social"
                             name="razonSocial"
+                            value={razonSocial}
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
                             onChange={ev => setRazonSocial(ev.target.value)}
@@ -215,6 +235,7 @@ const TabPersonaMoral = () => {
                             id="nombreRepLegal"
                             label="Nombre Representante Legal"
                             name="nombreRepLegal"
+                            value={legalName}
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
                             onChange={ev => setLegalName(ev.target.value)}
@@ -223,6 +244,7 @@ const TabPersonaMoral = () => {
                             id="domicilio"
                             label="Nombre de la calle, número exterior e interior"
                             name="domicilio"
+                            value={address}
                             className="rainbow-p-around_medium"
                             style={{ width: '90%' }}
                             onChange={ev => setAdrress(ev.target.value)}
@@ -233,6 +255,7 @@ const TabPersonaMoral = () => {
                             id="telefono"
                             label="Telefono"
                             name="telefono"
+                            value={phone}
                             className="rainbow-p-around_medium"
                             style={{ width: '45%' }}
                             onChange={ev => setPhone(ev.target.value)}
@@ -241,6 +264,7 @@ const TabPersonaMoral = () => {
                             id="rfc"
                             label="RFC"
                             name="rfc"
+                            value={RFC}
                             className="rainbow-p-around_medium"
                             style={{ width: '45%' }}
                             onChange={ev => setRFC(ev.target.value)}

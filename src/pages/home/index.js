@@ -9,7 +9,10 @@ import { Link } from 'react-router-dom';
 const HomePage = () => {
     return (
         <StyledHome>
-            <Container className="rainbow-m-vertical_medium" style={{ marginBottom: '-4rem' }}>
+            <Container
+                className="rainbow-m-vertical_medium"
+                style={{ marginBottom: '-4rem', marginTop: '3.5rem' }}
+            >
                 <Row className="content">
                     <Col>
                         <h1 className="title">
@@ -169,13 +172,13 @@ const HomePage = () => {
                     </li>
                     <li>
                         <div className="tcontent">
-                            <h3>Compara precios en los diferentes servicios de paqueteríasr</h3>
+                            <h3>Compara precios en los diferentes servicios de paqueterías</h3>
                             <p>
                                 Te brindamos la opción para que compares los precios reales del
                                 momento y elijas la mejor opción.
                             </p>
                         </div>
-                        <div className="time">
+                        <div className="time pt-5">
                             <img src="./assets/airplane.png" alt="airplane" />
                         </div>
                     </li>
@@ -187,7 +190,7 @@ const HomePage = () => {
                                 cumplir distintas funcionalidades dentro de la plataforma.
                             </p>
                         </div>
-                        <div className="time">
+                        <div className="time tiny">
                             <img src="./assets/user-box.png" alt="user-box" />
                         </div>
                     </li>

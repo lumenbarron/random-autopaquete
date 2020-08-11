@@ -107,6 +107,8 @@ export const OrigenComponent = ({ onSave }) => {
 
     let idGuia;
 
+    const [testError, setTestError] = useState('');
+
     useEffect(() => {
         if (user) {
             const reloadDirectios = () => {
@@ -192,17 +194,17 @@ export const OrigenComponent = ({ onSave }) => {
     }, []);
     const registerDirecction = () => {
         if (
-            name.trim() === '' ||
-            CP.trim() === '' ||
-            neighborhood.trim() === '' ||
-            country.trim() === '' ||
-            state.value.trim() === '' ||
-            streetNumber.trim() === '' ||
-            placeRef.trim() === '' ||
-            phone.trim() === ''
+            name.trim() === ''
+            // CP.trim() === '' ||
+            // neighborhood.trim() === '' ||
+            // country.trim() === '' ||
+            // state.value.trim() === '' ||
+            // streetNumber.trim() === '' ||
+            // placeRef.trim() === '' ||
+            // phone.trim() === ''
         ) {
-            // (Alert)console.log('Espacios vacios');
-            setError(true);
+            setTestError('nombre');
+            // setError(true);
             return;
         } else {
             setError(false);
@@ -313,6 +315,9 @@ export const OrigenComponent = ({ onSave }) => {
                         style={{ width: '70%' }}
                         onChange={e => setName(e.target.value)}
                     />
+                    {testError === 'nombre' ? (
+                        <div className="alert-error">Todos los campos necesitan estar llenosss</div>
+                    ) : null}
                     <Input
                         id="cp"
                         label="C.P."
