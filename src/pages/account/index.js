@@ -34,7 +34,6 @@ const AccountPage = () => {
     useEffect(() => {
         if (creditAmount < 2000) {
             setCreditAmountError(true);
-            console.log('Necesitas más feria morro');
         } else {
             setCreditAmountError(false);
         }
@@ -48,7 +47,7 @@ const AccountPage = () => {
                     <h2>Saldo Actual</h2>
                     <h2>{formatMoney(creditAmount, 2)}</h2>
                     {creditAmountError && (
-                        <div className="alert-error">Su saldo esta por agotarse</div>
+                        <div className="alert-error">Nota: Su saldo esta por agotarse</div>
                     )}
                 </div>
                 <Container className="imgtext">

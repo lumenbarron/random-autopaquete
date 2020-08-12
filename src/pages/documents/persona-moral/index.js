@@ -5,25 +5,35 @@ import { useHistory } from 'react-router-dom';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled.js';
 
 const TabPersonaMoral = () => {
+    const firebase = useFirebaseApp();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    const history = useHistory();
+    const user = useUser();
+
     const [razonSocial, setRazonSocial] = useState('');
     const [legalName, setLegalName] = useState('');
     const [address, setAdrress] = useState('');
     const [phone, setPhone] = useState('');
     const [RFC, setRFC] = useState('');
 
-    const [fileActaConstitutiva, setFileActaConstitutiva] = useState();
-    const [fileFiscal, setFileFiscal] = useState();
-    const [fileIne, setFileINE] = useState();
-    const [fileDomicilio, setFileAddress] = useState();
+    const [fileActaConstitutiva, setFileActaConstitutiva] = useState('');
+    const [fileFiscal, setFileFiscal] = useState('');
+    const [fileIne, setFileINE] = useState('');
+    const [fileDomicilio, setFileAddress] = useState('');
 
     const [error, setError] = useState(false);
+    const [errorRazonSocial, setErrorRazonSocial] = useState(false);
+    const [errorLegalName, setErrorLegalName] = useState(false);
+    const [errorAddress, setErrorAddress] = useState(false);
+    const [errorPhone, setErrorPhone] = useState(false);
+    const [errorRFC, setErrorRFC] = useState(false);
+    const [errorFileActaConstitutiva, setErrorFileActaConstitutiva] = useState(false);
+    const [errorFileFiscal, setErrorFileFiscal] = useState(false);
+    const [errorFileDomicilio, setErrorFileDomicilio] = useState(false);
+    const [errorFileIne, setErrorFileIne] = useState(false);
 
-    const firebase = useFirebaseApp();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-    const history = useHistory();
-
-    const user = useUser();
+    const [correctRegister, setCorrectRegister] = useState(false);
 
     let uploadedFiles = 0;
     let filesToUpload = 0;
@@ -44,7 +54,6 @@ const TabPersonaMoral = () => {
                     setAdrress(doc.data().direccion);
                     setPhone(doc.data().telefono);
                     setRFC(doc.data().RFC);
-                    console.log(doc.id, ' => ', doc.data());
                 });
             })
             .catch(function(error) {
@@ -92,7 +101,9 @@ const TabPersonaMoral = () => {
                             .catch(function(error) {
                                 console.error('Error writing document: ', error);
                             });
-                        history.push('/mi-cuenta');
+                        setTimeout(function() {
+                            history.push('/mi-cuenta');
+                        }, 1000);
                     }
                 });
             });
@@ -138,19 +149,74 @@ const TabPersonaMoral = () => {
 
     const register = e => {
         e.preventDefault();
-
-        if (
-            razonSocial.trim() === '' ||
-            legalName.trim() === '' ||
-            address.trim() === '' ||
-            RFC.trim() === '' ||
-            phone.trim() === ''
-        ) {
+        if (razonSocial.trim() === '') {
+            setErrorRazonSocial(true);
             setError(true);
             return;
+        } else {
+            setErrorRazonSocial(false);
+        }
+        if (legalName.trim() === '') {
+            setErrorLegalName(true);
+            setError(true);
+            return;
+        } else {
+            setErrorLegalName(false);
+        }
+        if (address.trim() === '') {
+            setErrorAddress(true);
+            setError(true);
+            console.log(1);
+            return;
+        } else {
+            setErrorAddress(false);
+        }
+        if (phone.trim() === '') {
+            setErrorPhone(true);
+            setError(true);
+            return;
+        } else {
+            setErrorPhone(false);
+        }
+        if (RFC.trim() === '') {
+            setErrorRFC(true);
+            setError(true);
+            return;
+        } else {
+            setErrorRFC(false);
+        }
+
+        if (fileActaConstitutiva === '' || fileActaConstitutiva.length === 0) {
+            setErrorFileActaConstitutiva(true);
+            setError(true);
+            return;
+        } else {
+            setErrorFileActaConstitutiva(false);
+        }
+        if (fileFiscal === '' || fileFiscal.length === 0) {
+            setErrorFileFiscal(true);
+            setError(true);
+            return;
+        } else {
+            setErrorFileFiscal(false);
+        }
+        if (fileDomicilio === '' || fileDomicilio.length === 0) {
+            setErrorFileDomicilio(true);
+            setError(true);
+            return;
+        } else {
+            setErrorFileDomicilio(false);
+        }
+        if (fileIne === '' || fileIne.length === 0) {
+            setErrorFileIne(true);
+            setError(true);
+            return;
+        } else {
+            setErrorFileIne(false);
         }
 
         setError(false);
+        setCorrectRegister(true);
 
         let fileName = '';
         let filePath = '';
@@ -227,7 +293,9 @@ const TabPersonaMoral = () => {
                             label="Razón Social"
                             name="razonSocial"
                             value={razonSocial}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${
+                                errorRazonSocial ? 'empty-space' : ''
+                            }`}
                             style={{ width: '90%' }}
                             onChange={ev => setRazonSocial(ev.target.value)}
                         />
@@ -236,7 +304,9 @@ const TabPersonaMoral = () => {
                             label="Nombre Representante Legal"
                             name="nombreRepLegal"
                             value={legalName}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${
+                                errorLegalName ? 'empty-space' : ''
+                            }`}
                             style={{ width: '90%' }}
                             onChange={ev => setLegalName(ev.target.value)}
                         />
@@ -245,7 +315,9 @@ const TabPersonaMoral = () => {
                             label="Nombre de la calle, número exterior e interior"
                             name="domicilio"
                             value={address}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${
+                                errorAddress ? 'empty-space' : ''
+                            }`}
                             style={{ width: '90%' }}
                             onChange={ev => setAdrress(ev.target.value)}
                         />
@@ -256,7 +328,7 @@ const TabPersonaMoral = () => {
                             label="Telefono"
                             name="telefono"
                             value={phone}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${errorPhone ? 'empty-space' : ''}`}
                             style={{ width: '45%' }}
                             onChange={ev => setPhone(ev.target.value)}
                         />
@@ -265,13 +337,15 @@ const TabPersonaMoral = () => {
                             label="RFC"
                             name="rfc"
                             value={RFC}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${errorRFC ? 'empty-space' : ''}`}
                             style={{ width: '45%' }}
                             onChange={ev => setRFC(ev.target.value)}
                         />
                     </div>
                     <FileSelector
-                        className="rainbow-p-horizontal_medium rainbow-m_auto"
+                        className={`rainbow-p-horizontal_medium rainbow-m_auto ${
+                            errorFileActaConstitutiva ? 'empty-file' : ''
+                        }`}
                         label="Acta Constitutiva"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%', marginBottom: '1rem' }}
@@ -280,21 +354,27 @@ const TabPersonaMoral = () => {
                 </div>
                 <div style={{ flex: '1 1', textAlign: 'center' }}>
                     <FileSelector
-                        className="rainbow-p-horizontal_medium rainbow-m_auto"
+                        className={`rainbow-p-horizontal_medium rainbow-m_auto ${
+                            errorFileFiscal ? 'empty-file' : ''
+                        }`}
                         label="Constancia de Situación Fiscal"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
                         onChange={setFileFiscal}
                     />
                     <FileSelector
-                        className="rainbow-p-horizontal_medium rainbow-m_auto"
+                        className={`rainbow-p-horizontal_medium rainbow-m_auto ${
+                            errorFileDomicilio ? 'empty-file' : ''
+                        }`}
                         label="Comprobante de domicilio"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
                         onChange={setFileAddress}
                     />
                     <FileSelector
-                        className="rainbow-p-horizontal_medium rainbow-m_auto"
+                        className={`rainbow-p-horizontal_medium rainbow-m_auto ${
+                            errorFileIne ? 'empty-file' : ''
+                        }`}
                         label="Foto de INE Representante Legal"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
@@ -304,9 +384,8 @@ const TabPersonaMoral = () => {
                         Al enviar tu documentación aceptas los términos y condiciones y el aviso de
                         privacidad
                     </h5>
-                    {error && (
-                        <div className="alert-error">Todos los campos necesitan estar llenos</div>
-                    )}
+                    {error && <div className="alert-error">Completar los campos marcados</div>}
+                    {correctRegister && <div className="text-success">Registro completo</div>}
                     <StyledSubmit
                         className="rainbow-m-around_medium"
                         type="submit"

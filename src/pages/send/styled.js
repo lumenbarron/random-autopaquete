@@ -49,6 +49,10 @@ export const StyledPaneContainer = styled.div`
         justify-content: left !important;
     }
 
+    .empty-space div > input {
+        border: 1.5px solid #ab0000 !important;
+    }
+
     @media (max-width: 768px) {
         margin: 3rem auto;
     }

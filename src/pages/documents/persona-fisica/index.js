@@ -14,11 +14,22 @@ const TabPersonaFisica = () => {
     const [date, setDate] = useState('');
     const [INEnumber, setINENumber] = useState('');
 
-    const [fileFiscal, setFileFiscal] = useState();
-    const [fileIne, setFileINE] = useState();
-    const [fileDomicilio, setFileAddress] = useState();
+    const [fileFiscal, setFileFiscal] = useState('');
+    const [fileIne, setFileINE] = useState('');
+    const [fileDomicilio, setFileAddress] = useState('');
 
     const [error, setError] = useState(false);
+    const [errorName, setErrorName] = useState(false);
+    const [errorAddress, setErrorAddress] = useState(false);
+    const [errorPhone, setErrorPhone] = useState(false);
+    const [errorRFC, setErrorRFC] = useState(false);
+    const [errorDate, setErrorDate] = useState(false);
+    const [errorINENumber, setErrorINENumber] = useState(false);
+    const [errorFileFiscal, setErrorFileFiscal] = useState(false);
+    const [errorFileIne, setErrorFileIne] = useState(false);
+    const [errorFileDomicilio, setErrorFileDomicilio] = useState(false);
+
+    const [correctRegister, setCorrectRegister] = useState(false);
 
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -48,7 +59,6 @@ const TabPersonaFisica = () => {
                     setRFC(doc.data().RFC);
                     // setDate(doc.data().Fecha);
                     setINENumber(doc.data().INENumero);
-                    console.log(doc.id, ' => ', doc.data());
                 });
             })
             .catch(function(error) {
@@ -88,13 +98,15 @@ const TabPersonaFisica = () => {
 
                         profilesCollectionAdd
                             .then(function() {
-                                console.log('Document successfully written!');
+                                setCorrectRegister(true);
                             })
                             .catch(function(error) {
-                                console.error('Error writing document: ', error);
+                                setCorrectRegister(false);
                             });
 
-                        history.push('/mi-cuenta');
+                        setTimeout(function() {
+                            history.push('/mi-cuenta');
+                        }, 1000);
                     }
                 });
             });
@@ -132,31 +144,81 @@ const TabPersonaFisica = () => {
 
     const register = e => {
         e.preventDefault();
-        if (
-            name.trim() === '' ||
-            INEnumber.trim() === '' ||
-            address.trim() === '' ||
-            RFC.trim() === '' ||
-            date.trim() === '' ||
-            phone.trim() === ''
-        ) {
+        if (name.trim() === '') {
+            setErrorName(true);
             setError(true);
             return;
+        } else {
+            setErrorName(false);
+        }
+        if (address.trim() === '') {
+            setErrorAddress(true);
+            setError(true);
+            return;
+        } else {
+            setErrorAddress(false);
+        }
+        if (phone.trim() === '') {
+            setErrorPhone(true);
+            setError(true);
+            return;
+        } else {
+            setErrorPhone(false);
+        }
+        if (RFC.trim() === '') {
+            setErrorRFC(true);
+            setError(true);
+            return;
+        } else {
+            setErrorRFC(false);
+        }
+        if (String(date) === '') {
+            setErrorDate(true);
+            setError(true);
+            console.log(1);
+            return;
+        } else {
+            setErrorDate(false);
+        }
+        if (INEnumber.trim() === '') {
+            setErrorINENumber(true);
+            setError(true);
+            return;
+        } else {
+            setErrorINENumber(false);
+        }
+        if (fileFiscal === '' || fileFiscal.length === 0) {
+            setErrorFileFiscal(true);
+            setError(true);
+            return;
+        } else {
+            setErrorFileFiscal(false);
+        }
+        if (fileIne === '' || fileIne.length === 0) {
+            setErrorFileIne(true);
+            setError(true);
+            return;
+        } else {
+            setErrorFileIne(false);
+        }
+        if (fileDomicilio === '' || fileDomicilio.length === 0) {
+            setErrorFileDomicilio(true);
+            setError(true);
+            return;
+        } else {
+            setErrorFileDomicilio(false);
         }
 
         setError(false);
-
+        setCorrectRegister(true);
         let fileName = '';
         let filePath = '';
-
         filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
         filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
         filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
-
         if (fileDomicilio) {
             fileName = fileDomicilio[0].name;
             filePath = `documentation/${user.uid}/${fileName}`;
-
             firebase
                 .storage()
                 .ref(filePath)
@@ -166,7 +228,6 @@ const TabPersonaFisica = () => {
                     saveURL();
                 });
         }
-
         if (fileIne) {
             fileName = fileIne[0].name;
             filePath = `documentation/${user.uid}/${fileName}`;
@@ -179,7 +240,6 @@ const TabPersonaFisica = () => {
                     saveURL();
                 });
         }
-
         if (fileFiscal) {
             fileName = fileFiscal[0].name;
             filePath = `documentation/${user.uid}/${fileName}`;
@@ -193,8 +253,6 @@ const TabPersonaFisica = () => {
                 });
         }
     };
-
-    console.log();
 
     return (
         <StyledTabContent
@@ -210,7 +268,7 @@ const TabPersonaFisica = () => {
                             label="Nombre Completo"
                             name="nombreCompleto"
                             value={name}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${errorName ? 'empty-space' : ''}`}
                             style={{ width: '90%' }}
                             onChange={ev => setName(ev.target.value)}
                         />
@@ -219,7 +277,9 @@ const TabPersonaFisica = () => {
                             label="Nombre de la calle, número exterior e interior"
                             name="domicilio"
                             value={address}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${
+                                errorAddress ? 'empty-space' : ''
+                            }`}
                             style={{ width: '90%' }}
                             onChange={ev => setAddress(ev.target.value)}
                         />
@@ -230,7 +290,7 @@ const TabPersonaFisica = () => {
                             label="Telefono"
                             name="telefono"
                             value={phone}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${errorPhone ? 'empty-space' : ''}`}
                             style={{ width: '45%' }}
                             onChange={ev => setPhone(ev.target.value)}
                         />
@@ -239,7 +299,7 @@ const TabPersonaFisica = () => {
                             label="RFC"
                             name="rfc"
                             value={RFC}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${errorRFC ? 'empty-space' : ''}`}
                             style={{ width: '45%' }}
                             onChange={ev => setRFC(ev.target.value)}
                         />
@@ -248,7 +308,7 @@ const TabPersonaFisica = () => {
                         <DatePicker
                             id="fechaNacimiento"
                             name="fechaNacimiento"
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${errorDate ? 'empty-space' : ''}`}
                             value={date.date}
                             label="Fecha de nacimiento"
                             onChange={value => setDate({ date: value })}
@@ -260,7 +320,9 @@ const TabPersonaFisica = () => {
                             label="Número de INE"
                             name="numeroINE"
                             value={INEnumber}
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${
+                                errorINENumber ? 'empty-space' : ''
+                            }`}
                             style={{ width: '90%' }}
                             onChange={ev => setINENumber(ev.target.value)}
                         />
@@ -268,21 +330,27 @@ const TabPersonaFisica = () => {
                 </div>
                 <div style={{ flex: '1 1', textAlign: 'center' }}>
                     <FileSelector
-                        className="rainbow-p-horizontal_medium rainbow-m_auto"
+                        className={`rainbow-p-horizontal_medium rainbow-m_auto ${
+                            errorFileFiscal ? 'empty-file' : ''
+                        }`}
                         label="Constancia de Situación Fiscal (Opcional)"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
                         onChange={setFileFiscal}
                     />
                     <FileSelector
-                        className="rainbow-p-horizontal_medium rainbow-m_auto"
+                        className={`rainbow-p-horizontal_medium rainbow-m_auto ${
+                            errorFileIne ? 'empty-file' : ''
+                        }`}
                         label="Foto de INE"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
                         onChange={setFileINE}
                     />
                     <FileSelector
-                        className="rainbow-p-horizontal_medium rainbow-m_auto"
+                        className={`rainbow-p-horizontal_medium rainbow-m_auto ${
+                            errorFileDomicilio ? 'empty-file' : ''
+                        }`}
                         label="Comprobante de domicilio"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
@@ -292,9 +360,8 @@ const TabPersonaFisica = () => {
                         Al enviar tu documentación aceptas los términos y condiciones y el aviso de
                         privacidad
                     </h5>
-                    {error && (
-                        <div className="alert-error">Todos los campos necesitan estar llenos</div>
-                    )}
+                    {error && <div className="alert-error">Completar los campos marcados</div>}
+                    {correctRegister && <div className="text-success">Registro completo</div>}
                     <StyledSubmit className="rainbow-m-around_medium" type="submit">
                         Continuar
                     </StyledSubmit>

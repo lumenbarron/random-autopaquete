@@ -22,6 +22,14 @@ export const StyledTabContent = styled.div.attrs(props => {
     margin: auto;
     box-shadow: 0 1px 2px 0 #d7d9e2;
     display: flex;
+
+    .empty-space div > input {
+        border: 1.5px solid #ab0000 !important;
+    }
+
+    .empty-file > div {
+        border: 1.5px solid #ab0000 !important;
+    }
 `;
 
 export const StyledTabset = styled(Tabset)`

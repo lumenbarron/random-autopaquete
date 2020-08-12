@@ -41,7 +41,7 @@ const ContactPage = () => {
     const [pass, setPass] = useState();
 
     const user = useUser();
-
+    const userEmail = user.providerData[0].email;
     useEffect(() => {
         db.collection('email_configuration')
             .where('email', '==', 'contacto@autopaquete.com.mx')
@@ -110,6 +110,18 @@ const ContactPage = () => {
                             }
                             onChange={ev => setPhone(ev.target.value)}
                         />
+                        <Input
+                            className="rainbow-p-around_medium"
+                            style={inputStyles}
+                            label="Correo"
+                            value={userEmail}
+                            icon={
+                                <FontAwesomeIcon
+                                    icon={faEnvelope}
+                                    className="rainbow-color_gray-3"
+                                />
+                            }
+                        />
                     </div>
                     <div>
                         <Textarea
@@ -147,7 +159,7 @@ const ContactPage = () => {
                                 <ul>
                                     <li>
                                         <FontAwesomeIcon className="icon" icon={faEnvelope} />
-                                        atencion1@autopaquete.com
+                                        soporte.logistica1@autopaquete.com
                                     </li>
                                     <li>
                                         <FontAwesomeIcon className="icon" icon={faPhoneAlt} />

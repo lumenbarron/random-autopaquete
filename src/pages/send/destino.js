@@ -86,6 +86,16 @@ export const DestinoComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState(false);
+    const [errorName, setErrorName] = useState(false);
+    const [errorCP, setErrorCP] = useState(false);
+    const [errorStreetNumber, setErrorStreetNumber] = useState(false);
+    const [errorNeighborhood, setErrorNeighborhood] = useState(false);
+    const [errorCountry, setErrorCountry] = useState(false);
+    const [errorState, setErrorState] = useState(false);
+    const [errorNumber, setErrorNumber] = useState(false);
+    const [errorPlaceRef, setErrorPlaceRef] = useState(false);
+    const [errorPhone, setErrorPhone] = useState(false);
+    const [errorCredits, setErrorCredits] = useState(false);
     const [filter, setFilter] = useState('');
 
     const [name, setName] = useState('');
@@ -170,18 +180,62 @@ export const DestinoComponent = ({ onSave }) => {
     }, [value]);
 
     const registerDirecction = () => {
-        if (
-            name.trim() === '' ||
-            CP.trim() === '' ||
-            neighborhood.trim() === '' ||
-            country.trim() === '' ||
-            state.value.trim() === '' ||
-            streetNumber.trim() === '' ||
-            placeRef.trim() === '' ||
-            phone.trim() === ''
-        ) {
+        if (name.trim() === '') {
+            setErrorName(true);
             setError(true);
             return;
+        } else {
+            setErrorName(false);
+            setError(true);
+        }
+        if (CP.trim() === '') {
+            setErrorCP(true);
+            setError(true);
+            return;
+        } else {
+            setErrorCP(false);
+        }
+        if (streetNumber.trim() === '') {
+            setErrorStreetNumber(true);
+            setError(true);
+            return;
+        } else {
+            setErrorStreetNumber(false);
+        }
+        if (neighborhood.trim() === '') {
+            setErrorNeighborhood(true);
+            setError(true);
+            return;
+        } else {
+            setErrorNeighborhood(false);
+        }
+        if (country.trim() === '') {
+            setErrorCountry(true);
+            setError(true);
+            return;
+        } else {
+            setErrorCountry(false);
+        }
+        if (state === '') {
+            setError(true);
+            setErrorState(true);
+            return;
+        } else {
+            setErrorState(false);
+        }
+        if (placeRef.trim() === '') {
+            setError(true);
+            setErrorPlaceRef(true);
+            return;
+        } else {
+            setErrorPlaceRef(false);
+        }
+        if (phone.trim() === '') {
+            setErrorPhone(true);
+            setError(true);
+            return;
+        } else {
+            setErrorPhone(false);
         }
 
         const directionData = {
@@ -245,7 +299,7 @@ export const DestinoComponent = ({ onSave }) => {
                         label="Nombre"
                         name="nombre"
                         value={name}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${errorName ? 'empty-space' : ''}`}
                         style={{ width: '70%' }}
                         onChange={e => setName(e.target.value)}
                     />
@@ -254,7 +308,7 @@ export const DestinoComponent = ({ onSave }) => {
                         label="C.P."
                         name="cp"
                         value={CP}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${errorCP ? 'empty-space' : ''}`}
                         style={{ width: '30%' }}
                         onChange={e => setCP(e.target.value)}
                     />
@@ -265,7 +319,9 @@ export const DestinoComponent = ({ onSave }) => {
                         label="Nombre de la calle, número exterior e interior"
                         name="domicilio"
                         value={streetNumber}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${
+                            errorStreetNumber ? 'empty-space' : ''
+                        }`}
                         style={{ flex: '1 1' }}
                         onChange={e => setStreetNumber(e.target.value)}
                     />
@@ -274,7 +330,9 @@ export const DestinoComponent = ({ onSave }) => {
                         label="Colonia"
                         name="colonia"
                         value={neighborhood}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${
+                            errorNeighborhood ? 'empty-space' : ''
+                        }`}
                         style={{ flex: '1 1' }}
                         onChange={e => setNeighborhood(e.target.value)}
                     />
@@ -285,7 +343,7 @@ export const DestinoComponent = ({ onSave }) => {
                         label="Ciudad"
                         name="ciudad"
                         value={country}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${errorCountry ? 'empty-space' : ''}`}
                         style={{ flex: '1 1' }}
                         onChange={e => setCountry(e.target.value)}
                     />
@@ -294,7 +352,7 @@ export const DestinoComponent = ({ onSave }) => {
                         label="Estado"
                         name="estado"
                         value={state}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${errorState ? 'empty-space' : ''}`}
                         style={{ flex: '1 1' }}
                         onChange={value => setState(value)}
                         required
@@ -308,7 +366,7 @@ export const DestinoComponent = ({ onSave }) => {
                         label="Referencias del Lugar"
                         name="referencia"
                         value={placeRef}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${errorPlaceRef ? 'empty-space' : ''}`}
                         style={{ flex: '2 2' }}
                         onChange={e => setPlaceRef(e.target.value)}
                     />
@@ -317,7 +375,7 @@ export const DestinoComponent = ({ onSave }) => {
                         label="Telefono"
                         name="telefono"
                         value={phone}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${errorPhone ? 'empty-space' : ''}`}
                         style={{ flex: '2 2' }}
                         onChange={e => setPhone(e.target.value)}
                     />
@@ -330,9 +388,7 @@ export const DestinoComponent = ({ onSave }) => {
                         />
                     </div>
                 </div>
-                {error && (
-                    <div className="alert-error">Todos los campos necesitan estar llenos</div>
-                )}
+                {error && <div className="alert-error pl-4">Completar los campos marcados</div>}
                 <Button
                     variant="brand"
                     className="rainbow-m-around_medium"

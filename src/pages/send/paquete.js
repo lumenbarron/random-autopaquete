@@ -47,8 +47,15 @@ export const PaqueteComponent = ({ onSave }) => {
     const db = firebase.firestore();
     const user = useUser();
 
-    const [error, setError] = useState(false);
+    const [error, setError] = useState();
+    const [errorName, setErrorName] = useState(false);
+    const [errorHeight, setErrorHeight] = useState(false);
+    const [errorWidth, setErrorWidth] = useState(false);
+    const [errorDepth, setErrorDepth] = useState(false);
+    const [errorWeight, setErrorWeight] = useState(false);
+    const [errorContentDescription, setErrorContentDescription] = useState(false);
     const [errorContentValue, setErrorContentValue] = useState(false);
+    const [errorContentValueEmpty, setErrorContentValueEmpty] = useState(false);
     const [filter, setFilter] = useState('');
 
     const [name, setName] = useState('');
@@ -133,17 +140,51 @@ export const PaqueteComponent = ({ onSave }) => {
     }, [value]);
 
     const registerDirecction = () => {
-        if (
-            name.trim() === '' ||
-            height.trim() === '' ||
-            width.trim() === '' ||
-            depth.trim() === '' ||
-            weight.trim() === '' ||
-            contentDescription.trim() === ''
-        ) {
+        if (name.trim() === '') {
             setError(true);
-        } else if (checkBoxSecure && contentValue.trim() === '') {
-            console.log('Espacios vacios (valor del contenido)');
+            setErrorName(true);
+            return;
+        } else {
+            setErrorName(false);
+        }
+        if (height.trim() === '') {
+            setError(true);
+            setErrorHeight(true);
+            return;
+        } else {
+            setErrorHeight(false);
+        }
+        if (width.trim() === '') {
+            setError(true);
+            setErrorWidth(true);
+            return;
+        } else {
+            setErrorWidth(false);
+        }
+        if (depth.trim() === '') {
+            setError(true);
+            setErrorDepth(true);
+            return;
+        } else {
+            setErrorDepth(false);
+        }
+        if (weight.trim() === '') {
+            setError(true);
+            setErrorWeight(true);
+            return;
+        } else {
+            setErrorWeight(false);
+        }
+        if (contentDescription.trim() === '') {
+            setError(true);
+            setErrorContentDescription(true);
+            return;
+        } else {
+            setErrorContentDescription(false);
+        }
+        if (checkBoxSecure && contentValue.trim() === '') {
+            setError(true);
+            setErrorContentValueEmpty(true);
         } else {
             if (!checkBoxSecure) {
                 setContentValue(0);
@@ -151,6 +192,7 @@ export const PaqueteComponent = ({ onSave }) => {
             if (contentValue > 100000) {
                 console.log('El monto máximo para asegurar un contenido es de $100,000');
                 setErrorContentValue(true);
+                setErrorContentValueEmpty(false);
                 return;
             }
             const packageData = {
@@ -205,7 +247,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         label="Nombre"
                         name="nombre"
                         value={name}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${errorName ? 'empty-space' : ''}`}
                         style={{ flex: '1 1', minWidth: '200px' }}
                         onChange={e => setName(e.target.value)}
                     />
@@ -216,7 +258,9 @@ export const PaqueteComponent = ({ onSave }) => {
                                 id="height"
                                 name="height"
                                 value={height}
-                                className="rainbow-p-around_medium"
+                                className={`rainbow-p-around_medium ${
+                                    errorHeight ? 'empty-space' : ''
+                                }`}
                                 style={{ width: '30%' }}
                                 onChange={e => setHeight(e.target.value)}
                             />
@@ -225,7 +269,9 @@ export const PaqueteComponent = ({ onSave }) => {
                                 id="width"
                                 name="width"
                                 value={width}
-                                className="rainbow-p-around_medium"
+                                className={`rainbow-p-around_medium ${
+                                    errorWidth ? 'empty-space' : ''
+                                }`}
                                 style={{ width: '30%' }}
                                 onChange={e => setWidth(e.target.value)}
                             />
@@ -234,7 +280,9 @@ export const PaqueteComponent = ({ onSave }) => {
                                 id="depth"
                                 name="depth"
                                 value={depth}
-                                className="rainbow-p-around_medium"
+                                className={`rainbow-p-around_medium ${
+                                    errorDepth ? 'empty-space' : ''
+                                }`}
                                 style={{ width: '30%' }}
                                 onChange={e => setDepth(e.target.value)}
                             />
@@ -248,7 +296,7 @@ export const PaqueteComponent = ({ onSave }) => {
                         label="Peso"
                         name="peso"
                         value={weight}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${errorWeight ? 'empty-space' : ''}`}
                         style={{ flex: '1 1' }}
                         onChange={e => setWeight(e.target.value)}
                     />
@@ -258,7 +306,9 @@ export const PaqueteComponent = ({ onSave }) => {
                         label="Descripción del Contenido"
                         name="contenido"
                         value={contentDescription}
-                        className="rainbow-p-around_medium"
+                        className={`rainbow-p-around_medium ${
+                            errorContentDescription ? 'empty-space' : ''
+                        }`}
                         style={{ flex: '1 1' }}
                         onChange={e => setContentDescription(e.target.value)}
                     />
@@ -281,7 +331,9 @@ export const PaqueteComponent = ({ onSave }) => {
                             id="valor"
                             label="Valor del Contenido"
                             name="valor"
-                            className="rainbow-p-around_medium"
+                            className={`rainbow-p-around_medium ${
+                                errorContentValueEmpty ? 'empty-space' : ''
+                            }`}
                             style={{ flex: '1 1' }}
                             onChange={e => setContentValue(e.target.value)}
                         />
@@ -305,14 +357,13 @@ export const PaqueteComponent = ({ onSave }) => {
                         onChange={e => setCheckBox(e.target.checked)}
                     />
                 </div>
-                {error && (
-                    <div className="alert-error">Todos los campos necesitan estar llenos</div>
-                )}
+                {error && <div className="alert-error pl-4">Completar los campos marcados</div>}
                 {errorContentValue && (
                     <div className="alert-error">
                         El monto máximo para asegurar un contenido es de $100,000
                     </div>
                 )}
+
                 <Button
                     variant="brand"
                     className="rainbow-m-around_medium"
