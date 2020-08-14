@@ -83,6 +83,7 @@ export const OrigenComponent = ({ onSave }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
+    const creationDate = new Date();
 
     const [error, setError] = useState(false);
 
@@ -118,9 +119,34 @@ export const OrigenComponent = ({ onSave }) => {
     const [userName, setUserName] = useState('');
     const [status, setStatus] = useState();
 
-    const creationDate = new Date();
+    const [currentDocId, setCurrentDocId] = useState('');
 
     let idGuia;
+
+    //Se busca los datos de envío (si hay algun registro activo)
+    // useEffect(() => {
+    //     if (user) {
+    //         if (currentDocId) {
+    //             db.collection('guia')
+    //                 .doc(currentDocId)
+    //                 .get()
+    //                 .then(function(doc) {
+    //                     if (doc.exists) {
+    //                         setName(doc.data().sender_addresses.name);
+    //                         set(doc.data().sender_addresses.name);
+    //                         setName(doc.data().sender_addresses.name);
+    //                         setName(doc.data().sender_addresses.name);
+    //                         setName(doc.data().sender_addresses.name);
+    //                         setName(doc.data().sender_addresses.name);
+    //                         setName(doc.data().sender_addresses.name);
+    //                     } else {
+    //                         // doc.data() will be undefined in this case
+    //                         console.log('No such document!');
+    //                     }
+    //                 });
+    //         }
+    //     }
+    // }, []);
 
     useEffect(() => {
         if (user) {
@@ -207,13 +233,13 @@ export const OrigenComponent = ({ onSave }) => {
     }, []);
 
     const registerDirecction = () => {
+        //Se validan todos los inputs uno por uno
         if (name.trim() === '') {
             setErrorName(true);
             setError(true);
             return;
         } else {
             setErrorName(false);
-            setError(true);
         }
         if (CP.trim() === '' || !cpRegex.test(CP)) {
             setErrorCP(true);
@@ -264,10 +290,10 @@ export const OrigenComponent = ({ onSave }) => {
         } else {
             setErrorPhone(false);
         }
-        // if (status !== 'Aprobado') {
-        //     setErrorCredits(true);
-        //     return;
-        // }
+        if (status !== 'Aprobado') {
+            setErrorCredits(true);
+            return;
+        }
 
         if (checkBox) {
             const duplicateName = directionData.map((searchName, idx) => {
@@ -279,6 +305,7 @@ export const OrigenComponent = ({ onSave }) => {
                 return;
             }
             setErrorNameDuplicate(false);
+            setError(false);
 
             const directionsCollectionAdd = db.collection('sender_addresses').add({
                 name,
@@ -325,7 +352,7 @@ export const OrigenComponent = ({ onSave }) => {
 
         directionsGuiasCollectionAdd
             .then(function(docRef) {
-                console.log('Document written with ID (Guía): ', docRef.id);
+                setCurrentDocId(docRef.id);
                 idGuia = docRef.id;
                 console.log('Se crea y se guarda el id de la guía', idGuia);
                 onSave({ idGuia });

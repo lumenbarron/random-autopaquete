@@ -24,6 +24,10 @@
                 "function": "email-send"
             },
             {
+                "source": "/documentacion/send",
+                "function": "newUser-send"
+            },
+            {
                 "source": "**",
                 "destination": "/index.html"
             }

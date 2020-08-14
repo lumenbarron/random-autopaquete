@@ -5,6 +5,7 @@ const secure = require('./secure');
 exports.estafeta = require('./estafeta');
 exports.fedex = require('./fedex');
 exports.email = require('./sendEmail');
+exports.newUser = require('./newUserRegister');
 
 exports.cotizarGuia = functions.https.onRequest(async (req, res) => {
     const profile = await secure.user(req);

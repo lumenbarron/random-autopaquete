@@ -49,7 +49,7 @@ const ContactPage = () => {
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     setHost(doc.data().host);
-                    setReceiverEmail(doc.data().email);
+                    setReceiverEmail(doc.data().emailConfig);
                     setPass(doc.data().password);
                 });
             })

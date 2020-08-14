@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ProgressIndicator, ProgressStep } from 'react-rainbow-components';
+import { ProgressIndicator, ProgressStep, Button } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { Link, useParams } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ import { DescargaComponent } from './descarga';
 import { StyledSendPage } from './styled';
 
 const SendPage = () => {
-    const [currentStepName, setCurrentStepName] = useState('destino');
+    const [currentStepName, setCurrentStepName] = useState('origen');
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const idGuiaGlobal = useRef(null);
@@ -34,6 +34,10 @@ const SendPage = () => {
     };
 
     const saveDestinationData = (directionData, directionGuiaData, checkBox) => {
+        if (idGuiaGlobal.current === null) {
+            console.log('Es necesario completar el primer paso');
+            return;
+        }
         // TODO: Guardar la info de la dirección a firestore (si fue solicitado)
         if (checkBox) {
             db.collection('receiver_addresses')
@@ -62,6 +66,11 @@ const SendPage = () => {
     };
 
     const savePackagingData = (packageData, packageGuiaData, checkBox) => {
+        if (idGuiaGlobal.current === null) {
+            console.log('Es necesario completar el primer paso');
+            return;
+        }
+
         // TODO: Guardar la info del paquete a firestore (si fue solicitado)
         if (checkBox) {
             db.collection('package')
@@ -121,9 +130,24 @@ const SendPage = () => {
             });
     };
 
-    const handleOnClick = ev => {
-        setCurrentStepName('name');
-        console.log(ev);
+    const handleNextClick = () => {
+        if (currentStepName === 'origen') {
+            setCurrentStepName('destino');
+        } else if (currentStepName === 'destino') {
+            setCurrentStepName('paquete');
+        }
+        // return setState(isNextDisabled: false );
+    };
+    const handleBackClick = () => {
+        if (currentStepName === 'descarga') {
+            setCurrentStepName('servicio');
+        } else if (currentStepName === 'servicio') {
+            setCurrentStepName('paquete');
+        } else if (currentStepName === 'paquete') {
+            setCurrentStepName('destino');
+        } else if (currentStepName === 'destino') {
+            setCurrentStepName('origen');
+        }
     };
 
     return (
@@ -136,6 +160,20 @@ const SendPage = () => {
                     <ProgressStep name="servicio" label="Servicio" />
                     <ProgressStep name="descarga" label="Descarga" />
                 </ProgressIndicator>
+                <div className="rainbow-m-top_xx-large rainbow-align-content_center rainbow-flex_wrap">
+                    <Button
+                        label="Atras"
+                        onClick={handleBackClick}
+                        variant="neutral"
+                        className="rainbow-m-horizontal_medium"
+                    />
+                    <Button
+                        label="Siguiente"
+                        onClick={handleNextClick}
+                        variant="brand"
+                        className="rainbow-m-horizontal_medium"
+                    />
+                </div>
                 {currentStepName === 'origen' && <OrigenComponent onSave={saveOriginData} />}
                 {currentStepName === 'destino' && <DestinoComponent onSave={saveDestinationData} />}
                 {currentStepName === 'paquete' && <PaqueteComponent onSave={savePackagingData} />}

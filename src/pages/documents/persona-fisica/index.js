@@ -13,6 +13,7 @@ const rfcRegex = RegExp(
 const ineRegex = RegExp(/^[0-9]{13}$/);
 
 const TabPersonaFisica = () => {
+    const [userName, setUserName] = useState('');
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
@@ -43,8 +44,9 @@ const TabPersonaFisica = () => {
 
     const storage = firebase.storage();
 
-    const user = useUser();
     const dateBorn = new Date(date.date);
+    const user = useUser();
+    const userEmail = user.providerData[0].email;
 
     let uploadedFiles = 0;
     let filesToUpload = 0;
@@ -59,6 +61,7 @@ const TabPersonaFisica = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    setUserName(doc.data().name);
                     setName(doc.data().nombre_fiscal);
                     setAddress(doc.data().direccion);
                     setPhone(doc.data().telefono);
@@ -109,6 +112,24 @@ const TabPersonaFisica = () => {
                             .catch(function(error) {
                                 setCorrectRegister(false);
                             });
+
+                        user.getIdToken().then(idToken => {
+                            const xhr = new XMLHttpRequest();
+                            xhr.responseType = 'json';
+                            xhr.contentType = 'application/json';
+                            // xhr.onload = () => {
+                            //     setSent(true);
+                            //     setSending(false);
+                            // };
+                            xhr.open('POST', '/documentacion/send');
+                            xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+                            xhr.send(
+                                JSON.stringify({
+                                    userName,
+                                    userEmail,
+                                }),
+                            );
+                        });
 
                         setTimeout(function() {
                             history.push('/mi-cuenta');

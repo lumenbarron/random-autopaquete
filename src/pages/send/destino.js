@@ -190,7 +190,6 @@ export const DestinoComponent = ({ onSave }) => {
             return;
         } else {
             setErrorName(false);
-            setError(true);
         }
         if (CP.trim() === '' || !cpRegex.test(CP)) {
             setErrorCP(true);
@@ -221,15 +220,15 @@ export const DestinoComponent = ({ onSave }) => {
             setErrorCountry(false);
         }
         if (state === '') {
-            setError(true);
             setErrorState(true);
+            setError(true);
             return;
         } else {
             setErrorState(false);
         }
         if (placeRef.trim() === '') {
-            setError(true);
             setErrorPlaceRef(true);
+            setError(true);
             return;
         } else {
             setErrorPlaceRef(false);
