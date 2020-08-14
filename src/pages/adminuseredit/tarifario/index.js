@@ -99,6 +99,8 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
     const [addKgError, setAddKgError] = useState(false);
     const [addKgErrorModal, setAddKgErrorModal] = useState();
 
+    const [maxValue, setMaxValue] = useState([]);
+
     const openModalExtra = () => {
         setIsOpenExtra(true);
     };
@@ -137,7 +139,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         // let key = label + idx;
 
         const { min, max, precio, key } = tarifa;
-
         return (
             <>
                 <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap" key={key}>
@@ -179,7 +180,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                 >
                     <h2 style={{ fontSize: '1.5rem', textAlign: 'center' }}>Cambia la tarifa</h2>
                     <div className="rainbow-p-horizontal_medium rainbow-m-vertical_large">
-                        De{' '}
+                        De
                         <InlineInput
                             value={minRateModal}
                             type="text"
@@ -383,12 +384,37 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
             });
     };
 
+    // El valor más alto del tarifario (por servicio)
+    useEffect(() => {
+        let tarifaMayor = 0;
+
+        tarifas.forEach(tarifa => {
+            tarifaMayor = tarifa.max > tarifaMayor ? tarifa.max : tarifaMayor;
+        });
+
+        setMaxValue(tarifaMayor + 1);
+    }, [tarifas]);
+    useEffect(() => {
+        setMinRate(maxValue);
+    }, [maxValue]);
+
+    if (isNaN(maxValue)) {
+        setMaxValue(0);
+    }
+
+    console.log(minRate);
+
     return (
         <StyledSection label={label}>
             {tarifasMap}
             <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap">
                 <div>
-                    De <InlineInput type="text" onChange={ev => setMinRate(ev.target.value)} />
+                    De
+                    <InlineInput
+                        value={parseInt(maxValue)}
+                        type="text"
+                        onChange={ev => setMinRate(ev.target.value)}
+                    />
                     Hasta
                     <InlineInput type="text" onChange={ev => setMaxRate(ev.target.value)} />
                     kg

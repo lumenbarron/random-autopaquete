@@ -4,6 +4,11 @@ import { useFirebaseApp, useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled.js';
 
+const phoneRegex = RegExp(/^[0-9]{10}$/);
+const rfcRegex = RegExp(
+    /^([A-ZÑ\x26]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1]))((-)?([A-Z\d]{3}))?$/,
+);
+
 const TabPersonaMoral = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -171,14 +176,14 @@ const TabPersonaMoral = () => {
         } else {
             setErrorAddress(false);
         }
-        if (phone.trim() === '') {
+        if (phone.trim() === '' || !phoneRegex.test(phone)) {
             setErrorPhone(true);
             setError(true);
             return;
         } else {
             setErrorPhone(false);
         }
-        if (RFC.trim() === '') {
+        if (RFC.trim() === '' || !rfcRegex.test(RFC)) {
             setErrorRFC(true);
             setError(true);
             return;
@@ -336,7 +341,7 @@ const TabPersonaMoral = () => {
                             id="rfc"
                             label="RFC"
                             name="rfc"
-                            value={RFC}
+                            value={RFC.toUpperCase()}
                             className={`rainbow-p-around_medium ${errorRFC ? 'empty-space' : ''}`}
                             style={{ width: '45%' }}
                             onChange={ev => setRFC(ev.target.value)}
@@ -384,7 +389,7 @@ const TabPersonaMoral = () => {
                         Al enviar tu documentación aceptas los términos y condiciones y el aviso de
                         privacidad
                     </h5>
-                    {error && <div className="alert-error">Completar los campos marcados</div>}
+                    {error && <div className="alert-error">corregir los campos marcados</div>}
                     {correctRegister && <div className="text-success">Registro completo</div>}
                     <StyledSubmit
                         className="rainbow-m-around_medium"

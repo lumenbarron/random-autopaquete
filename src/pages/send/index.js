@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ProgressIndicator, ProgressStep } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { OrigenComponent } from './origen';
 import { DestinoComponent } from './destino';
@@ -11,7 +11,7 @@ import { DescargaComponent } from './descarga';
 import { StyledSendPage } from './styled';
 
 const SendPage = () => {
-    const [currentStepName, setCurrentStepName] = useState('origen');
+    const [currentStepName, setCurrentStepName] = useState('destino');
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const idGuiaGlobal = useRef(null);
@@ -33,19 +33,9 @@ const SendPage = () => {
         setCurrentStepName('destino');
     };
 
-    const saveDestinationData = (
-        directionData,
-        directionGuiaData,
-        checkBox,
-        duplicateName,
-        name,
-    ) => {
+    const saveDestinationData = (directionData, directionGuiaData, checkBox) => {
         // TODO: Guardar la info de la dirección a firestore (si fue solicitado)
         if (checkBox) {
-            if (duplicateName.includes(name)) {
-                console.log('Necesitas poner un nombre diferente');
-                return;
-            }
             db.collection('receiver_addresses')
                 .add(directionData)
                 .then(function(docRef) {
@@ -71,13 +61,9 @@ const SendPage = () => {
         setCurrentStepName('paquete');
     };
 
-    const savePackagingData = (packageData, packageGuiaData, checkBox, duplicateName, name) => {
+    const savePackagingData = (packageData, packageGuiaData, checkBox) => {
         // TODO: Guardar la info del paquete a firestore (si fue solicitado)
         if (checkBox) {
-            if (duplicateName.includes(name)) {
-                console.log('Necesitas poner un nombre diferente');
-                return;
-            }
             db.collection('package')
                 .add(packageData)
                 .then(function(docRef) {
@@ -133,6 +119,11 @@ const SendPage = () => {
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
+    };
+
+    const handleOnClick = ev => {
+        setCurrentStepName('name');
+        console.log(ev);
     };
 
     return (

@@ -12,6 +12,8 @@ import {
     HelpLabel,
 } from './styled';
 
+const numberRegex = RegExp(/^[0-9]+$/);
+
 const PackagingRadioOption = ({ packages }) => {
     const {
         content_description,
@@ -48,6 +50,7 @@ export const PaqueteComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState();
+    const [errorNameDuplicate, setErrorNameDuplicate] = useState(false);
     const [errorName, setErrorName] = useState(false);
     const [errorHeight, setErrorHeight] = useState(false);
     const [errorWidth, setErrorWidth] = useState(false);
@@ -110,10 +113,6 @@ export const PaqueteComponent = ({ onSave }) => {
         setFilter(keyword);
     };
 
-    const duplicateName = packageData.map((searchName, idx) => {
-        return searchName.name;
-    });
-
     useEffect(() => {
         if (value) {
             const docRef = db.collection('package').doc(value);
@@ -147,28 +146,28 @@ export const PaqueteComponent = ({ onSave }) => {
         } else {
             setErrorName(false);
         }
-        if (height.trim() === '') {
+        if (height.trim() === '' || !numberRegex.test(height)) {
             setError(true);
             setErrorHeight(true);
             return;
         } else {
             setErrorHeight(false);
         }
-        if (width.trim() === '') {
+        if (width.trim() === '' || !numberRegex.test(width)) {
             setError(true);
             setErrorWidth(true);
             return;
         } else {
             setErrorWidth(false);
         }
-        if (depth.trim() === '') {
+        if (depth.trim() === '' || !numberRegex.test(depth)) {
             setError(true);
             setErrorDepth(true);
             return;
         } else {
             setErrorDepth(false);
         }
-        if (weight.trim() === '') {
+        if (weight.trim() === '' || !numberRegex.test(weight)) {
             setError(true);
             setErrorWeight(true);
             return;
@@ -195,7 +194,18 @@ export const PaqueteComponent = ({ onSave }) => {
                 setErrorContentValueEmpty(false);
                 return;
             }
-            const packageData = {
+            if (checkBox) {
+                const duplicateName = packageData.map((searchName, idx) => {
+                    return searchName.name;
+                });
+                if (duplicateName.includes(name)) {
+                    setErrorNameDuplicate(true);
+                    setError(false);
+                    return;
+                }
+            }
+            setErrorNameDuplicate(false);
+            const packageDataToFirebase = {
                 ID: user.uid,
                 name,
                 height,
@@ -224,7 +234,7 @@ export const PaqueteComponent = ({ onSave }) => {
             };
             setErrorContentValue(false);
 
-            onSave(packageData, packageGuiaData, checkBox, duplicateName, name);
+            onSave(packageDataToFirebase, packageGuiaData, checkBox);
         }
     };
     return (
@@ -357,7 +367,12 @@ export const PaqueteComponent = ({ onSave }) => {
                         onChange={e => setCheckBox(e.target.checked)}
                     />
                 </div>
-                {error && <div className="alert-error pl-4">Completar los campos marcados</div>}
+                {errorNameDuplicate && (
+                    <div className="pl-4">
+                        <span className="alert-error">El nombre ya se encuentra registrado</span>
+                    </div>
+                )}
+                {error && <div className="alert-error pl-4">Corregir los campos marcados</div>}
                 {errorContentValue && (
                     <div className="alert-error">
                         El monto máximo para asegurar un contenido es de $100,000

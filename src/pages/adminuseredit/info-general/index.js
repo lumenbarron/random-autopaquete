@@ -166,8 +166,6 @@ export default function InfoGeneral({ user }) {
             };
         }
 
-        console.log(editProfile);
-
         const directionsGuiasCollectionAdd = db
             .collection('profiles')
             .doc(user.id)

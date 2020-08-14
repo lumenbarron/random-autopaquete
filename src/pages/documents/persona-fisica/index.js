@@ -6,6 +6,12 @@ import { StyledTabContent, StyledForm, StyledSubmit } from '../styled';
 import * as firebase from 'firebase';
 import 'firebase/storage';
 
+const phoneRegex = RegExp(/^[0-9]{10}$/);
+const rfcRegex = RegExp(
+    /^([A-ZÑ\x26]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1]))((-)?([A-Z\d]{3}))?$/,
+);
+const ineRegex = RegExp(/^[0-9]{13}$/);
+
 const TabPersonaFisica = () => {
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
@@ -158,14 +164,14 @@ const TabPersonaFisica = () => {
         } else {
             setErrorAddress(false);
         }
-        if (phone.trim() === '') {
+        if (phone.trim() === '' || !phoneRegex.test(phone)) {
             setErrorPhone(true);
             setError(true);
             return;
         } else {
             setErrorPhone(false);
         }
-        if (RFC.trim() === '') {
+        if (RFC.trim() === '' || !rfcRegex.test(RFC)) {
             setErrorRFC(true);
             setError(true);
             return;
@@ -175,12 +181,11 @@ const TabPersonaFisica = () => {
         if (String(date) === '') {
             setErrorDate(true);
             setError(true);
-            console.log(1);
             return;
         } else {
             setErrorDate(false);
         }
-        if (INEnumber.trim() === '') {
+        if (INEnumber.trim() === '' || !ineRegex.test(INEnumber)) {
             setErrorINENumber(true);
             setError(true);
             return;
@@ -298,7 +303,7 @@ const TabPersonaFisica = () => {
                             id="rfc"
                             label="RFC"
                             name="rfc"
-                            value={RFC}
+                            value={RFC.toUpperCase()}
                             className={`rainbow-p-around_medium ${errorRFC ? 'empty-space' : ''}`}
                             style={{ width: '45%' }}
                             onChange={ev => setRFC(ev.target.value)}
@@ -360,7 +365,7 @@ const TabPersonaFisica = () => {
                         Al enviar tu documentación aceptas los términos y condiciones y el aviso de
                         privacidad
                     </h5>
-                    {error && <div className="alert-error">Completar los campos marcados</div>}
+                    {error && <div className="alert-error">Corregir los campos marcados</div>}
                     {correctRegister && <div className="text-success">Registro completo</div>}
                     <StyledSubmit className="rainbow-m-around_medium" type="submit">
                         Continuar

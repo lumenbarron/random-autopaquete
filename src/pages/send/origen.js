@@ -5,6 +5,9 @@ import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
 
+const cpRegex = RegExp(/^[0-9]{5}$/);
+const phoneRegex = RegExp(/^[0-9]{10}$/);
+
 const states = {
     AG: 'Aguascalientes',
     BC: 'Baja California',
@@ -84,6 +87,7 @@ export const OrigenComponent = ({ onSave }) => {
     const [error, setError] = useState(false);
 
     const [errorName, setErrorName] = useState(false);
+    const [errorNameDuplicate, setErrorNameDuplicate] = useState(false);
     const [errorCP, setErrorCP] = useState(false);
     const [errorStreetNumber, setErrorStreetNumber] = useState(false);
     const [errorNeighborhood, setErrorNeighborhood] = useState(false);
@@ -211,7 +215,7 @@ export const OrigenComponent = ({ onSave }) => {
             setErrorName(false);
             setError(true);
         }
-        if (CP.trim() === '') {
+        if (CP.trim() === '' || !cpRegex.test(CP)) {
             setErrorCP(true);
             setError(true);
             return;
@@ -253,26 +257,28 @@ export const OrigenComponent = ({ onSave }) => {
         } else {
             setErrorPlaceRef(false);
         }
-        if (phone.trim() === '') {
+        if (phone.trim() === '' || !phoneRegex.test(phone)) {
             setErrorPhone(true);
             setError(true);
             return;
         } else {
             setErrorPhone(false);
         }
-        if (status !== 'Aprobado') {
-            setErrorCredits(true);
-            return;
-        }
+        // if (status !== 'Aprobado') {
+        //     setErrorCredits(true);
+        //     return;
+        // }
 
         if (checkBox) {
             const duplicateName = directionData.map((searchName, idx) => {
                 return searchName.name;
             });
             if (duplicateName.includes(name)) {
-                console.log('Necesitas poner un nombre diferente');
+                setErrorNameDuplicate(true);
+                setError(false);
                 return;
             }
+            setErrorNameDuplicate(false);
 
             const directionsCollectionAdd = db.collection('sender_addresses').add({
                 name,
@@ -359,6 +365,7 @@ export const OrigenComponent = ({ onSave }) => {
                     <Input
                         id="nombre"
                         label="Nombre"
+                        type="email"
                         name="nombre"
                         value={name}
                         className={`rainbow-p-around_medium ${errorName ? 'empty-space' : ''}`}
@@ -376,6 +383,11 @@ export const OrigenComponent = ({ onSave }) => {
                         onChange={e => setCP(e.target.value)}
                     />
                 </div>
+                {errorNameDuplicate && (
+                    <div className="w-75 pl-4">
+                        <span className="alert-error">El nombre ya se encuentra registrado</span>
+                    </div>
+                )}
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
                         id="domicilio"
@@ -457,7 +469,7 @@ export const OrigenComponent = ({ onSave }) => {
                         Es necesario tener un estatus apobatorio para relizar envíos
                     </div>
                 )}
-                {error && <div className="alert-error pl-4">Completar los campos marcados</div>}
+                {error && <div className="alert-error pl-4">Corregir los campos marcados</div>}
 
                 <Button
                     variant="brand"

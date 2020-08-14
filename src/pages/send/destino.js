@@ -6,6 +6,9 @@ import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup 
 import * as firebase from 'firebase';
 import { useFirebaseApp, useUser } from 'reactfire';
 
+const cpRegex = RegExp(/^[0-9]{5}$/);
+const phoneRegex = RegExp(/^[0-9]{10}$/);
+
 const states = {
     AG: 'Aguascalientes',
     BC: 'Baja California',
@@ -86,6 +89,7 @@ export const DestinoComponent = ({ onSave }) => {
     const user = useUser();
 
     const [error, setError] = useState(false);
+    const [errorNameDuplicate, setErrorNameDuplicate] = useState(false);
     const [errorName, setErrorName] = useState(false);
     const [errorCP, setErrorCP] = useState(false);
     const [errorStreetNumber, setErrorStreetNumber] = useState(false);
@@ -188,7 +192,7 @@ export const DestinoComponent = ({ onSave }) => {
             setErrorName(false);
             setError(true);
         }
-        if (CP.trim() === '') {
+        if (CP.trim() === '' || !cpRegex.test(CP)) {
             setErrorCP(true);
             setError(true);
             return;
@@ -230,7 +234,7 @@ export const DestinoComponent = ({ onSave }) => {
         } else {
             setErrorPlaceRef(false);
         }
-        if (phone.trim() === '') {
+        if (phone.trim() === '' || !phoneRegex.test(phone)) {
             setErrorPhone(true);
             setError(true);
             return;
@@ -265,11 +269,20 @@ export const DestinoComponent = ({ onSave }) => {
                 creation_date: creationDate.toLocaleDateString(),
             },
         };
-        const duplicateName = directionDataa.map((searchName, idx) => {
-            return searchName.name;
-        });
 
-        onSave(directionData, directionGuiaData, checkBox, duplicateName, name);
+        if (checkBox) {
+            const duplicateName = directionDataa.map((searchName, idx) => {
+                return searchName.name;
+            });
+            if (duplicateName.includes(name)) {
+                setErrorNameDuplicate(true);
+                setError(false);
+                return;
+            }
+        }
+        setErrorNameDuplicate(false);
+
+        onSave(directionData, directionGuiaData, checkBox);
     };
 
     return (
@@ -313,6 +326,11 @@ export const DestinoComponent = ({ onSave }) => {
                         onChange={e => setCP(e.target.value)}
                     />
                 </div>
+                {errorNameDuplicate && (
+                    <div className="w-75 pl-4">
+                        <span className="alert-error">El nombre ya se encuentra registrado</span>
+                    </div>
+                )}
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
                         id="domicilio"
@@ -388,7 +406,7 @@ export const DestinoComponent = ({ onSave }) => {
                         />
                     </div>
                 </div>
-                {error && <div className="alert-error pl-4">Completar los campos marcados</div>}
+                {error && <div className="alert-error pl-4">Corregir los campos marcados</div>}
                 <Button
                     variant="brand"
                     className="rainbow-m-around_medium"

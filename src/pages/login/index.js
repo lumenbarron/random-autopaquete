@@ -24,6 +24,7 @@ const LoginPage = () => {
     const [lastname, setLastName] = useState('');
 
     const [errorLogIn, setErrorLogIn] = useState(false);
+    const [errorUserAlreadyRegistered, setErrorUserAlreadyRegistered] = useState(false);
     const [errorEmptyLogIn, setErrorEmptyLogIn] = useState(false);
     const [errorRestorePass, setErrorRestorePass] = useState(false);
     const [errorEmptyRestorePass, setErrorEmptyRestorePass] = useState(false);
@@ -70,6 +71,11 @@ const LoginPage = () => {
                     .catch(function(error) {
                         console.error('Error adding document: ', error);
                     });
+                setErrorUserAlreadyRegistered(false);
+            })
+            .catch(function() {
+                setErrorRegister(false);
+                setErrorUserAlreadyRegistered(true);
             });
     };
 
@@ -85,7 +91,12 @@ const LoginPage = () => {
             .auth()
             .setPersistence(firebase.auth.Auth.Persistence.SESSION)
             .then(function() {
-                return firebase.auth().signInWithEmailAndPassword(email, password);
+                return firebase
+                    .auth()
+                    .signInWithEmailAndPassword(email, password)
+                    .catch(function() {
+                        setErrorLogIn(true);
+                    });
             })
             .catch(function(error) {
                 var errorCode = error.code;
@@ -209,6 +220,9 @@ const LoginPage = () => {
                         </div>
                         {errorRegister && (
                             <div className="alert-error">Necesitas completar todos los campos</div>
+                        )}
+                        {errorUserAlreadyRegistered && (
+                            <div className="alert-error">El correo ya tiene una cuenta activa</div>
                         )}
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <p style={{ fontSize: '0.9rem' }}>
