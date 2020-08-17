@@ -9,9 +9,6 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
     if (!guia) {
         return false;
     }
-    if (guia.status !== 'completed') {
-        return false;
-    }
 
     const senderAddress = guia.sender_addresses;
     const receiverAddress = guia.receiver_addresses;

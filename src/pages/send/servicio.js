@@ -12,16 +12,18 @@ const PriceContainer = styled.div`
     flex-direction: row;
     width: 50%;
     min-width: 170px;
+    font-size: 0.75rem;
+    color: #000;
 `;
 
 const PriceLabel = styled.div`
     display: flex;
-    flex: '1 1';
+    flex-basis: 100%;
+    font-weight: bold;
 `;
 
 const PriceNumber = styled.div`
     text-align: right;
-    flex: '1 1';
 `;
 
 export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
@@ -106,7 +108,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
+            xhr.open('POST', 'http://localhost:5000/guia/cotizar');
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
@@ -165,7 +167,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 return baseValue + extraValue;
             }
             if (company === 'estafetaDiaSiguiente' || company === 'estafetaEconomico') {
-                return baseValue;
+                return Math.max(baseValue, 20);
             }
             return 0;
         };
@@ -285,7 +287,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         const tarifa = segundaMejorTarifa[entrega];
                         const { guia } = tarifa;
                         const precio = tarifa.guia + tarifa.diferencia * kgsExtraTarifas[entrega];
-                        //console.log('guia tarifa', tarifa.diferencia);
+                        // console.log('guia tarifa', tarifa.diferencia);
                         console.log('Entrega', entrega);
                         const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
                         console.log('kgsExtraTarifas', kgsExtraTarifas);
@@ -412,7 +414,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         <PriceLabel>IVA:</PriceLabel>
                         <PriceNumber>{formatMoney(costos.precio * 0.138)}</PriceNumber>
                     </PriceContainer>
-                    <h1> {formatMoney(costos.precio)}</h1>
+                    <h3> {formatMoney(costos.precio)} </h3>
                     <Button
                         label="Elegir"
                         variant="brand"
