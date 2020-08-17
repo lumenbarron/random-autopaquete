@@ -40,7 +40,7 @@ const PackagingRadioOption = ({ packages }) => {
     );
 };
 
-export const PaqueteComponent = ({ onSave }) => {
+export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [value, setValue] = useState(null);
 
     const [packageData, setPackageData] = useState([]);
@@ -74,6 +74,32 @@ export const PaqueteComponent = ({ onSave }) => {
     const [checkBoxSecure, setCheckBoxSecure] = useState(false);
 
     const creationDate = new Date();
+
+    console.log(idGuiaGlobal);
+
+    //Se busca los datos de envío (si hay algun envío efectuandose)
+    useEffect(() => {
+        if (user) {
+            if (idGuiaGlobal) {
+                db.collection('guia')
+                    .doc(idGuiaGlobal)
+                    .get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            setName(doc.data().package.name);
+                            setHeight(doc.data().package.height);
+                            setWidth(doc.data().package.width);
+                            setDepth(doc.data().package.depth);
+                            setWeight(doc.data().package.weight);
+                            setContentDescription(doc.data().package.content_description);
+                            setCheckBox(false);
+                        } else {
+                            console.log('No such document!');
+                        }
+                    });
+            }
+        }
+    }, [idGuiaGlobal]);
 
     useEffect(() => {
         const reloadDirectios = () => {

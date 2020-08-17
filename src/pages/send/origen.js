@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Input, CheckboxToggle, Button, Picklist, Option } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -79,7 +79,7 @@ const AddressRadioOption = ({ directions }) => {
     );
 };
 
-export const OrigenComponent = ({ onSave }) => {
+export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
@@ -119,34 +119,38 @@ export const OrigenComponent = ({ onSave }) => {
     const [userName, setUserName] = useState('');
     const [status, setStatus] = useState();
 
-    const [currentDocId, setCurrentDocId] = useState('');
-
     let idGuia;
 
-    //Se busca los datos de envío (si hay algun registro activo)
-    // useEffect(() => {
-    //     if (user) {
-    //         if (currentDocId) {
-    //             db.collection('guia')
-    //                 .doc(currentDocId)
-    //                 .get()
-    //                 .then(function(doc) {
-    //                     if (doc.exists) {
-    //                         setName(doc.data().sender_addresses.name);
-    //                         set(doc.data().sender_addresses.name);
-    //                         setName(doc.data().sender_addresses.name);
-    //                         setName(doc.data().sender_addresses.name);
-    //                         setName(doc.data().sender_addresses.name);
-    //                         setName(doc.data().sender_addresses.name);
-    //                         setName(doc.data().sender_addresses.name);
-    //                     } else {
-    //                         // doc.data() will be undefined in this case
-    //                         console.log('No such document!');
-    //                     }
-    //                 });
-    //         }
-    //     }
-    // }, []);
+    console.log(idGuiaGlobal);
+
+    //Se busca los datos de envío (si hay algun envío efectuandose)
+    useEffect(() => {
+        if (user) {
+            if (idGuiaGlobal) {
+                db.collection('guia')
+                    .doc(idGuiaGlobal)
+                    .get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            setName(doc.data().sender_addresses.name);
+                            setCP(doc.data().sender_addresses.codigo_postal);
+                            setNeighborhood(doc.data().sender_addresses.neighborhood);
+                            setCountry(doc.data().sender_addresses.country);
+                            setState({
+                                value: doc.data().sender_addresses.state,
+                                label: states[doc.data().sender_addresses.state],
+                            });
+                            setStreetNumber(doc.data().sender_addresses.street_number);
+                            setPlaceRef(doc.data().sender_addresses.place_reference);
+                            setPhone(doc.data().sender_addresses.phone);
+                            setCheckBox(false);
+                        } else {
+                            console.log('No such document!');
+                        }
+                    });
+            }
+        }
+    }, [idGuiaGlobal]);
 
     useEffect(() => {
         if (user) {
@@ -346,13 +350,35 @@ export const OrigenComponent = ({ onSave }) => {
                 ID: user.uid,
                 creation_date: creationDate.toLocaleDateString(),
             },
+            receiver_addresses: {
+                name: '',
+                codigo_postal: '',
+                neighborhood: '',
+                country: '',
+                state: '',
+                street_number: '',
+                place_reference: '',
+                phone: '',
+                ID: '',
+                creation_date: '',
+            },
+            package: {
+                name: '',
+                height: '',
+                width: '',
+                depth: '',
+                weight: '',
+                content_description: '',
+                quantity: '',
+                content_value: '',
+                creation_date: '',
+            },
         });
 
         const searchDuplicate = db.collection('sender_addresses').get();
 
         directionsGuiasCollectionAdd
             .then(function(docRef) {
-                setCurrentDocId(docRef.id);
                 idGuia = docRef.id;
                 console.log('Se crea y se guarda el id de la guía', idGuia);
                 onSave({ idGuia });

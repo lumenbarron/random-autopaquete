@@ -174,9 +174,21 @@ const SendPage = () => {
                         className="rainbow-m-horizontal_medium"
                     />
                 </div>
-                {currentStepName === 'origen' && <OrigenComponent onSave={saveOriginData} />}
-                {currentStepName === 'destino' && <DestinoComponent onSave={saveDestinationData} />}
-                {currentStepName === 'paquete' && <PaqueteComponent onSave={savePackagingData} />}
+                {currentStepName === 'origen' && (
+                    <OrigenComponent onSave={saveOriginData} idGuiaGlobal={idGuiaGlobal.current} />
+                )}
+                {currentStepName === 'destino' && (
+                    <DestinoComponent
+                        onSave={saveDestinationData}
+                        idGuiaGlobal={idGuiaGlobal.current}
+                    />
+                )}
+                {currentStepName === 'paquete' && (
+                    <PaqueteComponent
+                        onSave={savePackagingData}
+                        idGuiaGlobal={idGuiaGlobal.current}
+                    />
+                )}
                 {currentStepName === 'servicio' && (
                     <ServicioComponent
                         onSave={saveServiceData}

@@ -80,7 +80,7 @@ const AddressRadioOption = ({ directions }) => {
     );
 };
 
-export const DestinoComponent = ({ onSave }) => {
+export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
     const [value, setValue] = useState(null);
     const [directionDataa, setDirectionDataa] = useState([]);
 
@@ -114,6 +114,36 @@ export const DestinoComponent = ({ onSave }) => {
     const [checkBox, setCheckBox] = useState(true);
 
     const creationDate = new Date();
+    console.log('Destino', idGuiaGlobal);
+
+    //Se busca los datos de envío (si hay algun envío efectuandose)
+    useEffect(() => {
+        if (user) {
+            if (idGuiaGlobal) {
+                db.collection('guia')
+                    .doc(idGuiaGlobal)
+                    .get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            setName(doc.data().receiver_addresses.name);
+                            setCP(doc.data().receiver_addresses.codigo_postal);
+                            setNeighborhood(doc.data().receiver_addresses.neighborhood);
+                            setCountry(doc.data().receiver_addresses.country);
+                            setState({
+                                value: doc.data().receiver_addresses.state,
+                                label: states[doc.data().receiver_addresses.state],
+                            });
+                            setStreetNumber(doc.data().receiver_addresses.street_number);
+                            setPlaceRef(doc.data().receiver_addresses.place_reference);
+                            setPhone(doc.data().receiver_addresses.phone);
+                            setCheckBox(false);
+                        } else {
+                            console.log('No such document!');
+                        }
+                    });
+            }
+        }
+    }, [idGuiaGlobal]);
 
     useEffect(() => {
         const reloadDirectios = () => {
