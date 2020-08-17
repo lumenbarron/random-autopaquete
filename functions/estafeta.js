@@ -9,9 +9,6 @@ exports.rate = async function rateEstafeta(uid, guiaId) {
     if (!guia) {
         return false;
     }
-    if (guia.status !== 'completed') {
-        return false;
-    }
 
     const senderAddress = guia.sender_addresses;
     const receiverAddress = guia.receiver_addresses;
@@ -160,6 +157,11 @@ exports.create = functions.https.onRequest(async (req, res) => {
         url = 'https://labelqa.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
     }
 
+    const dValue =
+        packaging.content_value !== ''
+            ? { insurance: 'True', declaredValue: packaging.content_value }
+            : { insurance: 'False', declaredValue: '0' };
+
     const requestArgs = {
         in0: {
             customerNumber: supplierData.customerNumber,
@@ -201,6 +203,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 returnDocument: 'False',
                 parcelTypeId: '1',
                 weight: packaging.weight,
+                ...dValue,
             },
             labelDescriptionListCount: '1',
             login: supplierData.user,
@@ -213,7 +216,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
     };
 
     soap.createClient(url, {}, function(err, client) {
-        client.EstafetaLabelService.EstafetaLabelWS.createLabel(requestArgs, function(
+        client.EstafetaLabelService.EstafetaLabelWS.createLabelExtended(requestArgs, function(
             err1,
             result,
         ) {
@@ -223,8 +226,8 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 return;
             }
             try {
-                const pdf = result.createLabelReturn.labelPDF.$value;
-                const guias = result.createLabelReturn.labelResultList.labelResultList.resultDescription.$value.split(
+                const pdf = result.createLabelExtendedReturn.labelPDF.$value;
+                const guias = result.createLabelExtendedReturn.labelResultList.labelResultList.resultDescription.$value.split(
                     '|',
                 );
                 if (pdf) {

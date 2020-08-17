@@ -17,6 +17,7 @@ const SendPage = () => {
     const idGuiaGlobal = useRef(null);
     const user = useUser();
     const { idGuia: idGuiaParam, step: stepParam } = useParams();
+    const [onReplay, setOnReplay] = useState(false);
 
     useEffect(() => {
         if (stepParam) setCurrentStepName(stepParam);
@@ -56,8 +57,8 @@ const SendPage = () => {
             .update(directionGuiaData);
 
         directionsGuiasCollectionAdd
-            .then(function(docRef) {
-                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+            .then(function() {
+                console.log('Se cumplio! Document written with ID (guia): ', idGuiaGlobal.current);
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
@@ -75,8 +76,8 @@ const SendPage = () => {
         if (checkBox) {
             db.collection('package')
                 .add(packageData)
-                .then(function(docRef) {
-                    console.log('Document written with ID (destino): ', docRef.id);
+                .then(function() {
+                    console.log('Document written with ID (destino): ', idGuiaGlobal.current);
                 })
                 .catch(function(error) {
                     console.error('Error adding document: ', error);
@@ -130,6 +131,31 @@ const SendPage = () => {
             });
     };
 
+    async function replayLabel(e) {
+        e.preventDefault(true);
+        setCurrentStepName('servicio');
+        setOnReplay(true);
+        const ogGuia = await db
+            .collection('guia')
+            .doc(idGuiaGlobal.current)
+            .get();
+        const {
+            ID,
+            receiver_addresses: rAddress,
+            sender_addresses: sAddress,
+            supplierData,
+        } = ogGuia.data();
+        const newGuia = await db.collection('guia').add({
+            ID,
+            receiver_addresses: rAddress,
+            sender_addresses: sAddress,
+            supplierData,
+            package: ogGuia.data().package,
+        });
+        idGuiaGlobal.current = newGuia.id;
+        setOnReplay(false);
+    }
+
     const handleNextClick = () => {
         if (currentStepName === 'origen') {
             setCurrentStepName('destino');
@@ -149,6 +175,14 @@ const SendPage = () => {
             setCurrentStepName('origen');
         }
     };
+
+    if (onReplay) {
+        return (
+            <>
+                <h3>Generando nueva guía</h3>
+            </>
+        );
+    }
 
     return (
         <>
@@ -184,7 +218,7 @@ const SendPage = () => {
                     />
                 )}
                 {currentStepName === 'descarga' && (
-                    <DescargaComponent idGuiaGlobal={idGuiaGlobal.current} />
+                    <DescargaComponent idGuiaGlobal={idGuiaGlobal.current} onReplay={replayLabel} />
                 )}
             </StyledSendPage>
         </>

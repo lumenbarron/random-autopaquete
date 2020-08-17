@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'react-rainbow-components';
+import { useHistory } from 'react-router-dom';
 import { useFirebaseApp } from 'reactfire';
 import styled from 'styled-components';
 import { DownloadContainer } from './styled';
@@ -8,11 +8,12 @@ const DetailsLabel = styled.p`
     margin-bottom: 1.2rem;
 `;
 
-export const DescargaComponent = ({ idGuiaGlobal }) => {
+export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [pdf, setPDF] = useState(false);
     const [error, setError] = useState(false);
+    const history = useHistory();
 
     useEffect(() => {
         const prepareDownload = () => {
@@ -42,6 +43,9 @@ export const DescargaComponent = ({ idGuiaGlobal }) => {
                         <img src="/assets/icon-pdf.png" alt="Icono de PDF" nopin="nopin" />
                         <DetailsLabel>Imprímela y pégala en tu paquete</DetailsLabel>
                         Descargar
+                    </a>
+                    <a href="/mi-cuenta/enviar" onClick={onReplay}>
+                        Repetir último envío
                     </a>
                 </>
             )}

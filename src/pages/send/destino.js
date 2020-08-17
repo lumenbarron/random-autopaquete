@@ -158,6 +158,27 @@ export const DestinoComponent = ({ onSave }) => {
     };
 
     useEffect(() => {
+        if (CP.length === 5) {
+            fetch(`https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified`)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log('CP no validado');
+                        return {};
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.response) {
+                        const { municipio, estado } = data.response;
+                        setCountry(municipio);
+                        const stateKey = Object.keys(states).find(key => states[key] === estado);
+                        setState({ label: states[stateKey], value: stateKey });
+                    }
+                });
+        }
+    }, [CP]);
+
+    useEffect(() => {
         if (value) {
             const docRef = db.collection('receiver_addresses').doc(value);
             docRef

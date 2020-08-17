@@ -61,7 +61,11 @@ async function saveError(guiaId, APIResponse, error) {
     await db
         .collection('guia')
         .doc(guiaId)
-        .update({ status: 'error', APIResponse: response, error });
+        .update({
+            status: 'error',
+            APIResponse: JSON.parse(JSON.stringify(response)),
+            error: JSON.parse(JSON.stringify(error)),
+        });
 }
 
 exports.getGuiaById = getGuiaById;
