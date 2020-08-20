@@ -171,28 +171,28 @@ const TabPersonaFisica = () => {
 
     const register = e => {
         e.preventDefault();
-        if (name.trim() === '') {
+        if (name === undefined || name.trim() === '') {
             setErrorName(true);
             setError(true);
             return;
         } else {
             setErrorName(false);
         }
-        if (address.trim() === '') {
+        if (address === undefined || address.trim() === '') {
             setErrorAddress(true);
             setError(true);
             return;
         } else {
             setErrorAddress(false);
         }
-        if (phone.trim() === '' || !phoneRegex.test(phone)) {
+        if (phone === undefined || phone.trim() === '' || !phoneRegex.test(phone)) {
             setErrorPhone(true);
             setError(true);
             return;
         } else {
             setErrorPhone(false);
         }
-        if (RFC.trim() === '' || !rfcRegex.test(RFC)) {
+        if (RFC === undefined || RFC.trim() === '' || !rfcRegex.test(RFC)) {
             setErrorRFC(true);
             setError(true);
             return;
@@ -206,28 +206,28 @@ const TabPersonaFisica = () => {
         } else {
             setErrorDate(false);
         }
-        if (INEnumber.trim() === '' || !ineRegex.test(INEnumber)) {
+        if (INEnumber === undefined || INEnumber.trim() === '' || !ineRegex.test(INEnumber)) {
             setErrorINENumber(true);
             setError(true);
             return;
         } else {
             setErrorINENumber(false);
         }
-        if (fileFiscal === '' || fileFiscal.length === 0) {
+        if (fileFiscal === undefined || fileFiscal === '' || fileFiscal.length === 0) {
             setErrorFileFiscal(true);
             setError(true);
             return;
         } else {
             setErrorFileFiscal(false);
         }
-        if (fileIne === '' || fileIne.length === 0) {
+        if (fileIne === undefined || fileIne === '' || fileIne.length === 0) {
             setErrorFileIne(true);
             setError(true);
             return;
         } else {
             setErrorFileIne(false);
         }
-        if (fileDomicilio === '' || fileDomicilio.length === 0) {
+        if (fileDomicilio === undefined || fileDomicilio === '' || fileDomicilio.length === 0) {
             setErrorFileDomicilio(true);
             setError(true);
             return;
@@ -279,7 +279,6 @@ const TabPersonaFisica = () => {
                 });
         }
     };
-
     return (
         <StyledTabContent
             aria-labelledby="pfisica"
@@ -324,7 +323,7 @@ const TabPersonaFisica = () => {
                             id="rfc"
                             label="RFC"
                             name="rfc"
-                            value={RFC.toUpperCase()}
+                            value={RFC}
                             className={`rainbow-p-around_medium ${errorRFC ? 'empty-space' : ''}`}
                             style={{ width: '45%' }}
                             onChange={ev => setRFC(ev.target.value)}

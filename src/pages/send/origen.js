@@ -540,7 +540,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
                 {errorCredits && (
                     <div className="alert-error pl-4">
-                        Es necesario tener un estatus apobatorio para relizar envíos
+                        Es necesario tener un estatus aprobatorio para relizar envíos
                     </div>
                 )}
                 {error && <div className="alert-error pl-4">Corregir los campos marcados</div>}

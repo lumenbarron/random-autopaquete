@@ -15,7 +15,6 @@ export function useBlockSecurity() {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log(doc.data().user_type);
                     if (doc.data().user_type === 'regular') {
                         history.push('/mi-cuenta');
                     }

@@ -13,6 +13,7 @@ import {
 } from './styled';
 
 const numberRegex = RegExp(/^[0-9]+$/);
+const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
 
 const PackagingRadioOption = ({ packages }) => {
     const {
@@ -74,9 +75,6 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [checkBoxSecure, setCheckBoxSecure] = useState(false);
 
     const creationDate = new Date();
-
-    console.log(idGuiaGlobal);
-
     //Se busca los datos de envío (si hay algun envío efectuandose)
     useEffect(() => {
         if (user) {
@@ -193,7 +191,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorDepth(false);
         }
-        if (weight.trim() === '' || !numberRegex.test(weight)) {
+        if (weight.trim() === '' || !numberWithDecimalRegex.test(weight)) {
             setError(true);
             setErrorWeight(true);
             return;
@@ -237,7 +235,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 height,
                 width,
                 depth,
-                weight,
+                weight: Math.round(weight),
                 content_description: contentDescription,
                 quantity: 1,
                 content_value: contentValue,
@@ -251,7 +249,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     height,
                     width,
                     depth,
-                    weight,
+                    weight: Math.round(weight),
                     content_description: contentDescription,
                     quantity: 1,
                     content_value: contentValue,

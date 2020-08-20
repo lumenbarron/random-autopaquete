@@ -47,7 +47,11 @@ const AccountPage = () => {
                     <h2>Saldo Actual</h2>
                     <h2>{formatMoney(creditAmount, 2)}</h2>
                     {creditAmountError && (
-                        <div className="alert-error">Nota: Su saldo esta por agotarse</div>
+                        <div className="alert-error">
+                            {creditAmount === 0
+                                ? 'Nota: El saldo se ha agotado'
+                                : 'Nota: Su saldo esta por agotarse'}
+                        </div>
                     )}
                 </div>
                 <Container className="imgtext">

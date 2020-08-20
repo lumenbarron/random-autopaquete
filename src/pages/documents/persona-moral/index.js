@@ -104,10 +104,10 @@ const TabPersonaMoral = () => {
 
                         profilesCollectionAdd
                             .then(function() {
-                                console.log('Document successfully written!');
+                                setCorrectRegister(true);
                             })
                             .catch(function(error) {
-                                console.error('Error writing document: ', error);
+                                setCorrectRegister(false);
                             });
 
                         user.getIdToken().then(idToken => {
@@ -175,21 +175,21 @@ const TabPersonaMoral = () => {
 
     const register = e => {
         e.preventDefault();
-        if (razonSocial.trim() === '') {
+        if (razonSocial === undefined || razonSocial.trim() === '') {
             setErrorRazonSocial(true);
             setError(true);
             return;
         } else {
             setErrorRazonSocial(false);
         }
-        if (legalName.trim() === '') {
+        if (legalName === undefined || legalName.trim() === '') {
             setErrorLegalName(true);
             setError(true);
             return;
         } else {
             setErrorLegalName(false);
         }
-        if (address.trim() === '') {
+        if (address === undefined || address.trim() === '') {
             setErrorAddress(true);
             setError(true);
             console.log(1);
@@ -197,14 +197,14 @@ const TabPersonaMoral = () => {
         } else {
             setErrorAddress(false);
         }
-        if (phone.trim() === '' || !phoneRegex.test(phone)) {
+        if (phone === undefined || phone.trim() === '' || !phoneRegex.test(phone)) {
             setErrorPhone(true);
             setError(true);
             return;
         } else {
             setErrorPhone(false);
         }
-        if (RFC.trim() === '' || !rfcRegex.test(RFC)) {
+        if (RFC === undefined || RFC.trim() === '' || !rfcRegex.test(RFC)) {
             setErrorRFC(true);
             setError(true);
             return;
@@ -212,28 +212,32 @@ const TabPersonaMoral = () => {
             setErrorRFC(false);
         }
 
-        if (fileActaConstitutiva === '' || fileActaConstitutiva.length === 0) {
+        if (
+            fileActaConstitutiva === undefined ||
+            fileActaConstitutiva === '' ||
+            fileActaConstitutiva.length === 0
+        ) {
             setErrorFileActaConstitutiva(true);
             setError(true);
             return;
         } else {
             setErrorFileActaConstitutiva(false);
         }
-        if (fileFiscal === '' || fileFiscal.length === 0) {
+        if (fileFiscal === undefined || fileFiscal === '' || fileFiscal.length === 0) {
             setErrorFileFiscal(true);
             setError(true);
             return;
         } else {
             setErrorFileFiscal(false);
         }
-        if (fileDomicilio === '' || fileDomicilio.length === 0) {
+        if (fileDomicilio === undefined || fileDomicilio === '' || fileDomicilio.length === 0) {
             setErrorFileDomicilio(true);
             setError(true);
             return;
         } else {
             setErrorFileDomicilio(false);
         }
-        if (fileIne === '' || fileIne.length === 0) {
+        if (fileIne === undefined || fileIne === '' || fileIne.length === 0) {
             setErrorFileIne(true);
             setError(true);
             return;
@@ -242,7 +246,6 @@ const TabPersonaMoral = () => {
         }
 
         setError(false);
-        setCorrectRegister(true);
 
         let fileName = '';
         let filePath = '';
@@ -362,7 +365,7 @@ const TabPersonaMoral = () => {
                             id="rfc"
                             label="RFC"
                             name="rfc"
-                            value={RFC.toUpperCase()}
+                            value={RFC}
                             className={`rainbow-p-around_medium ${errorRFC ? 'empty-space' : ''}`}
                             style={{ width: '45%' }}
                             onChange={ev => setRFC(ev.target.value)}

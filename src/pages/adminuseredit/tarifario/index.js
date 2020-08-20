@@ -391,8 +391,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         tarifas.forEach(tarifa => {
             tarifaMayor = tarifa.max > tarifaMayor ? tarifa.max : tarifaMayor;
         });
-
-        setMaxValue(tarifaMayor + 1);
+        !tarifaMayor ? setMaxValue(tarifaMayor) : setMaxValue(tarifaMayor + 1);
     }, [tarifas]);
     useEffect(() => {
         setMinRate(maxValue);

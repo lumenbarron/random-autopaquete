@@ -55,7 +55,6 @@ const LoginPage = () => {
             .createUserWithEmailAndPassword(newEmail, newPassword)
             .then(({ user }) => {
                 user.sendEmailVerification();
-                history.push('/documentacion');
                 const profilesCollectionAdd = db.collection('profiles').add({
                     name,
                     lastname,
@@ -66,7 +65,7 @@ const LoginPage = () => {
                 });
                 profilesCollectionAdd
                     .then(function(docRef) {
-                        console.log('Document written with ID: ', docRef.id);
+                        history.push('/documentacion');
                     })
                     .catch(function(error) {
                         console.error('Error adding document: ', error);
@@ -130,7 +129,7 @@ const LoginPage = () => {
     return (
         <StyledLoginPage>
             <StyledLoginSection>
-                <h1>Iniciar sesión</h1>
+                <h1 style={{ marginBottom: '6%' }}>Iniciar sesión</h1>
                 <form>
                     <Input
                         label="Email o nombre de ususario"
@@ -170,7 +169,7 @@ const LoginPage = () => {
                 </form>
             </StyledLoginSection>
 
-            <StyledLoginSection>
+            <StyledLoginSection style={{ paddingBottom: '2.9%' }}>
                 <h1>Regístrate</h1>
                 <div>
                     <form>

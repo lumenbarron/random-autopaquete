@@ -30,7 +30,7 @@ export const StyledContact = styled.div`
     li {
         font-size: 0.9rem;
         text-align: left;
-        width: 300px;
+        width: 301px;
     }
 
     col ul,

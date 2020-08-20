@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const StyledLoginPage = styled.div`
     display: flex;
     flex-wrap: wrap;
-    padding: 6rem;
+    padding:  6rem;
 
     h1 {
         color: #c94141 !important;

@@ -4,9 +4,11 @@ import { useFirebaseApp, useUser } from 'reactfire';
 import { Table, Column, Badge, MenuItem } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserEdit } from '@fortawesome/free-solid-svg-icons';
+import { faUserEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useHistory } from 'react-router-dom';
 import { StyledAusers } from './styled';
+import firebase from 'firebase';
+import 'firebase/auth';
 
 const StyledTable = styled(Table)`
     color: #1de9b6;
@@ -95,7 +97,21 @@ const AdminUsersPage = () => {
 
     function editUser(e, profile) {
         e.preventDefault();
-        history.push('/admin/usuario/' + profile.ID);
+        console.log(profile.ID);
+        // history.push('/admin/usuario/' + profile.ID);
+    }
+
+    function deleteUser(e, profile) {
+        e.preventDefault();
+        firebase
+            .auth()
+            .deleteUser(profile.ID)
+            .then(function() {
+                console.log('Successfully deleted user');
+            })
+            .catch(function(error) {
+                console.log('Error deleting user:', error);
+            });
     }
 
     return (
@@ -124,6 +140,12 @@ const AdminUsersPage = () => {
                                     icon={<FontAwesomeIcon icon={faUserEdit} />}
                                     iconPosition="left"
                                     onClick={editUser}
+                                />
+                                <MenuItem
+                                    label="Eliminar"
+                                    icon={<FontAwesomeIcon icon={faTrashAlt} />}
+                                    iconPosition="left"
+                                    onClick={deleteUser}
                                 />
                             </Column>
                         </StyledTable>

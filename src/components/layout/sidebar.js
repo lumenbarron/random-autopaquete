@@ -359,6 +359,7 @@ export function AccountSidebar() {
                 });
         }
     };
+
     useEffect(() => {
         if (user) {
             const docRef = db.collection('profiles').where('ID', '==', user.uid);
@@ -369,6 +370,12 @@ export function AccountSidebar() {
                     setAvatarName(doc.data().name);
                     if (doc.data().status) {
                         setStatus(doc.data().status);
+                        if (
+                            !doc.data().persona ||
+                            (doc.data().persona !== 'Moral' && doc.data().persona !== 'Física')
+                        ) {
+                            history.push('/documentacion');
+                        }
                     } else {
                         setStatus('Falta Información');
                     }
