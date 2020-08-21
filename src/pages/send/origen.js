@@ -121,8 +121,6 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
     let idGuia;
 
-    console.log(idGuiaGlobal);
-
     //Se busca los datos de envío (si hay algun envío efectuandose)
     useEffect(() => {
         if (user) {

@@ -363,8 +363,10 @@ export function AccountSidebar() {
     useEffect(() => {
         if (user) {
             const docRef = db.collection('profiles').where('ID', '==', user.uid);
-
             docRef.get().then(function(querySnapshot) {
+                if (querySnapshot.docs.length === 0) {
+                    history.push('/');
+                }
                 querySnapshot.forEach(function(doc) {
                     setAvatarURL(doc.data().avatar);
                     setAvatarName(doc.data().name);

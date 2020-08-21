@@ -24,7 +24,7 @@ export function useBlockSecurity() {
                 });
             })
             .catch(function(error) {
-                console.log('Error getting documents: ', error);
+                history.push('/login');
             });
     }
 }

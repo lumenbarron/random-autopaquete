@@ -10,6 +10,9 @@ export function useSecurity() {
     if (user) {
         const docRef = db.collection('profiles').where('ID', '==', user.uid);
         docRef.get().then(querySnapshot => {
+            if (querySnapshot.docs.length === 0) {
+                history.push('/');
+            }
             querySnapshot.forEach(doc => {
                 if (doc.data().user_type !== 'admin') {
                     history.push('/admin');

@@ -98,19 +98,26 @@ const AdminUsersPage = () => {
     function editUser(e, profile) {
         e.preventDefault();
         console.log(profile.ID);
-        // history.push('/admin/usuario/' + profile.ID);
+        history.push('/admin/usuario/' + profile.ID);
     }
 
     function deleteUser(e, profile) {
         e.preventDefault();
+
         firebase
             .auth()
-            .deleteUser(profile.ID)
+            .delete(profile.ID)
             .then(function() {
-                console.log('Successfully deleted user');
+                db.collection('profiles')
+                    .doc(profile.id)
+                    .delete()
+                    .then(function() {})
+                    .catch(function(error) {
+                        console.error('Error: ', error);
+                    });
             })
             .catch(function(error) {
-                console.log('Error deleting user:', error);
+                console.log('Error eliminando al usuario:', error);
             });
     }
 

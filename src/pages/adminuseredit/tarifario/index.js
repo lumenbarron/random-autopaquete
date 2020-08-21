@@ -401,8 +401,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         setMaxValue(0);
     }
 
-    console.log(minRate);
-
     return (
         <StyledSection label={label}>
             {tarifasMap}
