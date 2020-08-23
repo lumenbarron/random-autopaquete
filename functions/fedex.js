@@ -26,7 +26,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
             packaging.content_value !== ''
                 ? {
                       InsuredValue: {
-                          Currency: 'MXN',
+                          Currency: 'NMP',
                           Amount: packaging.content_value,
                       },
                   }
@@ -214,7 +214,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
             packaging.content_value !== ''
                 ? {
                       InsuredValue: {
-                          Currency: 'MXN',
+                          Currency: 'NMP',
                           Amount: packaging.content_value,
                       },
                   }

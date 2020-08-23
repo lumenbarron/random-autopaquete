@@ -465,40 +465,49 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             </StyledError>
             {!supplierAvailability && <h1>Obteniendo precios...</h1>}
             {supplierAvailability && (
-                <StyledPaneContainer style={{ justifyContent: 'center' }}>
-                    {supplierAvailability.fedexDiaSiguiente &&
-                        supplierCostFedexDiaS.guia &&
-                        supplierCard(
-                            'fedex',
-                            'DiaSiguiente',
-                            'Día Siguiente',
-                            supplierCostFedexDiaS,
-                        )}
-                    {supplierAvailability.fedexEconomico &&
-                        supplierCostFedexEcon.guia &&
-                        supplierCard(
-                            'fedex',
-                            'Economico',
-                            '3 a 5 días hábiles',
-                            supplierCostFedexEcon,
-                        )}
-                    {supplierAvailability.estafetaDiaSiguiente &&
-                        supplierCostEstafetaDiaS.guia &&
-                        supplierCard(
-                            'estafeta',
-                            'DiaSiguiente',
-                            'Día Siguiente',
-                            supplierCostEstafetaDiaS,
-                        )}
-                    {supplierAvailability.estafetaEconomico &&
-                        supplierCostEstafetaEcon.guia &&
-                        supplierCard(
-                            'estafeta',
-                            'Economico',
-                            '3 a 5 días hábiles',
-                            supplierCostEstafetaEcon,
-                        )}
-                </StyledPaneContainer>
+                <>
+                    <StyledPaneContainer style={{ justifyContent: 'center' }}>
+                        {supplierAvailability.fedexDiaSiguiente &&
+                            supplierCostFedexDiaS.guia &&
+                            supplierCard(
+                                'fedex',
+                                'DiaSiguiente',
+                                'Día Siguiente',
+                                supplierCostFedexDiaS,
+                            )}
+                        {supplierAvailability.fedexEconomico &&
+                            supplierCostFedexEcon.guia &&
+                            supplierCard(
+                                'fedex',
+                                'Economico',
+                                '3 a 5 días hábiles',
+                                supplierCostFedexEcon,
+                            )}
+                        {supplierAvailability.estafetaDiaSiguiente &&
+                            supplierCostEstafetaDiaS.guia &&
+                            supplierCard(
+                                'estafeta',
+                                'DiaSiguiente',
+                                'Día Siguiente',
+                                supplierCostEstafetaDiaS,
+                            )}
+                        {supplierAvailability.estafetaEconomico &&
+                            supplierCostEstafetaEcon.guia &&
+                            supplierCard(
+                                'estafeta',
+                                'Economico',
+                                '3 a 5 días hábiles',
+                                supplierCostEstafetaEcon,
+                            )}
+                    </StyledPaneContainer>
+                    {!(
+                        (supplierAvailability.fedexDiaSiguiente && supplierCostFedexDiaS.guia) ||
+                        (supplierAvailability.fedexEconomico && supplierCostFedexEcon.guia) ||
+                        (supplierAvailability.estafetaDiaSiguiente &&
+                            supplierCostEstafetaDiaS.guia) ||
+                        (supplierAvailability.estafetaEconomico && supplierCostEstafetaEcon.guia)
+                    ) && <h1>Código Postal fuera de cobertura</h1>}
+                </>
             )}
         </>
     );
