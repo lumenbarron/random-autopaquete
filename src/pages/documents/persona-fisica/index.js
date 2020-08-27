@@ -358,7 +358,7 @@ const TabPersonaFisica = () => {
                         className={`rainbow-p-horizontal_medium rainbow-m_auto ${
                             errorFileFiscal ? 'empty-file' : ''
                         }`}
-                        label="Constancia de Situación Fiscal (Opcional)"
+                        label="Constancia de Situación Fiscal"
                         placeholder="Sube o arrastra tu archivo aquí"
                         style={{ height: '20%' }}
                         onChange={setFileFiscal}

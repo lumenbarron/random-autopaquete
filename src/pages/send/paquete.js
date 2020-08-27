@@ -191,7 +191,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorDepth(false);
         }
-        if (weight.trim() === '' || !numberWithDecimalRegex.test(weight)) {
+        if (weight === '' || !numberWithDecimalRegex.test(weight)) {
             setError(true);
             setErrorWeight(true);
             return;
@@ -235,7 +235,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 height,
                 width,
                 depth,
-                weight: Math.round(weight),
+                weight: Math.ceil(weight),
                 content_description: contentDescription,
                 quantity: 1,
                 content_value: contentValue,
@@ -249,7 +249,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     height,
                     width,
                     depth,
-                    weight: Math.round(weight),
+                    weight: Math.ceil(weight),
                     content_description: contentDescription,
                     quantity: 1,
                     content_value: contentValue,
@@ -261,6 +261,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             onSave(packageDataToFirebase, packageGuiaData, checkBox);
         }
     };
+
     return (
         <StyledPaneContainer>
             <StyledLeftPane>

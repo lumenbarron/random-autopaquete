@@ -56,7 +56,6 @@ const AdminOverweightPage = () => {
 
     const creationDate = new Date();
     const [rateKgExtra, setRateKgExtra] = useState();
-    console.log('ID document', profileDocId);
     //overWeight data
     useEffect(() => {
         if (!userId) {
@@ -132,7 +131,6 @@ const AdminOverweightPage = () => {
     //Guide data
     useEffect(() => {
         if (!guia) {
-            console.log('Variables reseteadas');
             setDocId('');
             setName('');
             setUserId('');
@@ -164,7 +162,6 @@ const AdminOverweightPage = () => {
         }
         setErrorGuia(false);
     }, [guia, getIdGuia]);
-    console.log(name);
     function handleOverWeight(snapshot) {
         const overWeightInformation = snapshot.docs.map(doc => {
             return {
@@ -289,7 +286,6 @@ const AdminOverweightPage = () => {
                                                                     overweightRatesBaseXls,
                                                                     10,
                                                                 );
-                                                            console.log(cargoOverweight);
                                                             const cargo = db
                                                                 .collection('overweights')
                                                                 .add({

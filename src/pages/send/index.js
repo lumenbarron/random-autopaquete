@@ -165,11 +165,7 @@ const SendPage = () => {
         // return setState(isNextDisabled: false );
     };
     const handleBackClick = () => {
-        if (currentStepName === 'descarga') {
-            setCurrentStepName('servicio');
-        } else if (currentStepName === 'servicio') {
-            setCurrentStepName('paquete');
-        } else if (currentStepName === 'paquete') {
+        if (currentStepName === 'paquete') {
             setCurrentStepName('destino');
         } else if (currentStepName === 'destino') {
             setCurrentStepName('origen');
@@ -194,20 +190,22 @@ const SendPage = () => {
                     <ProgressStep name="servicio" label="Servicio" />
                     <ProgressStep name="descarga" label="Descarga" />
                 </ProgressIndicator>
-                <div className="rainbow-m-top_xx-large rainbow-align-content_center rainbow-flex_wrap">
-                    <Button
-                        label="Atras"
-                        onClick={handleBackClick}
-                        variant="neutral"
-                        className="rainbow-m-horizontal_medium"
-                    />
-                    <Button
-                        label="Siguiente"
-                        onClick={handleNextClick}
-                        variant="brand"
-                        className="rainbow-m-horizontal_medium"
-                    />
-                </div>
+                {currentStepName === 'servicio' ? null : currentStepName === 'descarga' ? null : (
+                    <div className="rainbow-m-top_xx-large rainbow-align-content_center rainbow-flex_wrap">
+                        <Button
+                            label="Atras"
+                            onClick={handleBackClick}
+                            variant="neutral"
+                            className="rainbow-m-horizontal_medium"
+                        />
+                        <Button
+                            label="Siguiente"
+                            onClick={handleNextClick}
+                            variant="brand"
+                            className="rainbow-m-horizontal_medium"
+                        />
+                    </div>
+                )}
                 {currentStepName === 'origen' && (
                     <OrigenComponent onSave={saveOriginData} idGuiaGlobal={idGuiaGlobal.current} />
                 )}
