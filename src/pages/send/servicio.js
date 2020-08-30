@@ -383,26 +383,26 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             </h6>
             <PriceContainer>
                 <PriceLabel>Tarifa Base:</PriceLabel>
-                <PriceNumber>{formatMoney(costos.guia)}</PriceNumber>
+                <PriceNumber>{formatMoney(costos.guia * 0.862)}</PriceNumber>
             </PriceContainer>
             {costos && (
                 <>
                     {costos.cargoExtra && (
                         <PriceContainer>
                             <PriceLabel>Kg adicionales:</PriceLabel>
-                            <PriceNumber>{formatMoney(costos.cargoExtra)}</PriceNumber>
+                            <PriceNumber>{formatMoney(costos.cargoExtra * 0.862)}</PriceNumber>
                         </PriceContainer>
                     )}
                     {costos.seguro > 0 && (
                         <PriceContainer>
                             <PriceLabel>Cargo por Seguro:</PriceLabel>
-                            <PriceNumber>{formatMoney(costos.seguro)}</PriceNumber>
+                            <PriceNumber>{formatMoney(costos.seguro * 0.862)}</PriceNumber>
                         </PriceContainer>
                     )}
                     {costos.zonaExt && (
                         <PriceContainer>
                             <PriceLabel>Zona Extendida:</PriceLabel>
-                            <PriceNumber>{formatMoney(150)}</PriceNumber>
+                            <PriceNumber>{formatMoney(150 * 0.862)}</PriceNumber>
                         </PriceContainer>
                     )}
                     <br />
