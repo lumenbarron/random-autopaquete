@@ -11,6 +11,7 @@ import {
 import styled from 'styled-components';
 
 import formatMoney from 'accounting-js/lib/formatMoney';
+import toFixed from 'accounting-js/lib/toFixed';
 import { useFirebaseApp } from 'reactfire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport, faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -48,6 +49,7 @@ const AdminOverweightPage = () => {
     const [supplier, setSupplier] = useState([]);
     const [errorGuia, setErrorGuia] = useState(false);
     const [xlsToUpLoad, setXlsToUpLoad] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const [overweightRatesBase, setOverweightRatesBase] = useState([]);
     const [overweightRatesBaseXls, setOverweightRatesBaseXls] = useState([]);
@@ -56,36 +58,37 @@ const AdminOverweightPage = () => {
 
     const creationDate = new Date();
     const [rateKgExtra, setRateKgExtra] = useState();
-    //overWeight data
+    // overWeight data
     useEffect(() => {
         if (!userId) {
         } else {
             db.collection('profiles')
                 .where('ID', '==', userId)
-                .get()
-                .then(function(profilesSnapshot) {
-                    profilesSnapshot.forEach(function(profileDoc) {
-                        setSaldo(profileDoc.data().saldo);
-                        setProfileDocId(profileDoc.id);
-                        db.collection(`profiles/${profileDoc.id}/rate`)
-                            .get()
-                            .then(function(ratesSnapshot) {
-                                const tmpOverweightRatesBase = [];
+                .onSnapshot(
+                    function(profilesSnapshot) {
+                        profilesSnapshot.forEach(function(profileDoc) {
+                            setSaldo(profileDoc.data().saldo);
+                            setProfileDocId(profileDoc.id);
+                            db.collection(`profiles/${profileDoc.id}/rate`)
+                                .get()
+                                .then(function(ratesSnapshot) {
+                                    const tmpOverweightRatesBase = [];
 
-                                ratesSnapshot.forEach(function(rateDoc) {
-                                    tmpOverweightRatesBase.push(rateDoc.data());
+                                    ratesSnapshot.forEach(function(rateDoc) {
+                                        tmpOverweightRatesBase.push(rateDoc.data());
+                                    });
+
+                                    setOverweightRatesBase(tmpOverweightRatesBase);
+                                })
+                                .catch(function(error) {
+                                    console.log('rates not found');
                                 });
-
-                                setOverweightRatesBase(tmpOverweightRatesBase);
-                            })
-                            .catch(function(error) {
-                                console.log('rates not found');
-                            });
-                    });
-                })
-                .catch(function(error) {
-                    console.log('profile not found');
-                });
+                        });
+                    },
+                    function(error) {
+                        console.log('profile not found');
+                    },
+                );
         }
     }, [guia, userId, xlsData]);
 
@@ -104,7 +107,7 @@ const AdminOverweightPage = () => {
 
     // Calculo para el Kilo extra
     useEffect(() => {
-        setCargo((realKg - kgDeclarados) * parseInt(rateKgExtra, 10));
+        setCargo((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16);
     }, [realKg, kgDeclarados, rateKgExtra, xlsData]);
 
     if (isNaN(cargo)) {
@@ -176,7 +179,7 @@ const AdminOverweightPage = () => {
         const reloadOverWeight = () => {
             db.collection('overweights').onSnapshot(handleOverWeight);
         };
-        setCargo((realKg - kgDeclarados) * parseInt(rateKgExtra, 10));
+        setCargo(toFixed((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16), 2);
         reloadOverWeight();
     }, []);
 
@@ -199,7 +202,7 @@ const AdminOverweightPage = () => {
             const addOverWeightData = {
                 ID: userId,
                 usuario: name,
-                fecha: creationDate.toLocaleDateString(),
+                fecha: creationDate,
                 guia,
                 rastreo: trackingNumber,
                 kilos_declarados: kgDeclarados,
@@ -219,7 +222,7 @@ const AdminOverweightPage = () => {
             db.collection('profiles')
                 .doc(profileDocId)
                 .update({
-                    saldo: parseFloat(saldo) - parseFloat(cargo),
+                    saldo: toFixed(parseFloat(saldo) - parseFloat(cargo), 2),
                 });
         } else {
         }
@@ -279,19 +282,22 @@ const AdminOverweightPage = () => {
                                                                     return getCostkgExtra.kgExtra;
                                                                 });
 
-                                                            const cargoOverweight =
+                                                            const cargoOverweight = toFixed(
                                                                 (overWeight.kilos_reales -
                                                                     doc.data().package.weight) *
-                                                                parseInt(
-                                                                    overweightRatesBaseXls,
-                                                                    10,
-                                                                );
+                                                                    parseInt(
+                                                                        overweightRatesBaseXls,
+                                                                        10,
+                                                                    ) *
+                                                                    1.16,
+                                                                2,
+                                                            );
                                                             const cargo = db
                                                                 .collection('overweights')
                                                                 .add({
                                                                     ID: doc.data().ID,
                                                                     usuario: doc.data().name,
-                                                                    fecha: creationDate.toLocaleDateString(),
+                                                                    fecha: creationDate,
                                                                     guia: IdGuiaXls,
                                                                     rastreo: overWeight.guia,
                                                                     kilos_declarados: doc.data()
@@ -312,9 +318,11 @@ const AdminOverweightPage = () => {
                                                             db.collection('profiles')
                                                                 .doc(profileDoc.id)
                                                                 .update({
-                                                                    saldo:
+                                                                    saldo: toFixed(
                                                                         profileDoc.data().saldo -
-                                                                        cargoOverweight,
+                                                                            cargoOverweight,
+                                                                        2,
+                                                                    ),
                                                                 });
                                                         })
                                                         .catch(function(error) {
@@ -358,14 +366,34 @@ const AdminOverweightPage = () => {
     };
 
     const deleteOverWeight = idDoc => {
+        if (deleting) return;
+        setDeleting(true);
+        let costo = null;
         db.collection('overweights')
             .doc(idDoc)
-            .delete()
-            .then(function() {
-                console.log('Document successfully deleted!', idDoc);
-            })
-            .catch(function(error) {
-                console.error('Error removing document: ', error);
+            .get()
+            .then(doc => {
+                costo = doc.data().cargo;
+
+                db.collection('overweights')
+                    .doc(idDoc)
+                    .delete()
+                    .then(function() {
+                        console.log('Document successfully deleted!', idDoc);
+
+                        db.collection('profiles')
+                            .doc(profileDocId)
+                            .update({
+                                saldo: toFixed(parseFloat(saldo) + parseFloat(costo), 2),
+                            })
+                            .then(function() {
+                                setDeleting(false);
+                            });
+                    })
+                    .catch(function(error) {
+                        console.error('Error removing document: ', error);
+                        setDeleting(false);
+                    });
             });
     };
 
@@ -374,7 +402,10 @@ const AdminOverweightPage = () => {
             id: overWeight.id,
             guide: overWeight.rastreo,
             user: overWeight.usuario,
-            date: overWeight.fecha,
+            date:
+                typeof overWeight.fecha.toDate === 'function'
+                    ? overWeight.fecha.toDate().toLocaleDateString()
+                    : overWeight.fecha,
             kdeclared: overWeight.kilos_declarados,
             kreal: overWeight.kilos_reales,
             cadd: formatMoney(overWeight.cargo),
@@ -499,6 +530,8 @@ const AdminOverweightPage = () => {
                             data={infoOverWeight}
                             emptyTitle="Oh no!"
                             emptyDescription="No hay ningun registro actualmente..."
+                            sortedBy="date"
+                            sortDirection="desc"
                         >
                             <StyledColumn
                                 header="Número de Guía"

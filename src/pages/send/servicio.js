@@ -4,6 +4,7 @@ import { Card, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
 import formatMoney from 'accounting-js/lib/formatMoney';
+import toFixed from 'accounting-js/lib/toFixed';
 import { StyledPaneContainer, StyledDirectiosDetails, StyledDetails, StyledError } from './styled';
 
 const PriceContainer = styled.div`
@@ -27,6 +28,7 @@ const PriceNumber = styled.div`
 `;
 
 export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
+    const [hasActivatedSuppliers, setHasActivatedSuppliers] = useState(null);
     const [supplierAvailability, setSupplierAvailability] = useState(false);
 
     const [supplierCostFedexDiaS, setSupplierCostFedexDiaS] = useState(false);
@@ -63,15 +65,16 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [contentValue, setContentValue] = useState('');
     const [error, setError] = useState(false);
 
-    const [docId, setDocId] = useState();
+    const [profileDoc, setProfileDoc] = useState(false);
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
+        const precioNeto = precio * 1.16;
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    if (parseFloat(precio) > parseFloat(doc.data().saldo)) {
+                    if (parseFloat(precioNeto) > parseFloat(doc.data().saldo)) {
                         setError(true);
                     } else {
                         db.collection('profiles')
@@ -88,7 +91,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                         const supplierData = {
                                             ID: user.uid,
                                             Supplier: `${supplier}${type}`,
-                                            Supplier_cost: precio,
+                                            Supplier_cost: toFixed(precioNeto, 2),
                                             tarifa,
                                             cargos,
                                         };
@@ -151,8 +154,20 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     }, []);
 
     useEffect(() => {
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(profile => {
+                setProfileDoc(profile.docs[0]);
+                profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
+                    setHasActivatedSuppliers(querySnapshot.size > 0);
+                });
+            });
+    }, [user]);
+
+    useEffect(() => {
         if (weight === '') return;
-        if (!supplierAvailability) return;
+        if (!supplierAvailability || !profileDoc) return;
         let pricedWeight = weight;
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
         if (volumetricWeight > weight) {
@@ -171,190 +186,183 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             }
             return 0;
         };
-        db.collection('profiles')
-            .where('ID', '==', user.uid)
-            .get()
-            .then(profile => {
-                profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
-                    const segundaMejorTarifa = {};
-                    const kgsExtraTarifas = {};
-                    querySnapshot.forEach(doc => {
-                        const { entrega, precio, max, min, kgExtra } = doc.data();
-                        // Encontramos si hay tarifas que apliquen directo al paquete
-                        if (
-                            !kgExtra &&
-                            parseInt(min, 10) <= parseInt(pricedWeight, 10) &&
-                            parseInt(max, 10) >= parseInt(pricedWeight, 10)
-                        ) {
-                            const precioTotal = parseInt(precio, 10) * quantity;
-                            if (entrega === 'fedexDiaSiguiente')
-                                setSupplierCostFedexDiaS({
-                                    id: doc.id,
-                                    precio:
-                                        precioTotal +
-                                        getInsurancePrice('fedexDiaSiguiente') +
-                                        (typeof supplierAvailability.fedexDiaSiguiente
-                                            .zonaExtendida !== 'undefined'
-                                            ? 150
-                                            : 0),
-                                    seguro: getInsurancePrice('fedexDiaSiguiente'),
-                                    guia: precioTotal,
-                                    zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
-                                });
-                            if (entrega === 'fedexEconomico')
-                                setSupplierCostFedexEcon({
-                                    id: doc.id,
-                                    precio:
-                                        precioTotal +
-                                        getInsurancePrice('fedexEconomico') +
-                                        (typeof supplierAvailability.fedexEconomico
-                                            .zonaExtendida !== 'undefined'
-                                            ? 150
-                                            : 0),
-                                    seguro: getInsurancePrice('fedexEconomico'),
-                                    guia: precioTotal,
-                                    zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
-                                });
-                            if (entrega === 'estafetaDiaSiguiente')
-                                setSupplierCostEstafetaDiaS({
-                                    id: doc.id,
-                                    precio:
-                                        precioTotal +
-                                        getInsurancePrice('estafetaDiaSiguiente') +
-                                        (typeof supplierAvailability.estafetaDiaSiguiente
-                                            .zonaExtendida !== 'undefined'
-                                            ? 150
-                                            : 0),
-                                    seguro: getInsurancePrice('estafetaDiaSiguiente'),
-                                    guia: precioTotal,
-                                    zonaExt: !!supplierAvailability.estafetaDiaSiguiente
-                                        .zonaExtendida,
-                                });
-                            if (entrega === 'estafetaEconomico')
-                                setSupplierCostEstafetaEcon({
-                                    id: doc.id,
-                                    precio:
-                                        precioTotal +
-                                        getInsurancePrice('estafetaEconomico') +
-                                        (typeof supplierAvailability.estafetaEconomico
-                                            .zonaExtendida !== 'undefined'
-                                            ? 150
-                                            : 0),
-                                    seguro: getInsurancePrice('estafetaEconomico'),
-                                    guia: precioTotal,
-                                    zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
-                                });
-                            return;
-                        }
+        profileDoc.ref.collection('rate').onSnapshot(querySnapshot => {
+            const segundaMejorTarifa = {};
+            const kgsExtraTarifas = {};
+            querySnapshot.forEach(doc => {
+                const { entrega, precio, max, min, kgExtra } = doc.data();
+                // Encontramos si hay tarifas que apliquen directo al paquete
+                if (
+                    !kgExtra &&
+                    parseInt(min, 10) <= parseInt(pricedWeight, 10) &&
+                    parseInt(max, 10) >= parseInt(pricedWeight, 10)
+                ) {
+                    const precioTotal = parseInt(precio, 10) * quantity;
+                    if (entrega === 'fedexDiaSiguiente')
+                        setSupplierCostFedexDiaS({
+                            id: doc.id,
+                            precio:
+                                precioTotal +
+                                getInsurancePrice('fedexDiaSiguiente') +
+                                (typeof supplierAvailability.fedexDiaSiguiente.zonaExtendida !==
+                                'undefined'
+                                    ? 150
+                                    : 0),
+                            seguro: getInsurancePrice('fedexDiaSiguiente'),
+                            guia: precioTotal,
+                            zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
+                        });
+                    if (entrega === 'fedexEconomico')
+                        setSupplierCostFedexEcon({
+                            id: doc.id,
+                            precio:
+                                precioTotal +
+                                getInsurancePrice('fedexEconomico') +
+                                (typeof supplierAvailability.fedexEconomico.zonaExtendida !==
+                                'undefined'
+                                    ? 150
+                                    : 0),
+                            seguro: getInsurancePrice('fedexEconomico'),
+                            guia: precioTotal,
+                            zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
+                        });
+                    if (entrega === 'estafetaDiaSiguiente')
+                        setSupplierCostEstafetaDiaS({
+                            id: doc.id,
+                            precio:
+                                precioTotal +
+                                getInsurancePrice('estafetaDiaSiguiente') +
+                                (typeof supplierAvailability.estafetaDiaSiguiente.zonaExtendida !==
+                                'undefined'
+                                    ? 150
+                                    : 0),
+                            seguro: getInsurancePrice('estafetaDiaSiguiente'),
+                            guia: precioTotal,
+                            zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
+                        });
+                    if (entrega === 'estafetaEconomico')
+                        setSupplierCostEstafetaEcon({
+                            id: doc.id,
+                            precio:
+                                precioTotal +
+                                getInsurancePrice('estafetaEconomico') +
+                                (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
+                                'undefined'
+                                    ? 150
+                                    : 0),
+                            seguro: getInsurancePrice('estafetaEconomico'),
+                            guia: precioTotal,
+                            zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
+                        });
+                    return;
+                }
 
-                        // Anotamos los cargos de kg extra, por si los necesitamos
-                        if (kgExtra) {
-                            kgsExtraTarifas[entrega.slice(0, entrega.indexOf('Extra'))] = parseInt(
-                                kgExtra,
-                                10,
-                            );
-                            return;
-                        }
+                // Anotamos los cargos de kg extra, por si los necesitamos
+                if (kgExtra) {
+                    kgsExtraTarifas[entrega.slice(0, entrega.indexOf('Extra'))] = parseInt(
+                        kgExtra,
+                        10,
+                    );
+                    return;
+                }
 
-                        // Si el mínimo de kgs de la tarifa es mayor al peso, no aplica
-                        if (parseInt(min, 10) > parseInt(pricedWeight, 10)) {
-                            return;
-                        }
+                // Si el mínimo de kgs de la tarifa es mayor al peso, no aplica
+                if (parseInt(min, 10) > parseInt(pricedWeight, 10)) {
+                    return;
+                }
 
-                        // Esto ocurre si el máximo es menor y el mínimo es menor que el peso,
-                        // es decir, nos sobran kilos
-                        const diferencia =
-                            (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
+                // Esto ocurre si el máximo es menor y el mínimo es menor que el peso,
+                // es decir, nos sobran kilos
+                const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
 
-                        //console.log('Diferencia Variable', diferencia);
-                        if (
-                            !segundaMejorTarifa[entrega] ||
-                            segundaMejorTarifa[entrega].diferencia > diferencia
-                        ) {
-                            const precioTotal = parseInt(precio, 10) * quantity;
+                //console.log('Diferencia Variable', diferencia);
+                if (
+                    !segundaMejorTarifa[entrega] ||
+                    segundaMejorTarifa[entrega].diferencia > diferencia
+                ) {
+                    const precioTotal = parseInt(precio, 10) * quantity;
 
-                            segundaMejorTarifa[entrega] = {
-                                id: doc.id,
-                                //  precio: precioTotal + getInsurancePrice('estafetaEconomico'),
-                                guia: precioTotal,
-                                //  seguro: getInsurancePrice('estafetaEconomico'),
-                                diferencia,
-                            };
-                            return;
-                        }
-                    });
-                    Object.keys(segundaMejorTarifa).forEach(entrega => {
-                        const tarifa = segundaMejorTarifa[entrega];
-                        const { guia } = tarifa;
-                        const precio = tarifa.guia + tarifa.diferencia * kgsExtraTarifas[entrega];
-                        // console.log('guia tarifa', tarifa.diferencia);
-                        console.log('Entrega', entrega);
-                        const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
-                        console.log('kgsExtraTarifas', kgsExtraTarifas);
-                        if (entrega === 'fedexDiaSiguiente')
-                            setSupplierCostFedexDiaS({
-                                id: tarifa.id,
-                                precio:
-                                    precio +
-                                    getInsurancePrice('fedexDiaSiguiente') +
-                                    (typeof supplierAvailability.fedexDiaSiguiente.zonaExtendida !==
-                                    'undefined'
-                                        ? 150
-                                        : 0),
-                                seguro: getInsurancePrice('fedexDiaSiguiente'),
-                                cargoExtra,
-                                guia,
-                                zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
-                            });
-                        if (entrega === 'fedexEconomico')
-                            setSupplierCostFedexEcon({
-                                id: tarifa.id,
-                                precio:
-                                    precio +
-                                    getInsurancePrice('fedexEconomico') +
-                                    (typeof supplierAvailability.fedexEconomico.zonaExtendida !==
-                                    'undefined'
-                                        ? 150
-                                        : 0),
-                                seguro: getInsurancePrice('fedexEconomico'),
-                                cargoExtra,
-                                guia,
-                                zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
-                            });
-                        if (entrega === 'estafetaDiaSiguiente')
-                            setSupplierCostEstafetaDiaS({
-                                id: tarifa.id,
-                                precio:
-                                    precio +
-                                    getInsurancePrice('estafetaDiaSiguiente') +
-                                    (typeof supplierAvailability.estafetaDiaSiguiente
-                                        .zonaExtendida !== 'undefined'
-                                        ? 150
-                                        : 0),
-                                seguro: getInsurancePrice('estafetaDiaSiguiente'),
-                                cargoExtra,
-                                guia,
-                                zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
-                            });
-                        if (entrega === 'estafetaEconomico')
-                            setSupplierCostEstafetaEcon({
-                                id: tarifa.id,
-                                precio:
-                                    precio +
-                                    getInsurancePrice('estafetaEconomico') +
-                                    (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
-                                    'undefined'
-                                        ? 150
-                                        : 0),
-                                seguro: getInsurancePrice('estafetaEconomico'),
-                                cargoExtra,
-                                guia,
-                                zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
-                            });
-                    });
-                });
+                    segundaMejorTarifa[entrega] = {
+                        id: doc.id,
+                        //  precio: precioTotal + getInsurancePrice('estafetaEconomico'),
+                        guia: precioTotal,
+                        //  seguro: getInsurancePrice('estafetaEconomico'),
+                        diferencia,
+                    };
+                    return;
+                }
             });
-    }, [weight, quantity, contentValue, supplierAvailability]);
+            Object.keys(segundaMejorTarifa).forEach(entrega => {
+                const tarifa = segundaMejorTarifa[entrega];
+                const { guia } = tarifa;
+                const precio = tarifa.guia + tarifa.diferencia * kgsExtraTarifas[entrega];
+                // console.log('guia tarifa', tarifa.diferencia);
+                console.log('Entrega', entrega);
+                const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
+                console.log('kgsExtraTarifas', kgsExtraTarifas);
+                if (entrega === 'fedexDiaSiguiente')
+                    setSupplierCostFedexDiaS({
+                        id: tarifa.id,
+                        precio:
+                            precio +
+                            getInsurancePrice('fedexDiaSiguiente') +
+                            (typeof supplierAvailability.fedexDiaSiguiente.zonaExtendida !==
+                            'undefined'
+                                ? 150
+                                : 0),
+                        seguro: getInsurancePrice('fedexDiaSiguiente'),
+                        cargoExtra,
+                        guia,
+                        zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
+                    });
+                if (entrega === 'fedexEconomico')
+                    setSupplierCostFedexEcon({
+                        id: tarifa.id,
+                        precio:
+                            precio +
+                            getInsurancePrice('fedexEconomico') +
+                            (typeof supplierAvailability.fedexEconomico.zonaExtendida !==
+                            'undefined'
+                                ? 150
+                                : 0),
+                        seguro: getInsurancePrice('fedexEconomico'),
+                        cargoExtra,
+                        guia,
+                        zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
+                    });
+                if (entrega === 'estafetaDiaSiguiente')
+                    setSupplierCostEstafetaDiaS({
+                        id: tarifa.id,
+                        precio:
+                            precio +
+                            getInsurancePrice('estafetaDiaSiguiente') +
+                            (typeof supplierAvailability.estafetaDiaSiguiente.zonaExtendida !==
+                            'undefined'
+                                ? 150
+                                : 0),
+                        seguro: getInsurancePrice('estafetaDiaSiguiente'),
+                        cargoExtra,
+                        guia,
+                        zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
+                    });
+                if (entrega === 'estafetaEconomico')
+                    setSupplierCostEstafetaEcon({
+                        id: tarifa.id,
+                        precio:
+                            precio +
+                            getInsurancePrice('estafetaEconomico') +
+                            (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
+                            'undefined'
+                                ? 150
+                                : 0),
+                        seguro: getInsurancePrice('estafetaEconomico'),
+                        cargoExtra,
+                        guia,
+                        zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
+                    });
+            });
+        });
+    }, [weight, quantity, contentValue, supplierAvailability, profileDoc]);
 
     const supplierCard = (proveedor, tipoEnvio, entrega, costos) => (
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
@@ -383,38 +391,38 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             </h6>
             <PriceContainer>
                 <PriceLabel>Tarifa Base:</PriceLabel>
-                <PriceNumber>{formatMoney(costos.guia * 0.862)}</PriceNumber>
+                <PriceNumber>{formatMoney(costos.guia)}</PriceNumber>
             </PriceContainer>
             {costos && (
                 <>
                     {costos.cargoExtra && (
                         <PriceContainer>
                             <PriceLabel>Kg adicionales:</PriceLabel>
-                            <PriceNumber>{formatMoney(costos.cargoExtra * 0.862)}</PriceNumber>
+                            <PriceNumber>{formatMoney(costos.cargoExtra)}</PriceNumber>
                         </PriceContainer>
                     )}
                     {costos.seguro > 0 && (
                         <PriceContainer>
                             <PriceLabel>Cargo por Seguro:</PriceLabel>
-                            <PriceNumber>{formatMoney(costos.seguro * 0.862)}</PriceNumber>
+                            <PriceNumber>{formatMoney(costos.seguro)}</PriceNumber>
                         </PriceContainer>
                     )}
                     {costos.zonaExt && (
                         <PriceContainer>
                             <PriceLabel>Zona Extendida:</PriceLabel>
-                            <PriceNumber>{formatMoney(150 * 0.862)}</PriceNumber>
+                            <PriceNumber>{formatMoney(150)}</PriceNumber>
                         </PriceContainer>
                     )}
                     <br />
                     <PriceContainer>
                         <PriceLabel>Subtotal:</PriceLabel>
-                        <PriceNumber>{formatMoney(costos.precio * 0.862)}</PriceNumber>
+                        <PriceNumber>{formatMoney(costos.precio)}</PriceNumber>
                     </PriceContainer>
                     <PriceContainer>
                         <PriceLabel>IVA:</PriceLabel>
-                        <PriceNumber>{formatMoney(costos.precio * 0.138)}</PriceNumber>
+                        <PriceNumber>{formatMoney(costos.precio * 0.16)}</PriceNumber>
                     </PriceContainer>
-                    <h3> {formatMoney(costos.precio)} </h3>
+                    <h3> {formatMoney(costos.precio * 1.16)} </h3>
                     <Button
                         label="Elegir"
                         variant="brand"
@@ -463,8 +471,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             <StyledError>
                 {error && <div className="alert-error">No tienes el saldo suficiente</div>}
             </StyledError>
-            {!supplierAvailability && <h1>Obteniendo precios...</h1>}
-            {supplierAvailability && (
+            {hasActivatedSuppliers === false && (
+                <h1>Ningún servicio activado, contacte a un administrador</h1>
+            )}
+            {hasActivatedSuppliers && !supplierAvailability && <h1>Obteniendo precios...</h1>}
+            {hasActivatedSuppliers && supplierAvailability && (
                 <>
                     <StyledPaneContainer style={{ justifyContent: 'center' }}>
                         {supplierAvailability.fedexDiaSiguiente &&
