@@ -184,10 +184,10 @@ export default function DirectionPage() {
             setError(true);
             return;
         }
-        const duplicateStreet = data.map((searchStree, idx) => {
-            return searchStree.street_number;
+        const duplicateName = data.map((searchStree, idx) => {
+            return searchStree.name;
         });
-        if (duplicateStreet.includes(streetNumber)) {
+        if (duplicateName.includes(name)) {
             console.log('Necesitas poner una calle diferente');
             return;
         }
@@ -208,32 +208,6 @@ export default function DirectionPage() {
         directionsCollectionAdd
             .then(function(docRef) {
                 console.log('Document written with ID (origen): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
-
-        const directionsGuiasCollectionAdd = db.collection('guia').add({
-            ID: user.uid,
-            creation_date: creationDate.toLocaleDateString(),
-            sender_addresses: {
-                name,
-                codigo_postal: CP,
-                neighborhood,
-                country,
-                street_number: streetNumber,
-                place_reference: placeRef,
-                phone,
-                ID: user.uid,
-                creation_date: creationDate.toLocaleDateString(),
-            },
-        });
-
-        const searchDuplicate = db.collection('sender_addresses').get();
-
-        directionsGuiasCollectionAdd
-            .then(function(docRef) {
-                console.log('Document written with ID (Guía): ', docRef.id);
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);

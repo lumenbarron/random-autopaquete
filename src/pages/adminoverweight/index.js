@@ -150,7 +150,7 @@ const AdminOverweightPage = () => {
                         setDocId(doc.id);
                         setName(doc.data().name);
                         setUserId(doc.data().ID);
-                        setDate(doc.data().creation_date);
+                        setDate(doc.data().creation_date.toDate());
                         setKgdeclarados(doc.data().package.weight);
                         setSupplier(doc.data().supplierData.tarifa.entrega);
                     } else {
@@ -202,7 +202,7 @@ const AdminOverweightPage = () => {
             const addOverWeightData = {
                 ID: userId,
                 usuario: name,
-                fecha: creationDate,
+                fecha: creationDate.toLocaleDateString(),
                 guia,
                 rastreo: trackingNumber,
                 kilos_declarados: kgDeclarados,
@@ -213,7 +213,7 @@ const AdminOverweightPage = () => {
             db.collection('overweights')
                 .add(addOverWeightData)
                 .then(function(docRef) {
-                    console.log('Document written with ID (origen): ', docRef.id);
+                    console.log('Document written');
                 })
                 .catch(function(error) {
                     console.error('Error adding document: ', error);
@@ -297,7 +297,7 @@ const AdminOverweightPage = () => {
                                                                 .add({
                                                                     ID: doc.data().ID,
                                                                     usuario: doc.data().name,
-                                                                    fecha: creationDate,
+                                                                    fecha: creationDate.toLocaleDateString(),
                                                                     guia: IdGuiaXls,
                                                                     rastreo: overWeight.guia,
                                                                     kilos_declarados: doc.data()
@@ -379,16 +379,8 @@ const AdminOverweightPage = () => {
                     .doc(idDoc)
                     .delete()
                     .then(function() {
-                        console.log('Document successfully deleted!', idDoc);
-
-                        db.collection('profiles')
-                            .doc(profileDocId)
-                            .update({
-                                saldo: toFixed(parseFloat(saldo) + parseFloat(costo), 2),
-                            })
-                            .then(function() {
-                                setDeleting(false);
-                            });
+                        console.log('Document successfully deleted!');
+                        setDeleting(false);
                     })
                     .catch(function(error) {
                         console.error('Error removing document: ', error);
@@ -444,7 +436,7 @@ const AdminOverweightPage = () => {
                         <Input
                             id="fecha"
                             label="Fecha"
-                            value={date}
+                            value={date ? new Date(date).toLocaleDateString() : undefined}
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
                             readOnly

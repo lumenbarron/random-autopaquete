@@ -47,7 +47,6 @@ const OverweightPage = () => {
     }
 
     const data = overWeightData.map((overWeight, idx) => {
-        console.log(overWeight);
         return {
             date: overWeight.fecha,
             guide: overWeight.rastreo,

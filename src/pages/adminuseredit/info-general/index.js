@@ -174,7 +174,7 @@ export default function InfoGeneral({ user }) {
         if (comment.trim() === '') {
             directionsGuiasCollectionAdd
                 .then(function(docRef) {
-                    console.log('Se cumplio! Document written with ID (profile): ', docRef.id);
+                    console.log('Se cumplio! Document written');
                 })
                 .catch(function(error) {
                     console.error('No se encontro el documento: ', error);
@@ -183,7 +183,7 @@ export default function InfoGeneral({ user }) {
         }
         directionsGuiasCollectionAdd
             .then(function(docRef) {
-                console.log('Se cumplio! Document written with ID (profile): ', docRef.id);
+                console.log('Se cumplio! Document written');
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
@@ -202,7 +202,7 @@ export default function InfoGeneral({ user }) {
             .collection('comentarios')
             .add(addComment)
             .then(function(docRef) {
-                console.log('Document written with ID (origen): ', docRef.id);
+                console.log('Document written');
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);

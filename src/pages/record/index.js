@@ -52,54 +52,58 @@ const RecordPage = () => {
     const history = useHistory();
 
     const [filter, setFilter] = useState('');
-
+    const [tableData, setTableData] = useState();
     const [recordsData, setRecordsData] = useState([]);
 
-    function handleRecods(snapshot) {
-        const recordsMap = snapshot.docs.map(doc => {
-            return {
-                id: doc.id,
-                ...doc.data(),
-            };
-        });
-        setRecordsData(recordsMap);
-    }
-
     useEffect(() => {
-        const reloadRecords = () => {
-            db.collection('guia')
-                .where('ID', '==', user.uid)
-                .where('status', '==', 'completed')
-                .onSnapshot(handleRecods);
-        };
-        reloadRecords();
+        const data = [];
+        db.collection('guia')
+            .orderBy('creation_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    data.push({
+                        id: doc.id,
+                        sentDate: doc.data().creation_date.toDate(),
+                        ...doc.data(),
+                    });
+                });
+                setRecordsData(data);
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
     }, []);
 
-    const data = recordsData
-        .filter(historyRecord => {
-            if (filter === null) {
-                return historyRecord;
-            } else if (
-                historyRecord.sender_addresses.name.includes(filter) ||
-                historyRecord.supplierData.Supplier_cost.includes(filter)
-            ) {
-                return historyRecord;
-            }
-        })
-        .map(historyRecord => {
-            return {
-                id: historyRecord.id,
-                date: historyRecord.sender_addresses.creation_date,
-                guide: historyRecord.rastreo ? historyRecord.rastreo.join(' ') : 'N/D',
-                origin: historyRecord.sender_addresses.name,
-                Destination: historyRecord.receiver_addresses.name,
-                weight: historyRecord.package.weight,
-                service: historyRecord.supplierData.Supplier,
-                status: 'Finalizado',
-                cost: historyRecord.supplierData.Supplier_cost,
-                label: historyRecord.label,
-            };
-        });
+    useEffect(() => {
+        setTableData(
+            recordsData
+                .filter(historyRecord => {
+                    if (historyRecord.ID === user.uid && historyRecord.status === 'completed') {
+                        if (filter === null) {
+                            return historyRecord;
+                        } else if (historyRecord.sender_addresses.name.includes(filter)) {
+                            return historyRecord;
+                        }
+                    }
+                })
+                .map(historyRecord => {
+                    console.log('datos dentro dexl map', historyRecord);
+                    return {
+                        id: historyRecord.id,
+                        date: new Date(historyRecord.sentDate).toLocaleDateString(),
+                        guide: historyRecord.rastreo ? historyRecord.rastreo.join(' ') : 'N/D',
+                        origin: historyRecord.sender_addresses.name,
+                        Destination: historyRecord.receiver_addresses.name,
+                        weight: historyRecord.package.weight,
+                        service: historyRecord.supplierData.Supplier,
+                        status: 'Finalizado',
+                        cost: historyRecord.supplierData.Supplier_cost,
+                        label: historyRecord.label,
+                    };
+                }),
+        );
+    }, [recordsData]);
 
     const search = e => {
         let keyword = e.target.value;
@@ -109,7 +113,7 @@ const RecordPage = () => {
     const pushSend = () => {
         history.push('/mi-cuenta/enviar');
     };
-
+    console.log('recordsData', recordsData);
     return (
         <StyledRecord>
             <RecordContainer>
@@ -135,14 +139,12 @@ const RecordPage = () => {
                         <div className="rainbow-p-bottom_xx-large">
                             <div style={containerStyles}>
                                 <StyledTable
-                                    data={data}
+                                    data={tableData}
                                     pageSize={10}
                                     keyField="id"
                                     style={containerTableStyles}
                                     emptyTitle="Oh no!"
                                     emptyDescription="No hay ningun registro actualmente..."
-                                    sortedBy="date"
-                                    sortDirection="desc"
                                     className="direction-table"
                                 >
                                     <Column header="Fecha " field="date" defaultWidth={105} />
