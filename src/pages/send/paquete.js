@@ -229,13 +229,19 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 }
             }
             setErrorNameDuplicate(false);
+
+            let pricedWeight = weight;
+            const volumetricWeight = Math.ceil((height * width * depth) / 5000);
+            if (volumetricWeight > weight) {
+                pricedWeight = volumetricWeight;
+            }
             const packageDataToFirebase = {
                 ID: user.uid,
                 name,
                 height,
                 width,
                 depth,
-                weight: Math.ceil(weight),
+                weight: Math.ceil(pricedWeight),
                 content_description: contentDescription,
                 quantity: 1,
                 content_value: contentValue,
@@ -249,7 +255,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     height,
                     width,
                     depth,
-                    weight: Math.ceil(weight),
+                    weight: Math.ceil(pricedWeight),
                     content_description: contentDescription,
                     quantity: 1,
                     content_value: contentValue,
