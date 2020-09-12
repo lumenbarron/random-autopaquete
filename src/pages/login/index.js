@@ -129,47 +129,55 @@ const LoginPage = () => {
     return (
         <StyledLoginPage>
             <StyledLoginSection>
-                <h1 style={{ marginBottom: '6%' }}>Iniciar sesión</h1>
-                <form>
-                    <Input
-                        label="Email o nombre de ususario"
-                        style={containerStyles}
-                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
-                        icon={<FontAwesomeIcon icon={faEnvelope} />}
-                        onChange={ev => setEmail(ev.target.value)}
-                    />
-                    <Input
-                        label="Contraseña"
-                        style={containerStyles}
-                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
-                        icon={<FontAwesomeIcon icon={faKey} />}
-                        type="password"
-                        onChange={ev => setPassword(ev.target.value)}
-                    />
+                <h1>Iniciar sesión 1</h1>
+                <div className="rainbow-align-content_center rainbow-flex_wrap">
+                    <form>
+                        <Input
+                            label="Email o nombre de ususario"
+                            // style={containerStyles}
+                            className="rainbow-p-around_medium"
+                            icon={<FontAwesomeIcon icon={faEnvelope} />}
+                            onChange={ev => setEmail(ev.target.value)}
+                        />
+                        <Input
+                            label="Contraseña"
+                            className="rainbow-p-around_medium"
+                            icon={<FontAwesomeIcon icon={faKey} />}
+                            type="password"
+                            onChange={ev => setPassword(ev.target.value)}
+                        />
 
-                    {errorEmptyLogIn && (
-                        <div className="alert-error">
-                            Necesitas ingresar tu correo y contraseña para iniciar sesión
+                        {errorEmptyLogIn && (
+                            <div className="alert-error">
+                                Necesitas ingresar tu correo y contraseña para iniciar sesión
+                            </div>
+                        )}
+                        {errorLogIn && (
+                            <div className="alert-error">Correo o contraseña incorrectos</div>
+                        )}
+                        {errorEmptyRestorePass && (
+                            <div className="alert-error">Ingresa tu correo electrónico</div>
+                        )}
+                        {errorRestorePass && <div className={messegeClass}>{message}</div>}
+                        <div className="rainbow-align-content_center rainbow-flex_wrap">
+                            <Button
+                                className="boton rainbow-m-around_medium"
+                                type="submit"
+                                onClick={login}
+                            >
+                                Iniciar sesión
+                            </Button>
                         </div>
-                    )}
-                    {errorLogIn && (
-                        <div className="alert-error">Correo o contraseña incorrectos</div>
-                    )}
-                    {errorEmptyRestorePass && (
-                        <div className="alert-error">Ingresa tu correo electrónico</div>
-                    )}
-                    {errorRestorePass && <div className={messegeClass}>{message}</div>}
-                    <Button className="boton" type="submit" onClick={login}>
-                        Iniciar sesión
-                    </Button>
-
-                    <a className="remember-pass" href="/login" onClick={restorePass}>
-                        ¿Olvidaste tu constraseña?
-                    </a>
-                </form>
+                        <div className="rainbow-align-content_center rainbow-flex_wrap">
+                            <a href="/login" onClick={restorePass}>
+                                ¿Olvidaste tu constraseña?
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </StyledLoginSection>
 
-            <StyledLoginSection style={{ paddingBottom: '2.9%' }}>
+            {/* <StyledLoginSection style={{ paddingBottom: '2.9%' }}>
                 <h1>Regístrate</h1>
                 <div>
                     <form>
@@ -240,7 +248,7 @@ const LoginPage = () => {
                         </div>
                     </form>
                 </div>
-            </StyledLoginSection>
+            </StyledLoginSection> */}
         </StyledLoginPage>
     );
 };

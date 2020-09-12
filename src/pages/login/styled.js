@@ -5,6 +5,10 @@ export const StyledLoginPage = styled.div`
     flex-wrap: wrap;
     padding:  6rem;
 
+    @media (max-width: 426px) {
+        padding:  0;
+      }
+
     h1 {
         color: #c94141 !important;
         font-weight: 600;
