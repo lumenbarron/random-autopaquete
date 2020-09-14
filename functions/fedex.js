@@ -105,7 +105,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
                         PhoneNumber: senderAddress.phone,
                     },
                     Address: {
-                        StreetLines: senderAddress.street_number,
+                        StreetLines: [senderAddress.street_number, senderAddress.neighborhood],
                         City: senderAddress.country,
                         StateOrProvinceCode: senderAddress.state,
                         PostalCode: senderAddress.codigo_postal,
@@ -118,7 +118,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
                         PhoneNumber: receiverAddress.phone,
                     },
                     Address: {
-                        StreetLines: receiverAddress.street_number,
+                        StreetLines: [receiverAddress.street_number, receiverAddress.neighborhood],
                         City: receiverAddress.country,
                         StateOrProvinceCode: receiverAddress.state,
                         PostalCode: receiverAddress.codigo_postal,
