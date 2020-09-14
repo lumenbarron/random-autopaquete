@@ -20,6 +20,9 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
         return false;
     }
 
+    let weight = Math.ceil(packaging.weight);
+    weight = weight > 1 ? weight : 1;
+
     const packageLineItems = [];
     for (let i = 1; i <= quantity; i += 1) {
         const insuredValue =
@@ -37,7 +40,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
             GroupPackageCount: `${quantity}`,
             Weight: {
                 Units: 'KG',
-                Value: packaging.weight,
+                Value: weight,
             },
             Dimensions: {
                 Length: packaging.depth,
@@ -105,7 +108,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
                         PhoneNumber: senderAddress.phone,
                     },
                     Address: {
-                        StreetLines: senderAddress.street_number,
+                        StreetLines: [senderAddress.street_number, senderAddress.neighborhood],
                         City: senderAddress.country,
                         StateOrProvinceCode: senderAddress.state,
                         PostalCode: senderAddress.codigo_postal,
@@ -118,7 +121,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
                         PhoneNumber: receiverAddress.phone,
                     },
                     Address: {
-                        StreetLines: receiverAddress.street_number,
+                        StreetLines: [receiverAddress.street_number, receiverAddress.neighborhood],
                         City: receiverAddress.country,
                         StateOrProvinceCode: receiverAddress.state,
                         PostalCode: receiverAddress.codigo_postal,
@@ -208,6 +211,9 @@ exports.create = functions.https.onRequest(async (req, res) => {
         return;
     }
 
+    let weight = Math.ceil(packaging.weight);
+    weight = weight > 1 ? weight : 1;
+
     const packageLineItems = [];
     for (let i = 1; i <= quantity; i += 1) {
         const insuredValue =
@@ -223,7 +229,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
             SequenceNumber: `${i}`,
             Weight: {
                 Units: 'KG',
-                Value: packaging.weight,
+                Value: weight,
             },
             Dimensions: {
                 Length: packaging.depth,

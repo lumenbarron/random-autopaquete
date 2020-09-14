@@ -168,7 +168,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     useEffect(() => {
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
-        let pricedWeight = weight;
+        let pricedWeight = Math.ceil(weight);
+        pricedWeight = pricedWeight > 1 ? pricedWeight : 1;
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
         if (volumetricWeight > weight) {
             pricedWeight = volumetricWeight;
