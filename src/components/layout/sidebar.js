@@ -376,7 +376,9 @@ export function AccountSidebar() {
                             !doc.data().persona ||
                             (doc.data().persona !== 'Moral' && doc.data().persona !== 'Física')
                         ) {
-                            history.push('/documentacion');
+                            //Bug para ver mi cuenta sin haber dado de alta los papeles
+                            console.log('documentacion');
+                            //history.push('/documentacion');
                         }
                     } else {
                         setStatus('Falta Información');

@@ -59,7 +59,7 @@ const SignUpPage = () => {
                 });
                 profilesCollectionAdd
                     .then(function(docRef) {
-                        history.push('/documentacion');
+                        history.push('/admin/documentacion');
                     })
                     .catch(function(error) {
                         console.error('Error adding document: ', error);

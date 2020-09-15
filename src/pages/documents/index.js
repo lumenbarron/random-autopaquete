@@ -8,7 +8,7 @@ import TabPersonaMoral from './persona-moral';
 const DocumentsPage = () => {
     const [selectedTab, setSelectedTab] = useState('pfisica');
 
-    useRegularSecurity();
+    //useRegularSecurity();
 
     return (
         <StyledContainer>
