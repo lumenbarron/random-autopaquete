@@ -18,17 +18,17 @@ const containerStyles = {
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [newEmail, setNewEmail] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [name, setName] = useState('');
-    const [lastname, setLastName] = useState('');
+    // const [newEmail, setNewEmail] = useState('');
+    // const [newPassword, setNewPassword] = useState('');
+    // const [name, setName] = useState('');
+    // const [lastname, setLastName] = useState('');
 
     const [errorLogIn, setErrorLogIn] = useState(false);
-    const [errorUserAlreadyRegistered, setErrorUserAlreadyRegistered] = useState(false);
+    //const [errorUserAlreadyRegistered, setErrorUserAlreadyRegistered] = useState(false);
     const [errorEmptyLogIn, setErrorEmptyLogIn] = useState(false);
     const [errorRestorePass, setErrorRestorePass] = useState(false);
     const [errorEmptyRestorePass, setErrorEmptyRestorePass] = useState(false);
-    const [errorRegister, setErrorRegister] = useState(false);
+    //const [errorRegister, setErrorRegister] = useState(false);
 
     const firebase = useFirebaseApp();
     const history = useHistory();
@@ -39,44 +39,44 @@ const LoginPage = () => {
     const [messegeClass, setMessegeClass] = useState(false);
 
     // Crear usuario con correo y contraseña
-    const register = e => {
-        e.preventDefault();
-        if (
-            newEmail.trim() === '' ||
-            newPassword.trim() === '' ||
-            name.trim() === '' ||
-            lastname.trim() === ''
-        ) {
-            setErrorRegister(true);
-            return;
-        }
-        firebase
-            .auth()
-            .createUserWithEmailAndPassword(newEmail, newPassword)
-            .then(({ user }) => {
-                user.sendEmailVerification();
-                const profilesCollectionAdd = db.collection('profiles').add({
-                    name,
-                    lastname,
-                    user_type: 'regular',
-                    ID: user.uid,
-                    status: 'En Revisión',
-                    saldo: 0,
-                });
-                profilesCollectionAdd
-                    .then(function(docRef) {
-                        history.push('/documentacion');
-                    })
-                    .catch(function(error) {
-                        console.error('Error adding document: ', error);
-                    });
-                setErrorUserAlreadyRegistered(false);
-            })
-            .catch(function() {
-                setErrorRegister(false);
-                setErrorUserAlreadyRegistered(true);
-            });
-    };
+    // const register = e => {
+    //     e.preventDefault();
+    //     if (
+    //         newEmail.trim() === '' ||
+    //         newPassword.trim() === '' ||
+    //         name.trim() === '' ||
+    //         lastname.trim() === ''
+    //     ) {
+    //         setErrorRegister(true);
+    //         return;
+    //     }
+    //     firebase
+    //         .auth()
+    //         .createUserWithEmailAndPassword(newEmail, newPassword)
+    //         .then(({ user }) => {
+    //             user.sendEmailVerification();
+    //             const profilesCollectionAdd = db.collection('profiles').add({
+    //                 name,
+    //                 lastname,
+    //                 user_type: 'regular',
+    //                 ID: user.uid,
+    //                 status: 'En Revisión',
+    //                 saldo: 0,
+    //             });
+    //             profilesCollectionAdd
+    //                 .then(function(docRef) {
+    //                     history.push('/documentacion');
+    //                 })
+    //                 .catch(function(error) {
+    //                     console.error('Error adding document: ', error);
+    //                 });
+    //             setErrorUserAlreadyRegistered(false);
+    //         })
+    //         .catch(function() {
+    //             setErrorRegister(false);
+    //             setErrorUserAlreadyRegistered(true);
+    //         });
+    // };
 
     // Iniciar sesión
     const login = async e => {
@@ -129,7 +129,7 @@ const LoginPage = () => {
     return (
         <StyledLoginPage>
             <StyledLoginSection>
-                <h1>Iniciar sesión 1</h1>
+                <h1>Iniciar sesión</h1>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <form>
                         <Input
