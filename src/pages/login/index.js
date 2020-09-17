@@ -31,9 +31,9 @@ const LoginPage = () => {
     //const [errorRegister, setErrorRegister] = useState(false);
 
     const firebase = useFirebaseApp();
-    const history = useHistory();
-    const user = useUser();
-    const db = firebase.firestore();
+    // const history = useHistory();
+    // const user = useUser();
+    // const db = firebase.firestore();
 
     const [message, setMessage] = useState(false);
     const [messegeClass, setMessegeClass] = useState(false);
