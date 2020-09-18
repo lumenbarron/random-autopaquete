@@ -150,7 +150,7 @@ const AdminOverweightPage = () => {
                         setDocId(doc.id);
                         setName(doc.data().name);
                         setUserId(doc.data().ID);
-                        setDate(doc.data().creation_date.toDate());
+                        setDate(doc.data().creation_date);
                         setKgdeclarados(doc.data().package.weight);
                         setSupplier(doc.data().supplierData.tarifa.entrega);
                     } else {
@@ -202,7 +202,7 @@ const AdminOverweightPage = () => {
             const addOverWeightData = {
                 ID: userId,
                 usuario: name,
-                fecha: creationDate.toLocaleDateString(),
+                fecha: creationDate,
                 guia,
                 rastreo: trackingNumber,
                 kilos_declarados: kgDeclarados,
@@ -297,7 +297,7 @@ const AdminOverweightPage = () => {
                                                                 .add({
                                                                     ID: doc.data().ID,
                                                                     usuario: doc.data().name,
-                                                                    fecha: creationDate.toLocaleDateString(),
+                                                                    fecha: creationDate,
                                                                     guia: IdGuiaXls,
                                                                     rastreo: overWeight.guia,
                                                                     kilos_declarados: doc.data()

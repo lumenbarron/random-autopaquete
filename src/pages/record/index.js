@@ -58,6 +58,8 @@ const RecordPage = () => {
     useEffect(() => {
         const data = [];
         db.collection('guia')
+            .where('ID', '==', user.uid)
+            .where('status', '==', 'completed')
             .orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
@@ -79,12 +81,10 @@ const RecordPage = () => {
         setTableData(
             recordsData
                 .filter(historyRecord => {
-                    if (historyRecord.ID === user.uid && historyRecord.status === 'completed') {
-                        if (filter === null) {
-                            return historyRecord;
-                        } else if (historyRecord.sender_addresses.name.includes(filter)) {
-                            return historyRecord;
-                        }
+                    if (filter === null) {
+                        return historyRecord;
+                    } else if (historyRecord.sender_addresses.name.includes(filter)) {
+                        return historyRecord;
                     }
                 })
                 .map(historyRecord => {
@@ -113,7 +113,7 @@ const RecordPage = () => {
     const pushSend = () => {
         history.push('/mi-cuenta/enviar');
     };
-    console.log('recordsData', recordsData);
+
     return (
         <StyledRecord>
             <RecordContainer>

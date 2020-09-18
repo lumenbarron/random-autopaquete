@@ -40,6 +40,9 @@ exports.rate = async function rateEstafeta(uid, guiaId) {
         url = 'https://frecuenciacotizador.estafeta.com/Service.asmx?WSDL';
     }
 
+    let weight = Math.ceil(packaging.weight);
+    weight = weight > 1 ? weight : 1;
+
     const requestArgs = {
         idusuario: '1',
         usuario: 'AdminUser',
@@ -49,7 +52,7 @@ exports.rate = async function rateEstafeta(uid, guiaId) {
         tipoEnvio: {
             esPaquete: true,
             Largo: packaging.depth,
-            Peso: packaging.weight,
+            Peso: weight,
             Alto: packaging.height,
             Ancho: packaging.width,
         },
@@ -157,6 +160,9 @@ exports.create = functions.https.onRequest(async (req, res) => {
         url = 'https://labelqa.estafeta.com/EstafetaLabel20/services/EstafetaLabelWS?wsdl';
     }
 
+    let weight = Math.ceil(packaging.weight);
+    weight = weight > 1 ? weight : 1;
+
     const dValue =
         packaging.content_value !== ''
             ? { insurance: 'True', declaredValue: packaging.content_value }
@@ -202,7 +208,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 valid: 'True',
                 returnDocument: 'False',
                 parcelTypeId: '1',
-                weight: packaging.weight,
+                weight,
                 ...dValue,
             },
             labelDescriptionListCount: '1',
