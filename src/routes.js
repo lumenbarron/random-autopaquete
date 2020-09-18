@@ -31,7 +31,7 @@ const AppRoutes = () => {
                 <StyledMain style={{ display: 'flex' }}>
                     <AdminSidebar />
                     <Switch>
-                        <Route path="/admin/signup" component={SignUpPage} />
+                        {/* <Route path="/admin/signup" component={SignUpPage} /> */}
                         <Route path="/admin/documentacion" component={DocumentsPage} />
                         <Route path="/admin/sobrepesos" component={AdminOverweightPage} />
                         <Route path="/admin/usuario/:userId" component={AdminUserEditPage} />
@@ -58,9 +58,10 @@ const AppRoutes = () => {
             <Route>
                 <Layout>
                     <Switch>
-                        {/* <Route path="/documentacion" component={DocumentsPage} /> */}
+                        <Route path="/documentacion" component={DocumentsPage} />
                         <Route exact path="/" component={HomePage} />
                         <Route exact path="/login" component={LoginPage} />
+                        <Route path="/signup" component={SignUpPage} />
                         <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />
                         <Route exact path="/cotizacion" component={QuotePage} />
                         <Route exact path="/servicios" component={ServicesPage} />

@@ -8,7 +8,7 @@ import TabPersonaMoral from './persona-moral';
 const DocumentsPage = () => {
     const [selectedTab, setSelectedTab] = useState('pfisica');
 
-    //useRegularSecurity();
+    useRegularSecurity();
 
     return (
         <StyledContainer>
@@ -27,13 +27,13 @@ const DocumentsPage = () => {
                     ariaControls="pfisicaTab"
                     className="tabsets"
                 />
-                {/* <Tab
+                <Tab
                     label="Persona Moral"
                     name="pmoral"
                     id="pmoral"
                     ariaControls="pmoralTab"
                     className="tabsets"
-                /> */}
+                />
             </StyledTabset>
 
             {selectedTab === 'pfisica' && <TabPersonaFisica />}

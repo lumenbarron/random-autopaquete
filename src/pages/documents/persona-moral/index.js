@@ -127,13 +127,23 @@ const TabPersonaMoral = () => {
                                 }),
                             );
                         });
-                        setTimeout(function() {
-                            history.push('/mi-cuenta');
-                        }, 1000);
+                        // setTimeout(function() {
+                        //     history.push('/mi-cuenta');
+                        // }, 1000);
                     }
                 });
             });
         }
+        setTimeout(function() {
+            console.log('saliendo');
+            logout();
+        }, 1500);
+    };
+
+    const logout = () => {
+        //e.preventDefault();
+        firebase.auth().signOut();
+        history.push('/signup');
     };
 
     const saveURL = () => {

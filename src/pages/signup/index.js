@@ -59,7 +59,8 @@ const SignUpPage = () => {
                 });
                 profilesCollectionAdd
                     .then(function(docRef) {
-                        history.push('/admin/documentacion');
+                        console.log('yendo a la documentacion');
+                        history.push('/documentacion');
                     })
                     .catch(function(error) {
                         console.error('Error adding document: ', error);
@@ -77,7 +78,7 @@ const SignUpPage = () => {
     return (
         <StyledLoginPage>
             <StyledLoginSection style={{ paddingBottom: '2.9%' }}>
-                <h1>Regístrate 1</h1>
+                <h1>Regístra a un nuevo usuario </h1>
                 <div>
                     <form>
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -109,19 +110,17 @@ const SignUpPage = () => {
                                 name="email"
                                 type="email"
                                 className="rainbow-p-around_medium"
-                                style={{ width: '90%' }}
+                                style={{ width: '45%' }}
                                 onChange={ev => setNewEmail(ev.target.value)}
                                 icon={<FontAwesomeIcon icon={faEnvelope} />}
                             />
-                        </div>
-                        <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <Input
                                 id="password"
                                 label="Contraseña"
                                 name="password"
                                 type="password"
                                 className="rainbow-p-around_medium"
-                                style={{ width: '90%' }}
+                                style={{ width: '45%' }}
                                 onChange={ev => setNewPassword(ev.target.value)}
                                 icon={<FontAwesomeIcon icon={faKey} />}
                             />
@@ -132,21 +131,23 @@ const SignUpPage = () => {
                         {errorUserAlreadyRegistered && (
                             <div className="alert-error">El correo ya tiene una cuenta activa</div>
                         )}
-                        <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        {/* <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <p style={{ fontSize: '0.9rem' }}>
                                 Al darle Unirse estás aceptando nuestro
                                 <a href="/aviso-de-privacidad">Aviso de privacidad</a> y nuestros{' '}
                                 <a href="/terminos-y-condiciones">Términos y condiciones.</a>
                             </p>
-                        </div>
+                        </div> */}
                     </form>
-                    <Button
-                        className="boton rainbow-m-around_medium"
-                        type="submit"
-                        onClick={register}
-                    >
-                        Unirse
-                    </Button>
+                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        <Button
+                            className="boton rainbow-m-around_medium"
+                            type="submit"
+                            onClick={register}
+                        >
+                            Unirse
+                        </Button>
+                    </div>
                 </div>
             </StyledLoginSection>
         </StyledLoginPage>

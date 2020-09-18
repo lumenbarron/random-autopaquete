@@ -76,6 +76,7 @@ const TabPersonaFisica = () => {
     }, []);
 
     const saveData = () => {
+        console.log('save data');
         if (user) {
             const docRef = db.collection('profiles').where('ID', '==', user.uid);
             docRef.get().then(function(querySnapshot) {
@@ -131,16 +132,27 @@ const TabPersonaFisica = () => {
                             );
                         });
 
-                        setTimeout(function() {
-                            history.push('/mi-cuenta');
-                        }, 1000);
+                        // setTimeout(function() {
+                        //     //history.push('/mi-cuenta');
+                        // }, 1000);
                     }
                 });
             });
         }
+        setTimeout(function() {
+            console.log('saliendo');
+            logout();
+        }, 1500);
+    };
+
+    const logout = () => {
+        //e.preventDefault();
+        firebase.auth().signOut();
+        history.push('/signup');
     };
 
     const saveURL = () => {
+        console.log('save url');
         storage
             .ref(`documentation/${user.uid}`)
             .child(fileDomicilio[0].name)
@@ -170,6 +182,7 @@ const TabPersonaFisica = () => {
     };
 
     const register = e => {
+        console.log('registrando');
         e.preventDefault();
         if (name === undefined || name.trim() === '') {
             setErrorName(true);
