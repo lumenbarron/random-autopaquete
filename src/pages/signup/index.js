@@ -150,8 +150,6 @@ const SignUpPage = () => {
                             Unirse
                         </Button>
                     </div>
-                        </div>
-                    </form>
                     <Button
                         className="boton rainbow-m-around_medium"
                         type="submit"
