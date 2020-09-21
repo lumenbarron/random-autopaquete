@@ -18,7 +18,8 @@
         "jest/no-identical-title": "error",
         "jest/prefer-to-have-length": "warn",
         "jest/valid-expect": "error",
-        "import/prefer-default-export": 0
+        "import/prefer-default-export": 0,
+        "no-unused-expressions" : 0
     },
     "env": {
         "browser": true,
