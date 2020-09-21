@@ -114,8 +114,6 @@ const SignUpPage = () => {
                                 onChange={ev => setNewEmail(ev.target.value)}
                                 icon={<FontAwesomeIcon icon={faEnvelope} />}
                             />
-                        </div>
-                        <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <Input
                                 id="password"
                                 label="Contraseña"
@@ -150,13 +148,6 @@ const SignUpPage = () => {
                             Unirse
                         </Button>
                     </div>
-                    <Button
-                        className="boton rainbow-m-around_medium"
-                        type="submit"
-                        onClick={register}
-                    >
-                        Unirse
-                    </Button>
                 </div>
             </StyledLoginSection>
         </StyledLoginPage>

@@ -27,13 +27,13 @@ const DocumentsPage = () => {
                     ariaControls="pfisicaTab"
                     className="tabsets"
                 />
-                {/* <Tab
+                <Tab
                     label="Persona Moral"
                     name="pmoral"
                     id="pmoral"
                     ariaControls="pmoralTab"
                     className="tabsets"
-                /> */}
+                />
             </StyledTabset>
 
             {selectedTab === 'pfisica' && <TabPersonaFisica />}
