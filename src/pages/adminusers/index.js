@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useFirebaseApp, useUser } from 'reactfire';
 
-import { Table, Column, Badge, MenuItem } from 'react-rainbow-components';
+import { Table, Column, Badge, MenuItem, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
+import Row from 'react-bootstrap/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { StyledAusers } from './styled';
 import firebase from 'firebase';
 import 'firebase/auth';
@@ -124,8 +125,17 @@ const AdminUsersPage = () => {
     return (
         <StyledAusers>
             <div className="back">
-                <h1>Usuarios</h1>
-
+                <Row className="content-header">
+                    <h1>Usuarios</h1>
+                    <Link to="/admin/signup">
+                        <Button
+                            className="rainbow-m-vertical_medium"
+                            shaded
+                            label="Nuevo usuario"
+                            variant="brand"
+                        />
+                    </Link>
+                </Row>
                 <div className="rainbow-p-bottom_xx-large">
                     <div>
                         <StyledTable

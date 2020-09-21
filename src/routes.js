@@ -18,6 +18,7 @@ import AdminUserEditPage from './pages/adminuseredit';
 import AdminUsersPage from './pages/adminusers';
 import ConditionsPage from './pages/conditions';
 import LoginPage from './pages/login';
+import SignUpPage from './pages/signup';
 import Layout from './components/layout';
 import { StyledMain } from './components/layout/styled';
 import { AccountSidebar, AdminSidebar } from './components/layout/sidebar';
@@ -30,6 +31,8 @@ const AppRoutes = () => {
                 <StyledMain style={{ display: 'flex' }}>
                     <AdminSidebar />
                     <Switch>
+                        <Route path="/admin/signup" component={SignUpPage} />
+                        <Route path="/admin/documentacion" component={DocumentsPage} />
                         <Route path="/admin/sobrepesos" component={AdminOverweightPage} />
                         <Route path="/admin/usuario/:userId" component={AdminUserEditPage} />
                         <Route path="/admin/usuarios" component={AdminUsersPage} />
@@ -55,7 +58,7 @@ const AppRoutes = () => {
             <Route>
                 <Layout>
                     <Switch>
-                        <Route path="/documentacion" component={DocumentsPage} />
+                        {/* <Route path="/documentacion" component={DocumentsPage} /> */}
                         <Route exact path="/" component={HomePage} />
                         <Route exact path="/login" component={LoginPage} />
                         <Route exact path="/aviso-de-privacidad" component={PrivacyPage} />

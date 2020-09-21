@@ -292,7 +292,7 @@ const TabPersonaFisica = () => {
                             id="nombreCompleto"
                             label="Nombre Completo"
                             name="nombreCompleto"
-                            value={name}
+                            // value={name}
                             className={`rainbow-p-around_medium ${errorName ? 'empty-space' : ''}`}
                             style={{ width: '90%' }}
                             onChange={ev => setName(ev.target.value)}
@@ -301,7 +301,7 @@ const TabPersonaFisica = () => {
                             id="domicilio"
                             label="Nombre de la calle, número exterior e interior"
                             name="domicilio"
-                            value={address}
+                            value={address || ''}
                             className={`rainbow-p-around_medium ${
                                 errorAddress ? 'empty-space' : ''
                             }`}

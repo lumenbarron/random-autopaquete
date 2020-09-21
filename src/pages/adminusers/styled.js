@@ -16,4 +16,11 @@ export const StyledAusers = styled.div`
         font-weight: 700;
         font-size: 1.5rem;
     }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
+    }
 `;
