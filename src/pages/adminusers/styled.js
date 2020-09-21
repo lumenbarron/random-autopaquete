@@ -17,10 +17,6 @@ export const StyledAusers = styled.div`
         font-size: 1.5rem;
     }
 
-    #header-margin {
-        margin: 0;
-    }
-
     .content-header {
         display: flex;
         justify-content: space-between;
