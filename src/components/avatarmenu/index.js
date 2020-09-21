@@ -4,9 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faPowerOff } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 
-const containerStyles = {
-    paddingBottom: '12rem',
-};
+// const containerStyles = {
+//     paddingBottom: '12rem',
+// };
 
 const StyledUserFullnameContainer = styled.p.attrs(props => {
     return props.theme.rainbow.palette;

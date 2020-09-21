@@ -126,15 +126,7 @@ const AdminUsersPage = () => {
         <StyledAusers>
             <div className="back">
                 <Row className="content-header">
-                    <h1>Usuarios</h1>
-                    <Link to="/admin/signup">
-                        <Button
-                            className="rainbow-m-vertical_medium"
-                            shaded
-                            label="Nuevo usuario"
-                            variant="brand"
-                        />
-                    </Link>
+                    <h1 id="header-margin">Usuarios</h1>
                 </Row>
                 <div className="rainbow-p-bottom_xx-large">
                     <div>
