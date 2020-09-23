@@ -389,7 +389,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
 
     // El valor más alto del tarifario (por servicio)
     useEffect(() => {
-        let tarifaMayor = 1;
+        let tarifaMayor = 0;
 
         tarifas.forEach(tarifa => {
             tarifaMayor = tarifa.max > tarifaMayor ? tarifa.max : tarifaMayor;
@@ -412,6 +412,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                 <div>
                     De
                     <InlineInput
+                        value={minRate}
                         // value={parseInt(maxValue)}
                         type="text"
                         onChange={ev => setMinRate(ev.target.value)}
