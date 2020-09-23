@@ -19,8 +19,9 @@
         "jest/prefer-to-have-length": "warn",
         "jest/valid-expect": "error",
         "import/prefer-default-export": 0,
-        "no-unused-expressions" : 0
-    },
+        "react/jsx-no-undef": [2, { "allowGlobals": true }],
+        "no-unused-vars": ["error", { "vars": "all", "args": "all", "ignoreRestSiblings": false }]
+        },
     "env": {
         "browser": true,
         "jest/globals": true
