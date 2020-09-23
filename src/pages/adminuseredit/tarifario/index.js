@@ -142,6 +142,9 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         return (
             <>
                 <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap" key={key}>
+                    {/* <div> De
+                <input type="text" className="form-control" onChange={handleTarifaChange} name="tarifaMin" />
+                </div> */}
                     <div>
                         De {tarifa.min} Hasta {tarifa.max} kg
                     </div>
@@ -386,13 +389,14 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
 
     // El valor más alto del tarifario (por servicio)
     useEffect(() => {
-        let tarifaMayor = 0;
+        let tarifaMayor = 1;
 
         tarifas.forEach(tarifa => {
             tarifaMayor = tarifa.max > tarifaMayor ? tarifa.max : tarifaMayor;
         });
         !tarifaMayor ? setMaxValue(tarifaMayor) : setMaxValue(tarifaMayor + 1);
     }, [tarifas]);
+
     useEffect(() => {
         setMinRate(maxValue);
     }, [maxValue]);
@@ -408,7 +412,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                 <div>
                     De
                     <InlineInput
-                        value={parseInt(maxValue)}
+                        // value={parseInt(maxValue)}
                         type="text"
                         onChange={ev => setMinRate(ev.target.value)}
                     />
