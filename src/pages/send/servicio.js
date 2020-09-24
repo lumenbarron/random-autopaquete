@@ -28,6 +28,7 @@ const PriceNumber = styled.div`
 `;
 
 export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
+    console.log('servicio component');
     const [hasActivatedSuppliers, setHasActivatedSuppliers] = useState(null);
     const [supplierAvailability, setSupplierAvailability] = useState(false);
 
@@ -112,7 +113,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
+            // xhr.open('POST', '/guia/cotizar');
+            //xhr.open('POST', 'https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia');
+            xhr.open('POST', 'https://autopaquete.com.mx/guia/cotizar');
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
@@ -390,7 +393,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
             {proveedor === 'fedex' && <img src="/assets/fedex.png" alt="Fedex" />}
             {proveedor === 'estafeta' && <img src="/assets/estafeta.png" alt="Estafeta" />}
-            {proveedor === 'estafeta' && <img src="/assets/estafeta.png" alt="Estafeta" />}
+            {proveedor === 'autoencargos' && <img src="/assets/logo.png" alt="Autoencargos" />}
             <h6
                 style={{
                     color: 'gray',
@@ -529,6 +532,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             supplierCostEstafetaEcon.guia &&
                             supplierCard(
                                 'estafeta',
+                                'Economico',
+                                '3 a 5 días hábiles',
+                                supplierCostEstafetaEcon,
+                            )}
+                        {supplierAvailability.estafetaEconomico &&
+                            supplierCostEstafetaEcon.guia &&
+                            supplierCard(
+                                'autoencargos',
+                                'DiaSiguiente',
+                                'Dia Siguiente',
+                                supplierCostEstafetaEcon,
+                            )}
+                        {supplierAvailability.estafetaEconomico &&
+                            supplierCostEstafetaEcon.guia &&
+                            supplierCard(
+                                'autoencargos',
                                 'Economico',
                                 '3 a 5 días hábiles',
                                 supplierCostEstafetaEcon,
