@@ -107,6 +107,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     useEffect(() => {
+        console.log('primer useEffect');
         user.getIdToken().then(idToken => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
@@ -123,6 +124,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     }, []);
 
     useEffect(() => {
+        console.log('segundo useEffect');
         db.collection('guia')
             .doc(idGuiaGlobal)
             .onSnapshot(function getGuia(doc) {
@@ -154,6 +156,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     }, []);
 
     useEffect(() => {
+        console.log('tercer useEffect');
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
@@ -161,11 +164,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 setProfileDoc(profile.docs[0]);
                 profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
                     setHasActivatedSuppliers(querySnapshot.size > 0);
+                    console.log('hasActivatedSuppliers', hasActivatedSuppliers);
                 });
             });
     }, [user]);
 
     useEffect(() => {
+        console.log('cuarto useEffect');
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
         let pricedWeight = Math.ceil(weight);
@@ -189,9 +194,23 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         };
         profileDoc.ref.collection('rate').onSnapshot(querySnapshot => {
             const segundaMejorTarifa = {};
+            console.log('segundaMejorTarifa', segundaMejorTarifa);
             const kgsExtraTarifas = {};
+            console.log('kgsExtraTarifas', kgsExtraTarifas);
             querySnapshot.forEach(doc => {
                 const { entrega, precio, max, min, kgExtra } = doc.data();
+                console.log(
+                    'entrega',
+                    entrega,
+                    'precio',
+                    precio,
+                    'max',
+                    max,
+                    'min',
+                    min,
+                    'kgExtra',
+                    kgExtra,
+                );
                 // Encontramos si hay tarifas que apliquen directo al paquete
                 if (
                     !kgExtra &&
@@ -199,6 +218,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     parseInt(max, 10) >= parseInt(pricedWeight, 10)
                 ) {
                     const precioTotal = parseInt(precio, 10) * quantity;
+                    console.log('precioTotal', precioTotal);
                     if (entrega === 'fedexDiaSiguiente')
                         setSupplierCostFedexDiaS({
                             id: doc.id,
@@ -295,12 +315,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             });
             Object.keys(segundaMejorTarifa).forEach(entrega => {
                 const tarifa = segundaMejorTarifa[entrega];
+                console.log('tarifa', tarifa);
                 const { guia } = tarifa;
                 const precio = tarifa.guia + tarifa.diferencia * kgsExtraTarifas[entrega];
                 // console.log('guia tarifa', tarifa.diferencia);
                 console.log('Entrega', entrega);
                 const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
-                console.log('kgsExtraTarifas', kgsExtraTarifas);
+                console.log('cargoExtra', cargoExtra);
                 if (entrega === 'fedexDiaSiguiente')
                     setSupplierCostFedexDiaS({
                         id: tarifa.id,
@@ -368,6 +389,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const supplierCard = (proveedor, tipoEnvio, entrega, costos) => (
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
             {proveedor === 'fedex' && <img src="/assets/fedex.png" alt="Fedex" />}
+            {proveedor === 'estafeta' && <img src="/assets/estafeta.png" alt="Estafeta" />}
             {proveedor === 'estafeta' && <img src="/assets/estafeta.png" alt="Estafeta" />}
             <h6
                 style={{
