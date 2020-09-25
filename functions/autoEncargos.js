@@ -1,15 +1,15 @@
 const functions = require('firebase-functions');
-const { soap } = require('strong-soap');
+// const { soap } = require('strong-soap');
 const secure = require('./secure');
 const { getGuiaById, saveLabel, saveError, checkBalance } = require('./guia');
 const { admin } = require('./admin');
 
-exports.rate = async function rateEstafeta(uid, guiaId) {
+exports.rate = async function rateAutoencargos(uid, guiaId) {
     const guia = await getGuiaById(uid, guiaId);
     if (!guia) {
         return false;
     }
-
+    //Obteniendo los datos desde el doc guia
     const senderAddress = guia.sender_addresses;
     const receiverAddress = guia.receiver_addresses;
     const packaging = guia.package;
@@ -23,23 +23,22 @@ exports.rate = async function rateEstafeta(uid, guiaId) {
     const db = admin.firestore();
     const supplierQuery = await db
         .collection('suppliers_configuration')
-        .where('supplier', '==', 'estafeta')
+        .where('supplier', '==', 'autoencargosExpress')
         .get();
 
     const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
-    console.log('supplierData', supplierData);
     if (!supplierData) {
         return false;
     }
-    const isProd = supplierData.type === 'prod';
+    // const isProd = supplierData.type === 'prod';
 
-    let url;
+    // let url;
 
-    if (isProd) {
-        url = 'https://frecuenciacotizador.estafeta.com/Service.asmx?WSDL';
-    } else {
-        url = 'https://frecuenciacotizador.estafeta.com/Service.asmx?WSDL';
-    }
+    // if (isProd) {
+    //     url = 'https://frecuenciacotizador.estafeta.com/Service.asmx?WSDL';
+    // } else {
+    //     url = 'https://frecuenciacotizador.estafeta.com/Service.asmx?WSDL';
+    // }
 
     let weight = Math.ceil(packaging.weight);
     weight = weight > 1 ? weight : 1;
@@ -147,7 +146,6 @@ exports.create = functions.https.onRequest(async (req, res) => {
         .get();
 
     const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
-    console.log('supplierData', supplierData);
     if (!supplierData) {
         res.status(500).send('Missing estafeta config');
         return;

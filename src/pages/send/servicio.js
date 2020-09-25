@@ -28,7 +28,6 @@ const PriceNumber = styled.div`
 `;
 
 export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
-    console.log('servicio component');
     const [hasActivatedSuppliers, setHasActivatedSuppliers] = useState(null);
     const [supplierAvailability, setSupplierAvailability] = useState(false);
 
@@ -37,6 +36,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [supplierCostEstafetaDiaS, setSupplierCostEstafetaDiaS] = useState(false);
     const [supplierCostEstafetaEcon, setSupplierCostEstafetaEcon] = useState(false);
+
+    const [supplierCostAutoencargosExp, setSupplierCostAutoencargosExp] = useState(false);
+    const [supplierCostAutoencargosEcon, setSupplierCostAutoencargosEcon] = useState(false);
 
     const user = useUser();
     const firebase = useFirebaseApp();
@@ -118,15 +120,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 'POST',
                 'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
             );
-            // xhr.open('POST', 'https://cors-anywhere.herokuapp.com/${https://autopaquete.com.mx/guia/cotizar}');
-            //xhr.open('POST', 'https://autopaquete.com.mx/guia/cotizar');
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
                 console.log('la wea weona', xhr.readyState);
                 if (xhr.readyState === 4) {
                     console.log('la wea weona llego', xhr.response);
-                    setSupplierAvailability(xhr.response);
+                    //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
+                    //setSupplierAvailability(xhr.response);
+                    let suppliersGeneral = xhr.response;
+                    let autoencargos = {
+                        autoencargosExpress: true,
+                        autoencargosDiaSiguiente: true,
+                    };
+                    setSupplierAvailability({ ...suppliersGeneral, ...autoencargos });
+                    console.log({ ...suppliersGeneral, ...autoencargos });
+                    //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, estafetaDiaSiguiente: true}
                 }
             };
         });
@@ -134,6 +143,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         console.log('segundo useEffect');
+        //Asignando los valores desde el doc guia del firestore
         db.collection('guia')
             .doc(idGuiaGlobal)
             .onSnapshot(function getGuia(doc) {
@@ -172,8 +182,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .then(profile => {
                 setProfileDoc(profile.docs[0]);
                 profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
+                    //setHasActivatedSuppliers asigna a hasActivatedSuppliers el numero de doc de rate para que se muestren los provedores
                     setHasActivatedSuppliers(querySnapshot.size > 0);
-                    console.log('hasActivatedSuppliers', hasActivatedSuppliers);
+                    console.log('querySnapshot.size', querySnapshot.size);
                 });
             });
     }, [user]);
@@ -199,8 +210,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             if (company === 'estafetaDiaSiguiente' || company === 'estafetaEconomico') {
                 return Math.max(baseValue, 20);
             }
+            if (company === 'autoencargosExpress' || company === 'autoencargosDiaSiguiente') {
+                return Math.max(baseValue, 20);
+            }
             return 0;
         };
+
         profileDoc.ref.collection('rate').onSnapshot(querySnapshot => {
             const segundaMejorTarifa = {};
             console.log('segundaMejorTarifa', segundaMejorTarifa);
@@ -283,6 +298,34 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             seguro: getInsurancePrice('estafetaEconomico'),
                             guia: precioTotal,
                             zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
+                        });
+                    if (entrega === 'autoencargosExpress')
+                        setSupplierCostAutoencargosExp({
+                            id: doc.id,
+                            precio:
+                                precioTotal +
+                                getInsurancePrice('autoencargosExpress') +
+                                (typeof supplierAvailability.autoencargosExpress.zonaExtendida !==
+                                'undefined'
+                                    ? 150
+                                    : 0),
+                            seguro: getInsurancePrice('autoencargosExpress'),
+                            guia: precioTotal,
+                            zonaExt: !!supplierAvailability.autoencargosExpress.zonaExtendida,
+                        });
+                    if (entrega === 'autoencargosDiaSiguiente')
+                        setSupplierCostAutoencargosEcon({
+                            id: doc.id,
+                            precio:
+                                precioTotal +
+                                getInsurancePrice('autoencargosDiaSiguiente') +
+                                (typeof supplierAvailability.autoencargosDiaSiguiente
+                                    .zonaExtendida !== 'undefined'
+                                    ? 150
+                                    : 0),
+                            seguro: getInsurancePrice('autoencargosDiaSiguiente'),
+                            guia: precioTotal,
+                            zonaExt: !!supplierAvailability.autoencargosDiaSiguiente.zonaExtendida,
                         });
                     return;
                 }
@@ -376,20 +419,35 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         guia,
                         zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
                     });
-                if (entrega === 'estafetaEconomico')
-                    setSupplierCostEstafetaEcon({
+                if (entrega === 'autoencargosExpress')
+                    setSupplierCostAutoencargosExp({
                         id: tarifa.id,
                         precio:
                             precio +
-                            getInsurancePrice('estafetaEconomico') +
-                            (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
+                            getInsurancePrice('autoencargosExpress') +
+                            (typeof supplierAvailability.autoencargosExpress.zonaExtendida !==
                             'undefined'
                                 ? 150
                                 : 0),
-                        seguro: getInsurancePrice('estafetaEconomico'),
+                        seguro: getInsurancePrice('autoencargosExpress'),
                         cargoExtra,
                         guia,
-                        zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
+                        zonaExt: !!supplierAvailability.autoencargosExpress.zonaExtendida,
+                    });
+                if (entrega === 'autoencargosDiaSiguiente')
+                    setSupplierCostAutoencargosEcon({
+                        id: tarifa.id,
+                        precio:
+                            precio +
+                            getInsurancePrice('autoencargosDiaSiguiente') +
+                            (typeof supplierAvailability.autoencargosDiaSiguiente.zonaExtendida !==
+                            'undefined'
+                                ? 150
+                                : 0),
+                        seguro: getInsurancePrice('autoencargosDiaSiguiente'),
+                        cargoExtra,
+                        guia,
+                        zonaExt: !!supplierAvailability.autoencargosDiaSiguiente.zonaExtendida,
                     });
             });
         });
@@ -542,21 +600,21 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 '3 a 5 días hábiles',
                                 supplierCostEstafetaEcon,
                             )}
-                        {supplierAvailability.estafetaEconomico &&
-                            supplierCostEstafetaEcon.guia &&
+                        {supplierAvailability.autoencargosExpress &&
+                            supplierCostAutoencargosExp.guia &&
                             supplierCard(
                                 'autoencargos',
                                 'DiaSiguiente',
                                 'Dia Siguiente',
-                                supplierCostEstafetaEcon,
+                                supplierCostAutoencargosExp,
                             )}
-                        {supplierAvailability.estafetaEconomico &&
-                            supplierCostEstafetaEcon.guia &&
+                        {supplierAvailability.autoencargosDiaSiguiente &&
+                            supplierCostAutoencargosEcon.guia &&
                             supplierCard(
                                 'autoencargos',
                                 'Economico',
                                 '3 a 5 días hábiles',
-                                supplierCostEstafetaEcon,
+                                supplierCostAutoencargosEcon,
                             )}
                     </StyledPaneContainer>
                     {!(
