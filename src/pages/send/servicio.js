@@ -47,6 +47,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     // Sender states
     const [nameSender, setNameSender] = useState();
     const [CPSender, setCPSender] = useState('');
+    const getCPSender = useRef('');
     const [neighborhoodSender, setNeighborhoodSender] = useState('');
     const [countrySender, setCountrySender] = useState('');
     const [streetNumberSender, setStreetNumberSender] = useState('');
@@ -73,6 +74,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     let cpReceiver;
     let cpSender;
+    let currentCp;
     let cpsGdl;
     let cpsZap;
     let cpsTona;
@@ -177,6 +179,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
+                getCPSender.current = doc.data().sender_addresses.codigo_postal;
                 setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
                 setCountrySender(doc.data().sender_addresses.country);
                 setStreetNumberSender(doc.data().sender_addresses.street_number);
@@ -184,9 +187,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot to receive Receiver information
                 setNameReceiver(doc.data().receiver_addresses.name);
                 setCPReceiver(doc.data().receiver_addresses.codigo_postal);
-                // setCPReceiver( state => { console.log(state)})
                 getCPReceiver.current = doc.data().receiver_addresses.codigo_postal;
-                console.log('cpReceiver', getCPReceiver.current);
+                //console.log('cpReceiver', getCPReceiver.current);
                 setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
                 setCountryReceiver(doc.data().receiver_addresses.country);
                 setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
@@ -230,36 +232,37 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 (cpsTona = data3.response.cp),
                 (cpsTlaq = data4.response.cp),
                 (allCpsZMG = [...cpsGdl, ...cpsZap, ...cpsTona, ...cpsTlaq, ...OtherCpsZMG]),
-                console.log('allCpsZMG', allCpsZMG),
-                // if (CPReceiver && CPSender ) {
+                // console.log('allCpsZMG', allCpsZMG),
+                // currentCp = allCpsZMG.includes(getCPReceiver.current && getCPSender.current),
+                // console.log('currentCp', currentCp),
+                // console.log('allCpsZMG', allCpsZMG)
+                // if (currentCp === true) {
+                //     console.log('codigo postal ZMG')
                 // }
-                //console.log('cpsGdl', cpsGdl, 'cpsZap',cpsZap, 'cpsTona', cpsTona , 'cpsTlaq', cpsTlaq )
+                // else {
+                // console.log('codigo no postal gdl');
+                //  }
             ])
-            .then(allCpsZMG => {
-                console.log('holi', getCPReceiver.current);
-            })
-            //console.log('holi', {CPReceiver}
-            //                 if (allCpsZMG.find(element => element === CPReceiver )) {
-            //                     console.log('CPReceiver', CPReceiver);
-            //     console.log('codigo postal gdl');
+            //.then(currentCp => {
+            // console.log('holi', currentCp);
+            // console.log('allCpsZMG', allCpsZMG);
+            // if (currentCp === true) {
+            //     console.log('codigo postal ZMG')
+            // }else {
+            // console.log('codigo no postal gdl');
+            //  }
+            // console.log(typeof getCPReceiver.current);
+            //let currentCp = allCpsZMG.find(element => element === getCPReceiver.current )
+            // let currentRcCp = getCPReceiver.current.toString();
+            // let currentCp = allCpsZMG.includes(currentRcCp)
+            //console.log('currentCp', currentCp);
+            // if ( allCpsZMG.find(element => element == getCPReceiver.current )) {
+            //     console.log('codigo postal ZMG');
             // } else {
-            //     console.log('codigo no postal gdl');
-            // }
-
+            //  console.log('codigo no postal gdl');
+            //     }
+            //})
             .catch(err => console.log('error', err));
-        // fetch(
-        //     'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara',
-        // )
-        //     .then(res => {
-        //         return res.json();
-        //     })
-        //     .then(result => {
-        //         cpsGdl = result.response.cp;
-        //         console.log('response gdl', cpsGdl);
-        //     })
-        //     .catch(err => {
-        //         console.log('error', err);
-        //     });
     }, []);
 
     useEffect(() => {
