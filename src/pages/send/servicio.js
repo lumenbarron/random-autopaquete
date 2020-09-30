@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Card, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
@@ -54,6 +54,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     // Receiver states
     const [nameReceiver, setNameReceiver] = useState();
     const [CPReceiver, setCPReceiver] = useState('');
+    const getCPReceiver = useRef('');
     const [neighborhoodReceiver, setNeighborhoodReceiver] = useState('');
     const [countryReceiver, setCountryReceiver] = useState('');
     const [streetNumberReceiver, setStreetNumberReceiver] = useState('');
@@ -69,6 +70,32 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [error, setError] = useState(false);
 
     const [profileDoc, setProfileDoc] = useState(false);
+
+    let cpReceiver;
+    let cpSender;
+    let cpsGdl;
+    let cpsZap;
+    let cpsTona;
+    let cpsTlaq;
+    let allCpsZMG;
+    let OtherCpsZMG = [
+        '44009',
+        '44228',
+        '44229',
+        '44638',
+        '44639',
+        '44659',
+        '45013',
+        '45206',
+        '45207',
+        '45414',
+        '45416',
+        '45419',
+        '45640',
+        '45643',
+        '45645',
+        '45647',
+    ];
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
@@ -157,6 +184,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot to receive Receiver information
                 setNameReceiver(doc.data().receiver_addresses.name);
                 setCPReceiver(doc.data().receiver_addresses.codigo_postal);
+                // setCPReceiver( state => { console.log(state)})
+                getCPReceiver.current = doc.data().receiver_addresses.codigo_postal;
+                console.log('cpReceiver', getCPReceiver.current);
                 setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
                 setCountryReceiver(doc.data().receiver_addresses.country);
                 setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
@@ -171,7 +201,65 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     setQuantity(doc.data().package.quantity);
                     setContentValue(doc.data().package.content_value);
                 }
+                //Si el código postal coincide con los códigos postales de Autoencargos se agrega al supplierAvailability
             });
+    }, []);
+
+    useEffect(() => {
+        console.log('corroborando codigo para autoencargos');
+        Promise.all([
+            fetch(
+                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara',
+            ),
+            fetch(
+                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Zapopan',
+            ),
+            fetch(
+                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Tonalá',
+            ),
+            fetch(
+                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=San Pedro Tlaquepaque',
+            ),
+        ])
+            .then(([res1, res2, res3, res4]) =>
+                Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]),
+            )
+            .then(([data1, data2, data3, data4]) => [
+                (cpsGdl = data1.response.cp),
+                (cpsZap = data2.response.cp),
+                (cpsTona = data3.response.cp),
+                (cpsTlaq = data4.response.cp),
+                (allCpsZMG = [...cpsGdl, ...cpsZap, ...cpsTona, ...cpsTlaq, ...OtherCpsZMG]),
+                console.log('allCpsZMG', allCpsZMG),
+                // if (CPReceiver && CPSender ) {
+                // }
+                //console.log('cpsGdl', cpsGdl, 'cpsZap',cpsZap, 'cpsTona', cpsTona , 'cpsTlaq', cpsTlaq )
+            ])
+            .then(allCpsZMG => {
+                console.log('holi', getCPReceiver.current);
+            })
+            //console.log('holi', {CPReceiver}
+            //                 if (allCpsZMG.find(element => element === CPReceiver )) {
+            //                     console.log('CPReceiver', CPReceiver);
+            //     console.log('codigo postal gdl');
+            // } else {
+            //     console.log('codigo no postal gdl');
+            // }
+
+            .catch(err => console.log('error', err));
+        // fetch(
+        //     'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara',
+        // )
+        //     .then(res => {
+        //         return res.json();
+        //     })
+        //     .then(result => {
+        //         cpsGdl = result.response.cp;
+        //         console.log('response gdl', cpsGdl);
+        //     })
+        //     .catch(err => {
+        //         console.log('error', err);
+        //     });
     }, []);
 
     useEffect(() => {
@@ -193,6 +281,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         console.log('cuarto useEffect');
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
+        console.log('supplierAvailability', supplierAvailability);
         let pricedWeight = Math.ceil(weight);
         pricedWeight = pricedWeight > 1 ? pricedWeight : 1;
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
@@ -457,7 +546,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
             {proveedor === 'fedex' && <img src="/assets/fedex.png" alt="Fedex" />}
             {proveedor === 'estafeta' && <img src="/assets/estafeta.png" alt="Estafeta" />}
-            {proveedor === 'autoencargos' && <img src="/assets/logo.png" alt="Autoencargos" />}
+            {proveedor === 'autoencargos' && (
+                <img src="/assets/autoencar.png" style={{ height: 45 }} alt="Autoencargos" />
+            )}
             <h6
                 style={{
                     color: 'gray',
