@@ -48,6 +48,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [nameSender, setNameSender] = useState();
     const [CPSender, setCPSender] = useState('');
     const getCPSender = useRef('');
+    const cpsAvailabilityAutoencargos = useRef(false);
     const [neighborhoodSender, setNeighborhoodSender] = useState('');
     const [countrySender, setCountrySender] = useState('');
     const [streetNumberSender, setStreetNumberSender] = useState('');
@@ -148,16 +149,24 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 if (xhr.readyState === 4) {
                     console.log('la wea weona llego', xhr.response);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
-                    setSupplierAvailability(xhr.response);
-                    console.log('supplierAvailability', supplierAvailability);
+                    //setSupplierAvailability(xhr.response);
                     let suppliersGeneral = xhr.response;
-                    let autoencargos = {
-                        autoencargosExpress: true,
-                        autoencargosDiaSiguiente: true,
-                    };
-                    //setSupplierAvailability({...suppliersGeneral});
+                    let autoencargos;
+                    if (cpsAvailabilityAutoencargos.current === true) {
+                        console.log('aqui si hay autoencargos');
+                        autoencargos = {
+                            autoencargosExpress: true,
+                            autoencargosDiaSiguiente: true,
+                        };
+                    } else {
+                        console.log('aqui no hay autoencargos');
+                        autoencargos = {
+                            autoencargosExpress: false,
+                            autoencargosDiaSiguiente: false,
+                        };
+                    }
                     setSupplierAvailability({ ...suppliersGeneral, ...autoencargos });
-                    //console.log('setSupplierAvailability', supplierAvailability );
+                    console.log('setSupplierAvailability', supplierAvailability);
                     //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, estafetaDiaSiguiente: true}
                 }
             };
@@ -228,15 +237,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 let cpSender = allCpsZMG.includes(getCPSender.current);
                 if (cpReceiver === true && cpSender === true) {
                     console.log('codigos postales ZMG');
-                    console.log('setSupplierAvailability', supplierAvailability);
-                    // let autoencargos = {
-                    //     autoencargosExpress: true,
-                    //     autoencargosDiaSiguiente: true,
-                    // };
-                    // setSupplierAvailability({...autoencargos});
-                    // console.log('setSupplierAvailability', supplierAvailability );
+                    cpsAvailabilityAutoencargos.current = true;
                 } else {
                     console.log('codigos no postales ZMG');
+                    cpsAvailabilityAutoencargos.current = false;
                 }
             })
             .catch(err => console.log('error', err));
