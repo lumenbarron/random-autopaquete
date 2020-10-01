@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { element } from 'prop-types';
 import { Card, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
@@ -72,14 +72,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [profileDoc, setProfileDoc] = useState(false);
 
-    let cpReceiver;
-    let cpSender;
-    let currentCp;
-    let cpsGdl;
-    let cpsZap;
-    let cpsTona;
-    let cpsTlaq;
-    let allCpsZMG;
     let OtherCpsZMG = [
         '44009',
         '44228',
@@ -156,14 +148,16 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 if (xhr.readyState === 4) {
                     console.log('la wea weona llego', xhr.response);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
-                    //setSupplierAvailability(xhr.response);
+                    setSupplierAvailability(xhr.response);
+                    console.log('supplierAvailability', supplierAvailability);
                     let suppliersGeneral = xhr.response;
                     let autoencargos = {
                         autoencargosExpress: true,
                         autoencargosDiaSiguiente: true,
                     };
+                    //setSupplierAvailability({...suppliersGeneral});
                     setSupplierAvailability({ ...suppliersGeneral, ...autoencargos });
-                    console.log({ ...suppliersGeneral, ...autoencargos });
+                    //console.log('setSupplierAvailability', supplierAvailability );
                     //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, estafetaDiaSiguiente: true}
                 }
             };
@@ -226,42 +220,25 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .then(([res1, res2, res3, res4]) =>
                 Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]),
             )
-            .then(([data1, data2, data3, data4]) => [
-                (cpsGdl = data1.response.cp),
-                (cpsZap = data2.response.cp),
-                (cpsTona = data3.response.cp),
-                (cpsTlaq = data4.response.cp),
-                (allCpsZMG = [...cpsGdl, ...cpsZap, ...cpsTona, ...cpsTlaq, ...OtherCpsZMG]),
-                // console.log('allCpsZMG', allCpsZMG),
-                // currentCp = allCpsZMG.includes(getCPReceiver.current && getCPSender.current),
-                // console.log('currentCp', currentCp),
-                // console.log('allCpsZMG', allCpsZMG)
-                // if (currentCp === true) {
-                //     console.log('codigo postal ZMG')
-                // }
-                // else {
-                // console.log('codigo no postal gdl');
-                //  }
-            ])
-            //.then(currentCp => {
-            // console.log('holi', currentCp);
-            // console.log('allCpsZMG', allCpsZMG);
-            // if (currentCp === true) {
-            //     console.log('codigo postal ZMG')
-            // }else {
-            // console.log('codigo no postal gdl');
-            //  }
-            // console.log(typeof getCPReceiver.current);
-            //let currentCp = allCpsZMG.find(element => element === getCPReceiver.current )
-            // let currentRcCp = getCPReceiver.current.toString();
-            // let currentCp = allCpsZMG.includes(currentRcCp)
-            //console.log('currentCp', currentCp);
-            // if ( allCpsZMG.find(element => element == getCPReceiver.current )) {
-            //     console.log('codigo postal ZMG');
-            // } else {
-            //  console.log('codigo no postal gdl');
-            //     }
-            //})
+            .then(result => {
+                let allZMG = result.map(element => element.response.cp).flat();
+                let allCpsZMG = [...allZMG, ...OtherCpsZMG];
+                console.log(allCpsZMG);
+                let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
+                let cpSender = allCpsZMG.includes(getCPSender.current);
+                if (cpReceiver === true && cpSender === true) {
+                    console.log('codigos postales ZMG');
+                    console.log('setSupplierAvailability', supplierAvailability);
+                    // let autoencargos = {
+                    //     autoencargosExpress: true,
+                    //     autoencargosDiaSiguiente: true,
+                    // };
+                    // setSupplierAvailability({...autoencargos});
+                    // console.log('setSupplierAvailability', supplierAvailability );
+                } else {
+                    console.log('codigos no postales ZMG');
+                }
+            })
             .catch(err => console.log('error', err));
     }, []);
 
