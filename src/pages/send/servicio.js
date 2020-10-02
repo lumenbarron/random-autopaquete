@@ -282,7 +282,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     }, [user]);
 
     useEffect(() => {
-        console.log('cuarto useEffect');
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
         console.log('supplierAvailability', supplierAvailability);

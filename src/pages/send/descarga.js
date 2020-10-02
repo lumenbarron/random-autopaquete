@@ -2,18 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useFirebaseApp } from 'reactfire';
 import styled from 'styled-components';
+import { PdfAutoencargos } from './pdfAutoencargos';
 import { DownloadContainer } from './styled';
 
 const DetailsLabel = styled.p`
     margin-bottom: 1.2rem;
 `;
 
-export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
+export const DescargaComponent = ({ idGuiaGlobal, onReplay, data }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [pdf, setPDF] = useState(false);
     const [error, setError] = useState(false);
     const history = useHistory();
+
+    console.log(idGuiaGlobal, data);
 
     useEffect(() => {
         const prepareDownload = () => {
@@ -55,7 +58,12 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                     paquete sean válidos e intenta de nuevo.
                 </h2>
             )}
-            {loading && <h2>Generando guía, espera un minuto... </h2>}
+            {loading && (
+                <div>
+                    {' '}
+                    <h2>Generando guía, espera un minuto... </h2>
+                </div>
+            )}
         </DownloadContainer>
     );
 };
