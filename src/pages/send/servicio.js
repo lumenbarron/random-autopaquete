@@ -92,6 +92,23 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         '45647',
     ];
 
+    let notCoverCpsZMG = [
+        '45200',
+        '45220',
+        '45221',
+        '45226',
+        '45242',
+        '45245',
+        '45415',
+        '45424',
+        '45426',
+        '45427',
+        '45428',
+        '45429',
+        '45626',
+        '45627',
+    ];
+
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
         db.collection('profiles')
@@ -191,7 +208,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 setNameReceiver(doc.data().receiver_addresses.name);
                 setCPReceiver(doc.data().receiver_addresses.codigo_postal);
                 getCPReceiver.current = doc.data().receiver_addresses.codigo_postal;
-                //console.log('cpReceiver', getCPReceiver.current);
                 setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
                 setCountryReceiver(doc.data().receiver_addresses.country);
                 setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
@@ -230,9 +246,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]),
             )
             .then(result => {
-                let allZMG = result.map(element => element.response.cp).flat();
-                let allCpsZMG = [...allZMG, ...OtherCpsZMG];
-                console.log(allCpsZMG);
+                let resultZMG = result.map(element => element.response.cp).flat();
+                let allZMG = [...resultZMG, ...OtherCpsZMG];
+                //console.log(allZMG);
+                let allCpsZMG = allZMG.filter(item => {
+                    return !notCoverCpsZMG.includes(item);
+                });
+                //console.log('allCpsZMG', allCpsZMG);
                 let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
                 let cpSender = allCpsZMG.includes(getCPSender.current);
                 if (cpReceiver === true && cpSender === true) {
