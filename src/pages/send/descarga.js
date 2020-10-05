@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useFirebaseApp } from 'reactfire';
 import styled from 'styled-components';
@@ -9,14 +9,16 @@ const DetailsLabel = styled.p`
     margin-bottom: 1.2rem;
 `;
 
-export const DescargaComponent = ({ idGuiaGlobal, onReplay, data }) => {
+export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [pdf, setPDF] = useState(false);
+    const [pdfAuto, setPDFAuto] = useState(false);
     const [error, setError] = useState(false);
+    const allData = useRef();
     const history = useHistory();
 
-    console.log(idGuiaGlobal, data);
+    console.log(idGuiaGlobal);
 
     useEffect(() => {
         const prepareDownload = () => {
@@ -24,7 +26,16 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay, data }) => {
                 .doc(idGuiaGlobal)
                 .onSnapshot(doc => {
                     const data = doc.data();
+                    allData.current = doc.data();
+                    console.log('data descarga', allData.current);
+                    if (
+                        data.supplierData.Supplier === 'autoencargosDiaSiguiente' ||
+                        data.supplierData.Supplier === 'autoencargosExpress'
+                    ) {
+                        setPDFAuto(true);
+                    }
                     if (data.label) {
+                        //console.log('data label', data.label);
                         setPDF(doc.data().label);
                     }
                     if (data.status === 'error') {
@@ -35,7 +46,7 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay, data }) => {
         prepareDownload();
     }, [idGuiaGlobal]);
 
-    const loading = !pdf && !error;
+    const loading = !pdf && !error && !pdfAuto;
 
     return (
         <DownloadContainer>
@@ -52,6 +63,12 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay, data }) => {
                     </a>
                 </>
             )}
+            {pdfAuto && (
+                <div>
+                    <h2>Guía</h2>
+                    <PdfAutoencargos data={allData.current} />
+                </div>
+            )}
             {error && (
                 <h2>
                     Hubo un problema al generar tu guía, verifica que las direcciones y datos del
@@ -60,7 +77,6 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay, data }) => {
             )}
             {loading && (
                 <div>
-                    {' '}
                     <h2>Generando guía, espera un minuto... </h2>
                 </div>
             )}

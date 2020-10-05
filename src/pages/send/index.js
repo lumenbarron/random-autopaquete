@@ -15,7 +15,7 @@ const SendPage = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const idGuiaGlobal = useRef(null);
-    const allData = useRef();
+    //const allData = useRef();
     const user = useUser();
     const { idGuia: idGuiaParam, step: stepParam } = useParams();
     const [onReplay, setOnReplay] = useState(false);
@@ -107,35 +107,28 @@ const SendPage = () => {
             .collection('guia')
             .doc(idGuiaGlobal.current)
             .update({ status: 'completed', supplierData });
-
-        //let servicioUrl;
-        // if (supplierData.Supplier.indexOf('estafeta') >= 0) {
-        //     servicioUrl = '/guia/estafeta';
-        // } else
-        //     if (supplierData.Supplier === "autoencargosDiaSiguiente" || supplierData.Supplier === "autoencargosExpress") {
-        //         console.log('autoencargos pdf');
-        //     }
-
-        //     else {
-        //         servicioUrl = '/guia/fedex';
-        //     }
-        // supplierData.Supplier === "fedexEconomico" || supplierData.Supplier === "fedexOvernight" ||
         if (
             supplierData.Supplier === 'autoencargosDiaSiguiente' ||
             supplierData.Supplier === 'autoencargosExpress'
         ) {
             console.log('autoencargos pdf');
             console.log(idGuiaGlobal.current);
-            getAllData();
             setCurrentStepName('descarga');
-        } else if (supplierData.Supplier === 'estafeta') {
+        } else if (
+            supplierData.Supplier === 'estafetaDiaSiguiente' ||
+            supplierData.Supplier === 'estafetaEconomico'
+        ) {
             directionsGuiasCollectionAdd
                 .then(function() {
                     user.getIdToken().then(idToken => {
                         const xhr = new XMLHttpRequest();
                         xhr.responseType = 'json';
                         xhr.contentType = 'application/json';
-                        xhr.open('POST', '/guia/estafeta');
+                        //xhr.open('POST', '/guia/estafeta');
+                        xhr.open(
+                            'POST',
+                            'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/estafeta-create',
+                        );
                         xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                         xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
                         setCurrentStepName('descarga');
@@ -151,7 +144,11 @@ const SendPage = () => {
                         const xhr = new XMLHttpRequest();
                         xhr.responseType = 'json';
                         xhr.contentType = 'application/json';
-                        xhr.open('POST', '/guia/fedex');
+                        //xhr.open('POST', '/guia/fedex');
+                        xhr.open(
+                            'POST',
+                            'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
+                        );
                         xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                         xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
                         setCurrentStepName('descarga');
@@ -203,23 +200,6 @@ const SendPage = () => {
         idGuiaGlobal.current = newGuia.id;
         setOnReplay(false);
     }
-
-    const getAllData = () => {
-        db.collection('guia')
-            .doc(idGuiaGlobal.current)
-            .get()
-            .then(function(doc) {
-                if (doc.exists) {
-                    console.log('Document data:', doc.data());
-                    allData.current = doc.data();
-                } else {
-                    console.log('No document!');
-                }
-            })
-            .catch(function(error) {
-                console.log('Error getting document:', error);
-            });
-    };
 
     const handleNextClick = () => {
         if (currentStepName === 'origen') {
@@ -293,11 +273,7 @@ const SendPage = () => {
                     />
                 )}
                 {currentStepName === 'descarga' && (
-                    <DescargaComponent
-                        idGuiaGlobal={idGuiaGlobal.current}
-                        onReplay={replayLabel}
-                        data={allData.current}
-                    />
+                    <DescargaComponent idGuiaGlobal={idGuiaGlobal.current} onReplay={replayLabel} />
                 )}
             </StyledSendPage>
         </>

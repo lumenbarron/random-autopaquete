@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Page, Text, View, Document, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { useFirebaseApp, useUser } from 'reactfire';
 
 const stylePage = {
     flexDirection: 'row',
@@ -13,19 +14,34 @@ const styleSection = {
 };
 
 export const PdfAutoencargos = data => {
-    console.log('data', data);
+    // Sender states
+    const [nameSender, setNameSender] = useState();
+    const [renderReady, setRenderReady] = useState(false);
+
+    useEffect(() => {
+        console.log('data', data);
+        console.log('data', data.data.name);
+        setNameSender(data.data.name);
+        setRenderReady(true);
+        //console.log();
+    }, []);
+
     return (
         <div>
-            <PDFViewer>
-                <Document>
-                    <Page size="A4" style={stylePage}>
-                        <View style={styleSection}>
-                            <Text>Holi</Text>
-                            <Text>{data.receiver_addresses.country}</Text>
-                        </View>
-                    </Page>
-                </Document>
-            </PDFViewer>
+            {renderReady ? (
+                <PDFViewer>
+                    <Document>
+                        <Page size="A4" style={stylePage}>
+                            <View style={styleSection}>
+                                <Text>Holi</Text>
+                                <Text>{nameSender}</Text>
+                            </View>
+                        </Page>
+                    </Document>
+                </PDFViewer>
+            ) : (
+                <h2>No se puede generar el pdf</h2>
+            )}
         </div>
     );
 };
