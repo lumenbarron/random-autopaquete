@@ -66,7 +66,7 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
             {pdfAuto && (
                 <div>
                     <h2>Guía</h2>
-                    <PdfAutoencargos data={allData.current} />
+                    <PdfAutoencargos data={allData.current} guia={idGuiaGlobal} />
                 </div>
             )}
             {error && (

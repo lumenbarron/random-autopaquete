@@ -119,6 +119,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [userName, setUserName] = useState('');
     const [status, setStatus] = useState();
+    const [razonSocial, setRazonSocial] = useState('');
 
     let idGuia;
     let pickedDirection;
@@ -263,8 +264,10 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
+                        console.log('primer data', doc.data());
                         setUserName(doc.data().name);
                         setStatus(doc.data().status);
+                        setRazonSocial(doc.data().razon_social);
                     });
                 })
                 .catch(function(error) {
@@ -373,6 +376,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         const directionsGuiasCollectionAdd = db.collection('guia').add({
             ID: user.uid,
             name: userName,
+            razon_social: razonSocial,
             creation_date: creationDate,
             status: 'incomplete',
             sender_addresses: {
