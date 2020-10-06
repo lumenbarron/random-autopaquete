@@ -1,52 +1,43 @@
-//'use strict';
-import React from 'react';
 import { StyleSheet } from '@react-pdf/renderer';
+//import styled from '@react-pdf/styled-components';
+
+// export const StyleHeaderImage = styled.div`
+// display: flex;
+// justify-content: center;
+// `;
+
+// export const StyleContentData = styled.div`
+// display: flex;
+// justify-content: center;
+// align-items: center;
+// `;
 
 const styles = StyleSheet.create({
     body: {
         paddingTop: 35,
         paddingBottom: 65,
         paddingHorizontal: 35,
+        color: 'blue',
+        width: 500,
+        height: 800,
     },
-    title: {
-        fontSize: 24,
+    titles: {
+        fontSize: 26,
         textAlign: 'center',
-        fontFamily: 'Oswald',
-    },
-    author: {
-        fontSize: 12,
-        textAlign: 'center',
-        marginBottom: 40,
-    },
-    subtitle: {
-        fontSize: 18,
-        margin: 12,
-        fontFamily: 'Oswald',
+        fontFamily: 'Montserrat',
     },
     text: {
-        margin: 12,
-        fontSize: 14,
+        fontSize: 20,
         textAlign: 'justify',
-        fontFamily: 'Times-Roman',
+        fontFamily: 'Montserrat',
     },
     image: {
-        marginVertical: 15,
-        marginHorizontal: 100,
+        width: 185,
+        height: 45,
     },
-    header: {
-        fontSize: 12,
-        marginBottom: 20,
-        textAlign: 'center',
-        color: 'grey',
-    },
-    pageNumber: {
-        position: 'absolute',
-        fontSize: 12,
-        bottom: 30,
-        left: 0,
-        right: 0,
-        textAlign: 'center',
-        color: 'grey',
+    data: {
+        border: '1px solid green',
+        borderRadius: 20,
     },
 });
 

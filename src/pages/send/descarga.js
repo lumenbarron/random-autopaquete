@@ -9,6 +9,10 @@ const DetailsLabel = styled.p`
     margin-bottom: 1.2rem;
 `;
 
+const ContentPDF = styled.p`
+    margin-bottom: 1.2rem;
+`;
+
 export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();

@@ -1,17 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { Page, Text, View, Document, Image, PDFViewer } from '@react-pdf/renderer';
-import styles from './stylePdfAuto';
+import {
+    Page,
+    Text,
+    View,
+    Document,
+    Image,
+    PDFViewer,
+    Canvas,
+    StyleSheet,
+} from '@react-pdf/renderer';
+//import styles from './stylePdfAuto';
+//import {StyleHeaderImage  } from './styled';
+// import { StyleContentData } from './styled';
 
-const stylePage = {
-    flexDirection: 'row',
-    backgroundColor: '#E4E4E4',
-};
-
-const styleSection = {
-    margin: 10,
-    padding: 10,
-    flexGrow: 1,
-};
+const styles = StyleSheet.create({
+    body: {
+        paddingTop: 35,
+        paddingBottom: 65,
+        paddingHorizontal: 35,
+        width: '500px',
+        height: '800px',
+    },
+    titles: {
+        fontSize: 26,
+        textAlign: 'center',
+        fontFamily: 'Montserrat',
+    },
+    text: {
+        fontSize: 20,
+        textAlign: 'justify',
+        fontFamily: 'Montserrat',
+    },
+    image: {
+        width: 185,
+        height: 45,
+    },
+    data: {
+        border: '1px solid green',
+        borderRadius: 20,
+    },
+});
 
 export const PdfAutoencargos = data => {
     // Sender states
@@ -80,13 +108,10 @@ export const PdfAutoencargos = data => {
         <div>
             {renderReady ? (
                 <PDFViewer>
-                    <Document>
-                        <Page size="A4" style={stylePage}>
-                            {/* <Image
-                                style={styles.image}
-                                src="/assets/autoencar.png"
-                            /> */}
-                            <View style={styleSection}>
+                    <Document title={noGuia}>
+                        <Page orientation="portrait" style={styles.body}>
+                            <View>
+                                <Image style={styles.image} src="/assets/autoencar.png" />
                                 <Text>Número de Guía {noGuia}</Text>
                                 <Text>Servicio {service}</Text>
                                 <Text>Servicio {service}</Text>
