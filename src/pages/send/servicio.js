@@ -286,9 +286,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (!supplierAvailability || !profileDoc) return;
         console.log('supplierAvailability', supplierAvailability);
         let pricedWeight = Math.ceil(weight);
+        //Si el peso es menor que uno, se le asigna 1
         pricedWeight = pricedWeight > 1 ? pricedWeight : 1;
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
+        console.log('pesos', pricedWeight, volumetricWeight);
         if (volumetricWeight > weight) {
+            console.log('el peso volumetrico es mayor que el peso declarado');
             pricedWeight = volumetricWeight;
         }
 
@@ -333,6 +336,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     parseInt(min, 10) <= parseInt(pricedWeight, 10) &&
                     parseInt(max, 10) >= parseInt(pricedWeight, 10)
                 ) {
+                    console.log(
+                        'Encontramos si hay tarifas que apliquen directo al paquete',
+                        entrega,
+                        precio,
+                        max,
+                        min,
+                        kgExtra,
+                    );
                     const precioTotal = parseInt(precio, 10) * quantity;
                     console.log('precioTotal', precioTotal);
                     if (entrega === 'fedexDiaSiguiente')
@@ -421,7 +432,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         });
                     return;
                 }
-
+                //Si la tarifa incluye precio por kg extra
                 // Anotamos los cargos de kg extra, por si los necesitamos
                 if (kgExtra) {
                     kgsExtraTarifas[entrega.slice(0, entrega.indexOf('Extra'))] = parseInt(
@@ -433,35 +444,38 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
                 // Si el mínimo de kgs de la tarifa es mayor al peso, no aplica
                 if (parseInt(min, 10) > parseInt(pricedWeight, 10)) {
+                    console.log('Si el mínimo de kgs de la tarifa es mayor al peso, no aplica');
                     return;
                 }
 
                 // Esto ocurre si el máximo es menor y el mínimo es menor que el peso,
                 // es decir, nos sobran kilos
-                const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
-
-                //console.log('Diferencia Variable', diferencia);
-                if (
-                    !segundaMejorTarifa[entrega] ||
-                    segundaMejorTarifa[entrega].diferencia > diferencia
-                ) {
-                    const precioTotal = parseInt(precio, 10) * quantity;
-
-                    segundaMejorTarifa[entrega] = {
-                        id: doc.id,
-                        //  precio: precioTotal + getInsurancePrice('estafetaEconomico'),
-                        guia: precioTotal,
-                        //  seguro: getInsurancePrice('estafetaEconomico'),
-                        diferencia,
-                    };
-                    return;
-                }
+                //const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
+                //console.log('diferencia', diferencia);
+                //console.log('segundaMejorTarifa', segundaMejorTarifa);
+                // if (
+                //     !segundaMejorTarifa[entrega] ||
+                //     segundaMejorTarifa[entrega].diferencia > diferencia
+                // ) {
+                //     const precioTotal = parseInt(precio, 10) * quantity;
+                //     console.log('precioTotal de entrega', precioTotal);
+                //     segundaMejorTarifa[entrega] = {
+                //         id: doc.id,
+                //         //  precio: precioTotal + getInsurancePrice('estafetaEconomico'),
+                //         guia: precioTotal,
+                //         //  seguro: getInsurancePrice('estafetaEconomico'),
+                //         diferencia,
+                //     };
+                //     return;
+                // }
             });
+
             Object.keys(segundaMejorTarifa).forEach(entrega => {
                 const tarifa = segundaMejorTarifa[entrega];
                 console.log('tarifa', tarifa);
                 const { guia } = tarifa;
                 const precio = tarifa.guia + tarifa.diferencia * kgsExtraTarifas[entrega];
+                console.log('precio', precio);
                 // console.log('guia tarifa', tarifa.diferencia);
                 console.log('Entrega', entrega);
                 const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
