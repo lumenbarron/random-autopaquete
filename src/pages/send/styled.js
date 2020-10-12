@@ -126,3 +126,11 @@ export const DownloadContainer = styled.div`
     text-align: center;
     width: 300px;
 `;
+
+export const DownloadContainerPDF = styled.div`
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 100%;
+    margin: 5rem auto;
+`;

@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useFirebaseApp } from 'reactfire';
 import styled from 'styled-components';
 import { PdfAutoencargos } from './pdfAutoencargos';
-import { DownloadContainer } from './styled';
+import { DownloadContainer, DownloadContainerPDF } from './styled';
 
 const DetailsLabel = styled.p`
     margin-bottom: 1.2rem;
@@ -20,6 +20,7 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const [pdfAuto, setPDFAuto] = useState(false);
     const [error, setError] = useState(false);
     const allData = useRef();
+    const company = useRef('');
     const history = useHistory();
 
     console.log(idGuiaGlobal);
@@ -31,7 +32,8 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                 .onSnapshot(doc => {
                     const data = doc.data();
                     allData.current = doc.data();
-                    console.log('data descarga', allData.current);
+                    company.current = doc.data().razon_social;
+                    console.log('data descarga', allData.current, 'razon social', company.current);
                     if (
                         data.supplierData.Supplier === 'autoencargosDiaSiguiente' ||
                         data.supplierData.Supplier === 'autoencargosExpress'
@@ -53,9 +55,10 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const loading = !pdf && !error && !pdfAuto;
 
     return (
-        <DownloadContainer>
+        // <DownloadContainer>
+        <>
             {pdf && (
-                <>
+                <DownloadContainer>
                     <h2>Guía</h2>
                     <a href={`data:application/pdf;base64,${pdf}`} download="guia.pdf">
                         <img src="/assets/icon-pdf.png" alt="Icono de PDF" nopin="nopin" />
@@ -65,25 +68,35 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                     <a href="/mi-cuenta/enviar" onClick={onReplay}>
                         Repetir último envío
                     </a>
-                </>
+                </DownloadContainer>
             )}
             {pdfAuto && (
-                <div>
+                <DownloadContainerPDF>
                     <h2>Guía</h2>
-                    <PdfAutoencargos data={allData.current} guia={idGuiaGlobal} />
-                </div>
+                    <PdfAutoencargos
+                        data={allData.current}
+                        company={company.current}
+                        guia={idGuiaGlobal}
+                    />
+                    <a href="/mi-cuenta/enviar" onClick={onReplay}>
+                        Repetir último envío
+                    </a>
+                </DownloadContainerPDF>
             )}
             {error && (
-                <h2>
-                    Hubo un problema al generar tu guía, verifica que las direcciones y datos del
-                    paquete sean válidos e intenta de nuevo.
-                </h2>
+                <DownloadContainer>
+                    <h2>
+                        Hubo un problema al generar tu guía, verifica que las direcciones y datos
+                        del paquete sean válidos e intenta de nuevo.
+                    </h2>
+                </DownloadContainer>
             )}
             {loading && (
-                <div>
+                <DownloadContainer>
                     <h2>Generando guía, espera un minuto... </h2>
-                </div>
+                </DownloadContainer>
             )}
-        </DownloadContainer>
+        </>
+        // </DownloadContainer>
     );
 };

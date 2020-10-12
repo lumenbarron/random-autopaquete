@@ -1,45 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import {
-    Page,
-    Text,
-    View,
-    Document,
-    Image,
-    PDFViewer,
-    Canvas,
-    StyleSheet,
-} from '@react-pdf/renderer';
-//import styles from './stylePdfAuto';
-//import {StyleHeaderImage  } from './styled';
-// import { StyleContentData } from './styled';
-
-const styles = StyleSheet.create({
-    body: {
-        paddingTop: 35,
-        paddingBottom: 65,
-        paddingHorizontal: 35,
-        width: '500px',
-        height: '800px',
-    },
-    titles: {
-        fontSize: 26,
-        textAlign: 'center',
-        fontFamily: 'Montserrat',
-    },
-    text: {
-        fontSize: 20,
-        textAlign: 'justify',
-        fontFamily: 'Montserrat',
-    },
-    image: {
-        width: 185,
-        height: 45,
-    },
-    data: {
-        border: '1px solid green',
-        borderRadius: 20,
-    },
-});
+import React, { useState, useEffect, useRef } from 'react';
+import { Page, View, Document, Image, PDFViewer, Text } from '@react-pdf/renderer';
+import styles from './pdfAutoencargos/styles';
+import DataContact from './pdfAutoencargos/dataContact';
+import Politics from './pdfAutoencargos/politics';
+import Destination from './pdfAutoencargos/destinations';
+import Package from './pdfAutoencargos/package';
+import Logo from './pdfAutoencargos/logo';
+// import logo from '../../../public/assets/autoencar.png';
 
 export const PdfAutoencargos = data => {
     // Sender states
@@ -71,70 +38,94 @@ export const PdfAutoencargos = data => {
     const [renderReady, setRenderReady] = useState(false);
 
     useEffect(() => {
-        console.log('data', data.data);
-        console.log('guia', data.guia);
+        let allData = data.data;
+        console.log('company', data.company);
+        console.log(data[4]);
+        console.log(data.status);
+        console.log(data.name);
+        console.log(allData);
         //General data
         setNoGuia(data.guia);
-        setRazonSocial(data.razon_social);
-        setService(data.data.supplierData.Supplier);
-        setDate(data.data.package.creation_date);
+        setRazonSocial(data.company);
+        setService(allData.supplierData.Supplier);
+        setDate(allData.package.creation_date);
         //Sender information
-        setNameSender(data.data.name);
-        setStreetNumberSender(data.data.sender_addresses.street_number);
-        setNeighborhoodSender(data.data.sender_addresses.neighborhood);
-        setCountrySender(data.data.sender_addresses.country);
-        setCPSender(data.data.sender_addresses.codigo_postal);
-        setPhoneSender(data.data.sender_addresses.phone);
-        setRefSenderStreet(data.data.sender_addresses.place_reference);
+        setNameSender(allData.name);
+        setStreetNumberSender(allData.sender_addresses.street_number);
+        setNeighborhoodSender(allData.sender_addresses.neighborhood);
+        setCountrySender(allData.sender_addresses.country);
+        setCPSender(allData.sender_addresses.codigo_postal);
+        setPhoneSender(allData.sender_addresses.phone);
+        setRefSenderStreet(allData.sender_addresses.place_reference);
         //Receiver information
-        setNameReceiver(data.data.receiver_addresses.name);
-        setStreetNumberReceiver(data.data.receiver_addresses.street_number);
-        setNeighborhoodReceiver(data.data.receiver_addresses.neighborhood);
-        setCountryReceiver(data.data.receiver_addresses.country);
-        setCPReceiver(data.data.receiver_addresses.codigo_postal);
-        setPhoneReceiver(data.data.receiver_addresses.phone);
-        setRefReceiverStreet(data.data.receiver_addresses.place_reference);
+        setNameReceiver(allData.receiver_addresses.name);
+        setStreetNumberReceiver(allData.receiver_addresses.street_number);
+        setNeighborhoodReceiver(allData.receiver_addresses.neighborhood);
+        setCountryReceiver(allData.receiver_addresses.country);
+        setCPReceiver(allData.receiver_addresses.codigo_postal);
+        setPhoneReceiver(allData.receiver_addresses.phone);
+        setRefReceiverStreet(allData.receiver_addresses.place_reference);
         //Package
-        setContent(data.data.package.content_description);
-        setAssurance(data.data.supplierData.cargos.seguro);
+        setContent(allData.package.content_description);
+        setAssurance(allData.supplierData.cargos.seguro);
 
         setTimeout(() => {
             console.log('settime');
             setRenderReady(true);
         }, 5000);
     }, []);
-
     return (
         <div>
             {renderReady ? (
-                <PDFViewer>
-                    <Document title={noGuia}>
-                        <Page orientation="portrait" style={styles.body}>
-                            <View>
-                                <Image style={styles.image} src="/assets/autoencar.png" />
-                                <Text>Número de Guía {noGuia}</Text>
-                                <Text>Servicio {service}</Text>
-                                <Text>Servicio {service}</Text>
-                                <Text>Fecha {date}</Text>
-                                <Text> Origen </Text>
-                                <Text>Nombre quien envia {nameSender}</Text>
-                                <Text>
-                                    Direccion {streetNumberSender} , {neighborhoodSender},{' '}
-                                    {CPSender}, {countrySender}{' '}
-                                </Text>
-                                <Text>Telefono {phoneSender}</Text>
-                                <Text>Referencias adicionales {refSenderStreet}</Text>
-                                <Text> Destino </Text>
-                                <Text>Nombre quien recive {nameReceiver}</Text>
-                                <Text>
-                                    Direccion {streetNumberReceiver} , {neighborhoodReceiver},{' '}
-                                    {CPReceiver}, {countryReceiver}{' '}
-                                </Text>
-                                <Text>Telefono {phoneReceiver}</Text>
-                                <Text>Referencias adicionales {refReceiverStreet}</Text>
-                                <Text> Valor declarado {assurance}</Text>
-                                <Text>Contendio {content}</Text>
-                                <Text>Razón Social {razonSocial} </Text>
+                <PDFViewer style={styles.viewer}>
+                    <Document>
+                        <Page size="A4" style={styles.page} orientation="landscape">
+                            <View style={styles.section}>
+                                <View
+                                    style={[
+                                        styles.container,
+                                        {
+                                            width: '50%',
+                                            borderRightWidth: 1,
+                                            borderStyle: 'dashed',
+                                        },
+                                    ]}
+                                >
+                                    <Logo />
+                                    <DataContact noGuia={noGuia} service={service} date={date} />
+                                    <Destination
+                                        origin={'ORIGEN'}
+                                        name={nameSender}
+                                        adress={
+                                            (streetNumberSender,
+                                            neighborhoodSender,
+                                            CPSender,
+                                            countrySender)
+                                        }
+                                        phone={phoneSender}
+                                        reference={refSenderStreet}
+                                    />
+                                    <Destination
+                                        origin={'DESTINO'}
+                                        name={nameReceiver}
+                                        adress={
+                                            (streetNumberReceiver,
+                                            neighborhoodReceiver,
+                                            CPReceiver,
+                                            countryReceiver)
+                                        }
+                                        phone={phoneReceiver}
+                                        reference={refReceiverStreet}
+                                    />
+                                    <Package
+                                        assurance={assurance}
+                                        company={razonSocial}
+                                        content={content}
+                                    />
+                                </View>
+                                <View style={[styles.container, { width: '50%' }]}>
+                                    <Politics />
+                                </View>
                             </View>
                         </Page>
                     </Document>
