@@ -111,6 +111,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
+        console.log('type', type);
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
@@ -712,8 +713,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             supplierCostAutoencargosExp.guia &&
                             supplierCard(
                                 'autoencargos',
-                                'DiaSiguiente',
-                                'Dia Siguiente',
+                                'Express',
+                                'Express',
                                 supplierCostAutoencargosExp,
                             )}
                         {supplierAvailability.autoencargosDiaSiguiente &&

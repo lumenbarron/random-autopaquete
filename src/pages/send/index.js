@@ -108,8 +108,8 @@ const SendPage = () => {
             .doc(idGuiaGlobal.current)
             .update({ status: 'completed', supplierData });
         if (
-            supplierData.Supplier === 'autoencargosDiaSiguiente' ||
-            supplierData.Supplier === 'autoencargosExpress'
+            supplierData.Supplier === 'autoencargosExpress' ||
+            supplierData.Supplier === 'autoencargosEconomico'
         ) {
             console.log('autoencargos pdf');
             console.log(idGuiaGlobal.current);

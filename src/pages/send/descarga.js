@@ -35,8 +35,8 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                     company.current = doc.data().razon_social;
                     console.log('data descarga', allData.current, 'razon social', company.current);
                     if (
-                        data.supplierData.Supplier === 'autoencargosDiaSiguiente' ||
-                        data.supplierData.Supplier === 'autoencargosExpress'
+                        data.supplierData.Supplier === 'autoencargosExpress' ||
+                        data.supplierData.Supplier === 'autoencargosEconomico'
                     ) {
                         setPDFAuto(true);
                     }
