@@ -40,10 +40,6 @@ export const PdfAutoencargos = data => {
     useEffect(() => {
         let allData = data.data;
         console.log('company', data.company);
-        console.log(data[4]);
-        console.log(data.status);
-        console.log(data.name);
-        console.log(allData);
         //General data
         setNoGuia(data.guia);
         setRazonSocial(data.company);
