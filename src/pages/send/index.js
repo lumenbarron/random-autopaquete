@@ -245,12 +245,12 @@ const SendPage = () => {
                             variant="neutral"
                             className="rainbow-m-horizontal_medium"
                         />
-                        <Button
+                        {/* <Button
                             label="Siguiente"
                             onClick={handleNextClick}
                             variant="brand"
                             className="rainbow-m-horizontal_medium"
-                        />
+                        /> */}
                     </div>
                 )}
                 {currentStepName === 'origen' && (
