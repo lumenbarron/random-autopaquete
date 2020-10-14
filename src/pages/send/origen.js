@@ -170,7 +170,10 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 .then(response => {
                     if (!response.ok) {
                         console.log('CP no validado');
-                        return {};
+                        setTimeout(() => {
+                            alert('CP no validado');
+                            setCP('');
+                        }, 1000);
                     }
                     return response.json();
                 })
@@ -487,6 +490,9 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                     <div className="w-75 pl-4">
                         <span className="alert-error">El nombre ya se encuentra registrado</span>
                     </div>
+                )}
+                {errorCP && (
+                    <div className="alert-error pl-4">CP no validado, favor de verificarlo</div>
                 )}
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
