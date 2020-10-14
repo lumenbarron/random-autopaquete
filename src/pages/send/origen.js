@@ -119,7 +119,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [userName, setUserName] = useState('');
     const [status, setStatus] = useState();
-    const [razonSocial, setRazonSocial] = useState('');
+    const [registerSAT, setRegisterSAT] = useState('');
 
     let idGuia;
     let pickedDirection;
@@ -267,7 +267,13 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                         console.log('primer data', doc.data());
                         setUserName(doc.data().name);
                         setStatus(doc.data().status);
-                        setRazonSocial(doc.data().razon_social);
+                        if (doc.data().persona === 'Física') {
+                            setRegisterSAT(doc.data().nombre_fiscal);
+                        } else if (doc.data().persona === 'Moral') {
+                            setRegisterSAT(doc.data().razon_social);
+                        } else {
+                            setRegisterSAT('');
+                        }
                     });
                 })
                 .catch(function(error) {
@@ -376,7 +382,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         const directionsGuiasCollectionAdd = db.collection('guia').add({
             ID: user.uid,
             name: userName,
-            razon_social: razonSocial,
+            razon_social: registerSAT,
             creation_date: creationDate,
             status: 'incomplete',
             sender_addresses: {

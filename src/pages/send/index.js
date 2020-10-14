@@ -15,7 +15,6 @@ const SendPage = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const idGuiaGlobal = useRef(null);
-    //const allData = useRef();
     const user = useUser();
     const { idGuia: idGuiaParam, step: stepParam } = useParams();
     const [onReplay, setOnReplay] = useState(false);
