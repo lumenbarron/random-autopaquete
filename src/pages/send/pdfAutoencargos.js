@@ -39,11 +39,12 @@ export const PdfAutoencargos = data => {
 
     useEffect(() => {
         let allData = data.data;
+        let supplier = allData.supplierData.Supplier.substring(12);
         console.log('company', data.company);
         //General data
         setNoGuia(data.guia);
         setRazonSocial(data.company);
-        setService(allData.supplierData.Supplier);
+        setService(supplier);
         setDate(allData.package.creation_date);
         //Sender information
         setNameSender(allData.name);
@@ -63,7 +64,12 @@ export const PdfAutoencargos = data => {
         setRefReceiverStreet(allData.receiver_addresses.place_reference);
         //Package
         setContent(allData.package.content_description);
-        setAssurance(allData.supplierData.cargos.seguro);
+        // setAssurance(allData.supplierData.cargos.seguro);
+        if (allData.supplierData.cargos.seguro > 0) {
+            setAssurance('asegurado');
+        } else {
+            setAssurance('sin seguro');
+        }
 
         setTimeout(() => {
             console.log('settime');

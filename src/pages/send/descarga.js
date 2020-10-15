@@ -21,6 +21,7 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const [error, setError] = useState(false);
     const allData = useRef();
     const company = useRef('');
+    const rastreo = useRef('');
     const history = useHistory();
 
     console.log(idGuiaGlobal);
@@ -33,7 +34,15 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                     const data = doc.data();
                     allData.current = doc.data();
                     company.current = doc.data().razon_social;
-                    console.log('data descarga', allData.current, 'razon social', company.current);
+                    rastreo.current = doc.data().rastreo;
+                    console.log(
+                        'data descarga',
+                        allData.current,
+                        'razon social',
+                        company.current,
+                        'rastreo',
+                        rastreo.current,
+                    );
                     if (
                         data.supplierData.Supplier === 'autoencargosExpress' ||
                         data.supplierData.Supplier === 'autoencargosEconomico'
@@ -76,7 +85,7 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                     <PdfAutoencargos
                         data={allData.current}
                         company={company.current}
-                        guia={idGuiaGlobal}
+                        guia={rastreo.current}
                     />
                     <a href="/mi-cuenta/enviar" onClick={onReplay}>
                         Repetir último envío

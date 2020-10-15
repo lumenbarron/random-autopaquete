@@ -110,6 +110,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     ];
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
+        console.log('id', id);
         const precioNeto = precio * 1.16;
         db.collection('profiles')
             .where('ID', '==', user.uid)
@@ -117,10 +118,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     console.log(doc.id, ' => ', doc.data());
+                    console.log(idGuiaGlobal, 'idGuiaGlobal');
                     if (parseFloat(precioNeto) > parseFloat(doc.data().saldo)) {
                         setError(true);
                     } else if (supplier === 'autoencargos') {
                         console.log('restando el saldo para autoencargos');
+                        addRastreoAuto(idGuiaGlobal);
                         const newBalance = parseFloat(doc.data().saldo) - parseFloat(precioNeto);
                         console.log('newBalance', newBalance);
                         db.collection('profiles')
@@ -162,6 +165,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         onSave(supplierData);
                     });
             });
+    };
+
+    const addRastreoAuto = idGuiaGlobal => {
+        let guiaAutoencargos = Math.floor(Math.random() * 10000).toString();
+        db.collection('guia')
+            .doc(idGuiaGlobal)
+            .update({ rastreo: guiaAutoencargos });
     };
 
     useEffect(() => {

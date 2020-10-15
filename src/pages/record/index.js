@@ -88,7 +88,7 @@ const RecordPage = () => {
                     }
                 })
                 .map(historyRecord => {
-                    console.log('datos dentro dexl map', historyRecord);
+                    console.log('datos dentro del map', historyRecord);
                     return {
                         id: historyRecord.id,
                         date: new Date(historyRecord.sentDate).toLocaleDateString(),
