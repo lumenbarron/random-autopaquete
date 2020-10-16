@@ -38,6 +38,7 @@ export default function HistoryUser({ user }) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [history, setHistory] = useState([]);
+    const [label, setLabel] = useState([]);
     const [tableData, setTableData] = useState();
 
     useEffect(() => {
@@ -85,7 +86,6 @@ export default function HistoryUser({ user }) {
                             ? historyRecord.supplierData.Supplier_cost
                             : 'guia incompleta',
                     label:
-                        historyRecord.status === 'completed' &&
                         historyRecord.supplierData.Supplier === 'autoencargos'
                             ? 'guia autoencargos'
                             : historyRecord.label,
