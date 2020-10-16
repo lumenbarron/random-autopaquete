@@ -92,7 +92,7 @@ const RecordPage = () => {
                     return {
                         id: historyRecord.id,
                         date: new Date(historyRecord.sentDate).toLocaleDateString(),
-                        guide: historyRecord.rastreo ? historyRecord.rastreo.join(' ') : 'N/D',
+                        guide: historyRecord.rastreo ? historyRecord.rastreo : 'sin guia',
                         origin: historyRecord.sender_addresses.name,
                         Destination: historyRecord.receiver_addresses.name,
                         weight: historyRecord.package.weight,

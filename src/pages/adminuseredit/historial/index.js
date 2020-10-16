@@ -1,26 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Column,
-    Badge,
-    TableWithBrowserPagination,
-    Input,
-    Button,
-    Accordion,
-    AccordionSection,
-} from 'react-rainbow-components';
-import formatMoney from 'accounting-js/lib/formatMoney';
+import { Column, Badge, TableWithBrowserPagination } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faPencilAlt,
-    faTrashAlt,
-    faTimes,
-    faSearch,
-    faDownload,
-} from '@fortawesome/free-solid-svg-icons';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
-import Modal from 'react-modal';
-import { StyledRecord, RecordContainer, StyledPanel } from './styled';
+import { StyledPanel } from './styled';
 
 const StyledBadge = styled(Badge)`
     color: #09d3ac;
@@ -38,7 +22,6 @@ const StyledTable = styled(TableWithBrowserPagination)`
 `;
 
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
-
 const DownloadLabel = ({ value }) => (
     <a
         download="guia"
@@ -62,10 +45,12 @@ export default function HistoryUser({ user }) {
             let dataGuias = [];
             db.collection('guia')
                 .where('ID', '==', user.ID)
+                .where('status', '==', 'completed')
+                .orderBy('creation_date', 'desc')
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log('data guias', doc.data());
+                        console.log('data guias', doc.data(), 'doc.id', doc.id);
                         dataGuias.push(doc.data());
                     });
                     setHistory(dataGuias);
@@ -82,6 +67,7 @@ export default function HistoryUser({ user }) {
             history.map(historyRecord => {
                 console.log('datos dentro del map', historyRecord.guide);
                 return {
+                    id: historyRecord.id,
                     date: new Date(historyRecord.sentDate).toLocaleDateString(),
                     status: historyRecord.status,
                     guide:
@@ -101,7 +87,7 @@ export default function HistoryUser({ user }) {
                     label:
                         historyRecord.status === 'completed' &&
                         historyRecord.supplierData.Supplier === 'autoencargos'
-                            ? 'guia incompleta'
+                            ? 'guia autoencargos'
                             : historyRecord.label,
                 };
             }),
@@ -132,7 +118,7 @@ export default function HistoryUser({ user }) {
                         <Column header="Origen" field="origin" />
                         <Column header="Destino" field="Destination" />
                         <Column header="Peso" field="weight" defaultWidth={65} />
-                        <Column header="Servicio" field="service" defaultWidth={105} />
+                        <Column header="Servicio" field="service" defaultWidth={135} />
 
                         <Column header="Costo" field="cost" defaultWidth={75} />
                         <Column
@@ -145,10 +131,6 @@ export default function HistoryUser({ user }) {
                     </StyledTable>
                 </StyledPanel>
             </div>
-
-            {/* <button className="btn-new" onClick={pushSend}>
-                        Enviar uno nuevo
-                    </button> */}
         </>
     );
 }
