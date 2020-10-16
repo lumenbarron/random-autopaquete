@@ -131,7 +131,28 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             .update({ saldo: newBalance })
                             .then(() => {
                                 console.log('get it');
-                                addSupplier(supplier, type, { id, precio, ...cargos });
+                                //addSupplier(supplier, type, { id, precio, ...cargos });
+                                db.collection('profiles')
+                                    .where('ID', '==', user.uid)
+                                    .get()
+                                    .then(profile => {
+                                        profile.docs[0].ref
+                                            .collection('rate')
+                                            .doc(id)
+                                            .get()
+                                            .then(doc => {
+                                                setError(false);
+                                                const tarifa = doc.data();
+                                                const supplierData = {
+                                                    ID: user.uid,
+                                                    Supplier: supplier,
+                                                    Supplier_cost: toFixed(precio, 2),
+                                                    tarifa,
+                                                    cargos,
+                                                };
+                                                onSave(supplierData);
+                                            });
+                                    });
                             });
                     } else {
                         addSupplier(supplier, type, { id, precio, ...cargos });
