@@ -106,10 +106,7 @@ const SendPage = () => {
             .collection('guia')
             .doc(idGuiaGlobal.current)
             .update({ status: 'completed', supplierData });
-        if (
-            supplierData.Supplier === 'autoencargosExpress' ||
-            supplierData.Supplier === 'autoencargosEconomico'
-        ) {
+        if (supplierData.Supplier === 'autoencargos') {
             console.log('autoencargos pdf');
             console.log(idGuiaGlobal.current);
             setCurrentStepName('descarga');

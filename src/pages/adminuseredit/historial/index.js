@@ -22,23 +22,40 @@ const StyledTable = styled(TableWithBrowserPagination)`
 `;
 
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
-const DownloadLabel = ({ value }) => (
-    <a
-        download="guia"
-        href={`data:application/pdf;base64,${value}`}
-        title="Descargar etiqueta"
-        variant="neutral"
-        className="rainbow-m-around_medium"
-    >
-        <FontAwesomeIcon icon={faDownload} className="rainbow-m-left_medium" />
-    </a>
-);
+
+const DownloadLabel = ({ value }) => {
+    const [label, setLabel] = useState(true);
+    useEffect(() => {
+        //console.log('value', value);
+        if (value === 'no disponible') {
+            setLabel(false);
+        } else {
+            setLabel(true);
+        }
+    }, []);
+    return (
+        <>
+            {label ? (
+                <a
+                    download="guia"
+                    href={`data:application/pdf;base64,${value}`}
+                    title="Descargar etiqueta"
+                    variant="neutral"
+                    className="rainbow-m-around_medium"
+                >
+                    <FontAwesomeIcon icon={faDownload} className="rainbow-medium" />
+                </a>
+            ) : (
+                <p className="rainbow-m-around_medium">N/D</p>
+            )}
+        </>
+    );
+};
 
 export default function HistoryUser({ user }) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [history, setHistory] = useState([]);
-    const [label, setLabel] = useState([]);
     const [tableData, setTableData] = useState();
 
     useEffect(() => {
@@ -71,23 +88,15 @@ export default function HistoryUser({ user }) {
                     id: historyRecord.id,
                     date: new Date(historyRecord.sentDate).toLocaleDateString(),
                     status: historyRecord.status,
-                    guide:
-                        historyRecord.status === 'completed' ? historyRecord.rastreo : 'sin guia',
+                    guide: historyRecord.rastreo,
                     origin: historyRecord.sender_addresses.name,
                     Destination: historyRecord.receiver_addresses.name,
                     weight: historyRecord.package.weight,
-                    service:
-                        historyRecord.status === 'completed'
-                            ? historyRecord.supplierData.Supplier
-                            : 'guia incompleta',
-                    // status: 'Finalizado',
-                    cost:
-                        historyRecord.status === 'completed'
-                            ? historyRecord.supplierData.Supplier_cost
-                            : 'guia incompleta',
+                    service: historyRecord.supplierData.Supplier,
+                    cost: historyRecord.supplierData.Supplier_cost,
                     label:
                         historyRecord.supplierData.Supplier === 'autoencargos'
-                            ? 'guia autoencargos'
+                            ? 'no disponible'
                             : historyRecord.label,
                 };
             }),
