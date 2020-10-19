@@ -3,7 +3,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Sidebar, SidebarItem, Avatar, Chip, FileSelector } from 'react-rainbow-components';
 import styled, { keyframes } from 'styled-components';
 import { useFirebaseApp, useUser } from 'reactfire';
-import * as firebase from 'firebase';
+//import * as firebase from 'firebase';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCamera,
@@ -14,7 +14,7 @@ import {
     faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
-import moduleName from 'module';
+//import moduleName from 'module';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
 
@@ -163,10 +163,10 @@ const StyledAvatar = styled(Avatar)`
     height: 4rem;
 `;
 
-const Status = styled('h6')`
-    font-size: 0.6rem;
-    margin: 0.6rem;
-`;
+// const Status = styled('h6')`
+//     font-size: 0.6rem;
+//     margin: 0.6rem;
+// `;
 
 const AddCreditButton = styled('button')`
     background: darkred;

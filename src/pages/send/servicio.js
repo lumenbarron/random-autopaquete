@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect, useRef } from 'react';
+import PropTypes, { element } from 'prop-types';
 import { Card, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
@@ -37,6 +37,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [supplierCostEstafetaDiaS, setSupplierCostEstafetaDiaS] = useState(false);
     const [supplierCostEstafetaEcon, setSupplierCostEstafetaEcon] = useState(false);
 
+    const [supplierCostAutoencargosExp, setSupplierCostAutoencargosExp] = useState(false);
+    const [supplierCostAutoencargosEcon, setSupplierCostAutoencargosEcon] = useState(false);
+
     const user = useUser();
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -44,6 +47,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     // Sender states
     const [nameSender, setNameSender] = useState();
     const [CPSender, setCPSender] = useState('');
+    const getCPSender = useRef('');
+    const cpsAvailabilityAutoencargos = useRef(false);
     const [neighborhoodSender, setNeighborhoodSender] = useState('');
     const [countrySender, setCountrySender] = useState('');
     const [streetNumberSender, setStreetNumberSender] = useState('');
@@ -51,6 +56,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     // Receiver states
     const [nameReceiver, setNameReceiver] = useState();
     const [CPReceiver, setCPReceiver] = useState('');
+    const getCPReceiver = useRef('');
     const [neighborhoodReceiver, setNeighborhoodReceiver] = useState('');
     const [countryReceiver, setCountryReceiver] = useState('');
     const [streetNumberReceiver, setStreetNumberReceiver] = useState('');
@@ -67,37 +73,89 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [profileDoc, setProfileDoc] = useState(false);
 
+    let OtherCpsZMG = [
+        '44009',
+        '44228',
+        '44229',
+        '44638',
+        '44639',
+        '44659',
+        '45013',
+        '45206',
+        '45207',
+        '45414',
+        '45416',
+        '45419',
+        '45640',
+        '45643',
+        '45645',
+        '45647',
+    ];
+
+    let notCoverCpsZMG = [
+        '45200',
+        '45220',
+        '45221',
+        '45226',
+        '45242',
+        '45245',
+        '45415',
+        '45424',
+        '45426',
+        '45427',
+        '45428',
+        '45429',
+        '45626',
+        '45627',
+    ];
+
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
+        console.log('id', id);
         const precioNeto = precio * 1.16;
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    console.log(doc.id, ' => ', doc.data());
+                    console.log(idGuiaGlobal, 'idGuiaGlobal');
                     if (parseFloat(precioNeto) > parseFloat(doc.data().saldo)) {
                         setError(true);
-                    } else {
+                    } else if (supplier === 'autoencargos') {
+                        console.log('restando el saldo para autoencargos');
+                        addRastreoAuto(idGuiaGlobal);
+                        const newBalance = parseFloat(doc.data().saldo) - parseFloat(precioNeto);
+                        console.log('newBalance', newBalance);
                         db.collection('profiles')
-                            .where('ID', '==', user.uid)
-                            .get()
-                            .then(profile => {
-                                profile.docs[0].ref
-                                    .collection('rate')
-                                    .doc(id)
+                            .doc(doc.id)
+                            .update({ saldo: newBalance })
+                            .then(() => {
+                                console.log('get it');
+                                //addSupplier(supplier, type, { id, precio, ...cargos });
+                                db.collection('profiles')
+                                    .where('ID', '==', user.uid)
                                     .get()
-                                    .then(doc => {
-                                        setError(false);
-                                        const tarifa = doc.data();
-                                        const supplierData = {
-                                            ID: user.uid,
-                                            Supplier: `${supplier}${type}`,
-                                            Supplier_cost: toFixed(precioNeto, 2),
-                                            tarifa,
-                                            cargos,
-                                        };
-                                        onSave(supplierData);
+                                    .then(profile => {
+                                        profile.docs[0].ref
+                                            .collection('rate')
+                                            .doc(id)
+                                            .get()
+                                            .then(doc => {
+                                                setError(false);
+                                                const tarifa = doc.data();
+                                                const supplierData = {
+                                                    ID: user.uid,
+                                                    Supplier: supplier,
+                                                    Supplier_cost: toFixed(precio, 2),
+                                                    tarifa,
+                                                    cargos,
+                                                };
+                                                onSave(supplierData);
+                                            });
                                     });
                             });
+                    } else {
+                        addSupplier(supplier, type, { id, precio, ...cargos });
                     }
                 });
             })
@@ -106,29 +164,89 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             });
     };
 
+    const addSupplier = (supplier, type, { id, precio, ...cargos }) => {
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(profile => {
+                profile.docs[0].ref
+                    .collection('rate')
+                    .doc(id)
+                    .get()
+                    .then(doc => {
+                        setError(false);
+                        const tarifa = doc.data();
+                        const supplierData = {
+                            ID: user.uid,
+                            Supplier: `${supplier}${type}`,
+                            Supplier_cost: toFixed(precio, 2),
+                            tarifa,
+                            cargos,
+                        };
+                        onSave(supplierData);
+                    });
+            });
+    };
+
+    const addRastreoAuto = idGuiaGlobal => {
+        let guiaAutoencargos = Math.floor(Math.random() * 1000000).toString();
+        db.collection('guia')
+            .doc(idGuiaGlobal)
+            .update({ rastreo: guiaAutoencargos });
+    };
+
     useEffect(() => {
+        console.log('primer useEffect');
         user.getIdToken().then(idToken => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
+            //xhr.open('POST', '/guia/cotizar')';
+            xhr.open(
+                'POST',
+                'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
+                console.log('la wea weona', xhr.readyState);
                 if (xhr.readyState === 4) {
-                    setSupplierAvailability(xhr.response);
+                    console.log('la wea weona llego', xhr.response);
+                    //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
+                    //setSupplierAvailability(xhr.response);
+                    let suppliersGeneral = xhr.response;
+                    let autoencargos;
+                    if (cpsAvailabilityAutoencargos.current === true) {
+                        console.log('aqui si hay autoencargos');
+                        autoencargos = {
+                            autoencargosExpress: true,
+                            autoencargosDiaSiguiente: true,
+                        };
+                    } else {
+                        console.log('aqui no hay autoencargos');
+                        autoencargos = {
+                            autoencargosExpress: false,
+                            autoencargosDiaSiguiente: false,
+                        };
+                    }
+                    setSupplierAvailability({ ...suppliersGeneral, ...autoencargos });
+                    console.log('setSupplierAvailability', supplierAvailability);
+                    //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, estafetaDiaSiguiente: true}
                 }
             };
         });
     }, []);
 
     useEffect(() => {
+        console.log('segundo useEffect');
+        //Asignando los valores desde el doc guia del firestore
         db.collection('guia')
             .doc(idGuiaGlobal)
             .onSnapshot(function getGuia(doc) {
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
+                getCPSender.current = doc.data().sender_addresses.codigo_postal;
                 setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
                 setCountrySender(doc.data().sender_addresses.country);
                 setStreetNumberSender(doc.data().sender_addresses.street_number);
@@ -136,6 +254,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot to receive Receiver information
                 setNameReceiver(doc.data().receiver_addresses.name);
                 setCPReceiver(doc.data().receiver_addresses.codigo_postal);
+                getCPReceiver.current = doc.data().receiver_addresses.codigo_postal;
                 setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
                 setCountryReceiver(doc.data().receiver_addresses.country);
                 setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
@@ -150,17 +269,61 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     setQuantity(doc.data().package.quantity);
                     setContentValue(doc.data().package.content_value);
                 }
+                //Si el código postal coincide con los códigos postales de Autoencargos se agrega al supplierAvailability
             });
     }, []);
 
     useEffect(() => {
+        console.log('corroborando codigo para autoencargos');
+        Promise.all([
+            fetch(
+                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara',
+            ),
+            fetch(
+                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Zapopan',
+            ),
+            fetch(
+                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Tonalá',
+            ),
+            fetch(
+                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=San Pedro Tlaquepaque',
+            ),
+        ])
+            .then(([res1, res2, res3, res4]) =>
+                Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]),
+            )
+            .then(result => {
+                let resultZMG = result.map(element => element.response.cp).flat();
+                let allZMG = [...resultZMG, ...OtherCpsZMG];
+                //console.log(allZMG);
+                let allCpsZMG = allZMG.filter(item => {
+                    return !notCoverCpsZMG.includes(item);
+                });
+                //console.log('allCpsZMG', allCpsZMG);
+                let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
+                let cpSender = allCpsZMG.includes(getCPSender.current);
+                if (cpReceiver === true && cpSender === true) {
+                    console.log('codigos postales ZMG');
+                    cpsAvailabilityAutoencargos.current = true;
+                } else {
+                    console.log('codigos no postales ZMG');
+                    cpsAvailabilityAutoencargos.current = false;
+                }
+            })
+            .catch(err => console.log('error', err));
+    }, []);
+
+    useEffect(() => {
+        console.log('tercer useEffect');
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
             .then(profile => {
                 setProfileDoc(profile.docs[0]);
                 profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
+                    //setHasActivatedSuppliers asigna a hasActivatedSuppliers el numero de doc de rate para que se muestren los provedores
                     setHasActivatedSuppliers(querySnapshot.size > 0);
+                    console.log('querySnapshot.size', querySnapshot.size);
                 });
             });
     }, [user]);
@@ -168,6 +331,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     useEffect(() => {
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
+        console.log('supplierAvailability', supplierAvailability);
         let pricedWeight = Math.ceil(weight);
         //Si el peso es menor que uno, se le asigna 1
         pricedWeight = pricedWeight > 1 ? pricedWeight : 1;
@@ -188,13 +352,31 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             if (company === 'estafetaDiaSiguiente' || company === 'estafetaEconomico') {
                 return Math.max(baseValue, 20);
             }
+            if (company === 'autoencargosExpress' || company === 'autoencargosDiaSiguiente') {
+                return Math.max(baseValue, 20);
+            }
             return 0;
         };
+
         profileDoc.ref.collection('rate').onSnapshot(querySnapshot => {
             const segundaMejorTarifa = {};
+            console.log('segundaMejorTarifa', segundaMejorTarifa);
             const kgsExtraTarifas = {};
+            console.log('kgsExtraTarifas', kgsExtraTarifas);
             querySnapshot.forEach(doc => {
                 const { entrega, precio, max, min, kgExtra } = doc.data();
+                console.log(
+                    'entrega',
+                    entrega,
+                    'precio',
+                    precio,
+                    'max',
+                    max,
+                    'min',
+                    min,
+                    'kgExtra',
+                    kgExtra,
+                );
                 // Encontramos si hay tarifas que apliquen directo al paquete
                 if (
                     !kgExtra &&
@@ -267,6 +449,34 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             guia: precioTotal,
                             zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
                         });
+                    if (entrega === 'autoencargosExpress')
+                        setSupplierCostAutoencargosExp({
+                            id: doc.id,
+                            precio:
+                                precioTotal +
+                                getInsurancePrice('autoencargosExpress') +
+                                (typeof supplierAvailability.autoencargosExpress.zonaExtendida !==
+                                'undefined'
+                                    ? 150
+                                    : 0),
+                            seguro: getInsurancePrice('autoencargosExpress'),
+                            guia: precioTotal,
+                            zonaExt: !!supplierAvailability.autoencargosExpress.zonaExtendida,
+                        });
+                    if (entrega === 'autoencargosDiaSiguiente')
+                        setSupplierCostAutoencargosEcon({
+                            id: doc.id,
+                            precio:
+                                precioTotal +
+                                getInsurancePrice('autoencargosDiaSiguiente') +
+                                (typeof supplierAvailability.autoencargosDiaSiguiente
+                                    .zonaExtendida !== 'undefined'
+                                    ? 150
+                                    : 0),
+                            seguro: getInsurancePrice('autoencargosDiaSiguiente'),
+                            guia: precioTotal,
+                            zonaExt: !!supplierAvailability.autoencargosDiaSiguiente.zonaExtendida,
+                        });
                     return;
                 }
                 //Si la tarifa incluye precio por kg extra
@@ -309,14 +519,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
             Object.keys(segundaMejorTarifa).forEach(entrega => {
                 const tarifa = segundaMejorTarifa[entrega];
-                console.log('tarifa segunda mejor tarifa', tarifa);
+                console.log('tarifa', tarifa);
                 const { guia } = tarifa;
                 const precio = tarifa.guia + tarifa.diferencia * kgsExtraTarifas[entrega];
                 console.log('precio', precio);
                 // console.log('guia tarifa', tarifa.diferencia);
                 console.log('Entrega', entrega);
                 const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
-                console.log('kgsExtraTarifas', kgsExtraTarifas);
+                console.log('cargoExtra', cargoExtra);
                 if (entrega === 'fedexDiaSiguiente')
                     setSupplierCostFedexDiaS({
                         id: tarifa.id,
@@ -362,20 +572,35 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         guia,
                         zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
                     });
-                if (entrega === 'estafetaEconomico')
-                    setSupplierCostEstafetaEcon({
+                if (entrega === 'autoencargosExpress')
+                    setSupplierCostAutoencargosExp({
                         id: tarifa.id,
                         precio:
                             precio +
-                            getInsurancePrice('estafetaEconomico') +
-                            (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
+                            getInsurancePrice('autoencargosExpress') +
+                            (typeof supplierAvailability.autoencargosExpress.zonaExtendida !==
                             'undefined'
                                 ? 150
                                 : 0),
-                        seguro: getInsurancePrice('estafetaEconomico'),
+                        seguro: getInsurancePrice('autoencargosExpress'),
                         cargoExtra,
                         guia,
-                        zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
+                        zonaExt: !!supplierAvailability.autoencargosExpress.zonaExtendida,
+                    });
+                if (entrega === 'autoencargosDiaSiguiente')
+                    setSupplierCostAutoencargosEcon({
+                        id: tarifa.id,
+                        precio:
+                            precio +
+                            getInsurancePrice('autoencargosDiaSiguiente') +
+                            (typeof supplierAvailability.autoencargosDiaSiguiente.zonaExtendida !==
+                            'undefined'
+                                ? 150
+                                : 0),
+                        seguro: getInsurancePrice('autoencargosDiaSiguiente'),
+                        cargoExtra,
+                        guia,
+                        zonaExt: !!supplierAvailability.autoencargosDiaSiguiente.zonaExtendida,
                     });
             });
         });
@@ -385,6 +610,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
             {proveedor === 'fedex' && <img src="/assets/fedex.png" alt="Fedex" />}
             {proveedor === 'estafeta' && <img src="/assets/estafeta.png" alt="Estafeta" />}
+            {proveedor === 'autoencargos' && (
+                <img src="/assets/autoencar.png" style={{ height: 45 }} alt="Autoencargos" />
+            )}
             <h6
                 style={{
                     color: 'gray',
@@ -526,6 +754,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 'Economico',
                                 '3 a 5 días hábiles',
                                 supplierCostEstafetaEcon,
+                            )}
+                        {supplierAvailability.autoencargosExpress &&
+                            supplierCostAutoencargosExp.guia &&
+                            supplierCard(
+                                'autoencargos',
+                                'Express',
+                                'Express',
+                                supplierCostAutoencargosExp,
+                            )}
+                        {supplierAvailability.autoencargosDiaSiguiente &&
+                            supplierCostAutoencargosEcon.guia &&
+                            supplierCard(
+                                'autoencargos',
+                                'Economico',
+                                '3 a 5 días hábiles',
+                                supplierCostAutoencargosEcon,
                             )}
                     </StyledPaneContainer>
                     {!(

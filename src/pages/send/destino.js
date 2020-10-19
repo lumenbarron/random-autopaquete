@@ -193,7 +193,10 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                 .then(response => {
                     if (!response.ok) {
                         console.log('CP no validado');
-                        return {};
+                        setTimeout(() => {
+                            alert('CP no validado');
+                            setCP('');
+                        }, 1000);
                     }
                     return response.json();
                 })

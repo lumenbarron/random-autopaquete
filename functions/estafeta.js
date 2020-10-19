@@ -27,6 +27,7 @@ exports.rate = async function rateEstafeta(uid, guiaId) {
         .get();
 
     const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
+    console.log('supplierData', supplierData);
     if (!supplierData) {
         return false;
     }
@@ -146,6 +147,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
         .get();
 
     const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
+    console.log('supplierData', supplierData);
     if (!supplierData) {
         res.status(500).send('Missing estafeta config');
         return;

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
+import { log } from 'firebase-functions/lib/logger';
 
 const cpRegex = RegExp(/^[0-9]{5}$/);
 const phoneRegex = RegExp(/^[0-9]{10}$/);
@@ -118,8 +119,10 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [userName, setUserName] = useState('');
     const [status, setStatus] = useState();
+    const [registerSAT, setRegisterSAT] = useState('');
 
     let idGuia;
+    let pickedDirection;
 
     //Se busca los datos de envío (si hay algun envío efectuandose)
     useEffect(() => {
@@ -167,7 +170,10 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 .then(response => {
                     if (!response.ok) {
                         console.log('CP no validado');
-                        return {};
+                        setTimeout(() => {
+                            alert('CP no validado');
+                            setCP('');
+                        }, 1000);
                     }
                     return response.json();
                 })
@@ -190,6 +196,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
             };
         });
         setDirectionData(directionData);
+        console.log('directionData', directionData);
     }
 
     const options = directionData
@@ -214,6 +221,21 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     useEffect(() => {
         if (value) {
             const docRef = db.collection('sender_addresses').doc(value);
+            //Obteniendo la direccion seleccionada
+            let getOptions = {
+                source: 'cache',
+            };
+            docRef
+                .get(getOptions)
+                .then(function(doc) {
+                    // Document was found in the cache. If no cached document exists,
+                    // an error will be returned to the 'catch' block below.
+                    pickedDirection = doc.data();
+                    console.log('Cached document data:', pickedDirection);
+                })
+                .catch(function(error) {
+                    console.log('Error getting cached document:', error);
+                });
             docRef
                 .get()
                 .then(function(doc) {
@@ -245,8 +267,16 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
+                        console.log('primer data', doc.data());
                         setUserName(doc.data().name);
                         setStatus(doc.data().status);
+                        if (doc.data().persona === 'Física') {
+                            setRegisterSAT(doc.data().nombre_fiscal);
+                        } else if (doc.data().persona === 'Moral') {
+                            setRegisterSAT(doc.data().razon_social);
+                        } else {
+                            setRegisterSAT('');
+                        }
                     });
                 })
                 .catch(function(error) {
@@ -317,7 +347,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
             setErrorCredits(true);
             return;
         }
-
+        //Si el usuario quiere guardar la dirección se guarda en la colleccion de sender_addresses
         if (checkBox) {
             const duplicateName = directionData.map((searchName, idx) => {
                 return searchName.name;
@@ -355,6 +385,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         const directionsGuiasCollectionAdd = db.collection('guia').add({
             ID: user.uid,
             name: userName,
+            razon_social: registerSAT,
             creation_date: creationDate,
             status: 'incomplete',
             sender_addresses: {
@@ -459,6 +490,9 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                     <div className="w-75 pl-4">
                         <span className="alert-error">El nombre ya se encuentra registrado</span>
                     </div>
+                )}
+                {errorCP && (
+                    <div className="alert-error pl-4">CP no validado, favor de verificarlo</div>
                 )}
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input

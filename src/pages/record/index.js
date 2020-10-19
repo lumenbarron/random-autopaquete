@@ -27,17 +27,35 @@ StatusBadge.propTypes = {
     value: PropTypes.string.isRequired,
 };
 
-const DownloadLabel = ({ value }) => (
-    <a
-        download="guia"
-        href={`data:application/pdf;base64,${value}`}
-        title="Descargar etiqueta"
-        variant="neutral"
-        className="rainbow-m-around_medium"
-    >
-        <FontAwesomeIcon icon={faDownload} className="rainbow-m-left_medium" />
-    </a>
-);
+const DownloadLabel = ({ value }) => {
+    const [label, setLabel] = useState(true);
+    useEffect(() => {
+        //console.log('value', value);
+        if (value === 'no disponible') {
+            setLabel(false);
+        } else {
+            setLabel(true);
+        }
+    }, []);
+    return (
+        <>
+            {label ? (
+                <a
+                    download="guia"
+                    href={`data:application/pdf;base64,${value}`}
+                    title="Descargar etiqueta"
+                    variant="neutral"
+                    className="rainbow-m-around_medium"
+                >
+                    <FontAwesomeIcon icon={faDownload} className="rainbow-medium" />
+                </a>
+            ) : (
+                <p className="rainbow-m-around_medium">N/D</p>
+            )}
+        </>
+    );
+};
+
 DownloadLabel.propTypes = {
     value: PropTypes.string.isRequired,
 };
@@ -88,18 +106,21 @@ const RecordPage = () => {
                     }
                 })
                 .map(historyRecord => {
-                    console.log('datos dentro dexl map', historyRecord);
+                    console.log('datos dentro del map', historyRecord);
                     return {
                         id: historyRecord.id,
                         date: new Date(historyRecord.sentDate).toLocaleDateString(),
-                        guide: historyRecord.rastreo ? historyRecord.rastreo.join(' ') : 'N/D',
+                        guide: historyRecord.rastreo ? historyRecord.rastreo : 'sin guia',
                         origin: historyRecord.sender_addresses.name,
                         Destination: historyRecord.receiver_addresses.name,
                         weight: historyRecord.package.weight,
                         service: historyRecord.supplierData.Supplier,
                         status: 'Finalizado',
                         cost: historyRecord.supplierData.Supplier_cost,
-                        label: historyRecord.label,
+                        label:
+                            historyRecord.supplierData.Supplier === 'autoencargos'
+                                ? 'no disponible'
+                                : historyRecord.label,
                     };
                 }),
         );

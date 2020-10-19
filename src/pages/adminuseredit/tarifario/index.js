@@ -142,6 +142,9 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         return (
             <>
                 <div className="rainbow-flex rainbow-flex_row rainbow-flex_wrap" key={key}>
+                    {/* <div> De
+                <input type="text" className="form-control" onChange={handleTarifaChange} name="tarifaMin" />
+                </div> */}
                     <div>
                         De {tarifa.min} Hasta {tarifa.max} kg
                     </div>
@@ -393,6 +396,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
         });
         !tarifaMayor ? setMaxValue(tarifaMayor) : setMaxValue(tarifaMayor + 1);
     }, [tarifas]);
+
     useEffect(() => {
         setMinRate(maxValue);
     }, [maxValue]);
@@ -408,7 +412,8 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
                 <div>
                     De
                     <InlineInput
-                        value={parseInt(maxValue)}
+                        value={minRate}
+                        // value={parseInt(maxValue)}
                         type="text"
                         onChange={ev => setMinRate(ev.target.value)}
                     />
@@ -513,6 +518,7 @@ export default function Tarifario({ user }) {
                 ...doc.data(),
             };
         });
+        console.log('tarifasMap', tarifasMap);
         setTarifas(tarifasMap);
     }
 
@@ -564,6 +570,14 @@ export default function Tarifario({ user }) {
 
     const [fedexEconomico, fedexEconomicoExtra] = getTarifasDeServicio('fedexEconomico');
 
+    const [autoencargosExpress, autoencargosExpressExtra] = getTarifasDeServicio(
+        'autoencargosExpress',
+    );
+
+    const [autoencargosDiaSiguiente, autoencargosDiaSiguienteExtra] = getTarifasDeServicio(
+        'autoencargosDiaSiguiente',
+    );
+
     return (
         <>
             <h2>Tarifario del cliente</h2>
@@ -599,6 +613,23 @@ export default function Tarifario({ user }) {
                     tarifas={fedexEconomico}
                     kgExtra={fedexEconomicoExtra}
                     entrega="fedexEconomico"
+                    user={user}
+                />
+            </Accordion>
+            <h3 style={{ marginTop: '1rem' }}>Autoencargos</h3>
+            <Accordion id="accordion-autoencargos" multiple>
+                <TarifarioPorServicio
+                    label="Autoencargos Express"
+                    tarifas={autoencargosExpress}
+                    kgExtra={autoencargosExpressExtra}
+                    entrega="autoencargosExpress"
+                    user={user}
+                />
+                <TarifarioPorServicio
+                    label="Autoencargos Día Siguiente"
+                    tarifas={autoencargosDiaSiguiente}
+                    kgExtra={autoencargosDiaSiguienteExtra}
+                    entrega="autoencargosDiaSiguiente"
                     user={user}
                 />
             </Accordion>

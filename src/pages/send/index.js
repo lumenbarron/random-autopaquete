@@ -106,29 +106,70 @@ const SendPage = () => {
             .collection('guia')
             .doc(idGuiaGlobal.current)
             .update({ status: 'completed', supplierData });
-
-        let servicioUrl;
-        if (supplierData.Supplier.indexOf('estafeta') >= 0) {
-            servicioUrl = '/guia/estafeta';
+        if (supplierData.Supplier === 'autoencargos') {
+            console.log('autoencargos pdf');
+            console.log(idGuiaGlobal.current);
+            setCurrentStepName('descarga');
+        } else if (
+            supplierData.Supplier === 'estafetaDiaSiguiente' ||
+            supplierData.Supplier === 'estafetaEconomico'
+        ) {
+            directionsGuiasCollectionAdd
+                .then(function() {
+                    user.getIdToken().then(idToken => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.responseType = 'json';
+                        xhr.contentType = 'application/json';
+                        //xhr.open('POST', '/guia/estafeta');
+                        xhr.open(
+                            'POST',
+                            'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/estafeta-create',
+                        );
+                        xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+                        xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+                        setCurrentStepName('descarga');
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
         } else {
-            servicioUrl = '/guia/fedex';
+            directionsGuiasCollectionAdd
+                .then(function() {
+                    user.getIdToken().then(idToken => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.responseType = 'json';
+                        xhr.contentType = 'application/json';
+                        //xhr.open('POST', '/guia/fedex');
+                        xhr.open(
+                            'POST',
+                            'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
+                        );
+                        xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+                        xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+                        setCurrentStepName('descarga');
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
         }
 
-        directionsGuiasCollectionAdd
-            .then(function() {
-                user.getIdToken().then(idToken => {
-                    const xhr = new XMLHttpRequest();
-                    xhr.responseType = 'json';
-                    xhr.contentType = 'application/json';
-                    xhr.open('POST', servicioUrl);
-                    xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-                    xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-                    setCurrentStepName('descarga');
-                });
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
+        // directionsGuiasCollectionAdd
+        //     .then(function () {
+        //         user.getIdToken().then(idToken => {
+        //             const xhr = new XMLHttpRequest();
+        //             xhr.responseType = 'json';
+        //             xhr.contentType = 'application/json';
+        //             xhr.open('POST', servicioUrl);
+        //             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+        //             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+        //             setCurrentStepName('descarga');
+        //         });
+        //     })
+        //     .catch(function (error) {
+        //         console.error('Error adding document: ', error);
+        //     });
     };
 
     async function replayLabel(e) {
@@ -144,12 +185,15 @@ const SendPage = () => {
             receiver_addresses: rAddress,
             sender_addresses: sAddress,
             supplierData,
+            razon_social,
         } = ogGuia.data();
+        console.log('ogGuia.data()', ogGuia.data());
         const newGuia = await db.collection('guia').add({
             ID,
             receiver_addresses: rAddress,
             sender_addresses: sAddress,
             supplierData,
+            razon_social,
             package: ogGuia.data().package,
         });
         idGuiaGlobal.current = newGuia.id;
@@ -198,12 +242,12 @@ const SendPage = () => {
                             variant="neutral"
                             className="rainbow-m-horizontal_medium"
                         />
-                        <Button
+                        {/* <Button
                             label="Siguiente"
                             onClick={handleNextClick}
                             variant="brand"
                             className="rainbow-m-horizontal_medium"
-                        />
+                        /> */}
                     </div>
                 )}
                 {currentStepName === 'origen' && (
