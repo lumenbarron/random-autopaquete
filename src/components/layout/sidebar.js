@@ -601,6 +601,13 @@ export function AdminSidebar() {
                         label="Usuarios"
                     />
                 </Link>
+                <Link to="/admin/guias">
+                    <StyledSidebarItem
+                        icon={<img src="/assets/admin-users.png" alt="" />}
+                        name="Guías"
+                        label="Guías"
+                    />
+                </Link>
                 <Link to="/admin/sobrepesos">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-overweight.png" alt="" />}

@@ -16,6 +16,7 @@ import DocumentsPage from './pages/documents';
 import AdminOverweightPage from './pages/adminoverweight';
 import AdminUserEditPage from './pages/adminuseredit';
 import AdminUsersPage from './pages/adminusers';
+import AllGuides from './pages/adminguides';
 import ConditionsPage from './pages/conditions';
 import LoginPage from './pages/login';
 import SignUpPage from './pages/signup';
@@ -34,6 +35,7 @@ const AppRoutes = () => {
                         <Route path="/admin/sobrepesos" component={AdminOverweightPage} />
                         <Route path="/admin/usuario/:userId" component={AdminUserEditPage} />
                         <Route path="/admin/usuarios" component={AdminUsersPage} />
+                        <Route path="/admin/guias" component={AllGuides} />
                         <Redirect to="/admin" />
                     </Switch>
                 </StyledMain>
