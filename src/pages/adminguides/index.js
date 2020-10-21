@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Column, Badge, TableWithBrowserPagination, MenuItem } from 'react-rainbow-components';
+import { Column, Badge, TableWithBrowserPagination, Select } from 'react-rainbow-components';
 import styled from 'styled-components';
 import Row from 'react-bootstrap/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,6 +28,10 @@ const StyledTable = styled(TableWithBrowserPagination)`
         }
     }
 `;
+
+const containerStyles = {
+    maxWidth: 700,
+};
 
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
 
@@ -72,10 +76,13 @@ export default function AllGuides({}) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [history, setHistory] = useState([]);
+    const [users, setUsers] = useState([]);
     const [tableData, setTableData] = useState();
 
     useEffect(() => {
         let dataGuias = [];
+        let dataUsers = [];
+        let dataSingleUser = [];
         db.collection('guia')
             .where('status', '==', 'completed')
             .orderBy('creation_date', 'desc')
@@ -88,9 +95,17 @@ export default function AllGuides({}) {
                         sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
+
+                    dataUsers.push(doc.data().name);
                 });
+                console.log('dataUsers', dataUsers);
+                let singleName = dataUsers =>
+                    dataUsers.filter((item, index) => dataUsers.indexOf(item) === index);
+                dataSingleUser = [...new Set(singleName(dataUsers))];
+                console.log(dataSingleUser);
                 setHistory(dataGuias);
-                console.log('data', dataGuias);
+                setUsers(dataSingleUser);
+                console.log('data', dataGuias, 'users', dataSingleUser);
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -100,7 +115,6 @@ export default function AllGuides({}) {
     useEffect(() => {
         setTableData(
             history.map(historyRecord => {
-                console.log('datos dentro del map', historyRecord.guide);
                 return {
                     id: historyRecord.id,
                     date: new Date(historyRecord.sentDate).toLocaleDateString(),
@@ -126,6 +140,14 @@ export default function AllGuides({}) {
             <div className="back">
                 <Row className="content-header">
                     <h1 id="header-margin">Historial de envíos</h1>
+                    <Select
+                        label="Select Label"
+                        options={users}
+                        id="example-select-1"
+                        style={containerStyles}
+                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                    />
+                    ;
                 </Row>
                 <div className="rainbow-p-bottom_xx-large">
                     <StyledTable
@@ -137,23 +159,25 @@ export default function AllGuides({}) {
                         className="direction-table"
                     >
                         <Column header="Fecha " field="date" defaultWidth={105} />
-                        <Column header="Name " field="name" defaultWidth={105} />
+                        <Column header="Name " field="name" />
                         <Column header="Guía" field="guide" defaultWidth={85} />
                         <Column
                             header="Origen"
                             component={Destinations}
                             field="guide"
                             style={{ lineHeight: 25 }}
+                            defaultWidth={125}
                         />
                         <Column
                             header="Destino"
                             component={Destinations}
                             field="Destination"
                             style={{ lineHeight: 25 }}
+                            defaultWidth={125}
                         />
-                        <Column header="Servicio" field="service" defaultWidth={135} />
-                        <Column header="Peso" field="weight" defaultWidth={65} />
-                        <Column header="Medidas (cm)" field="measurement" defaultWidth={135} />
+                        <Column header="Servicio" field="service" defaultWidth={105} />
+                        <Column header="Peso" field="weight" defaultWidth={50} />
+                        <Column header="Medidas (cm)" field="measurement" defaultWidth={115} />
                         <Column header="Costo" field="cost" defaultWidth={75} />
                         <Column
                             header="Etiqueta"
