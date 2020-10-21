@@ -96,6 +96,7 @@ const RecordPage = () => {
     }, []);
 
     useEffect(() => {
+        console.log('filter', filter);
         setTableData(
             recordsData
                 .filter(historyRecord => {
@@ -128,6 +129,7 @@ const RecordPage = () => {
 
     const search = e => {
         let keyword = e.target.value;
+        console.log('keyword', keyword);
         setFilter(keyword);
     };
 

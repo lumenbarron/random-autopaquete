@@ -13,7 +13,8 @@ const StyledBadge = styled(Badge)`
 `;
 
 const StyledColumn = styled(Column)`
-    color: #1de9b6;
+    color: red;
+    white-space: initial;
 `;
 
 const StyledTable = styled(TableWithBrowserPagination)`
@@ -59,6 +60,14 @@ const DownloadLabel = ({ value }) => {
     );
 };
 
+function Destinations(value) {
+    return (
+        <div style={{ lineHeight: '30px' }}>
+            <span style={{ whiteSpace: 'initial' }}>{value.row.origin}</span>
+        </div>
+    );
+}
+
 export default function AllGuides({}) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -99,8 +108,9 @@ export default function AllGuides({}) {
                     guide: historyRecord.rastreo,
                     origin: `${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
                     Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
-                    weight: historyRecord.package.weight,
                     service: historyRecord.supplierData.Supplier,
+                    weight: historyRecord.package.weight,
+                    measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
                     cost: historyRecord.supplierData.Supplier_cost,
                     label:
                         historyRecord.supplierData.Supplier === 'autoencargos'
@@ -128,17 +138,22 @@ export default function AllGuides({}) {
                     >
                         <Column header="Fecha " field="date" defaultWidth={105} />
                         <Column header="Name " field="name" defaultWidth={105} />
-                        {/* <Column
-                            header="Status"
-                            field="status"
-                            component={StatusBadge}
-                            defaultWidth={140}
-                        /> */}
                         <Column header="Guía" field="guide" defaultWidth={85} />
-                        <Column header="Origen" field="origin" />
-                        <Column header="Destino" field="Destination" />
-                        <Column header="Peso" field="weight" defaultWidth={65} />
+                        <Column
+                            header="Origen"
+                            component={Destinations}
+                            field="guide"
+                            style={{ lineHeight: 25 }}
+                        />
+                        <Column
+                            header="Destino"
+                            component={Destinations}
+                            field="Destination"
+                            style={{ lineHeight: 25 }}
+                        />
                         <Column header="Servicio" field="service" defaultWidth={135} />
+                        <Column header="Peso" field="weight" defaultWidth={65} />
+                        <Column header="Medidas (cm)" field="measurement" defaultWidth={135} />
                         <Column header="Costo" field="cost" defaultWidth={75} />
                         <Column
                             header="Etiqueta"
