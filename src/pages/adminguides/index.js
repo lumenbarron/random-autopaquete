@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Column, Badge, TableWithBrowserPagination, Select } from 'react-rainbow-components';
+import {
+    Column,
+    Badge,
+    TableWithBrowserPagination,
+    Select,
+    Spinner,
+} from 'react-rainbow-components';
 import styled from 'styled-components';
 import Row from 'react-bootstrap/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -80,6 +86,9 @@ export default function AllGuides({}) {
     const [usersName, setUsersName] = useState([]);
     const [tableData, setTableData] = useState();
     const [tableUsers, setTableUsers] = useState();
+    const [selectName, setSelectName] = useState();
+    const [displayData, setDisplayData] = useState(false);
+    const nameSelected = useRef('');
 
     useEffect(() => {
         let dataGuias = [];
@@ -97,7 +106,6 @@ export default function AllGuides({}) {
                         sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
-
                     dataUsers.push(doc.data().name);
                 });
                 dataSingleUser = dataUsers.filter(
@@ -106,6 +114,7 @@ export default function AllGuides({}) {
                 //console.log(dataSingleUser);
                 setHistory(dataGuias);
                 setUsersName(dataSingleUser);
+                setDisplayData(true);
                 console.log('data', dataGuias, 'users', dataSingleUser);
             })
             .catch(function(error) {
@@ -114,38 +123,75 @@ export default function AllGuides({}) {
     }, []);
 
     useEffect(() => {
+        console.log('name filtered', nameSelected.current);
         setTableData(
-            history.map(historyRecord => {
-                return {
-                    id: historyRecord.id,
-                    date: new Date(historyRecord.sentDate).toLocaleDateString(),
-                    name: historyRecord.name,
-                    guide: historyRecord.rastreo,
-                    origin: `${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
-                    Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
-                    service: historyRecord.supplierData.Supplier,
-                    weight: historyRecord.package.weight,
-                    measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
-                    cost: historyRecord.supplierData.Supplier_cost,
-                    label:
-                        historyRecord.supplierData.Supplier === 'autoencargos'
-                            ? 'no disponible'
-                            : historyRecord.label,
-                };
-            }),
+            history
+
+                // .filter(historyRecord => {
+                //     if (nameSelected.current === "usuario") {
+                //         return historyRecord;
+                //     } else if (historyRecord.name.includes(nameSelected.current)) {
+                //         return historyRecord
+                //     }
+                // })
+
+                .map(historyRecord => {
+                    return {
+                        id: historyRecord.id,
+                        date: new Date(historyRecord.sentDate).toLocaleDateString(),
+                        name: historyRecord.name,
+                        guide: historyRecord.rastreo,
+                        origin: `${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
+                        Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
+                        service: historyRecord.supplierData.Supplier,
+                        weight: historyRecord.package.weight,
+                        measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
+                        cost: historyRecord.supplierData.Supplier_cost,
+                        label:
+                            historyRecord.supplierData.Supplier === 'autoencargos'
+                                ? 'no disponible'
+                                : historyRecord.label,
+                    };
+                }),
         );
     }, [history]);
 
     useEffect(() => {
-        setTableUsers(
-            usersName.map(historyRecord => {
-                return {
-                    value: historyRecord,
-                    label: historyRecord,
-                };
-            }),
-        );
+        let mapUsers = usersName.map(historyRecord => {
+            return {
+                value: historyRecord,
+                label: historyRecord,
+            };
+        });
+        setTableUsers([{ value: 'usuario', label: 'usuario' }, ...mapUsers]);
+        setDisplayData(true);
     }, [usersName]);
+
+    const searchByName = name => {
+        nameSelected.current = name;
+        console.log('selectName', selectName, name);
+        setSelectName(name);
+
+        let dataGuiasEachUser = [];
+        db.collection('guia')
+            .where('name', '==', name)
+            .where('status', '==', 'completed')
+            .orderBy('creation_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log('guias del cliente ' + name + ':', doc.data());
+                    dataGuiasEachUser.push({
+                        id: doc.id,
+                        sentDate: doc.data().creation_date.toDate(),
+                        ...doc.data(),
+                    });
+                });
+                setHistory(dataGuiasEachUser);
+                setDisplayData(true);
+                console.log('dataGuiasEachUser', dataGuiasEachUser);
+            });
+    };
 
     return (
         <StyledAusers>
@@ -157,48 +203,56 @@ export default function AllGuides({}) {
                         options={tableUsers}
                         id="example-select-1"
                         style={containerStyles}
+                        value={selectName}
+                        onChange={ev => searchByName(ev.target.value)}
                         className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
                     />
                     ;
                 </Row>
                 <div className="rainbow-p-bottom_xx-large">
-                    <StyledTable
-                        data={tableData}
-                        pageSize={20}
-                        keyField="id"
-                        emptyTitle="Oh no!"
-                        emptyDescription="No hay ningun registro actualmente..."
-                        className="direction-table"
-                    >
-                        <Column header="Fecha " field="date" defaultWidth={105} />
-                        <Column header="Name " field="name" />
-                        <Column header="Guía" field="guide" defaultWidth={85} />
-                        <Column
-                            header="Origen"
-                            component={Destinations}
-                            field="guide"
-                            style={{ lineHeight: 25 }}
-                            defaultWidth={125}
-                        />
-                        <Column
-                            header="Destino"
-                            component={Destinations}
-                            field="Destination"
-                            style={{ lineHeight: 25 }}
-                            defaultWidth={125}
-                        />
-                        <Column header="Servicio" field="service" defaultWidth={105} />
-                        <Column header="Peso" field="weight" defaultWidth={50} />
-                        <Column header="Medidas (cm)" field="measurement" defaultWidth={115} />
-                        <Column header="Costo" field="cost" defaultWidth={75} />
-                        <Column
-                            header="Etiqueta"
-                            component={DownloadLabel}
-                            field="label"
-                            style={{ width: '10px!important' }}
-                            defaultWidth={100}
-                        />
-                    </StyledTable>
+                    {displayData ? (
+                        <StyledTable
+                            data={tableData}
+                            pageSize={20}
+                            keyField="id"
+                            emptyTitle="Oh no!"
+                            emptyDescription="No hay ningun registro actualmente..."
+                            className="direction-table"
+                        >
+                            <Column header="Fecha " field="date" defaultWidth={105} />
+                            <Column header="Name " field="name" />
+                            <Column header="Guía" field="guide" defaultWidth={85} />
+                            <Column
+                                header="Origen"
+                                component={Destinations}
+                                field="guide"
+                                style={{ lineHeight: 25 }}
+                                defaultWidth={125}
+                            />
+                            <Column
+                                header="Destino"
+                                component={Destinations}
+                                field="Destination"
+                                style={{ lineHeight: 25 }}
+                                defaultWidth={125}
+                            />
+                            <Column header="Servicio" field="service" defaultWidth={105} />
+                            <Column header="Peso" field="weight" defaultWidth={50} />
+                            <Column header="Medidas (cm)" field="measurement" defaultWidth={115} />
+                            <Column header="Costo" field="cost" defaultWidth={75} />
+                            <Column
+                                header="Etiqueta"
+                                component={DownloadLabel}
+                                field="label"
+                                style={{ width: '10px!important' }}
+                                defaultWidth={100}
+                            />
+                        </StyledTable>
+                    ) : (
+                        <div className="rainbow-position_relative rainbow-m-vertical_xx-large rainbow-p-vertical_xx-large">
+                            <Spinner size="large" />
+                        </div>
+                    )}
                 </div>
             </div>
         </StyledAusers>
