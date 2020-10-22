@@ -99,6 +99,7 @@ export default function Credito({ user }) {
             db.collection('voucher')
                 .where('ID', '==', user.ID)
                 .onSnapshot(handleVouncher);
+            console.log('handleVouncher', handleVouncher);
         };
         reloadVoucher();
     }, []);
@@ -114,6 +115,7 @@ export default function Credito({ user }) {
     }
 
     const inforTransacciones = voucherData.map((voucher, idx) => {
+        console.log('voucherData', voucherData);
         return {
             id: voucher.id,
             date: voucher.create_date,

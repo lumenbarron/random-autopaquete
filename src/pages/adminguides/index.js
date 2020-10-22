@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Column, Badge, TableWithBrowserPagination, Select } from 'react-rainbow-components';
 import styled from 'styled-components';
 import Row from 'react-bootstrap/Row';
@@ -31,6 +31,7 @@ const StyledTable = styled(TableWithBrowserPagination)`
 
 const containerStyles = {
     maxWidth: 700,
+    color: 'red',
 };
 
 const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
@@ -76,8 +77,9 @@ export default function AllGuides({}) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [history, setHistory] = useState([]);
-    const [users, setUsers] = useState([]);
+    const [usersName, setUsersName] = useState([]);
     const [tableData, setTableData] = useState();
+    const [tableUsers, setTableUsers] = useState();
 
     useEffect(() => {
         let dataGuias = [];
@@ -89,7 +91,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('todas las guias', doc.data(), 'doc.id', doc.id);
+                    //console.log('todas las guias', doc.data(), 'doc.id', doc.id);
                     dataGuias.push({
                         id: doc.id,
                         sentDate: doc.data().creation_date.toDate(),
@@ -98,13 +100,12 @@ export default function AllGuides({}) {
 
                     dataUsers.push(doc.data().name);
                 });
-                console.log('dataUsers', dataUsers);
-                let singleName = dataUsers =>
-                    dataUsers.filter((item, index) => dataUsers.indexOf(item) === index);
-                dataSingleUser = [...new Set(singleName(dataUsers))];
-                console.log(dataSingleUser);
+                dataSingleUser = dataUsers.filter(
+                    (item, index) => dataUsers.indexOf(item) === index,
+                );
+                //console.log(dataSingleUser);
                 setHistory(dataGuias);
-                setUsers(dataSingleUser);
+                setUsersName(dataSingleUser);
                 console.log('data', dataGuias, 'users', dataSingleUser);
             })
             .catch(function(error) {
@@ -135,14 +136,25 @@ export default function AllGuides({}) {
         );
     }, [history]);
 
+    useEffect(() => {
+        setTableUsers(
+            usersName.map(historyRecord => {
+                return {
+                    value: historyRecord,
+                    label: historyRecord,
+                };
+            }),
+        );
+    }, [usersName]);
+
     return (
         <StyledAusers>
             <div className="back">
                 <Row className="content-header">
                     <h1 id="header-margin">Historial de envíos</h1>
                     <Select
-                        label="Select Label"
-                        options={users}
+                        label="Filtrar por usuario"
+                        options={tableUsers}
                         id="example-select-1"
                         style={containerStyles}
                         className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"

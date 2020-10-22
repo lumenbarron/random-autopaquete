@@ -69,7 +69,11 @@ export default function HistoryUser({ user }) {
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
                         console.log('data guias', doc.data(), 'doc.id', doc.id);
-                        dataGuias.push(doc.data());
+                        dataGuias.push({
+                            id: doc.id,
+                            sentDate: doc.data().creation_date.toDate(),
+                            ...doc.data(),
+                        });
                     });
                     setHistory(dataGuias);
                     console.log('data', dataGuias);
