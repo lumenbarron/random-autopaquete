@@ -63,12 +63,12 @@ export default function HistoryUser({ user }) {
             let dataGuias = [];
             db.collection('guia')
                 .where('ID', '==', user.ID)
-                .where('status', '==', 'completed')
+                // .where('status', '==', 'completed')
                 .orderBy('creation_date', 'desc')
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log('data guias', doc.data(), 'doc.id', doc.id);
+                        console.log('doc.id', doc.data().rastreo);
                         dataGuias.push({
                             id: doc.id,
                             sentDate: doc.data().creation_date.toDate(),
@@ -96,13 +96,18 @@ export default function HistoryUser({ user }) {
                     origin: historyRecord.sender_addresses.name,
                     Destination: historyRecord.receiver_addresses.name,
                     weight: historyRecord.package.weight,
-                    service: historyRecord.supplierData.Supplier,
-                    cost: historyRecord.supplierData.Supplier_cost,
+                    service:
+                        historyRecord.status === 'completed'
+                            ? historyRecord.supplierData.Supplier
+                            : 'sin servi',
+                    cost:
+                        historyRecord.status === 'completed'
+                            ? historyRecord.supplierData.Supplier_cost
+                            : 'sin costo',
                     label:
-                        historyRecord.supplierData.Supplier === 'autoencargosExpress' ||
-                        historyRecord.supplierData.Supplier === 'autoencargosEconomico'
-                            ? 'no disponible'
-                            : historyRecord.label,
+                        historyRecord.status === 'completed'
+                            ? historyRecord.label
+                            : 'no disponible',
                 };
             }),
         );

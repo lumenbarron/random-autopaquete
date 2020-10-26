@@ -12,6 +12,7 @@ export default function HistoryUser({ user }) {
             let dataGuias = [];
             db.collection('guia')
                 .where('ID', '==', user.ID)
+                // .orderBy('creation_date', 'desc')
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {

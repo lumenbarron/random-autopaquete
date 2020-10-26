@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     Column,
-    Badge,
+    DatePicker,
     TableWithBrowserPagination,
     Select,
     Spinner,
@@ -74,12 +74,12 @@ const DownloadLabel = ({ value }) => {
 function Destinations(value) {
     return (
         <div style={{ lineHeight: '30px' }}>
-            <span style={{ whiteSpace: 'initial' }}>{value.row.origin}</span>
+            <span style={{ whiteSpace: 'initial' }}>{value.row.Destination}</span>
         </div>
     );
 }
 
-function NamesDest(value) {
+function Origins(value) {
     return (
         <div style={{ lineHeight: '30px' }}>
             <span style={{ whiteSpace: 'initial' }}>{value.row.origin}</span>
@@ -96,9 +96,11 @@ export default function AllGuides({}) {
     const [tableUsers, setTableUsers] = useState();
     const [selectName, setSelectName] = useState();
     const [selectSupplier, setSelectSupplier] = useState();
+    const [selectDate, setSelectDate] = useState({ date: new Date() });
     const [displayData, setDisplayData] = useState(false);
     const nameSelected = useRef('usuario');
     const supplierSelected = useRef('servicio');
+    //const initialState = { date: new Date() };
     let allSuppliers = [
         {
             value: 'servicio',
@@ -132,13 +134,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log(
-                        'todas las guias',
-                        doc.data(),
-                        doc.data().supplierData.Supplier,
-                        'doc.id',
-                        doc.id,
-                    );
+                    console.log('todas las guias', doc.data());
                     dataGuias.push({
                         id: doc.id,
                         sentDate: doc.data().creation_date.toDate(),
@@ -171,8 +167,9 @@ export default function AllGuides({}) {
                     guide: historyRecord.rastreo,
                     nameorigin: `${historyRecord.sender_addresses.name} , ${historyRecord.sender_addresses.phone}`,
                     origin: `${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
-                    Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
                     namedestination: `${historyRecord.receiver_addresses.name} , ${historyRecord.receiver_addresses.phone}`,
+                    Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
+
                     service: historyRecord.supplierData.Supplier,
                     weight: historyRecord.package.weight,
                     measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
@@ -252,6 +249,39 @@ export default function AllGuides({}) {
             });
     };
 
+    const searchByDate = date => {
+        let dataGuiasByDate = [];
+        let convertDate = new Date(date).toLocaleDateString();
+        console.log('date', convertDate);
+        setSelectDate({ date: date });
+        db.collection('guia')
+            .where('package.creation_date', '==', date)
+            .where('status', '==', 'completed')
+            .orderBy('creation_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log('guias del cliente ' + date + ':', doc.data());
+                    // dataGuiasByDate.push({
+                    //     id: doc.id,
+                    //     sentDate: doc.data().creation_date.toDate(),
+                    //     ...doc.data(),
+                    // });
+                });
+                // setHistory(dataGuiasByDate);
+                // setDisplayData(true);
+                // supplierSelected.current = supplier;
+                // setSelectSupplier(supplier);
+                // if (nameSelected.current != 'usuario') {
+                //     setSelectName('');
+                // }
+                //console.log('dataGuiasByDate', dataGuiasByDate);
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+    };
+
     return (
         <StyledAusers>
             <div className="back">
@@ -276,6 +306,12 @@ export default function AllGuides({}) {
                         onChange={ev => searchBySupplier(ev.target.value)}
                         className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
                     />
+                    <DatePicker
+                        formatStyle="large"
+                        value={selectDate.date}
+                        //label="DatePicker Label"
+                        onChange={value => searchByDate(value)}
+                    />
                 </Row>
                 <div className="rainbow-p-bottom_xx-large">
                     {displayData ? (
@@ -293,7 +329,7 @@ export default function AllGuides({}) {
                             <Column header="Nombre Origen" field="nameorigin" />
                             <Column
                                 header="Origen"
-                                component={Destinations}
+                                component={Origins}
                                 field="origin"
                                 style={{ lineHeight: 25 }}
                                 defaultWidth={125}
