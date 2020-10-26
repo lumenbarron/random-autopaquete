@@ -79,6 +79,14 @@ function Destinations(value) {
     );
 }
 
+function NamesDest(value) {
+    return (
+        <div style={{ lineHeight: '30px' }}>
+            <span style={{ whiteSpace: 'initial' }}>{value.row.origin}</span>
+        </div>
+    );
+}
+
 export default function AllGuides({}) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -126,6 +134,7 @@ export default function AllGuides({}) {
                 querySnapshot.forEach(function(doc) {
                     console.log(
                         'todas las guias',
+                        doc.data(),
                         doc.data().supplierData.Supplier,
                         'doc.id',
                         doc.id,
@@ -160,8 +169,10 @@ export default function AllGuides({}) {
                     date: new Date(historyRecord.sentDate).toLocaleDateString(),
                     name: historyRecord.name,
                     guide: historyRecord.rastreo,
+                    nameorigin: `${historyRecord.sender_addresses.name} , ${historyRecord.sender_addresses.phone}`,
                     origin: `${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
                     Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
+                    namedestination: `${historyRecord.receiver_addresses.name} , ${historyRecord.receiver_addresses.phone}`,
                     service: historyRecord.supplierData.Supplier,
                     weight: historyRecord.package.weight,
                     measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
@@ -279,13 +290,22 @@ export default function AllGuides({}) {
                             <Column header="Fecha " field="date" defaultWidth={105} />
                             <Column header="Name " field="name" />
                             <Column header="Guía" field="guide" defaultWidth={85} />
+                            <Column header="Nombre Origen" field="nameorigin" />
                             <Column
                                 header="Origen"
                                 component={Destinations}
-                                field="guide"
+                                field="origin"
                                 style={{ lineHeight: 25 }}
                                 defaultWidth={125}
                             />
+                            <Column header="Nombre Destino" field="namedestination" />
+                            {/* <Column
+                                header="Nombre Destino"
+                                component={Destinations}
+                                field="namedestination"
+                                style={{ lineHeight: 25 }}
+                                defaultWidth={105}
+                            /> */}
                             <Column
                                 header="Destino"
                                 component={Destinations}
