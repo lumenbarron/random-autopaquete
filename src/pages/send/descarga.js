@@ -43,7 +43,10 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                         'rastreo',
                         rastreo.current,
                     );
-                    if (data.supplierData.Supplier === 'autoencargos') {
+                    if (
+                        data.supplierData.Supplier === 'autoencargosExpress' ||
+                        data.supplierData.Supplier === 'autoencargosEconomico'
+                    ) {
                         setPDFAuto(true);
                     }
                     if (data.label) {

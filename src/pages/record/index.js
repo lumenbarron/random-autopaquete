@@ -82,6 +82,7 @@ const RecordPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    console.log('data guias', doc.data(), 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         sentDate: doc.data().creation_date.toDate(),
@@ -119,7 +120,8 @@ const RecordPage = () => {
                         status: 'Finalizado',
                         cost: historyRecord.supplierData.Supplier_cost,
                         label:
-                            historyRecord.supplierData.Supplier === 'autoencargos'
+                            historyRecord.supplierData.Supplier === 'autoencargosExpress' ||
+                            historyRecord.supplierData.Supplier === 'autoencargosEconomico'
                                 ? 'no disponible'
                                 : historyRecord.label,
                     };

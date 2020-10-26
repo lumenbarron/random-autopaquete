@@ -14,14 +14,14 @@ import { useFirebaseApp } from 'reactfire';
 import { StyledUserEdit, StyledPanel } from '../adminuseredit/styled';
 import { StyledAusers } from '../adminusers/styled';
 
-const StyledBadge = styled(Badge)`
-    color: #09d3ac;
-`;
+// const StyledBadge = styled(Badge)`
+//     color: #09d3ac;
+// `;
 
-const StyledColumn = styled(Column)`
-    color: red;
-    white-space: initial;
-`;
+// const StyledColumn = styled(Column)`
+//     color: red;
+//     white-space: initial;
+// `;
 
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
@@ -35,12 +35,12 @@ const StyledTable = styled(TableWithBrowserPagination)`
     }
 `;
 
-const containerStyles = {
-    maxWidth: 700,
-    color: 'red',
-};
+// const containerStyles = {
+//     maxWidth: 700,
+//     color: 'red',
+// };
 
-const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
+//const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
 
 const DownloadLabel = ({ value }) => {
     const [label, setLabel] = useState(true);
@@ -87,8 +87,32 @@ export default function AllGuides({}) {
     const [tableData, setTableData] = useState();
     const [tableUsers, setTableUsers] = useState();
     const [selectName, setSelectName] = useState();
+    const [selectSupplier, setSelectSupplier] = useState();
     const [displayData, setDisplayData] = useState(false);
-    const nameSelected = useRef('');
+    const nameSelected = useRef('usuario');
+    const supplierSelected = useRef('servicio');
+    let allSuppliers = [
+        {
+            value: 'servicio',
+            label: 'servicio',
+        },
+        {
+            value: 'fedexEconomico',
+            label: 'fedexEconomico',
+        },
+        {
+            value: 'fedexDiaSiguiente',
+            label: 'fedexDiaSiguiente',
+        },
+        {
+            value: 'autoencargosEconomico',
+            label: 'autoencargosEconomico',
+        },
+        {
+            value: 'autoencargosExpress',
+            label: 'autoencargosExpress',
+        },
+    ];
 
     useEffect(() => {
         let dataGuias = [];
@@ -100,7 +124,12 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('todas las guias', doc.data(), 'doc.id', doc.id);
+                    console.log(
+                        'todas las guias',
+                        doc.data().supplierData.Supplier,
+                        'doc.id',
+                        doc.id,
+                    );
                     dataGuias.push({
                         id: doc.id,
                         sentDate: doc.data().creation_date.toDate(),
@@ -123,36 +152,27 @@ export default function AllGuides({}) {
     }, []);
 
     useEffect(() => {
-        console.log('name filtered', nameSelected.current);
+        // console.log('name filtered', nameSelected.current);
         setTableData(
-            history
-
-                // .filter(historyRecord => {
-                //     if (nameSelected.current === "usuario") {
-                //         return historyRecord;
-                //     } else if (historyRecord.name.includes(nameSelected.current)) {
-                //         return historyRecord
-                //     }
-                // })
-
-                .map(historyRecord => {
-                    return {
-                        id: historyRecord.id,
-                        date: new Date(historyRecord.sentDate).toLocaleDateString(),
-                        name: historyRecord.name,
-                        guide: historyRecord.rastreo,
-                        origin: `${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
-                        Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
-                        service: historyRecord.supplierData.Supplier,
-                        weight: historyRecord.package.weight,
-                        measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
-                        cost: historyRecord.supplierData.Supplier_cost,
-                        label:
-                            historyRecord.supplierData.Supplier === 'autoencargos'
-                                ? 'no disponible'
-                                : historyRecord.label,
-                    };
-                }),
+            history.map(historyRecord => {
+                return {
+                    id: historyRecord.id,
+                    date: new Date(historyRecord.sentDate).toLocaleDateString(),
+                    name: historyRecord.name,
+                    guide: historyRecord.rastreo,
+                    origin: `${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
+                    Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
+                    service: historyRecord.supplierData.Supplier,
+                    weight: historyRecord.package.weight,
+                    measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
+                    cost: historyRecord.supplierData.Supplier_cost,
+                    label:
+                        historyRecord.supplierData.Supplier === 'autoencargosExpress' ||
+                        historyRecord.supplierData.Supplier === 'autoencargosEconomico'
+                            ? 'no disponible'
+                            : historyRecord.label,
+                };
+            }),
         );
     }, [history]);
 
@@ -168,10 +188,6 @@ export default function AllGuides({}) {
     }, [usersName]);
 
     const searchByName = name => {
-        nameSelected.current = name;
-        console.log('selectName', selectName, name);
-        setSelectName(name);
-
         let dataGuiasEachUser = [];
         db.collection('guia')
             .where('name', '==', name)
@@ -189,7 +205,39 @@ export default function AllGuides({}) {
                 });
                 setHistory(dataGuiasEachUser);
                 setDisplayData(true);
+                nameSelected.current = name;
+                setSelectName(name);
+                if (supplierSelected.current != 'servicio') {
+                    setSelectSupplier('');
+                }
                 console.log('dataGuiasEachUser', dataGuiasEachUser);
+            });
+    };
+
+    const searchBySupplier = supplier => {
+        let dataGuiasBySupplier = [];
+        db.collection('guia')
+            .where('supplierData.Supplier', '==', supplier)
+            .where('status', '==', 'completed')
+            .orderBy('creation_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log('guias del cliente ' + supplier + ':', doc.data());
+                    dataGuiasBySupplier.push({
+                        id: doc.id,
+                        sentDate: doc.data().creation_date.toDate(),
+                        ...doc.data(),
+                    });
+                });
+                setHistory(dataGuiasBySupplier);
+                setDisplayData(true);
+                supplierSelected.current = supplier;
+                setSelectSupplier(supplier);
+                if (nameSelected.current != 'usuario') {
+                    setSelectName('');
+                }
+                console.log('dataGuiasBySupplier', dataGuiasBySupplier);
             });
     };
 
@@ -199,15 +247,24 @@ export default function AllGuides({}) {
                 <Row className="content-header">
                     <h1 id="header-margin">Historial de envíos</h1>
                     <Select
-                        label="Filtrar por usuario"
+                        //label="Filtrar por usuario"
                         options={tableUsers}
                         id="example-select-1"
-                        style={containerStyles}
+                        style={{ maxWidth: 700 }}
                         value={selectName}
                         onChange={ev => searchByName(ev.target.value)}
                         className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
                     />
-                    ;
+
+                    <Select
+                        //label="Filtrar por usuario"
+                        options={allSuppliers}
+                        id="example-select-2"
+                        style={{ maxWidth: 700 }}
+                        value={selectSupplier}
+                        onChange={ev => searchBySupplier(ev.target.value)}
+                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                    />
                 </Row>
                 <div className="rainbow-p-bottom_xx-large">
                     {displayData ? (

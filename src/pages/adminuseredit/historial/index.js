@@ -99,7 +99,8 @@ export default function HistoryUser({ user }) {
                     service: historyRecord.supplierData.Supplier,
                     cost: historyRecord.supplierData.Supplier_cost,
                     label:
-                        historyRecord.supplierData.Supplier === 'autoencargos'
+                        historyRecord.supplierData.Supplier === 'autoencargosExpress' ||
+                        historyRecord.supplierData.Supplier === 'autoencargosEconomico'
                             ? 'no disponible'
                             : historyRecord.label,
                 };
