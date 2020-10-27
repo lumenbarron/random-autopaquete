@@ -130,18 +130,24 @@ export default function AllGuides({}) {
         let dataSingleUser = [];
         db.collection('guia')
             .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
+            //.orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('todas las guias', doc.data());
+                    console.log(
+                        'todas las guias',
+                        doc.data().creation_date,
+                        doc.data().package.creation_date,
+                        doc.id,
+                    );
                     dataGuias.push({
                         id: doc.id,
-                        sentDate: doc.data().creation_date.toDate(),
+                        //sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
                     dataUsers.push(doc.data().name);
                 });
+
                 dataSingleUser = dataUsers.filter(
                     (item, index) => dataUsers.indexOf(item) === index,
                 );
@@ -149,7 +155,7 @@ export default function AllGuides({}) {
                 setHistory(dataGuias);
                 setUsersName(dataSingleUser);
                 setDisplayData(true);
-                console.log('data', dataGuias, 'users', dataSingleUser);
+                //console.log('data', dataGuias, 'users', dataSingleUser);
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -162,7 +168,7 @@ export default function AllGuides({}) {
             history.map(historyRecord => {
                 return {
                     id: historyRecord.id,
-                    date: new Date(historyRecord.sentDate).toLocaleDateString(),
+                    date: historyRecord.package.creation_date,
                     name: historyRecord.name,
                     guide: historyRecord.rastreo,
                     nameorigin: `${historyRecord.sender_addresses.name} , ${historyRecord.sender_addresses.phone}`,
@@ -200,14 +206,14 @@ export default function AllGuides({}) {
         db.collection('guia')
             .where('name', '==', name)
             .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
+            //.orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     console.log('guias del cliente ' + name + ':', doc.data());
                     dataGuiasEachUser.push({
                         id: doc.id,
-                        sentDate: doc.data().creation_date.toDate(),
+                        //sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
                 });
@@ -227,14 +233,14 @@ export default function AllGuides({}) {
         db.collection('guia')
             .where('supplierData.Supplier', '==', supplier)
             .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
+            //.orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     console.log('guias del cliente ' + supplier + ':', doc.data());
                     dataGuiasBySupplier.push({
                         id: doc.id,
-                        sentDate: doc.data().creation_date.toDate(),
+                        //sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
                 });
@@ -255,9 +261,9 @@ export default function AllGuides({}) {
         console.log('date', convertDate);
         setSelectDate({ date: date });
         db.collection('guia')
-            .where('package.creation_date', '==', date)
+            .where('.package.creation_date', '==', date)
             .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
+            //.orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {

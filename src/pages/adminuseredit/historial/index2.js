@@ -39,7 +39,7 @@ export default function HistoryUser({ user }) {
     };
 
     useEffect(() => {
-        history.map(doc => console.log(doc.id));
+        //history.map(doc => console.log(doc.id));
         setTableData(
             history.map(historyRecord => (
                 <table>

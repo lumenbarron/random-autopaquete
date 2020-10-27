@@ -63,15 +63,15 @@ export default function HistoryUser({ user }) {
             let dataGuias = [];
             db.collection('guia')
                 .where('ID', '==', user.ID)
-                // .where('status', '==', 'completed')
-                .orderBy('creation_date', 'desc')
+                .where('status', '==', 'completed')
+                //.orderBy('.package.creation_date', 'desc')
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log('doc.id', doc.data().rastreo);
+                        //console.log('doc.id', doc.data().creation_date);
                         dataGuias.push({
                             id: doc.id,
-                            sentDate: doc.data().creation_date.toDate(),
+                            //sentDate: doc.data().creation_date.toDate(),
                             ...doc.data(),
                         });
                     });
@@ -87,10 +87,10 @@ export default function HistoryUser({ user }) {
     useEffect(() => {
         setTableData(
             history.map(historyRecord => {
-                console.log('datos dentro del map', historyRecord.guide);
+                //console.log('datos dentro del map', historyRecord.guide);
                 return {
                     id: historyRecord.id,
-                    date: new Date(historyRecord.sentDate).toLocaleDateString(),
+                    date: historyRecord.package.creation_date,
                     status: historyRecord.status,
                     guide: historyRecord.rastreo,
                     origin: historyRecord.sender_addresses.name,
