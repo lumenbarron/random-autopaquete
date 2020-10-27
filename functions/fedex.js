@@ -54,11 +54,12 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
 
     let supplier;
     if (servicio === 'fedexEconomico') {
-        if (parseInt(packaging.weight, 10) > 15) {
-            supplier = 'fedexEconomicoPesado';
-        } else {
-            supplier = 'fedexEconomico';
-        }
+        supplier = 'fedexEconomico';
+        // if (parseInt(packaging.weight, 10) > 15) {
+        //     supplier = 'fedexEconomicoPesado';
+        // } else {
+        //     supplier = 'fedexEconomico';
+        // }
     } else if (servicio === 'fedexDiaSiguiente') {
         supplier = 'fedexOvernight';
     } else {
@@ -245,11 +246,12 @@ exports.create = functions.https.onRequest(async (req, res) => {
 
     let supplier;
     if (guia.supplierData.Supplier === 'fedexEconomico') {
-        if (parseInt(packaging.weight, 10) > 15) {
-            supplier = 'fedexEconomicoPesado';
-        } else {
-            supplier = 'fedexEconomico';
-        }
+        supplier = 'fedexEconomico';
+        // if (parseInt(packaging.weight, 10) > 15) {
+        //     supplier = 'fedexEconomicoPesado';
+        // } else {
+        //     supplier = 'fedexEconomico';
+        // }
     } else if (guia.supplierData.Supplier === 'fedexDiaSiguiente') {
         supplier = 'fedexOvernight';
     }
