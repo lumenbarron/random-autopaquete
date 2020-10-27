@@ -59,6 +59,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [errorWeight, setErrorWeight] = useState(false);
     const [errorContentDescription, setErrorContentDescription] = useState(false);
     const [errorContentValue, setErrorContentValue] = useState(false);
+    const [errorWeightValue, setErrorWeightValue] = useState(false);
     const [errorContentValueEmpty, setErrorContentValueEmpty] = useState(false);
     const [filter, setFilter] = useState('');
 
@@ -192,7 +193,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             setErrorDepth(false);
         }
         if (weight === '' || !numberWithDecimalRegex.test(weight) || weight > 15) {
-            alert('por el momento no puedes enviar mas de 15 kg');
+            alert('Por el momento no puedes enviar mas de 15 kg');
             setError(true);
             setErrorWeight(true);
             return;
@@ -231,92 +232,49 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             }
             setErrorNameDuplicate(false);
 
-            // let pricedWeight = weight;
-            // console.log(pricedWeight, 'pricedWeight');
-            // const volumetricWeight = Math.ceil((height * width * depth) / 5000);
-            // console.log(volumetricWeight, 'volumetricWeight');
-            // if (volumetricWeight  > 15 || pricedWeight > 15 ) {
-            //     alert('por el momento no puedes enviar mas de 15 kg')
-            //     setError(true);
-            //     //setErrorWeight(true);
-            // }
-            // if (volumetricWeight > weight) {
-            //     pricedWeight = volumetricWeight;
-            // }
-            // const packageDataToFirebase = {
-            //     ID: user.uid,
-            //     name,
-            //     height,
-            //     width,
-            //     depth,
-            //     weight: Math.ceil(pricedWeight),
-            //     content_description: contentDescription,
-            //     quantity: 1,
-            //     content_value: contentValue,
-            //     creation_date: creationDate.toLocaleDateString(),
-            // };
+            let pricedWeight = weight;
+            console.log(pricedWeight, 'pricedWeight');
+            const volumetricWeight = Math.ceil((height * width * depth) / 5000);
+            console.log(volumetricWeight, 'volumetricWeight');
+            if (volumetricWeight > weight) {
+                pricedWeight = volumetricWeight;
+            }
+            if (pricedWeight > 15) {
+                alert('por el momento no puedes enviar mas de 15 kg');
+                setError(true);
+            } else {
+                const packageDataToFirebase = {
+                    ID: user.uid,
+                    name,
+                    height,
+                    width,
+                    depth,
+                    weight: Math.ceil(pricedWeight),
+                    content_description: contentDescription,
+                    quantity: 1,
+                    content_value: contentValue,
+                    creation_date: creationDate.toLocaleDateString(),
+                };
 
-            // const packageGuiaData = {
-            //     package: {
-            //         ID: user.uid,
-            //         name,
-            //         height,
-            //         width,
-            //         depth,
-            //         weight: Math.ceil(pricedWeight),
-            //         content_description: contentDescription,
-            //         quantity: 1,
-            //         content_value: contentValue,
-            //         creation_date: creationDate.toLocaleDateString(),
-            //     },
-            // };
-            // setErrorContentValue(false);
+                const packageGuiaData = {
+                    package: {
+                        ID: user.uid,
+                        name,
+                        height,
+                        width,
+                        depth,
+                        weight: Math.ceil(pricedWeight),
+                        content_description: contentDescription,
+                        quantity: 1,
+                        content_value: contentValue,
+                        creation_date: creationDate.toLocaleDateString(),
+                    },
+                };
+                setErrorContentValue(false);
 
-            // onSave(packageDataToFirebase, packageGuiaData, checkBox);
+                onSave(packageDataToFirebase, packageGuiaData, checkBox);
+            }
         }
-
-        let pricedWeight = weight;
-        console.log(pricedWeight, 'pricedWeight');
-        const volumetricWeight = Math.ceil((height * width * depth) / 5000);
-        console.log(volumetricWeight, 'volumetricWeight');
-        if (volumetricWeight > 15 || pricedWeight > 15) {
-            alert('por el momento no puedes enviar mas de 15 kg');
-            setError(true);
-            //setErrorWeight(true);
-        }
-        if (volumetricWeight > weight) {
-            pricedWeight = volumetricWeight;
-        }
-        const packageDataToFirebase = {
-            ID: user.uid,
-            name,
-            height,
-            width,
-            depth,
-            weight: Math.ceil(pricedWeight),
-            content_description: contentDescription,
-            quantity: 1,
-            content_value: contentValue,
-            creation_date: creationDate.toLocaleDateString(),
-        };
-
-        const packageGuiaData = {
-            package: {
-                ID: user.uid,
-                name,
-                height,
-                width,
-                depth,
-                weight: Math.ceil(pricedWeight),
-                content_description: contentDescription,
-                quantity: 1,
-                content_value: contentValue,
-                creation_date: creationDate.toLocaleDateString(),
-            },
-        };
-        setErrorContentValue(false);
-
-        onSave(packageDataToFirebase, packageGuiaData, checkBox);
     };
 
     return (
@@ -459,6 +417,9 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     <div className="alert-error">
                         El monto máximo para asegurar un contenido es de $100,000
                     </div>
+                )}
+                {errorWeightValue && (
+                    <div className="alert-error">Por el momento no puedes enviar mas de 15 kg</div>
                 )}
 
                 <Button
