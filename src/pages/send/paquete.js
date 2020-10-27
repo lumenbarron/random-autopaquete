@@ -192,8 +192,8 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorDepth(false);
         }
-        if (weight === '' || !numberWithDecimalRegex.test(weight) || weight > 15) {
-            alert('Por el momento no puedes enviar mas de 15 kg');
+        if (weight === '' || !numberWithDecimalRegex.test(weight)) {
+            //alert('Por el momento no puedes enviar mas de 15 kg');
             setError(true);
             setErrorWeight(true);
             return;
@@ -239,12 +239,26 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             if (volumetricWeight > weight) {
                 pricedWeight = volumetricWeight;
             }
-            if (pricedWeight > 15) {
-                alert('por el momento no puedes enviar mas de 15 kg');
-                setError(true);
-                setErrorWeightValue(true);
-            } else {
-                const packageDataToFirebase = {
+            // if (pricedWeight > 15) {
+            //     alert('por el momento no puedes enviar mas de 15 kg');
+            //     setError(true);
+            //     setErrorWeightValue(true);
+            // } else {
+            const packageDataToFirebase = {
+                ID: user.uid,
+                name,
+                height,
+                width,
+                depth,
+                weight: Math.ceil(pricedWeight),
+                content_description: contentDescription,
+                quantity: 1,
+                content_value: contentValue,
+                creation_date: creationDate.toLocaleDateString(),
+            };
+
+            const packageGuiaData = {
+                package: {
                     ID: user.uid,
                     name,
                     height,
@@ -255,27 +269,13 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     quantity: 1,
                     content_value: contentValue,
                     creation_date: creationDate.toLocaleDateString(),
-                };
+                },
+            };
+            setErrorContentValue(false);
 
-                const packageGuiaData = {
-                    package: {
-                        ID: user.uid,
-                        name,
-                        height,
-                        width,
-                        depth,
-                        weight: Math.ceil(pricedWeight),
-                        content_description: contentDescription,
-                        quantity: 1,
-                        content_value: contentValue,
-                        creation_date: creationDate.toLocaleDateString(),
-                    },
-                };
-                setErrorContentValue(false);
-
-                onSave(packageDataToFirebase, packageGuiaData, checkBox);
-            }
+            onSave(packageDataToFirebase, packageGuiaData, checkBox);
         }
+        //}
     };
 
     return (
