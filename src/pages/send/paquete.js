@@ -242,6 +242,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             if (pricedWeight > 15) {
                 alert('por el momento no puedes enviar mas de 15 kg');
                 setError(true);
+                setErrorWeightValue(true);
             } else {
                 const packageDataToFirebase = {
                     ID: user.uid,
