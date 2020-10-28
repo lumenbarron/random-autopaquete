@@ -13,6 +13,7 @@ import { faDownload, faUserEdit } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
 import { StyledUserEdit, StyledPanel } from '../adminuseredit/styled';
 import { StyledAusers } from '../adminusers/styled';
+import { log } from 'firebase-functions/lib/logger';
 
 // const StyledBadge = styled(Badge)`
 //     color: #09d3ac;
@@ -100,6 +101,7 @@ export default function AllGuides({}) {
     const [displayData, setDisplayData] = useState(false);
     const nameSelected = useRef('usuario');
     const supplierSelected = useRef('servicio');
+    const dateSelected = useRef({ date: new Date() });
     //const initialState = { date: new Date() };
     let allSuppliers = [
         {
@@ -130,16 +132,17 @@ export default function AllGuides({}) {
         let dataSingleUser = [];
         db.collection('guia')
             .where('status', '==', 'completed')
-            //.orderBy('creation_date', 'desc')
+            .orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log(
-                        'todas las guias',
-                        doc.data().creation_date,
-                        doc.data().package.creation_date,
-                        doc.id,
-                    );
+                    // console.log(
+                    //     'todas las guias',
+                    //     doc.data().creation_date,
+                    //     doc.data().package.creation_date,
+                    //     doc.data().name,
+                    //     doc.id,
+                    // );
                     dataGuias.push({
                         id: doc.id,
                         //sentDate: doc.data().creation_date.toDate(),
@@ -257,29 +260,39 @@ export default function AllGuides({}) {
 
     const searchByDate = date => {
         let dataGuiasByDate = [];
-        let convertDate = new Date(date).toLocaleDateString();
-        console.log('date', convertDate);
-        setSelectDate({ date: date });
+        let guiasByDate = [];
+        console.log('date', date);
+        const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
+        let convertDate = new Date(date).toLocaleDateString('es-US', options);
+        //console.log('date', convertDate, typeof convertDate);
+        //setSelectDate({ date: date });
         db.collection('guia')
-            .where('.package.creation_date', '==', date)
             .where('status', '==', 'completed')
-            //.orderBy('creation_date', 'desc')
+            .orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('guias del cliente ' + date + ':', doc.data());
-                    // dataGuiasByDate.push({
-                    //     id: doc.id,
-                    //     sentDate: doc.data().creation_date.toDate(),
-                    //     ...doc.data(),
-                    // });
+                    //console.log('guias del cliente ' + date + ':', doc.data());
+                    dataGuiasByDate.push({
+                        id: doc.id,
+                        sentDate: doc
+                            .data()
+                            .creation_date.toDate()
+                            .toLocaleDateString('es-US', options),
+                        ...doc.data(),
+                    });
                 });
-                // setHistory(dataGuiasByDate);
-                // setDisplayData(true);
-                // supplierSelected.current = supplier;
-                // setSelectSupplier(supplier);
+                //console.log('dataGuiasByDate', dataGuiasByDate);
+                //guiasByDate = dataGuiasByDate.map( element => console.log(element.sentDate))
+                //console.log('convertDate', convertDate)
+                guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
+                console.log('guiasByDate', guiasByDate);
+                setHistory(guiasByDate);
+                setDisplayData(true);
+                // dateSelected.current = date;
+                // setSelectDate(date);
                 // if (nameSelected.current != 'usuario') {
-                //     setSelectName('');
+                //     setSelectDate({ date: new Date() });
                 // }
                 //console.log('dataGuiasByDate', dataGuiasByDate);
             })

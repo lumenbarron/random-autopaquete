@@ -190,6 +190,8 @@ const SendPage = () => {
             sender_addresses: sAddress,
             supplierData,
             razon_social,
+            name,
+            creation_date,
         } = ogGuia.data();
         console.log('ogGuia.data()', ogGuia.data());
         const newGuia = await db.collection('guia').add({
@@ -198,6 +200,8 @@ const SendPage = () => {
             sender_addresses: sAddress,
             supplierData,
             razon_social,
+            name,
+            creation_date,
             package: ogGuia.data().package,
         });
         idGuiaGlobal.current = newGuia.id;
