@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Column, Badge, TableWithBrowserPagination } from 'react-rainbow-components';
+import { Column, Badge, TableWithBrowserPagination, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
+import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
-import { StyledPanel } from './styled';
+import { StyledPanel, StyleHeader } from './styled';
+import ExportReactCSV from '../../dowloadData/index';
 
 const StyledBadge = styled(Badge)`
     color: #09d3ac;
@@ -57,7 +59,6 @@ export default function HistoryUser({ user }) {
     const db = firebase.firestore();
     const [history, setHistory] = useState([]);
     const [tableData, setTableData] = useState();
-
     useEffect(() => {
         if (user) {
             let dataGuias = [];
@@ -96,18 +97,13 @@ export default function HistoryUser({ user }) {
                     origin: historyRecord.sender_addresses.name,
                     Destination: historyRecord.receiver_addresses.name,
                     weight: historyRecord.package.weight,
-                    service:
-                        historyRecord.status === 'completed'
-                            ? historyRecord.supplierData.Supplier
-                            : 'sin servi',
-                    cost:
-                        historyRecord.status === 'completed'
-                            ? historyRecord.supplierData.Supplier_cost
-                            : 'sin costo',
+                    service: historyRecord.supplierData.Supplier,
+                    cost: historyRecord.supplierData.Supplier_cost,
                     label:
-                        historyRecord.status === 'completed'
-                            ? historyRecord.label
-                            : 'no disponible',
+                        historyRecord.supplierData.Supplier === 'autoencargosExpress' ||
+                        historyRecord.supplierData.Supplier === 'autoencargosEconomico'
+                            ? 'no disponible'
+                            : historyRecord.label,
                 };
             }),
         );
@@ -115,8 +111,13 @@ export default function HistoryUser({ user }) {
 
     return (
         <>
-            <h2>Historial de envíos</h2>
-            <div className="rainbow-p-bottom_large">
+            <StyleHeader>
+                <Row className="row-header">
+                    <h2>Historial de envíos</h2>
+                    <ExportReactCSV data={history} />
+                </Row>
+            </StyleHeader>
+            <div className="rainbow-p-bottom_large rainbow-p-top_large">
                 <StyledPanel>
                     <StyledTable
                         data={tableData}

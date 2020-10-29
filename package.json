@@ -23,6 +23,7 @@
         "rainbow-firebase-hooks": "0.0.1-canary.c5346a4",
         "react": "^16.12.0",
         "react-bootstrap": "^1.0.1",
+        "react-csv": "^2.0.3",
         "react-dom": "^16.12.0",
         "react-instantsearch-dom": "^6.3.0",
         "react-modal": "^3.11.2",

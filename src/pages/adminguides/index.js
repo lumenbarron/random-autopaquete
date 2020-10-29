@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
 import { StyledAusers } from '../adminusers/styled';
+import ExportReactCSV from '../dowloadData/index';
 
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
@@ -270,8 +271,9 @@ export default function AllGuides({}) {
     return (
         <StyledAusers>
             <div className="back">
-                <Row className="content-header">
+                <Row className="content-header row-header">
                     <h1 id="header-margin">Historial de envíos</h1>
+                    <ExportReactCSV data={history} />
                 </Row>
                 <Row className="content-header">
                     <h2 style={{ marginBottom: 0 }}>Filtrar por :</h2>
