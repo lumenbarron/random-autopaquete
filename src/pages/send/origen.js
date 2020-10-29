@@ -85,6 +85,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     const db = firebase.firestore();
     const user = useUser();
     const creationDate = new Date();
+    console.log('creationDate', creationDate);
 
     const [error, setError] = useState(false);
 

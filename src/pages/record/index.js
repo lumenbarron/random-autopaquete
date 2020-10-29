@@ -82,6 +82,7 @@ const RecordPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    console.log('data guias', doc.data(), 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         sentDate: doc.data().creation_date.toDate(),
@@ -96,6 +97,7 @@ const RecordPage = () => {
     }, []);
 
     useEffect(() => {
+        console.log('filter', filter);
         setTableData(
             recordsData
                 .filter(historyRecord => {
@@ -109,7 +111,7 @@ const RecordPage = () => {
                     console.log('datos dentro del map', historyRecord);
                     return {
                         id: historyRecord.id,
-                        date: new Date(historyRecord.sentDate).toLocaleDateString(),
+                        date: historyRecord.package.creation_date,
                         guide: historyRecord.rastreo ? historyRecord.rastreo : 'sin guia',
                         origin: historyRecord.sender_addresses.name,
                         Destination: historyRecord.receiver_addresses.name,
@@ -118,7 +120,8 @@ const RecordPage = () => {
                         status: 'Finalizado',
                         cost: historyRecord.supplierData.Supplier_cost,
                         label:
-                            historyRecord.supplierData.Supplier === 'autoencargos'
+                            historyRecord.supplierData.Supplier === 'autoencargosExpress' ||
+                            historyRecord.supplierData.Supplier === 'autoencargosEconomico'
                                 ? 'no disponible'
                                 : historyRecord.label,
                     };
@@ -128,6 +131,7 @@ const RecordPage = () => {
 
     const search = e => {
         let keyword = e.target.value;
+        console.log('keyword', keyword);
         setFilter(keyword);
     };
 

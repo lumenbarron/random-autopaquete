@@ -68,8 +68,12 @@ export default function HistoryUser({ user }) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log('data guias', doc.data(), 'doc.id', doc.id);
-                        dataGuias.push(doc.data());
+                        //console.log('doc.id', doc.data().creation_date);
+                        dataGuias.push({
+                            id: doc.id,
+                            //sentDate: doc.data().creation_date.toDate(),
+                            ...doc.data(),
+                        });
                     });
                     setHistory(dataGuias);
                     console.log('data', dataGuias);
@@ -83,21 +87,27 @@ export default function HistoryUser({ user }) {
     useEffect(() => {
         setTableData(
             history.map(historyRecord => {
-                console.log('datos dentro del map', historyRecord.guide);
+                //console.log('datos dentro del map', historyRecord.guide);
                 return {
                     id: historyRecord.id,
-                    date: new Date(historyRecord.sentDate).toLocaleDateString(),
+                    date: historyRecord.package.creation_date,
                     status: historyRecord.status,
                     guide: historyRecord.rastreo,
                     origin: historyRecord.sender_addresses.name,
                     Destination: historyRecord.receiver_addresses.name,
                     weight: historyRecord.package.weight,
-                    service: historyRecord.supplierData.Supplier,
-                    cost: historyRecord.supplierData.Supplier_cost,
+                    service:
+                        historyRecord.status === 'completed'
+                            ? historyRecord.supplierData.Supplier
+                            : 'sin servi',
+                    cost:
+                        historyRecord.status === 'completed'
+                            ? historyRecord.supplierData.Supplier_cost
+                            : 'sin costo',
                     label:
-                        historyRecord.supplierData.Supplier === 'autoencargos'
-                            ? 'no disponible'
-                            : historyRecord.label,
+                        historyRecord.status === 'completed'
+                            ? historyRecord.label
+                            : 'no disponible',
                 };
             }),
         );

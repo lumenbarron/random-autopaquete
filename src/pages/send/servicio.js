@@ -131,28 +131,28 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             .update({ saldo: newBalance })
                             .then(() => {
                                 console.log('get it');
-                                //addSupplier(supplier, type, { id, precio, ...cargos });
-                                db.collection('profiles')
-                                    .where('ID', '==', user.uid)
-                                    .get()
-                                    .then(profile => {
-                                        profile.docs[0].ref
-                                            .collection('rate')
-                                            .doc(id)
-                                            .get()
-                                            .then(doc => {
-                                                setError(false);
-                                                const tarifa = doc.data();
-                                                const supplierData = {
-                                                    ID: user.uid,
-                                                    Supplier: supplier,
-                                                    Supplier_cost: toFixed(precio, 2),
-                                                    tarifa,
-                                                    cargos,
-                                                };
-                                                onSave(supplierData);
-                                            });
-                                    });
+                                addSupplier(supplier, type, { id, precio, ...cargos });
+                                // db.collection('profiles')
+                                //     .where('ID', '==', user.uid)
+                                //     .get()
+                                //     .then(profile => {
+                                //         profile.docs[0].ref
+                                //             .collection('rate')
+                                //             .doc(id)
+                                //             .get()
+                                //             .then(doc => {
+                                //                 setError(false);
+                                //                 const tarifa = doc.data();
+                                //                 const supplierData = {
+                                //                     ID: user.uid,
+                                //                     Supplier: supplier,
+                                //                     Supplier_cost: toFixed(precio, 2),
+                                //                     tarifa,
+                                //                     cargos,
+                                //                 };
+                                //                 onSave(supplierData);
+                                //             });
+                                //     });
                             });
                     } else {
                         addSupplier(supplier, type, { id, precio, ...cargos });
@@ -201,7 +201,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
+            //xhr.open('POST', '/guia/cotizar');
+            xhr.open(
+                'POST',
+                'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {

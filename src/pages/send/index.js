@@ -107,7 +107,10 @@ const SendPage = () => {
             .collection('guia')
             .doc(idGuiaGlobal.current)
             .update({ status: 'completed', supplierData });
-        if (supplierData.Supplier === 'autoencargos') {
+        if (
+            supplierData.Supplier === 'autoencargosExpress' ||
+            supplierData.Supplier === 'autoencargosEconomico'
+        ) {
             console.log('autoencargos pdf');
             console.log(idGuiaGlobal.current);
             setCurrentStepName('descarga');
@@ -121,7 +124,11 @@ const SendPage = () => {
                         const xhr = new XMLHttpRequest();
                         xhr.responseType = 'json';
                         xhr.contentType = 'application/json';
-                        xhr.open('POST', '/guia/estafeta');
+                        //xhr.open('POST', '/guia/estafeta');
+                        xhr.open(
+                            'POST',
+                            'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/estafeta-create',
+                        );
                         xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                         xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
                         setCurrentStepName('descarga');
@@ -137,7 +144,11 @@ const SendPage = () => {
                         const xhr = new XMLHttpRequest();
                         xhr.responseType = 'json';
                         xhr.contentType = 'application/json';
-                        xhr.open('POST', '/guia/fedex');
+                        //xhr.open('POST', '/guia/fedex');
+                        xhr.open(
+                            'POST',
+                            'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
+                        );
                         xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                         xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
                         setCurrentStepName('descarga');
@@ -179,6 +190,8 @@ const SendPage = () => {
             sender_addresses: sAddress,
             supplierData,
             razon_social,
+            name,
+            creation_date,
         } = ogGuia.data();
         console.log('ogGuia.data()', ogGuia.data());
         const newGuia = await db.collection('guia').add({
@@ -187,6 +200,8 @@ const SendPage = () => {
             sender_addresses: sAddress,
             supplierData,
             razon_social,
+            name,
+            creation_date,
             package: ogGuia.data().package,
         });
         idGuiaGlobal.current = newGuia.id;
