@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Column, Badge, TableWithBrowserPagination } from 'react-rainbow-components';
+import { Column, Badge, TableWithBrowserPagination, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
+import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
-import { StyledPanel } from './styled';
+import { StyledPanel, StyleHeader } from './styled';
+import { CSVLink } from 'react-csv';
 
 const StyledBadge = styled(Badge)`
     color: #09d3ac;
@@ -57,6 +59,31 @@ export default function HistoryUser({ user }) {
     const db = firebase.firestore();
     const [history, setHistory] = useState([]);
     const [tableData, setTableData] = useState();
+    const headers = [
+        { label: 'ID', key: 'id' },
+        { label: 'Nombre', key: 'name' },
+        { label: 'Fecha', key: 'package.creation_date' },
+        { label: 'Guia', key: 'rastreo' },
+        { label: 'Nombre Origen', key: 'sender_addresses.name' },
+        { label: 'Telefono Origen', key: 'sender_addresses.phone' },
+        { label: 'Calle Origen', key: 'sender_addresses.street_number' },
+        { label: 'Colonia Origen', key: 'sender_addresses.neighborhood' },
+        { label: 'Código Postal Origen', key: 'sender_addresses.codigo_postal' },
+        { label: 'Referencias Origen', key: 'sender_addresses.place_reference' },
+        { label: 'Nombre Destino', key: 'receiver_addresses.name' },
+        { label: 'Telefono Destino', key: 'receiver_addresses.phone' },
+        { label: 'Calle Destino', key: 'receiver_addresses.street_number' },
+        { label: 'Colonia Destino', key: 'receiver_addresses.neighborhood' },
+        { label: 'Código Postal Destino', key: 'receiver_addresses.codigo_postal' },
+        { label: 'Referencias Destino', key: 'receiver_addresses.place_reference' },
+        { label: 'Paquete', key: 'package.content_description' },
+        { label: 'Paquete Peso', key: 'package.weight' },
+        { label: 'Paquete Largo', key: 'package.height' },
+        { label: 'Paquete Ancho', key: 'package.width' },
+        { label: 'Paquete Alto', key: 'package.depth' },
+        { label: 'Servicios', key: 'supplierData.Supplier' },
+        { label: 'Costo', key: 'supplierData.Supplier_cost' },
+    ];
 
     useEffect(() => {
         if (user) {
@@ -96,18 +123,13 @@ export default function HistoryUser({ user }) {
                     origin: historyRecord.sender_addresses.name,
                     Destination: historyRecord.receiver_addresses.name,
                     weight: historyRecord.package.weight,
-                    service:
-                        historyRecord.status === 'completed'
-                            ? historyRecord.supplierData.Supplier
-                            : 'sin servi',
-                    cost:
-                        historyRecord.status === 'completed'
-                            ? historyRecord.supplierData.Supplier_cost
-                            : 'sin costo',
+                    service: historyRecord.supplierData.Supplier,
+                    cost: historyRecord.supplierData.Supplier_cost,
                     label:
-                        historyRecord.status === 'completed'
-                            ? historyRecord.label
-                            : 'no disponible',
+                        historyRecord.supplierData.Supplier === 'autoencargosExpress' ||
+                        historyRecord.supplierData.Supplier === 'autoencargosEconomico'
+                            ? 'no disponible'
+                            : historyRecord.label,
                 };
             }),
         );
@@ -115,8 +137,22 @@ export default function HistoryUser({ user }) {
 
     return (
         <>
-            <h2>Historial de envíos</h2>
-            <div className="rainbow-p-bottom_large">
+            <StyleHeader>
+                <Row className="row-header">
+                    <h2>Historial de envíos</h2>
+                    <Button variant="destructive" className="rainbow-m-around_medium">
+                        <CSVLink
+                            data={history}
+                            headers={headers}
+                            filename={'historial-de-envios.csv'}
+                            target="_blank"
+                        >
+                            Descargar archivo
+                        </CSVLink>
+                    </Button>
+                </Row>
+            </StyleHeader>
+            <div className="rainbow-p-bottom_large rainbow-p-top_large">
                 <StyledPanel>
                     <StyledTable
                         data={tableData}
