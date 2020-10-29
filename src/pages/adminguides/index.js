@@ -7,22 +7,11 @@ import {
     Spinner,
 } from 'react-rainbow-components';
 import styled from 'styled-components';
-import Row from 'react-bootstrap/Row';
+import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faUserEdit } from '@fortawesome/free-solid-svg-icons';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
-import { StyledUserEdit, StyledPanel } from '../adminuseredit/styled';
 import { StyledAusers } from '../adminusers/styled';
-import { log } from 'firebase-functions/lib/logger';
-
-// const StyledBadge = styled(Badge)`
-//     color: #09d3ac;
-// `;
-
-// const StyledColumn = styled(Column)`
-//     color: red;
-//     white-space: initial;
-// `;
 
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
@@ -35,13 +24,6 @@ const StyledTable = styled(TableWithBrowserPagination)`
         }
     }
 `;
-
-// const containerStyles = {
-//     maxWidth: 700,
-//     color: 'red',
-// };
-
-//const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
 
 const DownloadLabel = ({ value }) => {
     const [label, setLabel] = useState(true);
@@ -102,7 +84,6 @@ export default function AllGuides({}) {
     const nameSelected = useRef('usuario');
     const supplierSelected = useRef('servicio');
     const dateSelected = useRef({ date: new Date() });
-    //const initialState = { date: new Date() };
     let allSuppliers = [
         {
             value: 'servicio',
@@ -136,16 +117,9 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    // console.log(
-                    //     'todas las guias',
-                    //     doc.data().creation_date,
-                    //     doc.data().package.creation_date,
-                    //     doc.data().name,
-                    //     doc.id,
-                    // );
+                    console.log('todas las guias', doc.data().creation_date, doc.id);
                     dataGuias.push({
                         id: doc.id,
-                        //sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
                     dataUsers.push(doc.data().name);
@@ -154,11 +128,9 @@ export default function AllGuides({}) {
                 dataSingleUser = dataUsers.filter(
                     (item, index) => dataUsers.indexOf(item) === index,
                 );
-                //console.log(dataSingleUser);
                 setHistory(dataGuias);
                 setUsersName(dataSingleUser);
                 setDisplayData(true);
-                //console.log('data', dataGuias, 'users', dataSingleUser);
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -209,14 +181,13 @@ export default function AllGuides({}) {
         db.collection('guia')
             .where('name', '==', name)
             .where('status', '==', 'completed')
-            //.orderBy('creation_date', 'desc')
+            .orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     console.log('guias del cliente ' + name + ':', doc.data());
                     dataGuiasEachUser.push({
                         id: doc.id,
-                        //sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
                 });
@@ -224,8 +195,9 @@ export default function AllGuides({}) {
                 setDisplayData(true);
                 nameSelected.current = name;
                 setSelectName(name);
-                if (supplierSelected.current != 'servicio') {
+                if (supplierSelected.current != 'servicio' || dateSelected.current != new Date()) {
                     setSelectSupplier('');
+                    setSelectDate({ date: new Date() });
                 }
                 console.log('dataGuiasEachUser', dataGuiasEachUser);
             });
@@ -236,14 +208,13 @@ export default function AllGuides({}) {
         db.collection('guia')
             .where('supplierData.Supplier', '==', supplier)
             .where('status', '==', 'completed')
-            //.orderBy('creation_date', 'desc')
+            .orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     console.log('guias del cliente ' + supplier + ':', doc.data());
                     dataGuiasBySupplier.push({
                         id: doc.id,
-                        //sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
                 });
@@ -251,8 +222,9 @@ export default function AllGuides({}) {
                 setDisplayData(true);
                 supplierSelected.current = supplier;
                 setSelectSupplier(supplier);
-                if (nameSelected.current != 'usuario') {
+                if (nameSelected.current != 'usuario' || dateSelected.current != new Date()) {
                     setSelectName('');
+                    setSelectDate({ date: new Date() });
                 }
                 console.log('dataGuiasBySupplier', dataGuiasBySupplier);
             });
@@ -261,11 +233,9 @@ export default function AllGuides({}) {
     const searchByDate = date => {
         let dataGuiasByDate = [];
         let guiasByDate = [];
-        console.log('date', date);
         const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
         let convertDate = new Date(date).toLocaleDateString('es-US', options);
-        //console.log('date', convertDate, typeof convertDate);
-        //setSelectDate({ date: date });
+        setSelectDate({ date: date });
         db.collection('guia')
             .where('status', '==', 'completed')
             .orderBy('creation_date', 'desc')
@@ -282,19 +252,15 @@ export default function AllGuides({}) {
                         ...doc.data(),
                     });
                 });
-                //console.log('dataGuiasByDate', dataGuiasByDate);
-                //guiasByDate = dataGuiasByDate.map( element => console.log(element.sentDate))
-                //console.log('convertDate', convertDate)
                 guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
                 console.log('guiasByDate', guiasByDate);
                 setHistory(guiasByDate);
                 setDisplayData(true);
-                // dateSelected.current = date;
-                // setSelectDate(date);
-                // if (nameSelected.current != 'usuario') {
-                //     setSelectDate({ date: new Date() });
-                // }
-                //console.log('dataGuiasByDate', dataGuiasByDate);
+                dateSelected.current = date;
+                if (nameSelected.current != 'usuario' || supplierSelected.current != 'servicio') {
+                    setSelectName('');
+                    setSelectSupplier('');
+                }
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -306,31 +272,38 @@ export default function AllGuides({}) {
             <div className="back">
                 <Row className="content-header">
                     <h1 id="header-margin">Historial de envíos</h1>
-                    <Select
-                        //label="Filtrar por usuario"
-                        options={tableUsers}
-                        id="example-select-1"
-                        style={{ maxWidth: 700 }}
-                        value={selectName}
-                        onChange={ev => searchByName(ev.target.value)}
-                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
-                    />
-
-                    <Select
-                        //label="Filtrar por usuario"
-                        options={allSuppliers}
-                        id="example-select-2"
-                        style={{ maxWidth: 700 }}
-                        value={selectSupplier}
-                        onChange={ev => searchBySupplier(ev.target.value)}
-                        className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
-                    />
-                    <DatePicker
-                        formatStyle="large"
-                        value={selectDate.date}
-                        //label="DatePicker Label"
-                        onChange={value => searchByDate(value)}
-                    />
+                </Row>
+                <Row className="content-header">
+                    <h2 style={{ marginBottom: 0 }}>Filtrar por :</h2>
+                </Row>
+                <Row className="content-header">
+                    <Col>
+                        <Select
+                            options={tableUsers}
+                            id="example-select-1"
+                            style={{ width: '100%', padding: 0 }}
+                            value={selectName}
+                            onChange={ev => searchByName(ev.target.value)}
+                            className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                        />
+                    </Col>
+                    <Col>
+                        <Select
+                            options={allSuppliers}
+                            id="example-select-2"
+                            style={{ width: '100%', padding: 0 }}
+                            value={selectSupplier}
+                            onChange={ev => searchBySupplier(ev.target.value)}
+                            className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                        />
+                    </Col>
+                    <Col>
+                        <DatePicker
+                            formatStyle="large"
+                            value={selectDate.date}
+                            onChange={value => searchByDate(value)}
+                        />
+                    </Col>
                 </Row>
                 <div className="rainbow-p-bottom_xx-large">
                     {displayData ? (
@@ -354,13 +327,6 @@ export default function AllGuides({}) {
                                 defaultWidth={125}
                             />
                             <Column header="Nombre Destino" field="namedestination" />
-                            {/* <Column
-                                header="Nombre Destino"
-                                component={Destinations}
-                                field="namedestination"
-                                style={{ lineHeight: 25 }}
-                                defaultWidth={105}
-                            /> */}
                             <Column
                                 header="Destino"
                                 component={Destinations}

@@ -78,7 +78,7 @@ const RecordPage = () => {
         db.collection('guia')
             .where('ID', '==', user.uid)
             .where('status', '==', 'completed')
-            //.orderBy('creation_date', 'desc')
+            .orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {

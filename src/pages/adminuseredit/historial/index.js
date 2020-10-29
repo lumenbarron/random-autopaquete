@@ -64,7 +64,7 @@ export default function HistoryUser({ user }) {
             db.collection('guia')
                 .where('ID', '==', user.ID)
                 .where('status', '==', 'completed')
-                //.orderBy('.package.creation_date', 'desc')
+                .orderBy('creation_date', 'desc')
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
