@@ -20,6 +20,7 @@ const AccountPage = () => {
 
             const cancelSnapshot = docRef.onSnapshot(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    console.log(doc.data().saldo);
                     setCreditAmount(doc.data().saldo);
                 });
             });

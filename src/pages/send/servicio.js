@@ -112,6 +112,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         console.log('id', id);
         const precioNeto = precio * 1.16;
+        console.log('precioNeto', precioNeto, precio);
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
@@ -126,36 +127,17 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         addRastreoAuto(idGuiaGlobal);
                         const newBalance = parseFloat(doc.data().saldo) - parseFloat(precioNeto);
                         console.log('newBalance', newBalance);
+                        console.log('precioNeto', precioNeto);
                         db.collection('profiles')
                             .doc(doc.id)
                             .update({ saldo: newBalance })
                             .then(() => {
                                 console.log('get it');
                                 addSupplier(supplier, type, { id, precio, ...cargos });
-                                // db.collection('profiles')
-                                //     .where('ID', '==', user.uid)
-                                //     .get()
-                                //     .then(profile => {
-                                //         profile.docs[0].ref
-                                //             .collection('rate')
-                                //             .doc(id)
-                                //             .get()
-                                //             .then(doc => {
-                                //                 setError(false);
-                                //                 const tarifa = doc.data();
-                                //                 const supplierData = {
-                                //                     ID: user.uid,
-                                //                     Supplier: supplier,
-                                //                     Supplier_cost: toFixed(precio, 2),
-                                //                     tarifa,
-                                //                     cargos,
-                                //                 };
-                                //                 onSave(supplierData);
-                                //             });
-                                //     });
                             });
                     } else {
-                        addSupplier(supplier, type, { id, precio, ...cargos });
+                        console.log('precioNeto', precioNeto);
+                        addSupplier(supplier, type, { id, precioNeto, ...cargos });
                     }
                 });
             })
@@ -164,7 +146,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             });
     };
 
-    const addSupplier = (supplier, type, { id, precio, ...cargos }) => {
+    const addSupplier = (supplier, type, { id, precioNeto, ...cargos }) => {
+        console.log('precioNeto', precioNeto);
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
@@ -179,10 +162,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         const supplierData = {
                             ID: user.uid,
                             Supplier: `${supplier}${type}`,
-                            Supplier_cost: toFixed(precio, 2),
+                            Supplier_cost: toFixed(precioNeto, 2),
                             tarifa,
                             cargos,
                         };
+                        console.log(supplierData.Supplier_cost);
                         onSave(supplierData);
                     });
             });
