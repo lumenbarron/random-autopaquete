@@ -268,7 +268,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log('primer data', doc.data());
+                        console.log('primer data', doc.data(), doc.id);
                         setUserName(doc.data().name);
                         setStatus(doc.data().status);
                         if (doc.data().persona === 'Física') {
