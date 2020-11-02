@@ -308,7 +308,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                     },
                     Address: {
                         StreetLines: [senderAddress.street_number, senderAddress.neighborhood],
-                        StreetLines: senderAddress.neighborhood,
+                        StreetLines: [senderAddress.neighborhood, senderAddress.street_number],
                         City: senderAddress.country,
                         StateOrProvinceCode: senderAddress.state,
                         PostalCode: senderAddress.codigo_postal,
@@ -322,7 +322,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                     },
                     Address: {
                         StreetLines: [receiverAddress.street_number, receiverAddress.neighborhood],
-                        StreetLines: receiverAddress.neighborhood,
+                        StreetLines: [receiverAddress.neighborhood, receiverAddress.street_number],
                         City: receiverAddress.country,
                         StateOrProvinceCode: receiverAddress.state,
                         PostalCode: receiverAddress.codigo_postal,
