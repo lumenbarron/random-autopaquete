@@ -109,7 +109,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
                         PhoneNumber: senderAddress.phone,
                     },
                     Address: {
-                        StreetLines: senderAddress.street_number,
+                        StreetLines: [senderAddress.street_number, senderAddress.neighborhood],
                         StreetLines: senderAddress.neighborhood,
                         City: senderAddress.country,
                         StateOrProvinceCode: senderAddress.state,
@@ -123,7 +123,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
                         PhoneNumber: receiverAddress.phone,
                     },
                     Address: {
-                        StreetLines: receiverAddress.street_number,
+                        StreetLines: [receiverAddress.street_number, receiverAddress.neighborhood],
                         StreetLines: receiverAddress.neighborhood,
                         City: receiverAddress.country,
                         StateOrProvinceCode: receiverAddress.state,
@@ -307,8 +307,8 @@ exports.create = functions.https.onRequest(async (req, res) => {
                         PhoneNumber: senderAddress.phone,
                     },
                     Address: {
-                        StreetLines: senderAddress.street_number,
-                        StreetLines: senderAddress.neighborhood,
+                        StreetLines: [senderAddress.street_number, senderAddress.neighborhood],
+                        StreetLines: [senderAddress.neighborhood, senderAddress.street_number],
                         City: senderAddress.country,
                         StateOrProvinceCode: senderAddress.state,
                         PostalCode: senderAddress.codigo_postal,
@@ -321,8 +321,8 @@ exports.create = functions.https.onRequest(async (req, res) => {
                         PhoneNumber: receiverAddress.phone,
                     },
                     Address: {
-                        StreetLines: receiverAddress.street_number,
-                        StreetLines: receiverAddress.neighborhood,
+                        StreetLines: [receiverAddress.street_number, receiverAddress.neighborhood],
+                        StreetLines: [receiverAddress.neighborhood, receiverAddress.street_number],
                         City: receiverAddress.country,
                         StateOrProvinceCode: receiverAddress.state,
                         PostalCode: receiverAddress.codigo_postal,
