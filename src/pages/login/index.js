@@ -94,11 +94,20 @@ const LoginPage = () => {
                 return firebase
                     .auth()
                     .signInWithEmailAndPassword(email, password)
+                    .then(function() {
+                        swal.fire({
+                            title: '¡Excelente!',
+                            text: 'Has sido autenticado. ¡Bienvenido!',
+                            icon: 'success',
+                            confirmButtonText: 'Ok',
+                        });
+                    })
                     .catch(function() {
                         setErrorLogIn(true);
                         swal.fire({
-                            title: '!Oh no!',
-                            text: 'Favor de verificar que el correo o la contraseña sean correctos',
+                            title: '¡Oh no!',
+                            text:
+                                'Parece que el correo o la contraseña son incorrectos, ¿Los podrías revisar?',
                             icon: 'error',
                             confirmButtonText: 'Ok',
                         });

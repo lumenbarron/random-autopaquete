@@ -17,6 +17,7 @@ import Modal from 'react-modal';
 //import moduleName from 'module';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
+import swal from 'sweetalert2';
 
 Modal.setAppElement('#root');
 
@@ -276,8 +277,26 @@ export function AccountSidebar() {
 
     const logout = async e => {
         e.preventDefault();
-        await firebase.auth().signOut();
-        history.push('/');
+        await swal
+            .fire({
+                title: '¿Quieres cerrar sesión?',
+                text: '',
+                icon: 'info',
+                showDenyButton: true,
+                confirmButtonText: `Si`,
+                denyButtonText: `No`,
+            })
+            .then(result => {
+                if (result.isConfirmed) {
+                    firebase.auth().signOut();
+                    history.push('/');
+                    swal.fire('Saliste', '¡Vuelve pronto!', 'success');
+                } else if (result.isDenied) {
+                    console.log('no saliendo');
+                }
+            });
+        // await firebase.auth().signOut();
+        // history.push('/');
     };
 
     const changeAvatar = () => {
@@ -577,8 +596,26 @@ export function AdminSidebar() {
 
     const logout = async e => {
         e.preventDefault();
-        await firebase.auth().signOut();
-        history.push('/');
+        await swal
+            .fire({
+                title: '¿Quieres cerrar sesión?',
+                text: '',
+                icon: 'info',
+                showDenyButton: true,
+                confirmButtonText: `Si`,
+                denyButtonText: `No`,
+            })
+            .then(result => {
+                if (result.isConfirmed) {
+                    firebase.auth().signOut();
+                    history.push('/');
+                    swal.fire('Saliste', '¡Vuelve pronto!', 'success');
+                } else if (result.isDenied) {
+                    console.log('no saliendo');
+                }
+            });
+        // await firebase.auth().signOut();
+        // history.push('/');
     };
 
     useSecurity();
