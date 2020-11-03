@@ -92,7 +92,10 @@ const AdminUsersPage = () => {
             };
             return profile;
         });
-        setUsers(data);
+        console.log('data', data);
+        const sorted = data.sort((a, b) => a.fullname.localeCompare(b.fullname));
+        console.log('sorted', sorted);
+        setUsers(sorted);
         setLoaded(false);
     }
 
@@ -102,25 +105,25 @@ const AdminUsersPage = () => {
         history.push('/admin/usuario/' + profile.ID);
     }
 
-    function deleteUser(e, profile) {
-        e.preventDefault();
+    // function deleteUser(e, profile) {
+    //     e.preventDefault();
 
-        firebase
-            .auth()
-            .delete(profile.ID)
-            .then(function() {
-                db.collection('profiles')
-                    .doc(profile.id)
-                    .delete()
-                    .then(function() {})
-                    .catch(function(error) {
-                        console.error('Error: ', error);
-                    });
-            })
-            .catch(function(error) {
-                console.log('Error eliminando al usuario:', error);
-            });
-    }
+    //     firebase
+    //         .auth()
+    //         .delete(profile.ID)
+    //         .then(function() {
+    //             db.collection('profiles')
+    //                 .doc(profile.id)
+    //                 .delete()
+    //                 .then(function() {})
+    //                 .catch(function(error) {
+    //                     console.error('Error: ', error);
+    //                 });
+    //         })
+    //         .catch(function(error) {
+    //             console.log('Error eliminando al usuario:', error);
+    //         });
+    // }
 
     return (
         <StyledAusers>
@@ -150,12 +153,12 @@ const AdminUsersPage = () => {
                                     iconPosition="left"
                                     onClick={editUser}
                                 />
-                                <MenuItem
+                                {/* <MenuItem
                                     label="Eliminar"
                                     icon={<FontAwesomeIcon icon={faTrashAlt} />}
                                     iconPosition="left"
                                     onClick={deleteUser}
-                                />
+                                /> */}
                             </Column>
                         </StyledTable>
                     </div>

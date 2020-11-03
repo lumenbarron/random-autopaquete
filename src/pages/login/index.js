@@ -10,6 +10,7 @@ import 'firebase/storage';
 import { StyledLoginPage, StyledLoginSection } from './styled';
 import { useBlockSecurity } from '../../hooks/useBlockSecurity';
 import 'firebase/auth';
+import swal from 'sweetalert2';
 
 const containerStyles = {
     maxWidth: 1000,
@@ -95,6 +96,12 @@ const LoginPage = () => {
                     .signInWithEmailAndPassword(email, password)
                     .catch(function() {
                         setErrorLogIn(true);
+                        swal.fire({
+                            title: '!Oh no!',
+                            text: 'Favor de verificar que el correo o la contraseña sean correctos',
+                            icon: 'error',
+                            confirmButtonText: 'Ok',
+                        });
                     });
             })
             .catch(function(error) {
