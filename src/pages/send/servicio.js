@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes, { element } from 'prop-types';
-import { Card, Button } from 'react-rainbow-components';
+import { Card, Button, Spinner } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
 import formatMoney from 'accounting-js/lib/formatMoney';
@@ -25,6 +25,10 @@ const PriceLabel = styled.div`
 
 const PriceNumber = styled.div`
     text-align: right;
+`;
+
+const LogoSpinner = styled.div`
+    border: 1px solid black;
 `;
 
 export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
@@ -329,6 +333,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         const getInsurancePrice = company => {
             if (contentValue === '') return 0;
             const baseValue = parseInt(contentValue, 10) * 0.02;
+            console.log('valor asegurado ', baseValue);
             const extraValue = 40;
             if (company === 'fedexDiaSiguiente' || company === 'fedexEconomico') {
                 return baseValue + extraValue;
@@ -703,7 +708,16 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             {hasActivatedSuppliers === false && (
                 <h1>Ningún servicio activado, contacte a un administrador</h1>
             )}
-            {hasActivatedSuppliers && !supplierAvailability && <h1>Obteniendo precios...</h1>}
+            {hasActivatedSuppliers && !supplierAvailability && (
+                <div className="rainbow-p-vertical_xx-large">
+                    <h1>Obteniendo precios...</h1>
+                    <div className="rainbow-position_relative rainbow-m-vertical_xx-large rainbow-p-vertical_xx-large">
+                        <Spinner size="large" variant="brand">
+                            <LogoSpinner />
+                        </Spinner>
+                    </div>
+                </div>
+            )}
             {hasActivatedSuppliers && supplierAvailability && (
                 <>
                     <StyledPaneContainer style={{ justifyContent: 'center' }}>

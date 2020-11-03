@@ -11,6 +11,8 @@ import {
     StyledRadioGroup,
     HelpLabel,
 } from './styled';
+import swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 const numberRegex = RegExp(/^[0-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
@@ -118,6 +120,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
         });
         setPackageData(packageData);
     }
+
     const options = packageData
         .filter(packages => {
             if (filter === null) {
@@ -136,6 +139,25 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const search = e => {
         let keyword = e.target.value;
         setFilter(keyword);
+    };
+
+    const checkInsurance = e => {
+        let keyword = e.target.value;
+        swal.fire({
+            title: '¿Estás seguro?',
+            text:
+                'Al asegurar tu paquete se hará un cargo adicional del 2% del valor + $40 de poliza',
+            icon: 'info',
+            showDenyButton: true,
+            confirmButtonText: `Ok`,
+            denyButtonText: `No asegurar`,
+        }).then(result => {
+            if (result.isConfirmed) {
+                setCheckBoxSecure(keyword);
+            } else if (result.isDenied) {
+                setCheckBoxSecure(false);
+            }
+        });
     };
 
     useEffect(() => {
@@ -375,7 +397,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         className="checkbox-toggle"
                         // style={{ flex: '1 1' }}
                         value={checkBoxSecure}
-                        onChange={e => setCheckBoxSecure(e.target.checked)}
+                        onChange={e => checkInsurance(e)}
                     />
                     {checkBoxSecure ? (
                         <Input
