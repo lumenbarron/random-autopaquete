@@ -12,7 +12,6 @@ import {
     HelpLabel,
 } from './styled';
 import swal from 'sweetalert2';
-import Swal from 'sweetalert2';
 
 const numberRegex = RegExp(/^[0-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
