@@ -214,7 +214,12 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             setErrorDepth(false);
         }
         if (weight === '' || !numberWithDecimalRegex.test(weight)) {
-            //alert('Por el momento no puedes enviar mas de 15 kg');
+            swal.fire('¡Oh no!', 'Parece que no hay un pesó válido', 'error');
+            setError(true);
+            setErrorWeight(true);
+            return;
+        } else if (weight > 68) {
+            swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 68 kg', 'error');
             setError(true);
             setErrorWeight(true);
             return;
@@ -252,34 +257,20 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 }
             }
             setErrorNameDuplicate(false);
-
             let pricedWeight = weight;
-            console.log(pricedWeight, 'pricedWeight');
+            console.log(pricedWeight, 'precio fisico');
+            console.log(new Date().toISOString());
             const volumetricWeight = Math.ceil((height * width * depth) / 5000);
-            console.log(volumetricWeight, 'volumetricWeight');
-            if (volumetricWeight > weight) {
+            console.log(volumetricWeight, 'peso volumetrico');
+            if (volumetricWeight > 68) {
+                swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 68 kg', 'error');
+                setError(true);
+                setErrorHeight(true);
+            } else if (volumetricWeight > weight) {
                 pricedWeight = volumetricWeight;
-            }
-            // if (pricedWeight > 15) {
-            //     alert('por el momento no puedes enviar mas de 15 kg');
-            //     setError(true);
-            //     setErrorWeightValue(true);
-            // } else {
-            const packageDataToFirebase = {
-                ID: user.uid,
-                name,
-                height,
-                width,
-                depth,
-                weight: Math.ceil(pricedWeight),
-                content_description: contentDescription,
-                quantity: 1,
-                content_value: contentValue,
-                creation_date: creationDate.toLocaleDateString(),
-            };
-
-            const packageGuiaData = {
-                package: {
+                console.log(pricedWeight, 'precio real');
+            } else {
+                const packageDataToFirebase = {
                     ID: user.uid,
                     name,
                     height,
@@ -290,13 +281,27 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     quantity: 1,
                     content_value: contentValue,
                     creation_date: creationDate.toLocaleDateString(),
-                },
-            };
-            setErrorContentValue(false);
+                };
 
-            onSave(packageDataToFirebase, packageGuiaData, checkBox);
+                const packageGuiaData = {
+                    package: {
+                        ID: user.uid,
+                        name,
+                        height,
+                        width,
+                        depth,
+                        weight: Math.ceil(pricedWeight),
+                        content_description: contentDescription,
+                        quantity: 1,
+                        content_value: contentValue,
+                        creation_date: creationDate.toLocaleDateString(),
+                    },
+                };
+                setErrorContentValue(false);
+
+                onSave(packageDataToFirebase, packageGuiaData, checkBox);
+            }
         }
-        //}
     };
 
     return (

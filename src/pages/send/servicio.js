@@ -324,7 +324,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         //Si el peso es menor que uno, se le asigna 1
         pricedWeight = pricedWeight > 1 ? pricedWeight : 1;
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
-        console.log('pesos', pricedWeight, volumetricWeight);
+        console.log(
+            'precio peso fisico',
+            pricedWeight,
+            'precio peso volumetrico',
+            volumetricWeight,
+        );
         if (volumetricWeight > weight) {
             console.log('el peso volumetrico es mayor que el peso declarado');
             pricedWeight = volumetricWeight;
@@ -372,14 +377,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     parseInt(min, 10) <= parseInt(pricedWeight, 10) &&
                     parseInt(max, 10) >= parseInt(pricedWeight, 10)
                 ) {
-                    console.log(
-                        'Encontramos si hay tarifas que apliquen directo al paquete',
-                        entrega,
-                        precio,
-                        max,
-                        min,
-                        kgExtra,
-                    );
+                    console.log('Encontramos si hay tarifas que apliquen directo al paquete');
                     const precioTotal = parseInt(precio, 10) * quantity;
                     console.log('precioTotal', precioTotal);
                     if (entrega === 'fedexDiaSiguiente')
@@ -471,14 +469,17 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 //Si la tarifa incluye precio por kg extra
                 // Anotamos los cargos de kg extra, por si los necesitamos
                 if (kgExtra) {
+                    console.log('entrando a kg extra');
                     kgsExtraTarifas[entrega.slice(0, entrega.indexOf('Extra'))] = parseInt(
                         kgExtra,
                         10,
                     );
+                    console.log('kgsExtraTarifas', kgsExtraTarifas);
                     return;
                 }
 
                 // Si el mínimo de kgs de la tarifa es mayor al peso, no aplica
+                //Por ejemplo, si el min de rango es de 20 y el peso es de 19, no se puede cotizar
                 if (parseInt(min, 10) > parseInt(pricedWeight, 10)) {
                     console.log('Si el mínimo de kgs de la tarifa es mayor al peso, no aplica');
                     return;
@@ -486,27 +487,34 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
                 // Esto ocurre si el máximo es menor y el mínimo es menor que el peso,
                 // es decir, nos sobran kilos
-                //const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
-                //console.log('diferencia', diferencia);
-                //console.log('segundaMejorTarifa', segundaMejorTarifa);
-                // if (
-                //     !segundaMejorTarifa[entrega] ||
-                //     segundaMejorTarifa[entrega].diferencia > diferencia
-                // ) {
-                //     const precioTotal = parseInt(precio, 10) * quantity;
-                //     console.log('precioTotal de entrega', precioTotal);
-                //     segundaMejorTarifa[entrega] = {
-                //         id: doc.id,
-                //         //  precio: precioTotal + getInsurancePrice('estafetaEconomico'),
-                //         guia: precioTotal,
-                //         //  seguro: getInsurancePrice('estafetaEconomico'),
-                //         diferencia,
-                //     };
-                //     return;
-                // }
-            });
+                //Si los rangos de la tarifa tanto maximo como minimo son menores que el peso, hay kilos extra
 
+                const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
+                console.log('diferencia', diferencia);
+                //si el rango maximo de la tarifa es mayor al peso
+                if (parseInt(pricedWeight, 10) > parseInt(max, 10)) {
+                    console.log('kilos extra');
+                    if (
+                        !segundaMejorTarifa[entrega] ||
+                        segundaMejorTarifa[entrega].diferencia > diferencia
+                    ) {
+                        console.log('segundaMejorTarifa', segundaMejorTarifa);
+                        const precioTotal = parseInt(precio, 10) * quantity;
+                        console.log('precioTotal de entrega', precioTotal);
+                        segundaMejorTarifa[entrega] = {
+                            id: doc.id,
+                            //  precio: precioTotal + getInsurancePrice('estafetaEconomico'),
+                            guia: precioTotal,
+                            //  seguro: getInsurancePrice('estafetaEconomico'),
+                            diferencia,
+                        };
+                        return;
+                    }
+                    console.log('segundaMejorTarifa', segundaMejorTarifa);
+                }
+            });
             Object.keys(segundaMejorTarifa).forEach(entrega => {
+                console.log('entrando a los objects keys');
                 const tarifa = segundaMejorTarifa[entrega];
                 console.log('tarifa', tarifa);
                 const { guia } = tarifa;
@@ -576,6 +584,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         guia,
                         zonaExt: !!supplierAvailability.autoencargosExpress.zonaExtendida,
                     });
+                console.log('supplierCostAutoencargosExp', supplierCostAutoencargosExp);
                 if (entrega === 'autoencargosDiaSiguiente')
                     setSupplierCostAutoencargosEcon({
                         id: tarifa.id,
@@ -666,7 +675,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             )}
         </Card>
     );
-
+    // console.log(supplierCostFedexDiaS);
     return (
         <>
             <StyledDirectiosDetails style={{ justifyContent: 'center' }}>
