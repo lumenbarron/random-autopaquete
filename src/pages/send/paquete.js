@@ -218,7 +218,11 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             setError(true);
             setErrorWeight(true);
             return;
-        } else if (weight > 68) {
+        }
+        // if (weight > 30 && weight <= 68 ) {
+        //     swal.fire('¿Estás seguro?', 'Los paquetes que físicamente excedan los 30 kg tienen un cargo adicional', 'info');
+        // } else
+        else if (weight > 68) {
             swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 68 kg', 'error');
             setError(true);
             setErrorWeight(true);
@@ -262,15 +266,33 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             console.log(new Date().toISOString());
             const volumetricWeight = Math.ceil((height * width * depth) / 5000);
             console.log(volumetricWeight, 'peso volumetrico');
+            // if (volumetricWeight > weight) {
+            //     pricedWeight = volumetricWeight;
+            //     console.log(pricedWeight, 'precio real');
+            // }
+
             if (volumetricWeight > 68) {
                 swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 68 kg', 'error');
                 setError(true);
                 setErrorHeight(true);
-            } else if (volumetricWeight > weight) {
-                pricedWeight = volumetricWeight;
-                console.log(pricedWeight, 'precio real');
-            } else {
-                const packageDataToFirebase = {
+            }
+
+            //else {
+            const packageDataToFirebase = {
+                ID: user.uid,
+                name,
+                height,
+                width,
+                depth,
+                weight: Math.ceil(pricedWeight),
+                content_description: contentDescription,
+                quantity: 1,
+                content_value: contentValue,
+                creation_date: creationDate.toLocaleDateString(),
+            };
+
+            const packageGuiaData = {
+                package: {
                     ID: user.uid,
                     name,
                     height,
@@ -281,26 +303,12 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     quantity: 1,
                     content_value: contentValue,
                     creation_date: creationDate.toLocaleDateString(),
-                };
+                },
+            };
+            setErrorContentValue(false);
 
-                const packageGuiaData = {
-                    package: {
-                        ID: user.uid,
-                        name,
-                        height,
-                        width,
-                        depth,
-                        weight: Math.ceil(pricedWeight),
-                        content_description: contentDescription,
-                        quantity: 1,
-                        content_value: contentValue,
-                        creation_date: creationDate.toLocaleDateString(),
-                    },
-                };
-                setErrorContentValue(false);
-
-                onSave(packageDataToFirebase, packageGuiaData, checkBox);
-            }
+            onSave(packageDataToFirebase, packageGuiaData, checkBox);
+            //}
         }
     };
 

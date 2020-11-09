@@ -71,6 +71,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
+    const [finalWeight, setFinalWeight] = useState('');
     const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
     const [error, setError] = useState(false);
@@ -318,24 +319,24 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         if (weight === '') return;
+        console.log('peso', weight);
         if (!supplierAvailability || !profileDoc) return;
         console.log('supplierAvailability', supplierAvailability);
         let pricedWeight = Math.ceil(weight);
-        //Si el peso es menor que uno, se le asigna 1
+        //Si el peso es mayor a uno, se le asigna su peso, en otro caso se le asigna 1
         pricedWeight = pricedWeight > 1 ? pricedWeight : 1;
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
-        console.log(
-            'precio peso fisico',
-            pricedWeight,
-            'precio peso volumetrico',
-            volumetricWeight,
-        );
+        setFinalWeight(pricedWeight);
+        console.log('peso fisico', pricedWeight, 'peso volumetrico', volumetricWeight);
         if (volumetricWeight > weight) {
             console.log('el peso volumetrico es mayor que el peso declarado');
             pricedWeight = volumetricWeight;
+            console.log('pricedWeight', pricedWeight);
+            setFinalWeight(pricedWeight);
         }
 
         const getInsurancePrice = company => {
+            console.log('seguro por provedor', company);
             if (contentValue === '') return 0;
             const baseValue = parseInt(contentValue, 10) * 0.02;
             console.log('valor asegurado ', baseValue);
@@ -488,12 +489,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Esto ocurre si el máximo es menor y el mínimo es menor que el peso,
                 // es decir, nos sobran kilos
                 //Si los rangos de la tarifa tanto maximo como minimo son menores que el peso, hay kilos extra
-
                 const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
                 console.log('diferencia', diferencia);
-                //si el rango maximo de la tarifa es mayor al peso
+                //si el peso es mayor al  rango maximo de la tarifa hay kilos extras
                 if (parseInt(pricedWeight, 10) > parseInt(max, 10)) {
                     console.log('kilos extra');
+                    if (parseInt(pricedWeight, 10) > 30) {
+                    }
                     if (
                         !segundaMejorTarifa[entrega] ||
                         segundaMejorTarifa[entrega].diferencia > diferencia
@@ -516,14 +518,23 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             Object.keys(segundaMejorTarifa).forEach(entrega => {
                 console.log('entrando a los objects keys');
                 const tarifa = segundaMejorTarifa[entrega];
+                let cargoExtra;
                 console.log('tarifa', tarifa);
                 const { guia } = tarifa;
-                const precio = tarifa.guia + tarifa.diferencia * kgsExtraTarifas[entrega];
-                console.log('precio', precio);
                 // console.log('guia tarifa', tarifa.diferencia);
                 console.log('Entrega', entrega);
-                const cargoExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
-                console.log('cargoExtra', cargoExtra);
+                const kilosExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
+                if (weight > 30) {
+                    cargoExtra = 110;
+                    console.log('cargoExtra', cargoExtra);
+                } else {
+                    cargoExtra = 0;
+                    console.log('cargoExtra', cargoExtra);
+                }
+                const precio =
+                    tarifa.guia + tarifa.diferencia * kgsExtraTarifas[entrega] + cargoExtra;
+                console.log('precio', precio);
+                console.log('kilosExtra', kilosExtra);
                 if (entrega === 'fedexDiaSiguiente')
                     setSupplierCostFedexDiaS({
                         id: tarifa.id,
@@ -535,6 +546,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 ? 150
                                 : 0),
                         seguro: getInsurancePrice('fedexDiaSiguiente'),
+                        kilosExtra,
                         cargoExtra,
                         guia,
                         zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
@@ -550,6 +562,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 ? 150
                                 : 0),
                         seguro: getInsurancePrice('fedexEconomico'),
+                        kilosExtra,
                         cargoExtra,
                         guia,
                         zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
@@ -565,6 +578,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 ? 150
                                 : 0),
                         seguro: getInsurancePrice('estafetaDiaSiguiente'),
+                        kilosExtra,
                         cargoExtra,
                         guia,
                         zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
@@ -580,7 +594,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 ? 150
                                 : 0),
                         seguro: getInsurancePrice('autoencargosExpress'),
-                        cargoExtra,
+                        kilosExtra,
+                        // cargoExtra,
                         guia,
                         zonaExt: !!supplierAvailability.autoencargosExpress.zonaExtendida,
                     });
@@ -596,7 +611,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 ? 150
                                 : 0),
                         seguro: getInsurancePrice('autoencargosDiaSiguiente'),
-                        cargoExtra,
+                        kilosExtra,
+                        // cargoExtra,
                         guia,
                         zonaExt: !!supplierAvailability.autoencargosDiaSiguiente.zonaExtendida,
                     });
@@ -638,9 +654,15 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             </PriceContainer>
             {costos && (
                 <>
-                    {costos.cargoExtra && (
+                    {costos.kilosExtra && (
                         <PriceContainer>
                             <PriceLabel>Kg adicionales:</PriceLabel>
+                            <PriceNumber>{formatMoney(costos.kilosExtra)}</PriceNumber>
+                        </PriceContainer>
+                    )}
+                    {costos.cargoExtra != 0 && (
+                        <PriceContainer>
+                            <PriceLabel>Cargo por más de 30 kg:</PriceLabel>
                             <PriceNumber>{formatMoney(costos.cargoExtra)}</PriceNumber>
                         </PriceContainer>
                     )}
@@ -707,7 +729,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <p>
                         Dimensiones: {height}x{width}x{depth} cm
                     </p>
-                    <p>Peso: {weight} kgs</p>
+                    <p>Peso Final: {finalWeight} kgs</p>
                     {contentValue !== '' && <p>Valor asegurado: ${contentValue}</p>}
                 </StyledDetails>
             </StyledDirectiosDetails>
