@@ -261,9 +261,8 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 }
             }
             setErrorNameDuplicate(false);
-            let pricedWeight = weight;
-            console.log(pricedWeight, 'precio fisico');
-            console.log(new Date().toISOString());
+            let pricedWeight = Math.ceil(weight);
+            console.log(pricedWeight, 'peso fisico');
             const volumetricWeight = Math.ceil((height * width * depth) / 5000);
             console.log(volumetricWeight, 'peso volumetrico');
             // if (volumetricWeight > weight) {
@@ -284,7 +283,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 height,
                 width,
                 depth,
-                weight: Math.ceil(pricedWeight),
+                weight: pricedWeight,
                 content_description: contentDescription,
                 quantity: 1,
                 content_value: contentValue,
@@ -298,7 +297,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     height,
                     width,
                     depth,
-                    weight: Math.ceil(pricedWeight),
+                    weight: pricedWeight,
                     content_description: contentDescription,
                     quantity: 1,
                     content_value: contentValue,

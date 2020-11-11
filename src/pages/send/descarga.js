@@ -24,8 +24,6 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const rastreo = useRef('');
     const history = useHistory();
 
-    console.log(idGuiaGlobal);
-
     useEffect(() => {
         const prepareDownload = () => {
             db.collection('guia')
