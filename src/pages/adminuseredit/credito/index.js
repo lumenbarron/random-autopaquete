@@ -14,6 +14,9 @@ import styled from 'styled-components';
 import * as firebase from 'firebase';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import swal from 'sweetalert2';
+
+const numberRegex = RegExp(/^[0-9]+$/);
 
 const StyledTable = styled(Table)`
     color: #1de9b6;
@@ -48,7 +51,7 @@ export default function Credito({ user }) {
     const userData = db.collection('profiles').where('ID', '==', user.ID);
 
     const montoTotal = parseInt(monto) + parseInt(saldoActual);
-
+    console.log('montoTotal', montoTotal, 'monto', monto, 'saldoActual', saldoActual);
     userData.get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
             setDocRef(doc.id);
@@ -99,7 +102,7 @@ export default function Credito({ user }) {
             db.collection('voucher')
                 .where('ID', '==', user.ID)
                 .onSnapshot(handleVouncher);
-            console.log('handleVouncher', handleVouncher);
+            // console.log('handleVouncher', handleVouncher);
         };
         reloadVoucher();
     }, []);
@@ -137,8 +140,11 @@ export default function Credito({ user }) {
     const addCredit = () => {
         let fileName = '';
         let filePath = '';
-
-        if (comprobante) {
+        console.log('monto', monto);
+        if (monto.trim() === '' || !numberRegex.test(monto)) {
+            swal.fire('¡Oh no!', 'Parece que no hay un monto válido', 'error');
+        } else if (comprobante) {
+            swal.fire('Agregado', '', 'success');
             fileName = comprobante[0].name;
             filePath = `comprobante/${user.ID}/${fileName}`;
             firebase
@@ -146,10 +152,15 @@ export default function Credito({ user }) {
                 .ref(filePath)
                 .put(comprobante[0])
                 .then(snapshot => {
+                    setMonto('');
                     saveURL();
                 });
+        } else {
+            swal.fire('¡Oh no!', 'Parece que no hay ningún archivo adjunto', 'error');
         }
     };
+
+    const saveMonto = () => {};
 
     return (
         <>

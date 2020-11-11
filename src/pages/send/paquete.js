@@ -11,6 +11,7 @@ import {
     StyledRadioGroup,
     HelpLabel,
 } from './styled';
+import swal from 'sweetalert2';
 
 const numberRegex = RegExp(/^[0-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
@@ -118,6 +119,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
         });
         setPackageData(packageData);
     }
+
     const options = packageData
         .filter(packages => {
             if (filter === null) {
@@ -136,6 +138,25 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const search = e => {
         let keyword = e.target.value;
         setFilter(keyword);
+    };
+
+    const checkInsurance = e => {
+        let keyword = e.target.value;
+        swal.fire({
+            title: '¿Estás seguro?',
+            text:
+                'Al asegurar tu paquete se hará un cargo adicional del 2% del valor + $40 de poliza',
+            icon: 'info',
+            showDenyButton: true,
+            confirmButtonText: `Ok`,
+            denyButtonText: `No asegurar`,
+        }).then(result => {
+            if (result.isConfirmed) {
+                setCheckBoxSecure(keyword);
+            } else if (result.isDenied) {
+                setCheckBoxSecure(false);
+            }
+        });
     };
 
     useEffect(() => {
@@ -193,7 +214,16 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             setErrorDepth(false);
         }
         if (weight === '' || !numberWithDecimalRegex.test(weight)) {
-            //alert('Por el momento no puedes enviar mas de 15 kg');
+            swal.fire('¡Oh no!', 'Parece que no hay un pesó válido', 'error');
+            setError(true);
+            setErrorWeight(true);
+            return;
+        }
+        // if (weight > 30 && weight <= 68 ) {
+        //     swal.fire('¿Estás seguro?', 'Los paquetes que físicamente excedan los 30 kg tienen un cargo adicional', 'info');
+        // } else
+        else if (weight > 68) {
+            swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 68 kg', 'error');
             setError(true);
             setErrorWeight(true);
             return;
@@ -231,26 +261,29 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 }
             }
             setErrorNameDuplicate(false);
-
-            let pricedWeight = weight;
-            console.log(pricedWeight, 'pricedWeight');
+            let pricedWeight = Math.ceil(weight);
+            console.log(pricedWeight, 'peso fisico');
             const volumetricWeight = Math.ceil((height * width * depth) / 5000);
-            console.log(volumetricWeight, 'volumetricWeight');
-            if (volumetricWeight > weight) {
-                pricedWeight = volumetricWeight;
+            console.log(volumetricWeight, 'peso volumetrico');
+            // if (volumetricWeight > weight) {
+            //     pricedWeight = volumetricWeight;
+            //     console.log(pricedWeight, 'precio real');
+            // }
+
+            if (volumetricWeight > 68) {
+                swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 68 kg', 'error');
+                setError(true);
+                setErrorHeight(true);
             }
-            // if (pricedWeight > 15) {
-            //     alert('por el momento no puedes enviar mas de 15 kg');
-            //     setError(true);
-            //     setErrorWeightValue(true);
-            // } else {
+
+            //else {
             const packageDataToFirebase = {
                 ID: user.uid,
                 name,
                 height,
                 width,
                 depth,
-                weight: Math.ceil(pricedWeight),
+                weight: pricedWeight,
                 content_description: contentDescription,
                 quantity: 1,
                 content_value: contentValue,
@@ -264,7 +297,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     height,
                     width,
                     depth,
-                    weight: Math.ceil(pricedWeight),
+                    weight: pricedWeight,
                     content_description: contentDescription,
                     quantity: 1,
                     content_value: contentValue,
@@ -274,8 +307,8 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             setErrorContentValue(false);
 
             onSave(packageDataToFirebase, packageGuiaData, checkBox);
+            //}
         }
-        //}
     };
 
     return (
@@ -375,7 +408,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         className="checkbox-toggle"
                         // style={{ flex: '1 1' }}
                         value={checkBoxSecure}
-                        onChange={e => setCheckBoxSecure(e.target.checked)}
+                        onChange={e => checkInsurance(e)}
                     />
                     {checkBoxSecure ? (
                         <Input

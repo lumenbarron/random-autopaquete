@@ -10,6 +10,7 @@ import 'firebase/storage';
 import { StyledLoginPage, StyledLoginSection } from './styled';
 import { useBlockSecurity } from '../../hooks/useBlockSecurity';
 import 'firebase/auth';
+import swal from 'sweetalert2';
 
 const containerStyles = {
     maxWidth: 1000,
@@ -93,8 +94,23 @@ const LoginPage = () => {
                 return firebase
                     .auth()
                     .signInWithEmailAndPassword(email, password)
+                    .then(function() {
+                        swal.fire({
+                            title: '¡Excelente!',
+                            text: 'Has sido autenticado. ¡Bienvenido!',
+                            icon: 'success',
+                            confirmButtonText: 'Ok',
+                        });
+                    })
                     .catch(function() {
                         setErrorLogIn(true);
+                        swal.fire({
+                            title: '¡Oh no!',
+                            text:
+                                'Parece que el correo o la contraseña son incorrectos, ¿Los podrías revisar?',
+                            icon: 'error',
+                            confirmButtonText: 'Ok',
+                        });
                     });
             })
             .catch(function(error) {

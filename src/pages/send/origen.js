@@ -5,6 +5,7 @@ import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
 import { log } from 'firebase-functions/lib/logger';
+import swal from 'sweetalert2';
 
 const cpRegex = RegExp(/^[0-9]{5}$/);
 const phoneRegex = RegExp(/^[0-9]{10}$/);
@@ -172,7 +173,12 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                     if (!response.ok) {
                         console.log('CP no validado');
                         setTimeout(() => {
-                            alert('CP no validado');
+                            swal.fire({
+                                title: '!Lo siento!',
+                                text: 'Código Postal no válido, favor de verificar.',
+                                icon: 'error',
+                                confirmButtonText: 'Ok',
+                            });
                             setCP('');
                         }, 1000);
                     }
@@ -338,6 +344,12 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
             setErrorPlaceRef(false);
         }
         if (phone.trim() === '' || !phoneRegex.test(phone)) {
+            swal.fire({
+                title: '!Lo siento!',
+                text: 'El teléfono debe ser de 10 números,favor de verificar.',
+                icon: 'warning',
+                confirmButtonText: 'Ok',
+            });
             setErrorPhone(true);
             setError(true);
             return;
