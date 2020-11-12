@@ -25,7 +25,7 @@ const states = {
     GR: 'Guerrero',
     HG: 'Hidalgo',
     JA: 'Jalisco',
-    EM: 'Estado de México',
+    EM: 'México',
     MI: 'Michoacán',
     MO: 'Morelos',
     NA: 'Nayarit',

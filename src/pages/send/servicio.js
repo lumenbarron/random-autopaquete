@@ -487,7 +487,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 }
 
                 //si el peso es mayor al  rango maximo de la tarifa hay kilos extras
-                if (parseInt(pricedWeight, 10) > parseInt(max, 10) && !precioTotal) {
+                if (parseInt(pricedWeight, 10) > parseInt(max, 10) && precioTotal > 0) {
                     console.log('entrando a kilos extra');
                     //Si los rangos de la tarifa tanto maximo como minimo son menores que el peso, hay kilos extra
                     const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
@@ -496,13 +496,17 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         !segundaMejorTarifa[entrega] ||
                         segundaMejorTarifa[entrega].diferencia > diferencia
                     ) {
-                        const precioTotal = parseInt(precio, 10) * quantity;
-                        console.log('precioTotal de entrega', precioTotal);
-                        segundaMejorTarifa[entrega] = {
-                            id: doc.id,
-                            guia: precioTotal,
-                            diferencia,
-                        };
+                        let newPrecioTotal = parseInt(precio, 10) * quantity;
+                        console.log('precioTotal de entrega', newPrecioTotal, precioTotal);
+                        if (precioTotal > newPrecioTotal) {
+                            newPrecioTotal = precioTotal;
+                        } else {
+                            segundaMejorTarifa[entrega] = {
+                                id: doc.id,
+                                guia: precioTotal,
+                                diferencia,
+                            };
+                        }
                         console.log('tarifas de precio extra', segundaMejorTarifa);
                         return;
                     }
