@@ -25,7 +25,7 @@ const states = {
     GR: 'Guerrero',
     HG: 'Hidalgo',
     JA: 'Jalisco',
-    EM: 'Estado de México',
+    EM: 'México',
     MI: 'Michoacán',
     MO: 'Morelos',
     NA: 'Nayarit',
@@ -209,8 +209,10 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                 .then(data => {
                     if (data.response) {
                         const { municipio, estado } = data.response;
+                        console.log('data', data.response);
                         setCountry(municipio);
                         const stateKey = Object.keys(states).find(key => states[key] === estado);
+                        console.log('stateKey', stateKey);
                         setState({ label: states[stateKey], value: stateKey });
                     }
                 });
