@@ -84,6 +84,8 @@ export default function AllGuides({}) {
     const [displayData, setDisplayData] = useState(false);
     const nameSelected = useRef('usuario');
     const supplierSelected = useRef('servicio');
+    const dateFrom = useRef('');
+    const dateTo = useRef('');
     const dateSelected = useRef({ date: new Date() });
     let allSuppliers = [
         {
@@ -252,6 +254,7 @@ export default function AllGuides({}) {
                             .toLocaleDateString('es-US', options),
                         ...doc.data(),
                     });
+                    console.log('todas las guias', dataGuiasByDate);
                 });
                 guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
                 console.log('guiasByDate', guiasByDate);

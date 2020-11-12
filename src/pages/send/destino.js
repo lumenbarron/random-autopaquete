@@ -299,7 +299,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
             swal.fire({
                 title: '!Lo siento!',
                 text: 'El teléfono debe ser de 10 números,favor de verificar.',
-                icon: 'warning',
+                icon: 'error',
                 confirmButtonText: 'Ok',
             });
             setErrorPhone(true);
