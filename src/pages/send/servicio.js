@@ -196,6 +196,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 'POST',
                 'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
             );
+            // xhr.open(
+            //     'POST',
+            //     'https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            // );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
@@ -332,6 +336,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setFinalWeight(pricedWeight);
             getFinalWeight.current = pricedWeight;
+            console.log('pricedWeight', pricedWeight);
         }
 
         const getInsurancePrice = company => {
@@ -352,26 +357,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             return 0;
         };
 
-        // const getExtraWeightCharge = (company, weight) => {
-        //     // if (contentValue === '') return 0;
-        //     // const baseValue = parseInt(contentValue, 10) * 0.02;
-        //     // console.log('valor asegurado ', baseValue);
-        //     // const extraValue = 40;
-        //     let cargoExtra;
-        //     if (company === 'fedexDiaSiguiente' && weight > 30 || company === 'fedexEconomico' && weight > 30) {
-        //         cargoExtra = 110;
-        //         console.log('cargoExtra', cargoExtra);
-        //         return
-        //     }  else {
-        //         cargoExtra = 0;
-        //         console.log('cargoExtra', cargoExtra);
-        //     }
-        //     return 0;
-        // };
-
         profileDoc.ref.collection('rate').onSnapshot(querySnapshot => {
             const segundaMejorTarifa = {};
             const kgsExtraTarifas = {};
+            let precioTotal;
             querySnapshot.forEach(doc => {
                 const { entrega, precio, max, min, kgExtra } = doc.data();
                 console.log(
@@ -393,8 +382,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     parseInt(max, 10) >= parseInt(pricedWeight, 10)
                 ) {
                     console.log('Encontramos si hay tarifas que apliquen directo al paquete');
-                    const precioTotal = parseInt(precio, 10) * quantity;
-                    // console.log('precioTotal', precioTotal);
+                    precioTotal = parseInt(precio, 10) * quantity;
+                    console.log('precioTotal', precioTotal);
                     if (entrega === 'fedexDiaSiguiente')
                         setSupplierCostFedexDiaS({
                             id: doc.id,
@@ -499,19 +488,18 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     return;
                 }
 
-                // Si el mínimo de kgs de la tarifa es mayor al peso, no aplica
-                //Por ejemplo, si el min de rango es de 20 y el peso es de 19, no se puede cotizar
-                if (parseInt(min, 10) > parseInt(pricedWeight, 10)) {
-                    console.log('Si el mínimo de kgs de la tarifa es mayor al peso, no aplica');
+                // Si el peso es menor al mínimo de kgs de la tarifa, no aplica
+                if (parseInt(pricedWeight, 10) < parseInt(min, 10)) {
+                    console.log('el peso es menor al mínimo de kgs de la tarifa, no aplica');
                     return;
                 }
 
-                //Si los rangos de la tarifa tanto maximo como minimo son menores que el peso, hay kilos extra
-                const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
-                console.log('diferencia', diferencia);
                 //si el peso es mayor al  rango maximo de la tarifa hay kilos extras
-                if (parseInt(pricedWeight, 10) > parseInt(max, 10)) {
+                if (parseInt(pricedWeight, 10) > parseInt(max, 10) && !precioTotal) {
                     console.log('entrando a kilos extra');
+                    //Si los rangos de la tarifa tanto maximo como minimo son menores que el peso, hay kilos extra
+                    const diferencia = (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
+                    console.log('diferencia', diferencia);
                     if (
                         !segundaMejorTarifa[entrega] ||
                         segundaMejorTarifa[entrega].diferencia > diferencia
