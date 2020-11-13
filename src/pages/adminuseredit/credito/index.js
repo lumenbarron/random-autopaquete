@@ -141,9 +141,9 @@ export default function Credito({ user }) {
         let fileName = '';
         let filePath = '';
         console.log('monto', monto);
-        if (monto.trim() === '' || !numberRegex.test(monto)) {
-            swal.fire('¡Oh no!', 'Parece que no hay un monto válido', 'error');
-        } else if (comprobante) {
+        if (monto.trim() === '' || !numberRegex.test(monto) || !comprobante) {
+            swal.fire('¡Oh no!', 'Parece que no hay un monto válido o comprobante', 'error');
+        } else if (monto && comprobante) {
             swal.fire('Agregado', '', 'success');
             fileName = comprobante[0].name;
             filePath = `comprobante/${user.ID}/${fileName}`;
