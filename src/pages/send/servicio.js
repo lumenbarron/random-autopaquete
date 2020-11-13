@@ -191,7 +191,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
+            //xhr.open('POST', '/guia/cotizar');
+            xhr.open(
+                'POST',
+                'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
@@ -332,7 +336,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         }
 
         const getInsurancePrice = company => {
-            // console.log('seguro por provedor', company);
+            console.log('seguro por provedor', company);
             if (contentValue === '') return 0;
             const baseValue = parseInt(contentValue, 10) * 0.02;
             console.log('valor asegurado ', baseValue);
@@ -527,6 +531,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 }
                 const precio = tarifa.guia + kilosExtra + cargoExtra;
                 console.log('precio final, sin contar seguro', precio);
+                console.log('supplierAvailability', supplierAvailability);
                 if (entrega === 'fedexDiaSiguiente')
                     setSupplierCostFedexDiaS({
                         id: tarifa.id,
@@ -574,6 +579,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         cargoExtra: 0,
                         guia,
                         zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
+                    });
+                if (entrega === 'estafetaEconomico')
+                    setSupplierCostEstafetaEcon({
+                        id: tarifa.id,
+                        precio:
+                            precioTotal +
+                            getInsurancePrice('estafetaEconomico') +
+                            (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
+                            'undefined'
+                                ? 150
+                                : 0),
+                        seguro: getInsurancePrice('estafetaEconomico'),
+                        kilosExtra,
+                        cargoExtra: 0,
+                        guia,
+                        zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
                     });
                 if (entrega === 'autoencargosExpress')
                     setSupplierCostAutoencargosExp({
@@ -805,7 +826,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         (supplierAvailability.estafetaDiaSiguiente &&
                             supplierCostEstafetaDiaS.guia) ||
                         (supplierAvailability.estafetaEconomico && supplierCostEstafetaEcon.guia)
-                    ) && <h1>Código Postal fuera de cobertura</h1>}
+                    ) && <h1> ¡Oh no! Ha ocurrido un error, favor de contactar a tu asesor.</h1>}
                 </>
             )}
         </>
