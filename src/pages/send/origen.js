@@ -9,6 +9,7 @@ import swal from 'sweetalert2';
 
 const cpRegex = RegExp(/^[0-9]{5}$/);
 const phoneRegex = RegExp(/^[0-9]{10}$/);
+const addressRegex = RegExp(/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/);
 
 const states = {
     AG: 'Aguascalientes',
@@ -161,6 +162,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 db.collection('sender_addresses')
                     .where('ID', '==', user.uid)
                     .onSnapshot(handleDirections);
+                console.log('handleDirections', handleDirections);
             };
             reloadDirectios();
         }
@@ -294,7 +296,14 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
     const registerDirecction = () => {
         //Se validan todos los inputs uno por uno
-        if (name.trim() === '') {
+        if (name.trim() === '' || !addressRegex.test(name) || name.length > 35) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
             setErrorName(true);
             setError(true);
             return;
@@ -308,14 +317,36 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorCP(false);
         }
-        if (streetNumber.trim() === '') {
+        if (
+            streetNumber.trim() === '' ||
+            !addressRegex.test(streetNumber) ||
+            streetNumber.length > 35
+        ) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
             setErrorStreetNumber(true);
             setError(true);
             return;
         } else {
             setErrorStreetNumber(false);
         }
-        if (neighborhood.trim() === '') {
+        if (
+            neighborhood.trim() === '' ||
+            !addressRegex.test(neighborhood) ||
+            neighborhood.length > 35
+        ) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
             setErrorNeighborhood(true);
             setError(true);
             return;

@@ -103,6 +103,7 @@ export default function DirectionPage() {
                 ...doc.data(),
             };
         });
+        console.log(data);
         setSenderAddresses(data);
     }
 
@@ -113,6 +114,7 @@ export default function DirectionPage() {
                 ...doc.data(),
             };
         });
+        console.log(data);
         setReceiverAddresses(data);
     }
 
