@@ -162,7 +162,6 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 db.collection('sender_addresses')
                     .where('ID', '==', user.uid)
                     .onSnapshot(handleDirections);
-                console.log('handleDirections', handleDirections);
             };
             reloadDirectios();
         }
@@ -205,7 +204,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
             };
         });
         setDirectionData(directionData);
-        console.log('directionData', directionData);
+        console.log('sender_addresses', directionData);
     }
 
     const options = directionData

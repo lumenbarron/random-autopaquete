@@ -120,14 +120,12 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('todas las guias', doc.data().creation_date, doc.id);
                     dataGuias.push({
                         id: doc.id,
                         ...doc.data(),
                     });
                     dataUsers.push(doc.data().name);
                 });
-
                 dataSingleUser = dataUsers.filter(
                     (item, index) => dataUsers.indexOf(item) === index,
                 );
@@ -254,7 +252,7 @@ export default function AllGuides({}) {
                             .toLocaleDateString('es-US', options),
                         ...doc.data(),
                     });
-                    console.log('todas las guias', dataGuiasByDate);
+                    //console.log('todas las guias', dataGuiasByDate);
                 });
                 guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
                 console.log('guiasByDate', guiasByDate);
@@ -361,3 +359,5 @@ export default function AllGuides({}) {
         </StyledAusers>
     );
 }
+
+//[{id: '1', date : "20/11/20"}, {id: '2', date : "20/12/20"}, {id: '3', date : "10/11/20"} , {id: '4', date : "10/12/20"}, {id: '5', date : "20/11/20"},{id: '6', date : "20/12/20"},{id: '7', date : "10/11/20"} ]

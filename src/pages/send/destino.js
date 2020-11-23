@@ -163,6 +163,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                 ...doc.data(),
             };
         });
+        console.log('receiver_addresses', directionDataa);
         setDirectionDataa(directionDataa);
     }
 
@@ -210,10 +211,8 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                 .then(data => {
                     if (data.response) {
                         const { municipio, estado } = data.response;
-                        console.log('data', data.response);
                         setCountry(municipio);
                         const stateKey = Object.keys(states).find(key => states[key] === estado);
-                        console.log('stateKey', stateKey);
                         setState({ label: states[stateKey], value: stateKey });
                     }
                 });

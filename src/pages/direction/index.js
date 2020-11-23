@@ -118,6 +118,7 @@ export default function DirectionPage() {
         setReceiverAddresses(data);
     }
 
+    //Aqui esta el error
     const deleteAddress = idDoc => {
         db.collection('sender_addresses')
             .doc(idDoc)
