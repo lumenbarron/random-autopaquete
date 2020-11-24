@@ -102,7 +102,6 @@ export default function Credito({ user }) {
             db.collection('voucher')
                 .where('ID', '==', user.ID)
                 .onSnapshot(handleVouncher);
-            // console.log('handleVouncher', handleVouncher);
         };
         reloadVoucher();
     }, []);
