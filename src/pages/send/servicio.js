@@ -192,7 +192,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
+            //xhr.open('POST', '/guia/cotizar');
+            xhr.open(
+                'POST',
+                'https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
