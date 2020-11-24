@@ -103,6 +103,7 @@ export default function DirectionPage() {
                 ...doc.data(),
             };
         });
+        console.log(data);
         setSenderAddresses(data);
     }
 
@@ -113,9 +114,11 @@ export default function DirectionPage() {
                 ...doc.data(),
             };
         });
+        console.log(data);
         setReceiverAddresses(data);
     }
 
+    //Aqui esta el error
     const deleteAddress = idDoc => {
         db.collection('sender_addresses')
             .doc(idDoc)

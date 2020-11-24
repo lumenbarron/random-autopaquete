@@ -192,7 +192,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
+            //xhr.open('POST', '/guia/cotizar');
+            xhr.open(
+                'POST',
+                'https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
@@ -353,7 +357,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
         profileDoc.ref
             .collection('rate')
-            .orderBy('entrega', 'desc')
+            .orderBy('max', 'desc')
             .onSnapshot(querySnapshot => {
                 const segundaMejorTarifa = {};
                 const kgsExtraTarifas = {};
@@ -369,12 +373,28 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ) {
                         console.log('Encontramos si hay tarifas que apliquen directo al paquete');
                         //precioTotal = parseInt(precio, 10) * quantity;
+                        console.log('height', height);
                         getFinalPrice.current = parseInt(precio, 10) * quantity;
+                        //console.log('precioTotal de entrega', precioTotal);
+                        let cargoExtraHeight;
+                        if (parseInt(height, 10) > 120 && entrega === 'fedexDiaSiguiente') {
+                            cargoExtraHeight = 280;
+                            console.log('cargoExtra', cargoExtraHeight);
+                        } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
+                            cargoExtraHeight = 110;
+                            console.log('cargoExtra', cargoExtraHeight);
+                        } else {
+                            cargoExtraHeight = 0;
+                            console.log('cargoExtra', cargoExtraHeight);
+                        }
+                        //const precio = tarifa.guia + kilosExtra + cargoExtra;
+
                         console.log(
                             'precioTotal',
                             precioTotal,
                             'getFinalPrice',
                             getFinalPrice.current,
+                            cargoExtraHeight,
                         );
                         if (entrega === 'fedexDiaSiguiente')
                             setSupplierCostFedexDiaS({
@@ -385,8 +405,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     (typeof supplierAvailability.fedexDiaSiguiente.zonaExtendida !==
                                     'undefined'
                                         ? 150
-                                        : 0),
+                                        : 0) +
+                                    cargoExtraHeight,
                                 seguro: getInsurancePrice('fedexDiaSiguiente'),
+                                cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPrice.current,
                                 zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
                             });
@@ -399,8 +421,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     (typeof supplierAvailability.fedexEconomico.zonaExtendida !==
                                     'undefined'
                                         ? 150
-                                        : 0),
+                                        : 0) +
+                                    cargoExtraHeight,
                                 seguro: getInsurancePrice('fedexEconomico'),
+                                cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPrice.current,
                                 zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
                             });
@@ -413,8 +437,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     (typeof supplierAvailability.estafetaDiaSiguiente
                                         .zonaExtendida !== 'undefined'
                                         ? 150
-                                        : 0),
+                                        : 0) +
+                                    cargoExtraHeight,
                                 seguro: getInsurancePrice('estafetaDiaSiguiente'),
+                                cargoExtraHeight: 0,
                                 guia: getFinalPrice.current,
                                 zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
                             });
@@ -427,8 +453,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
                                     'undefined'
                                         ? 150
-                                        : 0),
+                                        : 0) +
+                                    cargoExtraHeight,
                                 seguro: getInsurancePrice('estafetaEconomico'),
+                                cargoExtraHeight: 0,
                                 guia: getFinalPrice.current,
                                 zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
                             });
@@ -441,8 +469,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     (typeof supplierAvailability.autoencargosExpress
                                         .zonaExtendida !== 'undefined'
                                         ? 150
-                                        : 0),
+                                        : 0) +
+                                    cargoExtraHeight,
                                 seguro: getInsurancePrice('autoencargosExpress'),
+                                cargoExtraHeight: 0,
                                 guia: getFinalPrice.current,
                                 zonaExt: !!supplierAvailability.autoencargosExpress.zonaExtendida,
                             });
@@ -455,8 +485,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     (typeof supplierAvailability.autoencargosDiaSiguiente
                                         .zonaExtendida !== 'undefined'
                                         ? 150
-                                        : 0),
+                                        : 0) +
+                                    cargoExtraHeight,
                                 seguro: getInsurancePrice('autoencargosDiaSiguiente'),
+                                cargoExtraHeight: 0,
                                 guia: getFinalPrice.current,
                                 zonaExt: !!supplierAvailability.autoencargosDiaSiguiente
                                     .zonaExtendida,
@@ -520,6 +552,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     console.log('entrando a los objects keys');
                     const tarifa = segundaMejorTarifa[entrega];
                     let cargoExtra;
+                    let cargoExtraHeight;
                     // console.log('tarifa', tarifa);
                     const { guia } = tarifa;
                     // console.log('guia tarifa', tarifa.diferencia);
@@ -535,12 +568,25 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         cargoExtra = 0;
                         console.log('cargoExtra', cargoExtra);
                     }
+                    console.log('height en kilos extra', height);
+
+                    if (parseInt(height, 10) > 120 && entrega === 'fedexDiaSiguiente') {
+                        cargoExtraHeight = 280;
+                        console.log('cargoExtra', cargoExtraHeight);
+                    } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
+                        cargoExtraHeight = 110;
+                        console.log('cargoExtra', cargoExtraHeight);
+                    } else {
+                        cargoExtraHeight = 0;
+                        console.log('cargoExtra', cargoExtraHeight);
+                    }
                     const precio = tarifa.guia + kilosExtra + cargoExtra;
                     console.log(
                         'precio final, sin contar seguro',
                         tarifa.guia,
                         kilosExtra,
                         cargoExtra,
+                        cargoExtraHeight,
                     );
                     //console.log('supplierAvailability', supplierAvailability);
                     if (entrega === 'fedexDiaSiguiente')
@@ -552,9 +598,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 (typeof supplierAvailability.fedexDiaSiguiente.zonaExtendida !==
                                 'undefined'
                                     ? 150
-                                    : 0),
+                                    : 0) +
+                                cargoExtraHeight,
                             seguro: getInsurancePrice('fedexDiaSiguiente'),
                             kilosExtra,
+                            cargoExtraHeight,
                             cargoExtra,
                             guia,
                             zonaExt: !!supplierAvailability.fedexDiaSiguiente.zonaExtendida,
@@ -568,9 +616,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 (typeof supplierAvailability.fedexEconomico.zonaExtendida !==
                                 'undefined'
                                     ? 150
-                                    : 0),
+                                    : 0) +
+                                cargoExtraHeight,
                             seguro: getInsurancePrice('fedexEconomico'),
                             kilosExtra,
+                            cargoExtraHeight,
                             cargoExtra,
                             guia,
                             zonaExt: !!supplierAvailability.fedexEconomico.zonaExtendida,
@@ -584,9 +634,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 (typeof supplierAvailability.estafetaDiaSiguiente.zonaExtendida !==
                                 'undefined'
                                     ? 150
-                                    : 0),
+                                    : 0) +
+                                cargoExtraHeight,
                             seguro: getInsurancePrice('estafetaDiaSiguiente'),
                             kilosExtra,
+                            cargoExtraHeight: 0,
                             cargoExtra: 0,
                             guia,
                             zonaExt: !!supplierAvailability.estafetaDiaSiguiente.zonaExtendida,
@@ -600,9 +652,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 (typeof supplierAvailability.estafetaEconomico.zonaExtendida !==
                                 'undefined'
                                     ? 150
-                                    : 0),
+                                    : 0) +
+                                cargoExtraHeight,
                             seguro: getInsurancePrice('estafetaEconomico'),
                             kilosExtra,
+                            cargoExtraHeight: 0,
                             cargoExtra: 0,
                             guia,
                             zonaExt: !!supplierAvailability.estafetaEconomico.zonaExtendida,
@@ -616,9 +670,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 (typeof supplierAvailability.autoencargosExpress.zonaExtendida !==
                                 'undefined'
                                     ? 150
-                                    : 0),
+                                    : 0) +
+                                cargoExtraHeight,
                             seguro: getInsurancePrice('autoencargosExpress'),
                             kilosExtra,
+                            cargoExtraHeight: 0,
                             cargoExtra: 0,
                             guia,
                             zonaExt: !!supplierAvailability.autoencargosExpress.zonaExtendida,
@@ -632,9 +688,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 (typeof supplierAvailability.autoencargosDiaSiguiente
                                     .zonaExtendida !== 'undefined'
                                     ? 150
-                                    : 0),
+                                    : 0) +
+                                cargoExtraHeight,
                             seguro: getInsurancePrice('autoencargosDiaSiguiente'),
                             kilosExtra,
+                            cargoExtraHeight: 0,
                             cargoExtra: 0,
                             guia,
                             zonaExt: !!supplierAvailability.autoencargosDiaSiguiente.zonaExtendida,
@@ -683,18 +741,25 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             <PriceNumber>{formatMoney(costos.kilosExtra)}</PriceNumber>
                         </PriceContainer>
                     )}
-                    {costos.cargoExtra === 110 && (
-                        <PriceContainer>
-                            <PriceLabel>Cargo por más de 30 kg:</PriceLabel>
-                            <PriceNumber>{formatMoney(costos.cargoExtra)}</PriceNumber>
-                        </PriceContainer>
-                    )}
                     {costos.seguro > 0 && (
                         <PriceContainer>
                             <PriceLabel>Cargo por Seguro:</PriceLabel>
                             <PriceNumber>{formatMoney(costos.seguro)}</PriceNumber>
                         </PriceContainer>
                     )}
+                    {costos.cargoExtraHeight >= 110 && (
+                        <PriceContainer>
+                            <PriceLabel>Cargo por extra largo:</PriceLabel>
+                            <PriceNumber>{formatMoney(costos.cargoExtraHeight)}</PriceNumber>
+                        </PriceContainer>
+                    )}
+                    {costos.cargoExtra === 110 && (
+                        <PriceContainer>
+                            <PriceLabel>Cargo por más de 30 kg:</PriceLabel>
+                            <PriceNumber>{formatMoney(costos.cargoExtra)}</PriceNumber>
+                        </PriceContainer>
+                    )}
+
                     {costos.zonaExt && (
                         <PriceContainer>
                             <PriceLabel>Zona Extendida:</PriceLabel>
