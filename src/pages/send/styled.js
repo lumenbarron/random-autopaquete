@@ -74,6 +74,7 @@ const StyledPane = styled.div.attrs(props => {
     min-width: 330px;
     justify-content: flex-start;
     flex-direction: column;
+    overflow-y: scroll;
 
     h4 {
         text-align: center;
@@ -96,7 +97,6 @@ export const StyledRightPane = styled(StyledPane)`
 
 export const StyledRadioGroup = styled(RadioGroup)`
     max-height: 465px;
-    overflow-y: scroll;
 
     & label span {
         display: inline-flex;
