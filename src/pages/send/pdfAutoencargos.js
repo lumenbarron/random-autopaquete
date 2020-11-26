@@ -99,10 +99,13 @@ export const PdfAutoencargos = data => {
                                         origin={'ORIGEN'}
                                         name={nameSender}
                                         adress={
-                                            (streetNumberSender,
-                                            neighborhoodSender,
-                                            CPSender,
-                                            countrySender)
+                                            streetNumberSender +
+                                            `,` +
+                                            neighborhoodSender +
+                                            `,` +
+                                            CPSender +
+                                            `,` +
+                                            countrySender
                                         }
                                         phone={phoneSender}
                                         reference={refSenderStreet}
@@ -111,10 +114,13 @@ export const PdfAutoencargos = data => {
                                         origin={'DESTINO'}
                                         name={nameReceiver}
                                         adress={
-                                            (streetNumberReceiver,
-                                            neighborhoodReceiver,
-                                            CPReceiver,
-                                            countryReceiver)
+                                            streetNumberReceiver +
+                                            `,` +
+                                            neighborhoodReceiver +
+                                            `,` +
+                                            CPReceiver +
+                                            `,` +
+                                            countryReceiver
                                         }
                                         phone={phoneReceiver}
                                         reference={refReceiverStreet}
