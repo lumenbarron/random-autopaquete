@@ -133,6 +133,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         console.log('restando el saldo para autoencargos');
                         addRastreoAuto(idGuiaGlobal);
                         const newBalance = parseFloat(doc.data().saldo) - parseFloat(precioNeto);
+                        if (newBalance < 0) {
+                            return false;
+                        }
+                        newBalance = Math.round((newBalance + Number.EPSILON) * 100) / 100;
                         console.log('newBalance', newBalance);
                         //console.log('precioNeto', precioNeto);
                         db.collection('profiles')
@@ -231,6 +235,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         db.collection('guia')
             .doc(idGuiaGlobal)
             .onSnapshot(function getGuia(doc) {
+                console.log(doc.data().receiver_addresses.country);
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
@@ -704,7 +709,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const supplierCard = (proveedor, tipoEnvio, entrega, costos) => (
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
             {proveedor === 'fedex' && <img src="/assets/fedex.png" alt="Fedex" />}
-            {proveedor === 'estafeta' && <img src="/assets/estafeta.png" alt="Estafeta" />}
+            {proveedor === 'estafeta' && (
+                <img src="/assets/redpack.png" style={{ height: 50 }} alt="Redpack" />
+            )}
             {proveedor === 'autoencargos' && (
                 <img src="/assets/autoencar.png" style={{ height: 45 }} alt="Autoencargos" />
             )}
