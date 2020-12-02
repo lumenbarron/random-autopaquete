@@ -91,14 +91,10 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
     const [minRateModal, setMinRateModal] = useState();
     const [maxRateModal, setMaxRateModal] = useState();
     const [costModal, setCostModal] = useState();
-
     const [extraCost, setExtraCost] = useState();
-
     const [keyRate, setKeyRate] = useState();
-
     const [addKgError, setAddKgError] = useState(false);
     const [addKgErrorModal, setAddKgErrorModal] = useState();
-
     const [maxValue, setMaxValue] = useState([]);
 
     const openModalExtra = () => {
@@ -368,6 +364,7 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
             return;
         }
         const addExtraRate = {
+            max: 0,
             kgExtra: extraCost,
             entrega: `${entrega}Extra`,
         };
@@ -390,7 +387,6 @@ function TarifarioPorServicio({ label, tarifas, kgExtra, entrega, user }) {
     // El valor más alto del tarifario (por servicio)
     useEffect(() => {
         let tarifaMayor = 0;
-
         tarifas.forEach(tarifa => {
             tarifaMayor = tarifa.max > tarifaMayor ? tarifa.max : tarifaMayor;
         });
@@ -546,7 +542,11 @@ export default function Tarifario({ user }) {
                     precio: entrega.precio,
                     min: entrega.min,
                 };
+            })
+            .sort(function(a, b) {
+                return a.max - b.max;
             });
+        //console.log('tarifaNormal',tarifaNormal.sort( function(a,b) { return a.max - b.max}) )
         const tarifaExtra = tarifas
             .filter(entregaFilterExtra => {
                 return entregaFilterExtra.entrega === `${nombre}Extra`;
@@ -581,10 +581,10 @@ export default function Tarifario({ user }) {
     return (
         <>
             <h2>Tarifario del cliente</h2>
-            <h3 style={{ marginTop: '1rem' }}>Estafeta</h3>
+            <h3 style={{ marginTop: '1rem' }}>Redpack</h3>
             <Accordion id="accordion-estafeta" multiple>
                 <TarifarioPorServicio
-                    label="Estafeta Día Siguiente"
+                    label="Redpack Express"
                     tarifas={estafetaDiaSiguiente}
                     kgExtra={estafetaDiaSiguienteExtra}
                     entrega="estafetaDiaSiguiente"
@@ -592,7 +592,7 @@ export default function Tarifario({ user }) {
                 />
 
                 <TarifarioPorServicio
-                    label="Estafeta Terrestre"
+                    label="Redpack EcoExpress"
                     tarifas={estafetaEconomico}
                     kgExtra={estafetaEconomicoExtra}
                     entrega="estafetaEconomico"

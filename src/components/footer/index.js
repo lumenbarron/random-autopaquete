@@ -36,7 +36,7 @@ const Footer = () => {
                             <ul>
                                 <li>
                                     <FontAwesomeIcon className="icon" icon={faEnvelope} />
-                                    atencion@autopaquete.com
+                                    soporte.logistica1@autopaquete.com
                                 </li>
                                 <li>
                                     <FontAwesomeIcon className="icon" icon={faPhoneAlt} />
@@ -44,7 +44,7 @@ const Footer = () => {
                                 </li>
                                 <li>
                                     <FontAwesomeIcon className="icon" icon={faComment} />
-                                    WhatsApp: +52 (33) 2297 7746
+                                    WhatsApp: +52 (33) 23 107622
                                 </li>
                                 <li>
                                     <FontAwesomeIcon className="icon" icon={faLocationArrow} />
