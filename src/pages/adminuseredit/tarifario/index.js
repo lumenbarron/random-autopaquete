@@ -546,7 +546,6 @@ export default function Tarifario({ user }) {
             .sort(function(a, b) {
                 return a.max - b.max;
             });
-        //console.log('tarifaNormal',tarifaNormal.sort( function(a,b) { return a.max - b.max}) )
         const tarifaExtra = tarifas
             .filter(entregaFilterExtra => {
                 return entregaFilterExtra.entrega === `${nombre}Extra`;
@@ -570,13 +569,11 @@ export default function Tarifario({ user }) {
 
     const [fedexEconomico, fedexEconomicoExtra] = getTarifasDeServicio('fedexEconomico');
 
-    const [autoencargosExpress, autoencargosExpressExtra] = getTarifasDeServicio(
-        'autoencargosExpress',
-    );
+    const [autoencargos, autoencargosExtra] = getTarifasDeServicio('autoencargos');
 
-    const [autoencargosDiaSiguiente, autoencargosDiaSiguienteExtra] = getTarifasDeServicio(
-        'autoencargosDiaSiguiente',
-    );
+    // const [autoencargosDiaSiguiente, autoencargosDiaSiguienteExtra] = getTarifasDeServicio(
+    //     'autoencargosDiaSiguiente',
+    // );
 
     return (
         <>
@@ -619,19 +616,19 @@ export default function Tarifario({ user }) {
             <h3 style={{ marginTop: '1rem' }}>Autoencargos</h3>
             <Accordion id="accordion-autoencargos" multiple>
                 <TarifarioPorServicio
-                    label="Autoencargos Express"
-                    tarifas={autoencargosExpress}
-                    kgExtra={autoencargosExpressExtra}
-                    entrega="autoencargosExpress"
+                    label="Autoencargos"
+                    tarifas={autoencargos}
+                    kgExtra={autoencargosExtra}
+                    entrega="autoencargos"
                     user={user}
                 />
-                <TarifarioPorServicio
+                {/* <TarifarioPorServicio
                     label="Autoencargos Día Siguiente"
                     tarifas={autoencargosDiaSiguiente}
                     kgExtra={autoencargosDiaSiguienteExtra}
                     entrega="autoencargosDiaSiguiente"
                     user={user}
-                />
+                /> */}
             </Accordion>
             <p style={{ margin: '1rem' }}>
                 <b>NOTA:</b> El peso volumétrico equivale al (largo x ancho x alto) / 5000 y este

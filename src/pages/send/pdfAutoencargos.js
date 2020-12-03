@@ -39,8 +39,7 @@ export const PdfAutoencargos = data => {
 
     useEffect(() => {
         let allData = data.data;
-        let supplier = allData.supplierData.Supplier.substring(12);
-        console.log('company', data.company);
+        let supplier = allData.supplierData.Supplier.substring(0, 12);
         //General data
         setNoGuia(data.guia);
         setRazonSocial(data.company);
