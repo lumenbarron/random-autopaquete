@@ -102,11 +102,7 @@ export default function AllGuides({}) {
         },
         {
             value: 'autoencargosEconomico',
-            label: 'autoencargosEconomico',
-        },
-        {
-            value: 'autoencargosExpress',
-            label: 'autoencargosExpress',
+            label: 'autoencargos',
         },
     ];
 
@@ -157,7 +153,6 @@ export default function AllGuides({}) {
                     measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
                     cost: historyRecord.supplierData.Supplier_cost,
                     label:
-                        historyRecord.supplierData.Supplier === 'autoencargosExpress' ||
                         historyRecord.supplierData.Supplier === 'autoencargosEconomico'
                             ? 'no disponible'
                             : historyRecord.label,
