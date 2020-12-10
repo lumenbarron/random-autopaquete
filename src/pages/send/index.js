@@ -90,8 +90,11 @@ const SendPage = () => {
             .update(packageGuiaData);
 
         directionsGuiasCollectionAdd
-            .then(function(docRef) {
-                console.log('Se cumplio! Document written with ID (guia): ', docRef.id);
+            .then(function() {
+                console.log(
+                    'Se cumplio 2! Document written with ID (guia): ',
+                    idGuiaGlobal.current,
+                );
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
@@ -101,51 +104,177 @@ const SendPage = () => {
 
     const saveServiceData = supplierData => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
-
+        console.log('supplierData', supplierData);
         const directionsGuiasCollectionAdd = db
             .collection('guia')
             .doc(idGuiaGlobal.current)
             .update({ status: 'completed', supplierData });
+
         if (supplierData.Supplier === 'autoencargosEconomico') {
             console.log('autoencargos pdf');
             console.log(idGuiaGlobal.current);
             setCurrentStepName('descarga');
-        } else if (
-            supplierData.Supplier === 'estafetaDiaSiguiente' ||
-            supplierData.Supplier === 'estafetaEconomico'
-        ) {
-            directionsGuiasCollectionAdd
-                .then(function() {
-                    user.getIdToken().then(idToken => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.responseType = 'json';
-                        xhr.contentType = 'application/json';
-                        xhr.open('POST', '/guia/estafeta');
-                        xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-                        xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-                        setCurrentStepName('descarga');
-                    });
-                })
-                .catch(function(error) {
-                    console.error('Error adding document: ', error);
-                });
         } else {
-            directionsGuiasCollectionAdd
-                .then(function() {
-                    user.getIdToken().then(idToken => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.responseType = 'json';
-                        xhr.contentType = 'application/json';
-                        xhr.open('POST', '/guia/fedex');
-                        xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-                        xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-                        setCurrentStepName('descarga');
-                    });
-                })
-                .catch(function(error) {
-                    console.error('Error adding document: ', error);
+            let myHeaders = new Headers();
+            myHeaders.append('Authorization', 'Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded');
+            myHeaders.append('Content-Type', 'application/json');
+
+            console.log('obteniendo los valores de firestore');
+            //Asignando los valores desde el doc guia del firestore
+            db.collection('guia')
+                .doc(idGuiaGlobal.current)
+                .get()
+                .then(function(doc) {
+                    if (doc.exists) {
+                        console.log('Document data:', doc.data());
+                        let data = JSON.stringify({
+                            sender: {
+                                contact_name: doc.data().sender_addresses.name,
+                                street: doc.data().sender_addresses.street_number,
+                                zip_code: doc.data().sender_addresses.codigo_postal,
+                                neighborhood: doc.data().sender_addresses.neighborhood,
+                                city: doc.data().sender_addresses.country,
+                                country: 'MX',
+                                state: doc.data().sender_addresses.state,
+                                street_number: 'sn',
+                                place_reference: doc.data().sender_addresses.place_reference,
+                                phone: doc.data().sender_addresses.phone,
+                            },
+                            receiver: {
+                                contact_name: doc.data().receiver_addresses.name,
+                                street: doc.data().receiver_addresses.street_number,
+                                zip_code: doc.data().receiver_addresses.codigo_postal,
+                                neighborhood: doc.data().receiver_addresses.neighborhood,
+                                city: doc.data().receiver_addresses.country,
+                                country: 'MX',
+                                state: doc.data().receiver_addresses.state,
+                                street_number: 'sn',
+                                place_reference: doc.data().receiver_addresses.place_reference,
+                                phone: doc.data().receiver_addresses.phone,
+                            },
+                            packages: [
+                                {
+                                    name: doc.data().package.name,
+                                    height: doc.data().package.height,
+                                    width: doc.data().package.width,
+                                    depth: doc.data().package.depth,
+                                    weight: doc.data().package.weight,
+                                    content_description: doc.data().package.content_description,
+                                    quantity: doc.data().package.quantity,
+                                },
+                            ],
+                            shipping_company: doc.data().supplierData.cargos.shippingInfo[0],
+                            shipping_service: {
+                                name: doc.data().supplierData.cargos.shippingInfo[1],
+                                description: doc.data().supplierData.cargos.shippingInfo[2],
+                                id: doc.data().supplierData.cargos.shippingInfo[3],
+                            },
+                            shipping_secure:
+                                doc.data().supplierData.cargos.insurance === 0 ? false : true,
+                            shipping_secure_data: {
+                                notes: doc.data().package.content_description,
+                                amount: doc.data().supplierData.cargos.insurance,
+                            },
+                        });
+                        console.log('data 2', data);
+                        let requestOptions = {
+                            method: 'POST',
+                            headers: myHeaders,
+                            body: data,
+                            redirect: 'follow',
+                        };
+                        fetch(
+                            'http://autopaquete.simplestcode.com/api/do-shipping/',
+                            requestOptions,
+                        )
+                            .then(response => response.json())
+                            .then(result => {
+                                console.log(result);
+                                console.log(result.pdf_b64);
+                                console.log(result.id_shipping);
+                                db.collection('guia')
+                                    .doc(idGuiaGlobal.current)
+                                    .update({ label: result.pdf_b64, rastreo: result.id_shipping });
+                                setCurrentStepName('descarga');
+                            })
+                            .catch(error => console.log('error', error));
+                    }
                 });
         }
+        // else if (
+        //     supplierData.Supplier === 'redpackExpress' ||
+        //     supplierData.Supplier === 'redpackEcoExpress'
+        // )
+
+        // {
+        //     directionsGuiasCollectionAdd
+        //         .then(function() {
+        //             user.getIdToken().then(idToken => {
+        //                 const xhr = new XMLHttpRequest();
+        //                 xhr.responseType = 'json';
+        //                 xhr.contentType = 'application/json';
+        //                 xhr.open('POST', '/guia/estafeta');
+        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+        //                 setCurrentStepName('descarga');
+        //             });
+        //         })
+        //         .catch(function(error) {
+        //             console.error('Error adding document: ', error);
+        //         });
+        // } else {
+        //     directionsGuiasCollectionAdd
+        //         .then(function() {
+        //             user.getIdToken().then(idToken => {
+        //                 const xhr = new XMLHttpRequest();
+        //                 xhr.responseType = 'json';
+        //                 xhr.contentType = 'application/json';
+        //                 xhr.open('POST', '/guia/fedex');
+        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+        //                 setCurrentStepName('descarga');
+        //             });
+        //         })
+        //         .catch(function(error) {
+        //             console.error('Error adding document: ', error);
+        //         });
+        // }
+        // else if (
+        //     supplierData.Supplier === 'estafetaDiaSiguiente' ||
+        //     supplierData.Supplier === 'estafetaEconomico'
+        // ) {
+        //     directionsGuiasCollectionAdd
+        //         .then(function() {
+        //             user.getIdToken().then(idToken => {
+        //                 const xhr = new XMLHttpRequest();
+        //                 xhr.responseType = 'json';
+        //                 xhr.contentType = 'application/json';
+        //                 xhr.open('POST', '/guia/estafeta');
+        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+        //                 setCurrentStepName('descarga');
+        //             });
+        //         })
+        //         .catch(function(error) {
+        //             console.error('Error adding document: ', error);
+        //         });
+        // } else {
+        //     directionsGuiasCollectionAdd
+        //         .then(function() {
+        //             user.getIdToken().then(idToken => {
+        //                 const xhr = new XMLHttpRequest();
+        //                 xhr.responseType = 'json';
+        //                 xhr.contentType = 'application/json';
+        //                 xhr.open('POST', '/guia/fedex');
+        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+        //                 setCurrentStepName('descarga');
+        //             });
+        //         })
+        //         .catch(function(error) {
+        //             console.error('Error adding document: ', error);
+        //         });
+        // }
 
         // directionsGuiasCollectionAdd
         //     .then(function () {

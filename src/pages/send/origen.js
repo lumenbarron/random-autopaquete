@@ -132,110 +132,70 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     headers.append('Content-Type', 'application/json');
 
     useEffect(() => {
-        //     const fetchData = async () => {
-        //    const data = await fetch('http://autopaquete.simplestcode.com/api/do-shipping-quote/', {
-        //             method:'POST',
-        //             headers: headers,
-        //             body: JSON.stringify({
-        //                 "sender":{
-        //                     "contact_name": "Narciso Avalos",
-        //                     "street": "Av. Palmeras",
-        //                     "zip_code": "45130",
-        //                     "neighborhood": "Tuzania",
-        //                     "city": "Zapopan",
-        //                     "country": "MX",
-        //                     "state": "Jalisco",
-        //                     "street_number" : "1033",
-        //                     "place_reference": "Casa Blanca",
-        //                     "phone": "40401006"
-        //                 },
-        //                 "receiver": {
-        //                     "contact_name": "Karla Ramos",
-        //                     "street": "Pto. Isla Mujeres",
-        //                     "zip_code": "49500",
-        //                     "neighborhood": "Miramar",
-        //                     "city": "Mizamitla",
-        //                     "country": "MX",
-        //                     "state": "Jalisco",
-        //                     "street_number" : "3538",
-        //                     "place_reference": "Casa color naranja",
-        //                     "phone": "31808328"
-        //                 },
-        //                 "packages": [
-        //                     {
-        //                         "name": "Regalo",
-        //                         "height": 1,
-        //                         "width": 1,
-        //                         "depth": 1,
-        //                         "weight": 1,
-        //                         "content_description": "-",
-        //                         "quantity": 1
-        //                     }
-        //                 ]
-        //                 }),
-        //             redirect: 'follow'
-        //         })
-        //     .then(( response) => {
-        //         console.log(response.json())
-        //     })
-        //     .then( result => console.log(result))
-        //     .catch(err => console.log('error', err));
-        //     }
-        //     fetchData();
-
-        let myHeaders = new Headers();
-        myHeaders.append('Authorization', 'Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded');
-        myHeaders.append('Content-Type', 'application/json');
-
-        let raw = JSON.stringify({
-            sender: {
-                contact_name: 'Narciso Avalos',
-                street: 'Av. Palmeras',
-                zip_code: '45130',
-                neighborhood: 'Tuzania',
-                city: 'Zapopan',
-                country: 'MX',
-                state: 'Jalisco',
-                street_number: '1033',
-                place_reference: 'Casa Blanca',
-                phone: '40401006',
-            },
-            receiver: {
-                contact_name: 'Karla Ramos',
-                street: 'Prol, Vicente Guerrero #100, 49500 Mazamitla, Jal.',
-                zip_code: '49500',
-                neighborhood: 'Mazamitla',
-                city: 'Mazamitla',
-                country: 'MX',
-                state: 'Jalisco',
-                street_number: '100',
-                place_reference: 'Casa color naranja',
-                phone: '31808328',
-            },
-            packages: [
-                {
-                    name: 'Regalo',
-                    height: 1,
-                    width: 1,
-                    depth: 1,
-                    weight: 1,
-                    content_description: '-',
-                    quantity: 1,
-                },
-            ],
-        });
-
-        let requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow',
-        };
-
-        fetch('http://autopaquete.simplestcode.com/api/do-shipping-quote/', requestOptions)
-            .then(response => response.text())
-            .then(result => console.log(result))
-            .catch(error => console.log('error', error));
+        // let myHeaders = new Headers();
+        // myHeaders.append('Authorization', 'Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded');
+        // myHeaders.append('Content-Type', 'application/json');
+        // let raw = JSON.stringify({
+        //     sender: {
+        //         contact_name: 'Narciso Avalos',
+        //         street: 'Av. Palmeras',
+        //         zip_code: '45130',
+        //         neighborhood: 'Tuzania',
+        //         city: 'Zapopan',
+        //         country: 'MX',
+        //         state: 'Jalisco',
+        //         street_number: '1033',
+        //         place_reference: 'Casa Blanca',
+        //         phone: '40401006',
+        //     },
+        //     receiver: {
+        //         contact_name: 'Karla Ramos',
+        //         street: 'Prol, Vicente Guerrero #100, 49500 Mazamitla, Jal.',
+        //         zip_code: '49500',
+        //         neighborhood: 'Mazamitla',
+        //         city: 'Mazamitla',
+        //         country: 'MX',
+        //         state: 'Jalisco',
+        //         street_number: '100',
+        //         place_reference: 'Casa color naranja',
+        //         phone: '31808328',
+        //     },
+        //     packages: [
+        //         {
+        //             name: 'Regalo',
+        //             height: 1,
+        //             width: 1,
+        //             depth: 1,
+        //             weight: 1,
+        //             content_description: '-',
+        //             quantity: 1,
+        //         },
+        //     ],
+        // });
+        // let requestOptions = {
+        //     method: 'POST',
+        //     headers: myHeaders,
+        //     body: raw,
+        //     redirect: 'follow',
+        // };
+        // fetch('http://autopaquete.simplestcode.com/api/do-shipping-quote/', requestOptions)
+        //     .then(response => response.text())
+        //     .then(result => console.log(result))
+        //     .catch(error => console.log('error', error));
+        // let myHeaders = new Headers();
+        // myHeaders.append("Authorization", "Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded");
+        // myHeaders.append("Content-Type", "application/json");
+        // let raw = JSON.stringify({"sender":{"contact_name":"Narciso Avalos","street":"Av. Palmeras","city":"Zapopan","zip_code":"45130","neighborhood":"Tuzania","country":"MX","state":"Jalisco","street_number":"1033","place_reference":"Casa Blanca","phone":"40401006"},"receiver":{"contact_name":"Karla Ramos","street":"Gómez Farias 4, Centro, 49500 Mazamitla, Jal.","city":"Mazamitla","zip_code":"49500","neighborhood":"Mazamitla","country":"MX","state":"Jalisco","street_number":"4","place_reference":"Casa color naranja","phone":"31808328"},"packages":[{"name":"Regalo","height":1,"width":1,"depth":1,"weight":1,"content_description":"-","quantity":1}],"shipping_company":"FEDEX","shipping_service":{"name":"FEDEX_EXPRESS_SAVER","description":"","id":2},"shipping_secure":false,"shipping_secure_data":{"notes":"Productos de belleza","amount":550}});
+        // let requestOptions = {
+        // method: 'POST',
+        // headers: myHeaders,
+        // body: raw,
+        // redirect: 'follow'
+        // };
+        // fetch("http://autopaquete.simplestcode.com/api/do-shipping/", requestOptions)
+        // .then(response => response.text())
+        // .then(result => console.log(result))
+        // .catch(error => console.log('error', error));
     }, []);
 
     //Se busca los datos de envío (si hay algun envío efectuandose)
