@@ -94,15 +94,23 @@ export default function AllGuides({}) {
         },
         {
             value: 'fedexEconomico',
-            label: 'fedexEconomico',
+            label: 'Fedex Economico',
         },
         {
             value: 'fedexDiaSiguiente',
-            label: 'fedexDiaSiguiente',
+            label: 'Fedex Dia Siguiente',
+        },
+        {
+            value: 'redpackExpress',
+            label: 'Redpack Express',
+        },
+        {
+            value: 'redpackEcoExpress',
+            label: 'Redpack Eco Express',
         },
         {
             value: 'autoencargosEconomico',
-            label: 'autoencargos',
+            label: 'Autoencargos',
         },
     ];
 

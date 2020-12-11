@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ProgressIndicator, ProgressStep, Button } from 'react-rainbow-components';
+import { ProgressIndicator, ProgressStep, Button, Spinner } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { Link, useParams } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import { DestinoComponent } from './destino';
 import { PaqueteComponent } from './paquete';
 import { ServicioComponent } from './servicio';
 import { DescargaComponent } from './descarga';
-import { StyledSendPage } from './styled';
+import { StyledSendPage, DownloadContainerPDF } from './styled';
 
 const SendPage = () => {
     const [currentStepName, setCurrentStepName] = useState('origen');
@@ -18,6 +18,7 @@ const SendPage = () => {
     const user = useUser();
     const { idGuia: idGuiaParam, step: stepParam } = useParams();
     const [onReplay, setOnReplay] = useState(false);
+    const [guiaReady, setguiaReady] = useState(false);
 
     useEffect(() => {
         if (stepParam) setCurrentStepName(stepParam);
@@ -71,7 +72,6 @@ const SendPage = () => {
             console.log('Es necesario completar el primer paso');
             return;
         }
-
         // TODO: Guardar la info del paquete a firestore (si fue solicitado)
         if (checkBox) {
             db.collection('package')
@@ -115,10 +115,10 @@ const SendPage = () => {
             console.log(idGuiaGlobal.current);
             setCurrentStepName('descarga');
         } else {
+            setCurrentStepName('descarga');
             let myHeaders = new Headers();
             myHeaders.append('Authorization', 'Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded');
             myHeaders.append('Content-Type', 'application/json');
-
             console.log('obteniendo los valores de firestore');
             //Asignando los valores desde el doc guia del firestore
             db.collection('guia')
@@ -195,102 +195,13 @@ const SendPage = () => {
                                 db.collection('guia')
                                     .doc(idGuiaGlobal.current)
                                     .update({ label: result.pdf_b64, rastreo: result.id_shipping });
-                                setCurrentStepName('descarga');
+                                // setCurrentStepName('descarga');
+                                setguiaReady(true);
                             })
                             .catch(error => console.log('error', error));
                     }
                 });
         }
-        // else if (
-        //     supplierData.Supplier === 'redpackExpress' ||
-        //     supplierData.Supplier === 'redpackEcoExpress'
-        // )
-
-        // {
-        //     directionsGuiasCollectionAdd
-        //         .then(function() {
-        //             user.getIdToken().then(idToken => {
-        //                 const xhr = new XMLHttpRequest();
-        //                 xhr.responseType = 'json';
-        //                 xhr.contentType = 'application/json';
-        //                 xhr.open('POST', '/guia/estafeta');
-        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-        //                 setCurrentStepName('descarga');
-        //             });
-        //         })
-        //         .catch(function(error) {
-        //             console.error('Error adding document: ', error);
-        //         });
-        // } else {
-        //     directionsGuiasCollectionAdd
-        //         .then(function() {
-        //             user.getIdToken().then(idToken => {
-        //                 const xhr = new XMLHttpRequest();
-        //                 xhr.responseType = 'json';
-        //                 xhr.contentType = 'application/json';
-        //                 xhr.open('POST', '/guia/fedex');
-        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-        //                 setCurrentStepName('descarga');
-        //             });
-        //         })
-        //         .catch(function(error) {
-        //             console.error('Error adding document: ', error);
-        //         });
-        // }
-        // else if (
-        //     supplierData.Supplier === 'estafetaDiaSiguiente' ||
-        //     supplierData.Supplier === 'estafetaEconomico'
-        // ) {
-        //     directionsGuiasCollectionAdd
-        //         .then(function() {
-        //             user.getIdToken().then(idToken => {
-        //                 const xhr = new XMLHttpRequest();
-        //                 xhr.responseType = 'json';
-        //                 xhr.contentType = 'application/json';
-        //                 xhr.open('POST', '/guia/estafeta');
-        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-        //                 setCurrentStepName('descarga');
-        //             });
-        //         })
-        //         .catch(function(error) {
-        //             console.error('Error adding document: ', error);
-        //         });
-        // } else {
-        //     directionsGuiasCollectionAdd
-        //         .then(function() {
-        //             user.getIdToken().then(idToken => {
-        //                 const xhr = new XMLHttpRequest();
-        //                 xhr.responseType = 'json';
-        //                 xhr.contentType = 'application/json';
-        //                 xhr.open('POST', '/guia/fedex');
-        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-        //                 setCurrentStepName('descarga');
-        //             });
-        //         })
-        //         .catch(function(error) {
-        //             console.error('Error adding document: ', error);
-        //         });
-        // }
-
-        // directionsGuiasCollectionAdd
-        //     .then(function () {
-        //         user.getIdToken().then(idToken => {
-        //             const xhr = new XMLHttpRequest();
-        //             xhr.responseType = 'json';
-        //             xhr.contentType = 'application/json';
-        //             xhr.open('POST', servicioUrl);
-        //             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-        //             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-        //             setCurrentStepName('descarga');
-        //         });
-        //     })
-        //     .catch(function (error) {
-        //         console.error('Error adding document: ', error);
-        //     });
     };
 
     async function replayLabel(e) {
@@ -396,7 +307,15 @@ const SendPage = () => {
                         idGuiaGlobal={idGuiaGlobal.current}
                     />
                 )}
-                {currentStepName === 'descarga' && (
+                {!guiaReady && currentStepName === 'descarga' && (
+                    <DownloadContainerPDF>
+                        <h1>Generando guía...</h1>
+                        <div className="rainbow-position_relative rainbow-m-vertical_xx-large rainbow-p-vertical_xx-large">
+                            <Spinner size="large" variant="brand" />
+                        </div>
+                    </DownloadContainerPDF>
+                )}
+                {guiaReady && currentStepName === 'descarga' && (
                     <DescargaComponent idGuiaGlobal={idGuiaGlobal.current} onReplay={replayLabel} />
                 )}
             </StyledSendPage>

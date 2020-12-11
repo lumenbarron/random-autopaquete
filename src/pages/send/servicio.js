@@ -27,18 +27,11 @@ const PriceNumber = styled.div`
     text-align: right;
 `;
 
-// const LogoSpinner = styled.div`
-//     border: 1px solid black;
-// `;
-
 export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [hasActivatedSuppliers, setHasActivatedSuppliers] = useState(null);
     const [supplierAvailability, setSupplierAvailability] = useState(false);
-    const [availabilityFedex, setAvailabilityFedex] = useState(false);
-    const [availabilityRedpack, setAvailabilityRedpack] = useState(false);
     const [supplierAvailabilityGeneral, setSupplierAvailabilityGeneral] = useState(false);
     const [supplierExtraWeight, setSupplierExtraWeight] = useState(true);
-    const allSuppliers = useRef([]);
 
     const [supplierCostFedexDiaS, setSupplierCostFedexDiaS] = useState(false);
     const [supplierCostFedexEcon, setSupplierCostFedexEcon] = useState(false);
@@ -84,6 +77,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [profileDoc, setProfileDoc] = useState(false);
 
+    let dataShipping = useRef();
+    let delivery_company = useRef();
+    let supplierExtendedArea = {};
+    let supplierShippingName = {};
+    const allRatesData = useRef([]);
+
     let OtherCpsZMG = [
         '44009',
         '44228',
@@ -119,12 +118,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         '45626',
         '45627',
     ];
-    let dataShipping;
-    let supplierExtendedArea = {};
-    let supplierShippingName = {};
-    let urlRequest;
-
-    //const supplierShipping = useRef();
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
@@ -146,7 +139,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         if (newBalance < 0) {
                             return false;
                         }
-
                         console.log('precioNeto', precioNeto);
                         console.log('newBalance', newBalance);
                         console.log('restando el saldo');
@@ -239,7 +231,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         //Si el código postal coincide con los códigos postales de Autoencargos se agrega al supplierAvailability
-        console.log('corroborando codigo para autoencargos');
+        console.log('corroborando codigo para autoencargos, segundo use effect');
         Promise.all([
             fetch(
                 'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara',
@@ -279,73 +271,71 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     useEffect(() => {
         let supplerFedex = false;
         let supplierRedpack = false;
-        let delivery_company;
         //Se extraen los provedores de la colecccion rate del perfil del usuario
-        db.collection('profiles')
-            .where('ID', '==', user.uid)
-            .get()
-            .then(profile => {
-                setProfileDoc(profile.docs[0]);
-                profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
-                    //         querySnapshot.forEach((doc) =>  {
+        const getRates = async () => {
+            await db
+                .collection('profiles')
+                .where('ID', '==', user.uid)
+                .get()
+                .then(profile => {
+                    setProfileDoc(profile.docs[0]);
+                    profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
+                        querySnapshot.forEach(doc => {
+                            //console.log(doc.id, " => ", doc.data());
+                            //allRates asigna todos las tairfas que tiene el usario
+                            allRatesData.current.push(doc.data());
+                        });
+                        //setHasActivatedSuppliers asigna a hasActivatedSuppliers el numero de doc de rate para que se muestren los provedores
+                        setHasActivatedSuppliers(querySnapshot.size > 0);
+                        console.log(
+                            'numero de tarifas que tiene este usuario :',
+                            querySnapshot.size,
+                        );
+                        console.log('todas las tarifas del cliente', allRatesData.current);
+                        //Se verifica que si las tarifas tienen el proveedor asignado
+                        allRatesData.current.forEach(supplier => {
+                            // supplerFedex = (supplier.entrega === "fedexDiaSiguiente" || supplier.entrega === "fedexEconomico" ? true : false );
+                            // supplierRedpack = (supplier.entrega === "redpackExpress" || supplier.entrega === "redpackEcoExpress" ? true : false );
+                            if (
+                                supplier.entrega === 'fedexDiaSiguiente' ||
+                                supplier.entrega === 'fedexEconomico'
+                            ) {
+                                console.log('si hay fedex');
+                                supplerFedex = true;
+                            } else if (
+                                supplier.entrega === 'redpackExpress' ||
+                                supplier.entrega === 'redpackEcoExpress'
+                            ) {
+                                console.log('si hay redpack');
+                                supplierRedpack = true;
+                            }
+                        });
 
-                    //         console.log(doc.id, " => ", doc.data());
-                    //     allSuppliers.current.push(doc.data());
-                    //     });
-                    //     console.log('allSuppliers.current', allSuppliers.current);
-                    //     allSuppliers.current.forEach( supplier  => {
-                    //         if (supplier.entrega === "fedexDiaSiguiente" || supplier.entrega === "fedexEconomico"  ) {
-                    //             console.log('si hay fedesz');
-                    //             supplerFedex = true;
-                    //         } else
-                    //             if (supplier.entrega === "redpackExpress" || supplier.entrega === "redpackEcoExpress" ) {
-                    //             console.log('si hay redpack');
-                    //             supplierRedpack = true;
-                    //         }
-
-                    //     } )
-                    //     if (supplerFedex && supplierRedpack) {
-                    //         urlRequest = `http://autopaquete.simplestcode.com/api/do-shipping-quote/`
-                    //     } else
-                    //    if (supplerFedex) {
-                    //     urlRequest = `http://autopaquete.simplestcode.com/api/do-shipping-quote/fedex`
-                    //    } else {
-                    //     urlRequest = `http://autopaquete.simplestcode.com/api/do-shipping-quote/redpack`
-                    //    }
-
-                    //    console.log('urlRequest', urlRequest)
-
-                    // if ( allSuppliers.current.entrega === "fedexDiaSiguiente" || doc.data().entrega === "fedexEconomico" ) {
-                    //     setAvailabilityFedex(true);
-                    // }
-                    // if (doc.data().entrega === "redpackExpress" || doc.data().entrega === "redpackEcoExpress" ) {
-                    //     setAvailabilityRedpack(true);
-                    // }
-
-                    //const urlRequest = `http://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery_company}`
-                    //setHasActivatedSuppliers asigna a hasActivatedSuppliers el numero de doc de rate para que se muestren los provedores
-                    setHasActivatedSuppliers(querySnapshot.size > 0);
-                    console.log('numero de tarifas que tiene este usuario :', querySnapshot.size);
+                        if (!supplerFedex && supplierRedpack) {
+                            delivery_company.current = 'redpack';
+                        } else if (supplerFedex && !supplierRedpack) {
+                            delivery_company.current = 'fedex';
+                        } else {
+                            delivery_company.current = '';
+                        }
+                        console.log('delivery_company.current', delivery_company.current);
+                        getDataGuia(delivery_company.current);
+                    });
                 });
-            });
+        };
+        getRates();
     }, [user]);
 
-    useEffect(() => {
-        let myHeaders = new Headers();
-        myHeaders.append('Authorization', 'Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded');
-        myHeaders.append('Content-Type', 'application/json');
-
+    const getDataGuia = async delivery => {
         console.log('asignando los valores');
-        console.log('allSuppliers.current', allSuppliers.current);
-        //console.log(availabilityFedex, 'AvailabilityFedex', availabilityRedpack, 'availabilityRedpack')
-        //Asignando los valores desde el doc guia del firestore
-        db.collection('guia')
+        await db
+            .collection('guia')
             .doc(idGuiaGlobal)
             .get()
             .then(function(doc) {
                 if (doc.exists) {
                     console.log('Document data:', doc.data());
-                    dataShipping = JSON.stringify({
+                    dataShipping.current = JSON.stringify({
                         sender: {
                             contact_name: doc.data().sender_addresses.name,
                             street: doc.data().sender_addresses.street_number,
@@ -395,115 +385,89 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             },
                         ],
                     });
-                    // console.log('data 2', data)
-                    let requestOptions = {
-                        method: 'POST',
-                        headers: myHeaders,
-                        body: dataShipping,
-                        redirect: 'follow',
-                    };
-                    //console.log('allSuppliers.current', allSuppliers.current);
-                    fetch(
-                        'http://autopaquete.simplestcode.com/api/do-shipping-quote/',
-                        requestOptions,
-                    )
-                        .then(response => response.json())
-                        .then(result => {
-                            // console.log(result, result.length)
-                            if (result.length >= 1) {
-                                console.log('numero de provedores disponibles', result.length);
-                                //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
-                                let suppliersGeneral = result;
-                                console.log('suppliersGeneral', suppliersGeneral);
-                                if (cpsAvailabilityAutoencargos.current === true) {
-                                    console.log('aqui si hay autoencargos');
-                                    let autoencargos = {
-                                        shipping_company: 'AUTOENCARGOS',
-                                        shipping_cost: 90.0,
-                                        shipping_service: {
-                                            name: 'AUTOENCARGOS',
-                                            description: 'ESTANDAR',
-                                            id: 5,
-                                        },
-                                        extended_area: false,
-                                        extended_area_estimate_cost: {},
-                                    };
-                                    suppliersGeneral.push(autoencargos);
-                                    //setSupplierAvailabilityGeneral(suppliersGeneral);
-                                    // console.log(suppliersGeneral)
-                                } else {
-                                    console.log('aqui no hay autoencargos');
-                                    console.log(suppliersGeneral);
-
-                                    //setSupplierAvailabilityGeneral(suppliersGeneral);
-                                }
-
-                                //console.log('todos los provedores activos', supplierAvailability);
-                                // let supplierExtendedArea = {}
-                                suppliersGeneral.forEach(element => {
-                                    supplierExtendedArea[element.shipping_service.name] = true;
-                                    if (element.extended_area === true) {
-                                        supplierExtendedArea[element.shipping_service.name] = {
-                                            zonaExtendida: element.extended_area,
-                                        };
-                                    }
-                                });
-                                console.log(supplierExtendedArea);
-                                // supplierExtended.current = supplierExtendedArea;
-                                setSupplierAvailability(supplierExtendedArea);
-                                //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, RedpackExiguiente: true}
-                                suppliersGeneral.forEach(element => {
-                                    supplierShippingName[element.shipping_service.name] = [
-                                        element.shipping_company,
-                                        element.shipping_service.name,
-                                        element.shipping_service.description,
-                                        element.shipping_service.id,
-                                    ];
-                                });
-                                console.log(supplierShippingName);
-                                //supplierShipping.current = supplierShippingName;
-                                setSupplierAvailabilityGeneral(supplierShippingName);
-                            }
-                        })
-                        .catch(error => console.log('error', error));
+                    console.log(allRatesData.current.length, 'allRatesData');
+                    fetchGuia(dataShipping.current, delivery);
                 } else {
                     console.log('Error getting document:', error);
                 }
             });
-    }, []);
+    };
 
-    // useEffect(() => {
-    //     user.getIdToken().then(idToken => {
-    //         const xhr = new XMLHttpRequest();
-    //         xhr.responseType = 'json';
-    //         xhr.contentType = 'application/json';
-    //         xhr.open('POST', 'https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia');
-    //         xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-    //         xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
-    //         xhr.onreadystatechange = () => {
-    //             // console.log('la wea weona', xhr.readyState);
-    //             if (xhr.readyState === 4) {
-    //                 console.log('la wea weona llego', xhr.response, typeof xhr.response);
-    //                 //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
-    //                 let suppliersGeneral = xhr.response;
-    //                 let autoencargos;
-    //                 if (cpsAvailabilityAutoencargos.current === true) {
-    //                     console.log('aqui si hay autoencargos');
-    //                     autoencargos = {
-    //                         autoencargos: true,
-    //                     };
-    //                 } else {
-    //                     console.log('aqui no hay autoencargos');
-    //                     autoencargos = {
-    //                         autoencargos: false,
-    //                     };
-    //                 }
-    //                 setSupplierAvailability({ ...suppliersGeneral, ...autoencargos });
-    //                 //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, RedpackExiguiente: true}
-    //             }
-    //         };
-    //     });
-    // }, []);
+    const fetchGuia = async (data, delivery) => {
+        console.log('data 2', data);
+        console.log('delivery', delivery);
+        console.log('haciendo la peticion al broker');
+        let myHeaders = new Headers();
+        myHeaders.append('Authorization', 'Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded');
+        myHeaders.append('Content-Type', 'application/json');
+        let requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: data,
+            redirect: 'follow',
+        };
+
+        const urlRequest = `http://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
+        console.log('url', urlRequest);
+        fetch(urlRequest, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                // console.log(result, result.length)
+                if (result.length >= 1) {
+                    console.log('numero de provedores disponibles', result.length);
+                    //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
+                    let suppliersGeneral = result;
+                    console.log('suppliersGeneral', suppliersGeneral);
+                    if (cpsAvailabilityAutoencargos.current === true) {
+                        console.log('aqui si hay autoencargos');
+                        let autoencargos = {
+                            shipping_company: 'AUTOENCARGOS',
+                            shipping_cost: 90.0,
+                            shipping_service: {
+                                name: 'AUTOENCARGOS',
+                                description: 'ESTANDAR',
+                                id: 5,
+                            },
+                            extended_area: false,
+                            extended_area_estimate_cost: {},
+                        };
+                        suppliersGeneral.push(autoencargos);
+                        //setSupplierAvailabilityGeneral(suppliersGeneral);
+                        // console.log(suppliersGeneral)
+                    } else {
+                        console.log('aqui no hay autoencargos');
+                        console.log(suppliersGeneral);
+                        //setSupplierAvailabilityGeneral(suppliersGeneral);
+                    }
+                    //Se hace un nuevo array con la respuesta de la API para ver si hay zona extendida
+                    suppliersGeneral.forEach(element => {
+                        supplierExtendedArea[element.shipping_service.name] = true;
+                        if (element.extended_area === true) {
+                            supplierExtendedArea[element.shipping_service.name] = {
+                                zonaExtendida: element.extended_area,
+                            };
+                        }
+                    });
+                    console.log(supplierExtendedArea);
+                    // supplierExtended.current = supplierExtendedArea;
+                    setSupplierAvailability(supplierExtendedArea);
+                    //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, RedpackExiguiente: true}
+                    //Se hace un nuevo array con la informacion de cada paqueteria con la respuesta de la API
+                    suppliersGeneral.forEach(element => {
+                        supplierShippingName[element.shipping_service.name] = [
+                            element.shipping_company,
+                            element.shipping_service.name,
+                            element.shipping_service.description,
+                            element.shipping_service.id,
+                        ];
+                    });
+                    console.log(supplierShippingName);
+                    //supplierShipping.current = supplierShippingName;
+                    setSupplierAvailabilityGeneral(supplierShippingName);
+                }
+            })
+            .catch(error => console.log('error', error));
+    };
 
     useEffect(() => {
         if (weight === '') return;
@@ -529,17 +493,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             console.log('pricedWeight', pricedWeight);
         }
 
-        //console.log('shipping name', supplierShipping.current)
-        // let supplierExtendedArea = {}
-        // supplierAvailability.forEach((element) => { supplierExtendedArea[element.shipping_service.name] = element.extended_area})
-        // console.log(supplierExtendedArea)
-        // supplierExtended.current = supplierExtendedArea;
-        // setSupplierAvailability(supplierExtendedArea);
-        //console.log('peso fisico', pricedWeight, 'peso volumetrico', volumetricWeight);
-        // let insuranceFedex = 0;
-        // let insuranceRedpack = 0;
-        // let insuranceAutoencargos = 0;
-
         //Validaciones de valor asegurado
         const getInsurancePrice = company => {
             //console.log('seguro por provedor', company);
@@ -556,15 +509,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             } else {
                 return 0;
             }
-            // if (company === 'fedexDiaSiguiente' || company === 'fedexEconomico') {
-            //     return Math.max(baseValue, 20) + extraValue;
-            // }
-            // if (company === 'redpackExpress' || company === 'redpackEcoExpress') {
-            //     return Math.max(baseValue, 20);
-            // }
-            // if (company === 'autoencargos') {
-            //     return Math.max(baseValue, 20);
-            // }
         };
 
         //Validaciones de zona extendida
@@ -579,7 +523,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 typeof supplierAvailability.NACIONALDIASIGUIENTE.zonaExtendida !== 'undefined'
                     ? 150
                     : 0;
-            console.log('extendedAreaFedexDiaS', extendedAreaFedexDiaS);
+            //console.log('extendedAreaFedexDiaS', extendedAreaFedexDiaS);
         } else {
             console.log('no zona extendida extendedAreaFedexDiaS');
         }
@@ -588,31 +532,24 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 typeof supplierAvailability.NACIONALECONOMICO.zonaExtendida !== 'undefined'
                     ? 150
                     : 0;
-            console.log('extendedAreaFedexEco', extendedAreaFedexEco);
+            //console.log('extendedAreaFedexEco', extendedAreaFedexEco);
         } else {
             console.log('no zona extendida extendedAreaFedexEco');
         }
         if (typeof supplierAvailability.EXPRESS !== 'undefined') {
             extendedAreaRedpackExp =
                 typeof supplierAvailability.EXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
-            console.log('extendedAreaRedpackExp', extendedAreaRedpackExp);
+            //console.log('extendedAreaRedpackExp', extendedAreaRedpackExp);
         } else {
             console.log('no zona extendida extendedAreaRedpackExp');
         }
         if (typeof supplierAvailability.ECOEXPRESS !== 'undefined') {
             extendedAreaRedpackEco =
                 typeof supplierAvailability.ECOEXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
-            console.log('extendedAreaRedpackEco', extendedAreaRedpackEco);
+            //console.log('extendedAreaRedpackEco', extendedAreaRedpackEco);
         } else {
             console.log('no zona extendida extendedAreaRedpackEco');
         }
-        // if (typeof supplierAvailability.AUTOENCARGOS !==
-        //     'undefined') {
-        //     extendedAreaAutoencargos = (typeof supplierAvailability.AUTOENCARGOS.zonaExtendida !== 'undefined' ? 150 : 0)
-        //     console.log('extendedAreaAutoencargos', extendedAreaAutoencargos)
-        // } else {
-        //     console.log('no zona extendida extendedAreaAutoencargos')
-        // }
 
         profileDoc.ref
             .collection('rate')
@@ -839,7 +776,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         cargoExtra,
                         cargoExtraHeight,
                     );
-                    //console.log('supplierAvailability', supplierAvailability);
                     if (entrega === 'fedexDiaSiguiente')
                         setSupplierCostFedexDiaS({
                             id: tarifa.id,
@@ -897,7 +833,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 : supplierAvailabilityGeneral.EXPRESS,
                             insurance: getInsurancePrice('redpackExpress'),
                         });
-                    console.log('supplierAvailability', supplierAvailability.EXPRESS);
                     if (entrega === 'redpackEcoExpress')
                         setSupplierCostRedpackEco({
                             id: tarifa.id,
@@ -917,8 +852,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 : supplierAvailabilityGeneral.ECOEXPRESS,
                             insurance: getInsurancePrice('redpackEcoExpress'),
                         });
-
-                    console.log('supplierAvailability', supplierAvailability.ECOEXPRESS);
                     if (entrega === 'autoencargos')
                         setSupplierCostAutoencargosEcon({
                             id: tarifa.id,
@@ -1101,7 +1034,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 'Día Siguiente',
                                 supplierCostFedexDiaS,
                             )}
-                        {console.log(supplierCostFedexDiaS)}
                         {supplierAvailability.NACIONALECONOMICO &&
                             supplierCostFedexEcon.guia &&
                             supplierCard(
