@@ -79,9 +79,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     let dataShipping = useRef();
     let delivery_company = useRef();
+    const allRatesData = useRef([]);
     let supplierExtendedArea = {};
     let supplierShippingName = {};
-    const allRatesData = useRef([]);
+    let supplerFedex = false;
+    let supplierRedpack = false;
 
     let OtherCpsZMG = [
         '44009',
@@ -269,8 +271,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     }, []);
 
     useEffect(() => {
-        let supplerFedex = false;
-        let supplierRedpack = false;
+        // let supplerFedex = false;
+        // let supplierRedpack = false;
         //Se extraen los provedores de la colecccion rate del perfil del usuario
         const getRates = async () => {
             await db
@@ -385,13 +387,27 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             },
                         ],
                     });
+
                     console.log(allRatesData.current.length, 'allRatesData');
+
+                    // if (!supplerFedex && supplierRedpack) {
+                    //     fetchGuia(dataShipping.current, 'redpack')
+                    //     // delivery_company.current = 'redpack';
+                    // } else if (supplerFedex && !supplierRedpack) {
+                    //     fetchGuia(dataShipping.current, 'fedex')
+                    // } else {
+                    //     getFetch(dataShipping.current)
+                    // }
                     fetchGuia(dataShipping.current, delivery);
                 } else {
                     console.log('Error getting document:', error);
                 }
             });
     };
+
+    // async function getFetch(data){
+    //     await Promise.all([fetchGuia(data, 'redpack'), fetchGuia(data, 'fedex')])
+    // }
 
     const fetchGuia = async (data, delivery) => {
         console.log('data 2', data);
