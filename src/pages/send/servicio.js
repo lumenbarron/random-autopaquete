@@ -572,12 +572,15 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         getFinalPrice.current = parseInt(precio, 10) * quantity;
                         //console.log('precioTotal de entrega', precioTotal);
                         let cargoExtraHeight;
-                        if (parseInt(height, 10) > 120 && entrega === 'fedexDiaSiguiente') {
+                        if (parseInt(height, 10) > 100 && entrega === 'redpackEcoExpress') {
+                            cargoExtraHeight = 210;
+                            console.log('cargoExtra redpack', cargoExtraHeight);
+                        } else if (parseInt(height, 10) > 120 && entrega === 'fedexDiaSiguiente') {
                             cargoExtraHeight = 280;
-                            console.log('cargoExtra', cargoExtraHeight);
+                            console.log('cargoExtra fedexDiaSiguiente', cargoExtraHeight);
                         } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
                             cargoExtraHeight = 110;
-                            console.log('cargoExtra', cargoExtraHeight);
+                            console.log('cargoExtra fedexEconomico', cargoExtraHeight);
                         } else {
                             cargoExtraHeight = 0;
                             console.log('cargoExtra', cargoExtraHeight);
@@ -636,7 +639,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     extendedAreaRedpackExp +
                                     cargoExtraHeight,
                                 seguro: getInsurancePrice('redpackExpress'),
-                                cargoExtraHeight: 0,
+                                cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPrice.current,
                                 zonaExt: extendedAreaRedpackExp != 0 ? 130 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.EXPRESS
@@ -654,7 +657,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     extendedAreaRedpackEco +
                                     cargoExtraHeight,
                                 seguro: getInsurancePrice('redpackEcoExpress'),
-                                cargoExtraHeight: 0,
+                                cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPrice.current,
                                 zonaExt: extendedAreaRedpackEco != 0 ? 130 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.ECOEXPRESS
@@ -743,8 +746,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     // console.log('tarifa', tarifa);
                     const { guia } = tarifa;
                     // console.log('guia tarifa', tarifa.diferencia);
-                    //console.log('Entrega', entrega);
-                    console.log('supplierCostFedexDiaS 2', supplierCostFedexDiaS);
+                    console.log('Entrega', entrega);
+                    //console.log('supplierCostFedexDiaS 2', supplierCostFedexDiaS);
                     const kilosExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
                     if (
                         (weight > 30 && entrega === 'fedexDiaSiguiente') ||
@@ -758,7 +761,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     }
                     console.log('height en kilos extra', height);
 
-                    if (parseInt(height, 10) > 120 && entrega === 'fedexDiaSiguiente') {
+                    if (
+                        (parseInt(height, 10) > 100 && entrega === 'redpackEcoExpress') ||
+                        (parseInt(height, 10) > 100 && entrega === 'redpackExpress')
+                    ) {
+                        cargoExtraHeight = 210;
+                        console.log('cargoExtra redpack', cargoExtraHeight);
+                    } else if (parseInt(height, 10) > 120 && entrega === 'fedexDiaSiguiente') {
                         cargoExtraHeight = 280;
                         console.log('cargoExtra', cargoExtraHeight);
                     } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
@@ -824,7 +833,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 cargoExtraHeight,
                             seguro: getInsurancePrice('redpackExpress'),
                             kilosExtra,
-                            cargoExtraHeight: 0,
+                            cargoExtraHeight: cargoExtraHeight,
                             cargoExtra: 0,
                             guia,
                             zonaExt: extendedAreaRedpackExp != 0 ? 130 : false,
@@ -843,7 +852,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 cargoExtraHeight,
                             seguro: getInsurancePrice('redpackEcoExpress'),
                             kilosExtra,
-                            cargoExtraHeight: 0,
+                            cargoExtraHeight: cargoExtraHeight,
                             cargoExtra: 0,
                             guia,
                             zonaExt: extendedAreaRedpackEco != 0 ? 130 : false,
