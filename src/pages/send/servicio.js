@@ -405,9 +405,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             });
     };
 
-    // async function getFetch(data){
-    //     await Promise.all([fetchGuia(data, 'redpack'), fetchGuia(data, 'fedex')])
-    // }
+    async function getFetch(data) {
+        await Promise.all([fetchGuia(data, 'redpack'), fetchGuia(data, 'fedex')]);
+    }
 
     const fetchGuia = async (data, delivery) => {
         console.log('data 2', data);
@@ -516,15 +516,27 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const baseValue = parseInt(contentValue, 10) * 0.02;
             console.log('valor asegurado ', baseValue);
             const extraValue = 40;
-            if (company === 'autoencargos') {
+            if (company === 'autoencargos' && baseValue > 0) {
                 return Math.max(baseValue, 20);
-            } else if (company === 'fedexDiaSiguiente' || company === 'fedexEconomico') {
-                return Math.max(baseValue, 20) + extraValue;
-            } else if (company === 'redpackExpress' || company === 'redpackEcoExpress') {
-                return Math.max(baseValue, 20) + extraValue;
-            } else {
-                return 0;
             }
+            //else
+            if (
+                (company === 'fedexDiaSiguiente' && baseValue > 0) ||
+                (company === 'fedexEconomico' && baseValue > 0)
+            ) {
+                return Math.max(baseValue, 20) + extraValue;
+            }
+            //else
+            if (
+                (company === 'redpackExpress' && baseValue > 0) ||
+                (company === 'redpackEcoExpress' && baseValue > 0)
+            ) {
+                return Math.max(baseValue, 20) + extraValue;
+            }
+            return 0;
+            // else {
+            //     return 0;
+            // }
         };
 
         //Validaciones de zona extendida
@@ -555,14 +567,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (typeof supplierAvailability.EXPRESS !== 'undefined') {
             extendedAreaRedpackExp =
                 typeof supplierAvailability.EXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
-            //console.log('extendedAreaRedpackExp', extendedAreaRedpackExp);
+            console.log('extendedAreaRedpackExp', extendedAreaRedpackExp);
         } else {
             console.log('no zona extendida extendedAreaRedpackExp');
         }
         if (typeof supplierAvailability.ECOEXPRESS !== 'undefined') {
             extendedAreaRedpackEco =
                 typeof supplierAvailability.ECOEXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
-            //console.log('extendedAreaRedpackEco', extendedAreaRedpackEco);
+            console.log('extendedAreaRedpackEco', extendedAreaRedpackEco);
         } else {
             console.log('no zona extendida extendedAreaRedpackEco');
         }
@@ -905,12 +917,20 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const supplierCard = (proveedor, tipoEnvio, entrega, costos) => (
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
-            {proveedor === 'fedex' && <img src="/assets/fedex.png" alt="Fedex" />}
-            {proveedor === 'redpack' && (
-                <img src="/assets/redpack.png" style={{ height: 50 }} alt="Redpack" />
+            {proveedor === 'fedex' && tipoEnvio === 'DiaSiguiente' && (
+                <img src="/assets/fedex-express.png" alt="Fedex" />
             )}
-            {proveedor === 'autoencargos' && (
-                <img src="/assets/autoencar.png" style={{ height: 45 }} alt="Autoencargos" />
+            {proveedor === 'fedex' && tipoEnvio === 'Economico' && (
+                <img src="/assets/fedex-eco.png" alt="Fedex" />
+            )}
+            {proveedor === 'redpack' && tipoEnvio === 'Express' && (
+                <img src="/assets/redpack-express.png" alt="Redpack" />
+            )}
+            {proveedor === 'redpack' && tipoEnvio === 'EcoExpress' && (
+                <img src="/assets/redpack-eco.png" alt="Redpack" />
+            )}
+            {proveedor === 'autoencargos' && tipoEnvio === 'Economico' && (
+                <img src="/assets/autoencar.png" style={{ height: 50 }} alt="Autoencargos" />
             )}
             <h6
                 style={{
@@ -967,7 +987,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     {costos.zonaExt && (
                         <PriceContainer>
                             <PriceLabel>Zona Extendida:</PriceLabel>
-                            <PriceNumber>{formatMoney(150)}</PriceNumber>
+                            <PriceNumber>{formatMoney(costos.zonaExt)}</PriceNumber>
                         </PriceContainer>
                     )}
                     <br />
