@@ -46,13 +46,6 @@ const states = {
     ZA: 'Zacatecas',
 };
 
-console.log(
-    'tokenSand',
-    process.env.REACT_APP_REDPACK_SAND,
-    'tokenProd',
-    process.env.REACT_APP_REDPACK_PROD,
-);
-
 const StatePicklistOptions = () => {
     const allStates = Object.keys(states).map(code => {
         return <Option key={code} value={code} name={states[code]} label={states[code]} />;
@@ -94,15 +87,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     const db = firebase.firestore();
     const user = useUser();
     const creationDate = new Date();
-    const tokenSand = process.env.REACT_APP_REDPACK_SAND;
-    const tokenProd = process.env.REACT_APP_REDPACK_PROD;
     console.log('creationDate', creationDate);
-    console.log(
-        'tokenSand',
-        process.env.REACT_APP_REDPACK_SAND,
-        'tokenProd',
-        process.env.REACT_APP_REDPACK_PROD,
-    );
 
     const [error, setError] = useState(false);
 

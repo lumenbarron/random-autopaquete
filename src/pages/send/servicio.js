@@ -84,6 +84,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     let supplierShippingName = {};
     let supplerFedex = false;
     let supplierRedpack = false;
+    const tokenSand = process.env.REACT_APP_REDPACK_SAND;
+    const tokenProd = process.env.REACT_APP_REDPACK_PROD;
+    console.log('tokenSand', tokenSand, 'tokenProd', tokenProd);
 
     let OtherCpsZMG = [
         '44009',
@@ -414,7 +417,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         console.log('delivery', delivery);
         console.log('haciendo la peticion al broker');
         let myHeaders = new Headers();
-        myHeaders.append('Authorization', 'Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded');
+        myHeaders.append('Authorization', tokenSand);
         myHeaders.append('Content-Type', 'application/json');
         let requestOptions = {
             method: 'POST',

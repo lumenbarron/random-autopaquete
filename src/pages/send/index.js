@@ -19,6 +19,9 @@ const SendPage = () => {
     const { idGuia: idGuiaParam, step: stepParam } = useParams();
     const [onReplay, setOnReplay] = useState(false);
     const [guiaReady, setguiaReady] = useState(false);
+    const tokenSand = process.env.REACT_APP_REDPACK_SAND;
+    const tokenProd = process.env.REACT_APP_REDPACK_PROD;
+    console.log('tokenSand', tokenSand, 'tokenProd', tokenProd);
 
     useEffect(() => {
         if (stepParam) setCurrentStepName(stepParam);
@@ -117,7 +120,7 @@ const SendPage = () => {
         } else {
             setCurrentStepName('descarga');
             let myHeaders = new Headers();
-            myHeaders.append('Authorization', 'Token 1dd603f5ac7378929cdaa37506cceeb3630e0ded');
+            myHeaders.append('Authorization', tokenSand);
             myHeaders.append('Content-Type', 'application/json');
             console.log('obteniendo los valores de firestore');
             //Asignando los valores desde el doc guia del firestore
