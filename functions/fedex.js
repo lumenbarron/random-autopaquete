@@ -54,14 +54,14 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
 
     let supplier;
     if (servicio === 'fedexEconomico') {
-        supplier = 'fedexOvernight';
+        supplier = 'fedexEconomico';
         // if (parseInt(packaging.weight, 10) > 15) {
         //     supplier = 'fedexEconomicoPesado';
         // } else {
         //     supplier = 'fedexEconomico';
         // }
     } else if (servicio === 'fedexDiaSiguiente') {
-        supplier = 'fedexEconomicoPesado';
+        supplier = 'fedexOvernight';
     } else {
         return false;
     }
