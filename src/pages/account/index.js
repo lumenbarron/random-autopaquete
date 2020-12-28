@@ -101,7 +101,7 @@ const AccountPage = () => {
                                         Enviar comprobante de pago por correo y en caso de requerir
                                         factura, solicitarla en el mismo
                                     </h3>
-                                    <a href="mailto:atencion1@autopaquete.com">
+                                    <a href="mailto:cobranza@autopaquete.com">
                                         cobranza@autopaquete.com
                                     </a>
                                 </Col>
