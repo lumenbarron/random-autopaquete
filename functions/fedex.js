@@ -248,7 +248,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
     if (guia.supplierData.Supplier === 'fedexEconomico') {
         supplier = 'fedexEconomico';
         // if (parseInt(packaging.weight, 10) > 15) {
-        //     supplier = 'fedexEconomicoPesado';
+        //     supplier = 'fedexOvernight';
         // } else {
         //     supplier = 'fedexEconomico';
         // }

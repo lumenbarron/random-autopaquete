@@ -559,11 +559,9 @@ export default function Tarifario({ user }) {
         return [tarifaNormal, tarifaExtra];
     };
 
-    const [estafetaDiaSiguiente, estafetaDiaSiguienteExtra] = getTarifasDeServicio(
-        'estafetaDiaSiguiente',
-    );
+    const [redpackExpress, redpackExpressExtra] = getTarifasDeServicio('redpackExpress');
 
-    const [estafetaEconomico, estafetaEconomicoExtra] = getTarifasDeServicio('estafetaEconomico');
+    const [redpackEcoExpress, redpackEcoExpressExtra] = getTarifasDeServicio('redpackEcoExpress');
 
     const [fedexDiaSiguiente, fedexDiaSiguienteExtra] = getTarifasDeServicio('fedexDiaSiguiente');
 
@@ -582,17 +580,17 @@ export default function Tarifario({ user }) {
             <Accordion id="accordion-estafeta" multiple>
                 <TarifarioPorServicio
                     label="Redpack Express"
-                    tarifas={estafetaDiaSiguiente}
-                    kgExtra={estafetaDiaSiguienteExtra}
-                    entrega="estafetaDiaSiguiente"
+                    tarifas={redpackExpress}
+                    kgExtra={redpackExpressExtra}
+                    entrega="redpackExpress"
                     user={user}
                 />
 
                 <TarifarioPorServicio
                     label="Redpack EcoExpress"
-                    tarifas={estafetaEconomico}
-                    kgExtra={estafetaEconomicoExtra}
-                    entrega="estafetaEconomico"
+                    tarifas={redpackEcoExpress}
+                    kgExtra={redpackEcoExpressExtra}
+                    entrega="redpackEcoExpress"
                     user={user}
                 />
             </Accordion>
