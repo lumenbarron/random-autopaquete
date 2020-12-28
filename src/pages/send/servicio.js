@@ -86,7 +86,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     let supplierRedpack = false;
     const tokenSand = process.env.REACT_APP_REDPACK_SAND;
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
-    console.log('tokenSand', tokenSand, 'tokenProd', tokenProd);
 
     let OtherCpsZMG = [
         '44009',
@@ -274,8 +273,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     }, []);
 
     useEffect(() => {
-        // let supplerFedex = false;
-        // let supplierRedpack = false;
         //Se extraen los provedores de la colecccion rate del perfil del usuario
         const getRates = async () => {
             await db
@@ -299,19 +296,17 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         console.log('todas las tarifas del cliente', allRatesData.current);
                         //Se verifica que si las tarifas tienen el proveedor asignado
                         allRatesData.current.forEach(supplier => {
-                            // supplerFedex = (supplier.entrega === "fedexDiaSiguiente" || supplier.entrega === "fedexEconomico" ? true : false );
-                            // supplierRedpack = (supplier.entrega === "redpackExpress" || supplier.entrega === "redpackEcoExpress" ? true : false );
                             if (
                                 supplier.entrega === 'fedexDiaSiguiente' ||
                                 supplier.entrega === 'fedexEconomico'
                             ) {
-                                console.log('si hay fedex');
+                                // console.log('si hay fedex');
                                 supplerFedex = true;
                             } else if (
                                 supplier.entrega === 'redpackExpress' ||
                                 supplier.entrega === 'redpackEcoExpress'
                             ) {
-                                console.log('si hay redpack');
+                                // console.log('si hay redpack');
                                 supplierRedpack = true;
                             }
                         });
@@ -323,7 +318,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         } else {
                             delivery_company.current = '';
                         }
-                        console.log('delivery_company.current', delivery_company.current);
+                        // console.log('delivery_company.current', delivery_company.current);
                         getDataGuia(delivery_company.current);
                     });
                 });
@@ -392,15 +387,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     });
 
                     console.log(allRatesData.current.length, 'allRatesData');
-
-                    // if (!supplerFedex && supplierRedpack) {
-                    //     fetchGuia(dataShipping.current, 'redpack')
-                    //     // delivery_company.current = 'redpack';
-                    // } else if (supplerFedex && !supplierRedpack) {
-                    //     fetchGuia(dataShipping.current, 'fedex')
-                    // } else {
-                    //     getFetch(dataShipping.current)
-                    // }
                     fetchGuia(dataShipping.current, delivery);
                 } else {
                     console.log('Error getting document:', error);
@@ -413,11 +399,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     }
 
     const fetchGuia = async (data, delivery) => {
-        console.log('data 2', data);
-        console.log('delivery', delivery);
+        // console.log('data 2', data);
+        // console.log('delivery', delivery);
         console.log('haciendo la peticion al broker');
         let myHeaders = new Headers();
-        myHeaders.append('Authorization', tokenSand);
+        myHeaders.append('Authorization', tokenProd);
         myHeaders.append('Content-Type', 'application/json');
         let requestOptions = {
             method: 'POST',
@@ -427,7 +413,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         };
 
         const urlRequest = `http://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
-        console.log('url', urlRequest);
+        // console.log('url', urlRequest);
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
             .then(result => {
@@ -451,12 +437,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             extended_area_estimate_cost: {},
                         };
                         suppliersGeneral.push(autoencargos);
-                        //setSupplierAvailabilityGeneral(suppliersGeneral);
                         // console.log(suppliersGeneral)
                     } else {
                         console.log('aqui no hay autoencargos');
-                        console.log(suppliersGeneral);
-                        //setSupplierAvailabilityGeneral(suppliersGeneral);
+                        // console.log(suppliersGeneral);
                     }
                     //Se hace un nuevo array con la respuesta de la API para ver si hay zona extendida
                     suppliersGeneral.forEach(element => {
@@ -492,7 +476,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
         console.log('todos los provedores activos', supplierAvailability);
-        console.log('toda la info de los provedores activos', supplierAvailabilityGeneral);
+        // console.log('toda la info de los provedores activos', supplierAvailabilityGeneral);
 
         //Validaciones del peso
         let pricedWeight = Math.ceil(weight);
@@ -570,14 +554,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (typeof supplierAvailability.EXPRESS !== 'undefined') {
             extendedAreaRedpackExp =
                 typeof supplierAvailability.EXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
-            console.log('extendedAreaRedpackExp', extendedAreaRedpackExp);
+            // console.log('extendedAreaRedpackExp', extendedAreaRedpackExp);
         } else {
             console.log('no zona extendida extendedAreaRedpackExp');
         }
         if (typeof supplierAvailability.ECOEXPRESS !== 'undefined') {
             extendedAreaRedpackEco =
                 typeof supplierAvailability.ECOEXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
-            console.log('extendedAreaRedpackEco', extendedAreaRedpackEco);
+            // console.log('extendedAreaRedpackEco', extendedAreaRedpackEco);
         } else {
             console.log('no zona extendida extendedAreaRedpackEco');
         }
