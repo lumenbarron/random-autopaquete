@@ -186,7 +186,7 @@ const SendPage = () => {
                             redirect: 'follow',
                         };
                         fetch(
-                            'http://autopaquete.simplestcode.com/api/do-shipping/',
+                            'https://autopaquete.simplestcode.com/api/do-shipping/',
                             requestOptions,
                         )
                             .then(response => response.json())

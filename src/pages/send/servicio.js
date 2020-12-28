@@ -412,7 +412,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             redirect: 'follow',
         };
 
-        const urlRequest = `http://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
+        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
         // console.log('url', urlRequest);
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
