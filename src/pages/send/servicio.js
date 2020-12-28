@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import toFixed from 'accounting-js/lib/toFixed';
+import axios from 'axios';
+
 import { StyledPaneContainer, StyledDirectiosDetails, StyledDetails, StyledError } from './styled';
 
 const PriceContainer = styled.div`
@@ -86,6 +88,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     let supplierRedpack = false;
     const tokenSand = process.env.REACT_APP_REDPACK_SAND;
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
+    const https = require('https');
 
     let OtherCpsZMG = [
         '44009',
@@ -402,6 +405,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         // console.log('data 2', data);
         // console.log('delivery', delivery);
         console.log('haciendo la peticion al broker');
+
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
         myHeaders.append('Content-Type', 'application/json');
@@ -411,9 +415,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             body: data,
             redirect: 'follow',
         };
+        // let axiosConfig = {
+        //     headers : {
+        //         'Content-Type': 'application/json',
+        //         "Access-Control-Allow-Origin": "*",
+        //         'Authorization': tokenProd,
+        //         // body: data,
+        //         redirect: 'follow',
+        //     },
+        //     httpsAgent: new https.Agent({
+        //         rejectUnauthorized: false
+        //       }),
+        // }
 
         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
-        // console.log('url', urlRequest);
+        console.log('url', urlRequest);
+        //axios.post(urlRequest, data, axiosConfig)
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
             .then(result => {
@@ -1063,7 +1080,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             supplierCard(
                                 'fedex',
                                 'DiaSiguiente',
-                                'Día Siguiente',
+                                '1 a 3 días hábiles',
                                 supplierCostFedexDiaS,
                             )}
                         {supplierAvailability.NACIONALECONOMICO &&
@@ -1095,7 +1112,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             supplierCard(
                                 'autoencargos',
                                 'Economico',
-                                '1 a 3 días hábiles',
+                                '1 a 2 días hábiles',
                                 supplierCostAutoencargosEcon,
                             )}
                     </StyledPaneContainer>

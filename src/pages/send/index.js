@@ -115,6 +115,7 @@ const SendPage = () => {
         if (supplierData.Supplier === 'autoencargosEconomico') {
             console.log('autoencargos pdf');
             console.log(idGuiaGlobal.current);
+            setguiaReady(true);
             setCurrentStepName('descarga');
         } else {
             setCurrentStepName('descarga');
