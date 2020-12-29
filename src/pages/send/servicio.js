@@ -922,19 +922,19 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const supplierCard = (proveedor, tipoEnvio, entrega, costos) => (
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
             {proveedor === 'fedex' && tipoEnvio === 'DiaSiguiente' && (
-                <img src="/assets/fedex-express.png" alt="Fedex" />
+                <img src="/assets/fedex-express.png" style={{ maxWidth: 180 }} alt="Fedex" />
             )}
             {proveedor === 'fedex' && tipoEnvio === 'Economico' && (
-                <img src="/assets/fedex-eco.png" alt="Fedex" />
+                <img src="/assets/fedex-eco.png" style={{ maxWidth: 180 }} alt="Fedex" />
             )}
             {proveedor === 'redpack' && tipoEnvio === 'Express' && (
-                <img src="/assets/redpack-express.png" alt="Redpack" />
+                <img src="/assets/redpack-express.png" style={{ maxWidth: 180 }} alt="Redpack" />
             )}
             {proveedor === 'redpack' && tipoEnvio === 'EcoExpress' && (
-                <img src="/assets/redpack-eco.png" alt="Redpack" />
+                <img src="/assets/redpack-eco.png" style={{ maxWidth: 180 }} alt="Redpack" />
             )}
             {proveedor === 'autoencargos' && tipoEnvio === 'Economico' && (
-                <img src="/assets/autoencar.png" style={{ height: 50 }} alt="Autoencargos" />
+                <img src="/assets/autoencar.png" style={{ maxWidth: 180 }} alt="Autoencargos" />
             )}
             <h6
                 style={{

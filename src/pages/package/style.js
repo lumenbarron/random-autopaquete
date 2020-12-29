@@ -20,8 +20,7 @@ export const StyledPackage = styled.div`
     h1 {
         color: #ab0000;
         font-weight: 700;
-        padding-left: 100px;
-        padding-top: 50px;
+        padding-top: 30px;
     }
 
     h2 {
@@ -31,8 +30,27 @@ export const StyledPackage = styled.div`
     }
 
     h3 {
-        font-weight: 700;
-        font-size: 18px !important;
+        font-weight: 400;
+        font-size: 28px !important;
+    }
+
+    h4 {
+        color: #c94141;
+        font-weight: 600;
+        font-size: 24px !important;
+    }
+
+    .subtitle {
+        font-size: 20px;
+    }
+
+    .price {
+        color: #c94141;
+    }
+
+    .img-package {
+        max-width: fit-content;
+        height: 191px;
     }
 
     a {
@@ -46,6 +64,13 @@ export const StyledPackage = styled.div`
 
     .description {
         font-size: 1rem;
+        text-align: center;
+    }
+
+    .container-package {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .lineimg {
@@ -53,7 +78,7 @@ export const StyledPackage = styled.div`
     }
 
     .spaceline {
-        max-width: 50px !important;
+        max-width: 20px !important;
     }
 
     .whitespace {

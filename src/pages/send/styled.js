@@ -43,7 +43,6 @@ export const StyledPaneContainer = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    margin: 3rem;
 
     .content-value {
         justify-content: left !important;
