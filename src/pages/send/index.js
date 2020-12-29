@@ -133,6 +133,7 @@ const SendPage = () => {
                         let data = JSON.stringify({
                             sender: {
                                 contact_name: doc.data().sender_addresses.name,
+                                company_name: doc.data().sender_addresses.name,
                                 street: doc.data().sender_addresses.street_number,
                                 zip_code: doc.data().sender_addresses.codigo_postal,
                                 neighborhood: doc.data().sender_addresses.neighborhood,
@@ -145,6 +146,7 @@ const SendPage = () => {
                             },
                             receiver: {
                                 contact_name: doc.data().receiver_addresses.name,
+                                company_name: doc.data().receiver_addresses.name,
                                 street: doc.data().receiver_addresses.street_number,
                                 zip_code: doc.data().receiver_addresses.codigo_postal,
                                 neighborhood: doc.data().receiver_addresses.neighborhood,
