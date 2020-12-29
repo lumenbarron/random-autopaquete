@@ -51,7 +51,6 @@ export default function PackagePage() {
                             <h3>Sólo aplica para FEDEX</h3>
                             <h4>Empaque</h4>
                             <p className="subtitle">
-                                {' '}
                                 La mercancía que esta empacada de la siguiente manera tendrá un
                                 cargo extra de <b className="price"> $110 </b>por envío.
                             </p>
