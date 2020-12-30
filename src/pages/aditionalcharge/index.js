@@ -15,9 +15,8 @@ export default function ChargePage() {
                         <h1>Recargos Adicionales</h1>
                         <p className="main-subtitle">
                             Para Autopaquete es un gusto poder servirle con nuestros servicios, sin
-                            embargo, hay recargos adicionales a su envío, entre los cuales nuestra
-                            plataforma no puede calcular. A continuación se los desglozamos para que
-                            los tenga en cuenta:
+                            embargo, hay recargos adicionales a su envío que continuación se los
+                            desglozamos para que los tenga en cuenta:
                         </p>
                     </div>
                     <ContentCharge

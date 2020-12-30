@@ -8,6 +8,12 @@ export const StyledSendPage = styled.div`
     background-color: #f7f7f7;
     min-height: 100vh;
 
+    .link-package {
+        p {
+            text-decoration: underline;
+            text-align: center;
+        }
+
     @media (max-width: 768px) {
         padding: 3rem 0;
     }
