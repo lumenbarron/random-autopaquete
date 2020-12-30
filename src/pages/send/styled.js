@@ -92,6 +92,14 @@ export const StyledRightPane = styled(StyledPane)`
         font-weight: 600;
         color: #0e0e0e !important;
     }
+    .link-package {
+        p {
+            font-size: 12px;
+            text-decoration: underline;
+            color: rgba(171, 0, 0, 1);
+            text-align: center;
+        }
+    }
 `;
 
 export const StyledRadioGroup = styled(RadioGroup)`
