@@ -88,7 +88,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     let supplierRedpack = false;
     const tokenSand = process.env.REACT_APP_REDPACK_SAND;
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
-    const https = require('https');
 
     let OtherCpsZMG = [
         '44009',
@@ -640,25 +639,23 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.NACIONALDIASIGUIENTE,
                                 insurance: getInsurancePrice('fedexDiaSiguiente'),
                             });
-                        //console.log(supplierAvailabilityGeneral.NACIONALDIASIGUIENTE[0])
-                        // if (entrega === 'fedexEconomico')
-                        //     setSupplierCostFedexEcon({
-                        //         id: doc.id,
-                        //         precio:
-                        //             getFinalPrice.current +
-                        //             getInsurancePrice('fedexEconomico') +
-                        //             extendedAreaFedexEco +
-                        //             cargoExtraHeight,
-                        //         seguro: getInsurancePrice('fedexEconomico'),
-                        //         cargoExtraHeight: cargoExtraHeight,
-                        //         guia: getFinalPrice.current,
-                        //         zonaExt: extendedAreaFedexEco != 0 ? 150 : false,
-                        //         shippingInfo: !supplierAvailabilityGeneral.NACIONALECONOMICO
-                        //             ? false
-                        //             : supplierAvailabilityGeneral.NACIONALECONOMICO,
-                        //         insurance: getInsurancePrice('fedexEconomico'),
-                        //     });
-                        //console.log(supplierAvailabilityGeneral.NACIONALECONOMICO[0])
+                        if (entrega === 'fedexEconomico')
+                            setSupplierCostFedexEcon({
+                                id: doc.id,
+                                precio:
+                                    getFinalPrice.current +
+                                    getInsurancePrice('fedexEconomico') +
+                                    extendedAreaFedexEco +
+                                    cargoExtraHeight,
+                                seguro: getInsurancePrice('fedexEconomico'),
+                                cargoExtraHeight: cargoExtraHeight,
+                                guia: getFinalPrice.current,
+                                zonaExt: extendedAreaFedexEco != 0 ? 150 : false,
+                                shippingInfo: !supplierAvailabilityGeneral.NACIONALECONOMICO
+                                    ? false
+                                    : supplierAvailabilityGeneral.NACIONALECONOMICO,
+                                insurance: getInsurancePrice('fedexEconomico'),
+                            });
                         if (entrega === 'redpackExpress')
                             setSupplierCostRedpackEx({
                                 id: doc.id,
@@ -676,7 +673,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.EXPRESS,
                                 insurance: getInsurancePrice('redpackExpress'),
                             });
-                        //console.log(supplierAvailabilityGeneral.EXPRESS[0])
                         if (entrega === 'redpackEcoExpress')
                             setSupplierCostRedpackEco({
                                 id: doc.id,
@@ -694,7 +690,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.ECOEXPRESS,
                                 insurance: getInsurancePrice('redpackEcoExpress'),
                             });
-                        //console.log(supplierAvailability.ECOEXPRESS)
                         if (entrega === 'autoencargos')
                             setSupplierCostAutoencargosEcon({
                                 id: doc.id,
@@ -711,7 +706,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.AUTOENCARGOS,
                                 insurance: getInsurancePrice('autoencargos'),
                             });
-                        //console.log(supplierAvailabilityGeneral.AUTOENCARGOS)
                         return;
                     }
                     // else
@@ -833,25 +827,25 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 : supplierAvailabilityGeneral.NACIONALDIASIGUIENTE,
                             insurance: getInsurancePrice('fedexDiaSiguiente'),
                         });
-                    // if (entrega === 'fedexEconomico')
-                    //     setSupplierCostFedexEcon({
-                    //         id: tarifa.id,
-                    //         precio:
-                    //             precio +
-                    //             getInsurancePrice('fedexEconomico') +
-                    //             extendedAreaFedexEco +
-                    //             cargoExtraHeight,
-                    //         seguro: getInsurancePrice('fedexEconomico'),
-                    //         kilosExtra,
-                    //         cargoExtraHeight,
-                    //         cargoExtra,
-                    //         guia,
-                    //         zonaExt: extendedAreaFedexEco != 0 ? 150 : false,
-                    //         shippingInfo: !supplierAvailabilityGeneral.NACIONALECONOMICO
-                    //             ? false
-                    //             : supplierAvailabilityGeneral.NACIONALECONOMICO,
-                    //         insurance: getInsurancePrice('fedexEconomico'),
-                    //     });
+                    if (entrega === 'fedexEconomico')
+                        setSupplierCostFedexEcon({
+                            id: tarifa.id,
+                            precio:
+                                precio +
+                                getInsurancePrice('fedexEconomico') +
+                                extendedAreaFedexEco +
+                                cargoExtraHeight,
+                            seguro: getInsurancePrice('fedexEconomico'),
+                            kilosExtra,
+                            cargoExtraHeight,
+                            cargoExtra,
+                            guia,
+                            zonaExt: extendedAreaFedexEco != 0 ? 150 : false,
+                            shippingInfo: !supplierAvailabilityGeneral.NACIONALECONOMICO
+                                ? false
+                                : supplierAvailabilityGeneral.NACIONALECONOMICO,
+                            insurance: getInsurancePrice('fedexEconomico'),
+                        });
                     if (entrega === 'redpackExpress')
                         setSupplierCostRedpackEx({
                             id: tarifa.id,
@@ -1080,14 +1074,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 '1 a 3 días hábiles',
                                 supplierCostFedexDiaS,
                             )}
-                        {/* {supplierAvailability.NACIONALECONOMICO &&
+                        {supplierAvailability.NACIONALECONOMICO &&
                             supplierCostFedexEcon.guia &&
                             supplierCard(
                                 'fedex',
                                 'Economico',
                                 '3 a 5 días hábiles',
                                 supplierCostFedexEcon,
-                            )} */}
+                            )}
                         {supplierAvailability.EXPRESS &&
                             supplierCostRedpackEx.guia &&
                             supplierCard(
