@@ -9,14 +9,14 @@ export default function PackagePage() {
     return (
         <StyledPackage>
             <div className="back">
-                <div>
-                    <h1>Recomendaciones generales sobre medidas y paquetes</h1>
-                </div>
-                <Container className="imgtext">
-                    <Row className="pb-4">
+                <Container>
+                    <div className="pb-4">
+                        <h1>Recomendaciones generales sobre medidas y paquetes</h1>
+                    </div>
+                    <Row className="pb-4 mt-5">
                         <Col lg={6}>
                             <Row>
-                                <Col className="spaceline">
+                                <Col className="spaceline p-0">
                                     <img className="lineimg" src="/assets/greyline.png" alt="" />
                                 </Col>
                                 <Col>
@@ -31,7 +31,7 @@ export default function PackagePage() {
                         </Col>
                         <Col lg={6}>
                             <Row>
-                                <Col className="spaceline">
+                                <Col className="spaceline p-0">
                                     <img className="lineimg" src="/assets/greyline.png" alt="" />
                                 </Col>
                                 <Col>

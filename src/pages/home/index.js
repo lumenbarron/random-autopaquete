@@ -40,7 +40,7 @@ const HomePage = () => {
                     </Col>
                 </Row>
             </Container>
-            <img src="/assets/nback.svg" style={{ width: '100%' }} />
+            {/* <img src="/assets/nback.svg" style={{ width: '100%' }} />
             <div className="nback">
                 <Container>
                     <Row>
@@ -65,8 +65,8 @@ const HomePage = () => {
                         </Col>
                     </Row>
                 </Container>
-            </div>
-            <div
+            </div> */}
+            {/* <div
                 style={{
                     background: 'linear-gradient(45deg, #bb1b1f, #7c0004)',
                 }}
@@ -106,8 +106,8 @@ const HomePage = () => {
                     src="/assets/back-cards-below.svg"
                     style={{ width: '100%', marginBottom: '-1px' }}
                 />
-            </div>
-            <div style={{ background: 'rgb(242,242,242)', padding: '5rem 0' }}>
+            </div> */}
+            {/* <div style={{ background: 'rgb(242,242,242)', padding: '5rem 0' }}>
                 <Container>
                     <Row className="justify-content-md-center">
                         <Col xs lg="2">
@@ -143,8 +143,8 @@ const HomePage = () => {
                     </Row>
                 </Container>
             </div>
-            <h1 className="title timeline-header">¿Cómo funciona?</h1>
-            <div className="timeline">
+            <h1 className="title timeline-header">¿Cómo funciona?</h1> */}
+            {/* <div className="timeline">
                 <ul>
                     <li>
                         <div className="tcontent">
@@ -195,8 +195,8 @@ const HomePage = () => {
                         </div>
                     </li>
                 </ul>
-            </div>
-            <div className="backsilder">
+            </div> */}
+            {/* <div className="backsilder">
                 <h1 className="nclients">Nuestros clientes</h1>
                 <div className="wrapper">
                     <div className="slider">
@@ -212,7 +212,7 @@ const HomePage = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </StyledHome>
     );
 };

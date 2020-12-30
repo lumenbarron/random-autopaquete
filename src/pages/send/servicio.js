@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes, { element } from 'prop-types';
 import { Card, Button, Spinner } from 'react-rainbow-components';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
 import formatMoney from 'accounting-js/lib/formatMoney';
@@ -8,6 +9,7 @@ import toFixed from 'accounting-js/lib/toFixed';
 import axios from 'axios';
 
 import { StyledPaneContainer, StyledDirectiosDetails, StyledDetails, StyledError } from './styled';
+import { Row } from 'react-bootstrap';
 
 const PriceContainer = styled.div`
     display: flex;
@@ -1107,6 +1109,20 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 supplierCostAutoencargosEcon,
                             )}
                     </StyledPaneContainer>
+                    <Row className="justify-content-md-center mt-4">
+                        <Link
+                            className="link-package"
+                            to="/mi-cuenta/recargos"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <p>
+                                {' '}
+                                ¿ Tienes duda de algun cargo extra ?{' '}
+                                <b>Consulta nuestra sección de recargos adicionales</b>
+                            </p>
+                        </Link>
+                    </Row>
                     {!(
                         (supplierAvailability.NACIONALDIASIGUIENTE != 'undefined' &&
                             supplierCostFedexDiaS.guia) ||

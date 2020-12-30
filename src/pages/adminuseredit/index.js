@@ -50,7 +50,7 @@ const AdminUserEditPage = () => {
         });
         setUser(data[0]);
     }
-
+    console.log('user');
     if (!user) return <div></div>;
 
     return (

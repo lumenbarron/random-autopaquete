@@ -530,6 +530,13 @@ export function AccountSidebar() {
                         label="Empaques"
                     />
                 </Link>
+                <Link to="/mi-cuenta/recargos">
+                    <StyledSidebarItem
+                        icon={<img src="/assets/icon-money.svg" alt="" />}
+                        name="Recargos"
+                        label="Recargos"
+                    />
+                </Link>
                 <Link to="/mi-cuenta/contacto">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-contact.png" alt="" />}
