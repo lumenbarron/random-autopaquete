@@ -57,9 +57,8 @@ const Footer = () => {
             </div>
             <div className="footertwo">
                 <p>
-                    <a href="/terminos-y-condiciones">Términos y Condiciones</a> |{' '}
-                    <a href="/aviso-de-privacidad">Aviso de Privacidad</a> Hecho por
-                    <a href="https://sitiorandom.com"> Sitio Random</a>
+                    <a href="/terminos-y-condiciones">Términos y Condiciones</a> |
+                    <a href="/aviso-de-privacidad">Aviso de Privacidad</a>
                 </p>
             </div>
         </StyledFooter>

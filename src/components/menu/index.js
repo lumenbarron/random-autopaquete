@@ -40,7 +40,7 @@ const Menu = () => {
     return (
         <StyledMain>
             <Nav fill className="justify-content-end" variant="pills" defaultActiveKey="/">
-                <Nav.Item>
+                {/* <Nav.Item>
                     <Link to="/">
                         <StyledButton
                             label="Inicio"
@@ -50,8 +50,8 @@ const Menu = () => {
                             active={activeMenu === 0}
                         />
                     </Link>
-                </Nav.Item>
-                <Nav.Item>
+                </Nav.Item> */}
+                {/* <Nav.Item>
                     <Link to="/servicios">
                         <StyledButton
                             label="Servicios"
@@ -61,12 +61,12 @@ const Menu = () => {
                             active={activeMenu === 1}
                         />
                     </Link>
-                </Nav.Item>
+                </Nav.Item> */}
                 <Nav.Item>
                     <Link to="/cotizacion">
                         <StyledButton
                             label="Cotización"
-                            variant={activeMenu === 2 ? 'brand' : 'base'}
+                            variant={activeMenu === 2 ? 'brand' : 'outline-brand'}
                             onClick={() => setActiveMenu(2)}
                             wide
                             active={activeMenu === 2}
@@ -78,15 +78,15 @@ const Menu = () => {
                         <Link to="/login">
                             <StyledButton
                                 label="Mi cuenta"
-                                variant={activeMenu === 3 ? 'brand' : 'outline-brand'}
-                                onClick={() => setActiveMenu(3)}
+                                variant={activeMenu === 0 ? 'brand' : 'outline-brand'}
+                                onClick={() => setActiveMenu(0)}
                                 wide
-                                active={activeMenu === 3}
+                                active={activeMenu === 0}
                             />
                         </Link>
                     </Nav.Item>
                 )}
-                {/* {user && (
+                {user && (
                     <Nav.Item>
                         <span style={{ verticalAlign: 'top', lineHeight: '42px' }}>MI CUENTA</span>
                         <StyledAvatarMenu
@@ -98,7 +98,7 @@ const Menu = () => {
                             src={avatarURL}
                         >
                             <MenuItem
-                                label="Configuración"
+                                label="Mi cuenta"
                                 icon={
                                     <FontAwesomeIcon icon={faCog} style={{ color: 'goldenrod' }} />
                                 }
@@ -118,7 +118,7 @@ const Menu = () => {
                             />
                         </StyledAvatarMenu>
                     </Nav.Item>
-                )} */}
+                )}
             </Nav>
         </StyledMain>
     );
