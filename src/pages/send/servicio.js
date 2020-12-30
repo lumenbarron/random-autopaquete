@@ -1110,8 +1110,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     {!(
                         (supplierAvailability.NACIONALDIASIGUIENTE != 'undefined' &&
                             supplierCostFedexDiaS.guia) ||
-                        // (supplierAvailability.NACIONALECONOMICO != 'undefined' &&
-                        //     supplierCostFedexEcon.guia) ||
+                        (supplierAvailability.NACIONALECONOMICO != 'undefined' &&
+                            supplierCostFedexEcon.guia) ||
                         (supplierAvailability.EXPRESS != 'undefined' &&
                             supplierCostRedpackEx.guia) ||
                         (supplierAvailability.ECOEXPRESS != 'undefined' &&
