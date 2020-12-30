@@ -11,8 +11,8 @@ export default function ContentDescription(props) {
             </Col>
             <Col className="container-package">
                 <img className="mb-3" src={props.img} alt="" />
-                <div className="d-flex">
-                    <img className="mr-1" src={props.icon} alt="icon-number" />
+                <div className="container-description">
+                    <img className="mr-2" src={props.icon} alt="icon-number" />
                     <p className="description">{props.description}</p>
                 </div>
                 <div className="whitespace" />

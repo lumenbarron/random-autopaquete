@@ -17,40 +17,36 @@ export const StyledPackage = styled.div`
         min-width: 300px;
     }
 
-    h1 {
-        color: #ab0000;
-        font-weight: 700;
-        padding-top: 30px;
-    }
-
-    h2 {
-        color: #6b6b6b !important;
-        font-weight: 600;
-        padding-left: 100px;
-    }
-
-    h3 {
-        font-weight: 400;
-        font-size: 28px !important;
-    }
-
     h4 {
         color: #c94141;
         font-weight: 600;
         font-size: 24px !important;
+        width: 100%;
+    }
+
+    ul {
+        line-height: 2rem;
+    }
+
+    .main-subtitle {
+        font-size: 18px;
     }
 
     .subtitle {
         font-size: 20px;
+        color: #6b6b6b;
     }
 
     .price {
         color: #c94141;
+        font-size: 22px;
+        font-weight: 600;
     }
 
-    .img-package {
-        max-width: fit-content;
-        height: 191px;
+    .supplier {
+        color: #c94141;
+        font-size: 22px;
+        font-weight: 400;
     }
 
     a {
@@ -69,29 +65,32 @@ export const StyledPackage = styled.div`
 
     .container-package {
         display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
         flex-direction: column;
-        align-items: center;
     }
 
     .container-description {
         display: flex;
-        align-items: center;
+        justify-content: space-between;
+        width: 200px;
+    }
+
+    .container-description2 {
+        display: flex;
+        justify-content: space-between;
+        width: 350px;
     }
 
     .lineimg {
-        height: 250px;
+        height: 180px;
+    }
+
+    .lineimg2 {
+        height: 225px;
     }
 
     .spaceline {
         max-width: 20px !important;
-    }
-
-    .whitespace {
-        height: 25px;
-    }
-
-    .alert-error {
-        color: red;
-        padding-left: 100px;
     }
 `;

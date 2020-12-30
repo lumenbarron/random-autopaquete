@@ -14,6 +14,7 @@ import ServicesPage from './pages/services';
 import OverweightPage from './pages/overweight';
 import DocumentsPage from './pages/documents';
 import PackagePage from './pages/package';
+import ChargePage from './pages/aditionalcharge';
 import AdminOverweightPage from './pages/adminoverweight';
 import AdminUserEditPage from './pages/adminuseredit';
 import AdminUsersPage from './pages/adminusers';
@@ -48,6 +49,7 @@ const AppRoutes = () => {
                         <Route path="/mi-cuenta/historial" component={RecordPage} />
                         <Route path="/mi-cuenta/sobrepeso" component={OverweightPage} />
                         <Route path="/mi-cuenta/empaques" component={PackagePage} />
+                        <Route path="/mi-cuenta/recargos" component={ChargePage} />
                         <Route path="/mi-cuenta/direcciones" component={DirectionPage} />
                         <Route path="/mi-cuenta/contacto" component={ContactPage} />
                         <Route path="/mi-cuenta/enviar/:idGuia/:step" component={SendPage} />
