@@ -11,7 +11,7 @@ const HomePage = () => {
         <StyledHome>
             <Container className="rainbow-m-vertical_medium" style={{ marginTop: '3.5rem' }}>
                 <Row className="content">
-                    <Col sm={12}>
+                    <Col lg={6} sm={12}>
                         <h1 className="title">
                             La plataforma que te permite una excelente logística de envíos.
                         </h1>
@@ -29,7 +29,7 @@ const HomePage = () => {
                         </Link>
                     </Col>
 
-                    <Col sm={12}>
+                    <Col lg={6} sm={12}>
                         <img
                             src="./assets/intro-img.png"
                             alt="La plataforma que te permite una excelente logística de envíos"

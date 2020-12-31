@@ -8,6 +8,7 @@ export const StyledMain = styled.div`
         padding: 35px 20px;
     }
     @media screen and (max-width: 450px) {
+        padding: 35px 20px;
         flex-direction: column;
     }
 `;
