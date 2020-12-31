@@ -8,7 +8,7 @@ export const StyledMain = styled.div`
     font-size: 14px;
     line-height: 1.5em;
     width: 100%;
-
+    height: 100vh;
     margin: 0 auto;
     box-sizing: border-box;
 

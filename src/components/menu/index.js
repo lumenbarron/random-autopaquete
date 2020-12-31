@@ -65,6 +65,7 @@ const Menu = () => {
                 <Nav.Item>
                     <Link to="/cotizacion">
                         <StyledButton
+                            style={{ maxWidth: 200 }}
                             label="Cotización"
                             variant={activeMenu === 2 ? 'brand' : 'outline-brand'}
                             onClick={() => setActiveMenu(2)}

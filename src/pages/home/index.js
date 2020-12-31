@@ -9,12 +9,9 @@ import { Link } from 'react-router-dom';
 const HomePage = () => {
     return (
         <StyledHome>
-            <Container
-                className="rainbow-m-vertical_medium"
-                style={{ marginBottom: '-4rem', marginTop: '3.5rem' }}
-            >
+            <Container className="rainbow-m-vertical_medium" style={{ marginTop: '3.5rem' }}>
                 <Row className="content">
-                    <Col>
+                    <Col sm={12}>
                         <h1 className="title">
                             La plataforma que te permite una excelente logística de envíos.
                         </h1>
@@ -32,7 +29,7 @@ const HomePage = () => {
                         </Link>
                     </Col>
 
-                    <Col>
+                    <Col sm={12}>
                         <img
                             src="./assets/intro-img.png"
                             alt="La plataforma que te permite una excelente logística de envíos"
