@@ -148,15 +148,18 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             return false;
                         }
                         console.log('precioNeto', precioNeto);
-                        console.log('newBalance', newBalance);
-                        console.log('restando el saldo');
-                        db.collection('profiles')
-                            .doc(doc.id)
-                            .update({ saldo: newBalance })
-                            .then(() => {
-                                console.log('get it');
-                                addSupplier(supplier, type, { id, precioNeto, ...cargos });
-                            });
+                        console.log('updating data');
+                        addSupplier(supplier, type, { id, precioNeto, ...cargos });
+
+                        // console.log('newBalance', newBalance);
+                        // console.log('restando el saldo');
+                        // db.collection('profiles')
+                        //     .doc(doc.id)
+                        //     .update({ saldo: newBalance })
+                        //     .then(() => {
+                        //         console.log('get it');
+                        //         addSupplier(supplier, type, { id, precioNeto, ...cargos });
+                        //     });
                     }
                     if (supplier === 'autoencargos') {
                         addRastreoAuto(idGuiaGlobal);
