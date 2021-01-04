@@ -19,6 +19,7 @@ const SendPage = () => {
     const { idGuia: idGuiaParam, step: stepParam } = useParams();
     const [onReplay, setOnReplay] = useState(false);
     const [guiaReady, setguiaReady] = useState(false);
+    const [emptyResult, setEmptyResult] = useState(false);
     const tokenSand = process.env.REACT_APP_REDPACK_SAND;
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
 
@@ -107,6 +108,8 @@ const SendPage = () => {
     const saveServiceData = supplierData => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
         console.log('supplierData', supplierData);
+        let costGuia = supplierData.Supplier_cost;
+        console.log('costGuia', costGuia);
         const directionsGuiasCollectionAdd = db
             .collection('guia')
             .doc(idGuiaGlobal.current)
@@ -115,6 +118,7 @@ const SendPage = () => {
         if (supplierData.Supplier === 'autoencargosEconomico') {
             console.log('autoencargos pdf');
             console.log(idGuiaGlobal.current);
+            newBalance(costGuia);
             setguiaReady(true);
             setCurrentStepName('descarga');
         } else {
@@ -195,18 +199,53 @@ const SendPage = () => {
                             .then(response => response.json())
                             .then(result => {
                                 console.log(result);
-                                console.log(result.pdf_b64);
-                                console.log(result.id_shipping);
-                                db.collection('guia')
-                                    .doc(idGuiaGlobal.current)
-                                    .update({ label: result.pdf_b64, rastreo: result.id_shipping });
-                                // setCurrentStepName('descarga');
-                                setguiaReady(true);
+                                let responseFetch = Object.keys(result);
+                                if (responseFetch.length === 0) {
+                                    setEmptyResult(true);
+                                } else {
+                                    console.log(result.pdf_b64);
+                                    console.log(result.id_shipping);
+                                    db.collection('guia')
+                                        .doc(idGuiaGlobal.current)
+                                        .update({
+                                            label: result.pdf_b64,
+                                            rastreo: result.id_shipping,
+                                        });
+                                    // setCurrentStepName('descarga');
+                                    newBalance(costGuia);
+                                    setguiaReady(true);
+                                }
                             })
                             .catch(error => console.log('error', error));
                     }
                 });
         }
+    };
+
+    const newBalance = cost => {
+        console.log('cost', cost);
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log(doc.id, ' => ', doc.data());
+                    const newBalance = parseFloat(doc.data().saldo) - cost;
+                    if (newBalance < 0) {
+                        return false;
+                    }
+                    console.log('newBalance', newBalance);
+                    db.collection('profiles')
+                        .doc(doc.id)
+                        .update({ saldo: newBalance })
+                        .then(() => {
+                            console.log('get it');
+                        });
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
     };
 
     async function replayLabel(e) {
@@ -318,6 +357,14 @@ const SendPage = () => {
                         <div className="rainbow-position_relative rainbow-m-vertical_xx-large rainbow-p-vertical_xx-large">
                             <Spinner size="large" variant="brand" />
                         </div>
+                    </DownloadContainerPDF>
+                )}
+                {emptyResult && currentStepName === 'descarga' && (
+                    <DownloadContainerPDF>
+                        <h1>
+                            Lo sentimos, ha ocurrido un error, podrías generar la guía de nuevo. (No
+                            te preocupes, tu saldo no se ha descontado){' '}
+                        </h1>
                     </DownloadContainerPDF>
                 )}
                 {guiaReady && currentStepName === 'descarga' && (
