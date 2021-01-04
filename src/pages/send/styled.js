@@ -8,6 +8,12 @@ export const StyledSendPage = styled.div`
     background-color: #f7f7f7;
     min-height: 100vh;
 
+    .link-package {
+        p {
+            text-decoration: underline;
+            text-align: center;
+        }
+
     @media (max-width: 768px) {
         padding: 3rem 0;
     }
@@ -43,7 +49,6 @@ export const StyledPaneContainer = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    margin: 3rem;
 
     .content-value {
         justify-content: left !important;
@@ -92,6 +97,14 @@ export const StyledRightPane = styled(StyledPane)`
         font-size: 5px !important;
         font-weight: 600;
         color: #0e0e0e !important;
+    }
+    .link-package {
+        p {
+            font-size: 12px;
+            text-decoration: underline;
+            color: rgba(171, 0, 0, 1);
+            text-align: center;
+        }
     }
 `;
 

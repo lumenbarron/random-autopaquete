@@ -115,6 +115,7 @@ const SendPage = () => {
         if (supplierData.Supplier === 'autoencargosEconomico') {
             console.log('autoencargos pdf');
             console.log(idGuiaGlobal.current);
+            setguiaReady(true);
             setCurrentStepName('descarga');
         } else {
             setCurrentStepName('descarga');
@@ -132,6 +133,7 @@ const SendPage = () => {
                         let data = JSON.stringify({
                             sender: {
                                 contact_name: doc.data().sender_addresses.name,
+                                company_name: doc.data().sender_addresses.name,
                                 street: doc.data().sender_addresses.street_number,
                                 zip_code: doc.data().sender_addresses.codigo_postal,
                                 neighborhood: doc.data().sender_addresses.neighborhood,
@@ -144,6 +146,7 @@ const SendPage = () => {
                             },
                             receiver: {
                                 contact_name: doc.data().receiver_addresses.name,
+                                company_name: doc.data().receiver_addresses.name,
                                 street: doc.data().receiver_addresses.street_number,
                                 zip_code: doc.data().receiver_addresses.codigo_postal,
                                 neighborhood: doc.data().receiver_addresses.neighborhood,
@@ -186,7 +189,7 @@ const SendPage = () => {
                             redirect: 'follow',
                         };
                         fetch(
-                            'http://autopaquete.simplestcode.com/api/do-shipping/',
+                            'https://autopaquete.simplestcode.com/api/do-shipping/',
                             requestOptions,
                         )
                             .then(response => response.json())

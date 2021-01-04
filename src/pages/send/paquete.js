@@ -3,6 +3,7 @@ import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import * as firebase from 'firebase';
+import { Link } from 'react-router-dom';
 import { useFirebaseApp, useUser } from 'reactfire';
 import {
     StyledLeftPane,
@@ -445,6 +446,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         onChange={e => setCheckBox(e.target.checked)}
                     />
                 </div>
+
                 {errorNameDuplicate && (
                     <div className="pl-4">
                         <span className="alert-error">El nombre ya se encuentra registrado</span>
@@ -459,7 +461,6 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 {errorWeightValue && (
                     <div className="alert-error">Por el momento no puedes enviar mas de 15 kg</div>
                 )}
-
                 <Button
                     variant="brand"
                     className="rainbow-m-around_medium"
@@ -468,6 +469,14 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     Continuar
                     <FontAwesomeIcon icon={faArrowRight} className="rainbow-m-left_medium" />
                 </Button>
+                <Link
+                    className="link-package"
+                    to="/mi-cuenta/empaques"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <p>Toma en cuenta las siguientes recomendaciones para tus paquetes</p>
+                </Link>
             </StyledRightPane>
         </StyledPaneContainer>
     );

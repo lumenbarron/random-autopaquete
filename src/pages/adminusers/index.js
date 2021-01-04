@@ -22,7 +22,21 @@ const StyledColumn = styled(Column)`
 const StyledBadge = styled(Badge)`
     color: #09d3ac;
 `;
-const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
+
+const StyledBadgeRed = styled(Badge)`
+    color: #c94141;
+`;
+const StatusBadge = ({ value }) => {
+    return (
+        <>
+            {value === 'Aprobado' ? (
+                <StyledBadge label={value} variant="lightest" />
+            ) : (
+                <StyledBadgeRed label={value} variant="lightest" />
+            )}
+        </>
+    );
+};
 
 const AdminUsersPage = () => {
     const firebase = useFirebaseApp();

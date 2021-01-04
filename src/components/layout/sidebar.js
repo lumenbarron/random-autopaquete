@@ -523,13 +523,20 @@ export function AccountSidebar() {
                         label="Sobrepeso"
                     />
                 </Link>
-                {/* <Link to="/mi-cuenta/empaques">
+                <Link to="/mi-cuenta/empaques">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-package.png" alt="" />}
                         name="Empaques"
                         label="Empaques"
                     />
-                </Link> */}
+                </Link>
+                <Link to="/mi-cuenta/recargos">
+                    <StyledSidebarItem
+                        icon={<img src="/assets/icon-money.svg" alt="" />}
+                        name="Recargos"
+                        label="Recargos"
+                    />
+                </Link>
                 <Link to="/mi-cuenta/contacto">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-contact.png" alt="" />}

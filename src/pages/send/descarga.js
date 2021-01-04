@@ -25,6 +25,7 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const history = useHistory();
 
     useEffect(() => {
+        console.log('este usde effect');
         const prepareDownload = () => {
             db.collection('guia')
                 .doc(idGuiaGlobal)

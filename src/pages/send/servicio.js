@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes, { element } from 'prop-types';
 import { Card, Button, Spinner } from 'react-rainbow-components';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import toFixed from 'accounting-js/lib/toFixed';
+import axios from 'axios';
+
 import { StyledPaneContainer, StyledDirectiosDetails, StyledDetails, StyledError } from './styled';
+import { Row } from 'react-bootstrap';
 
 const PriceContainer = styled.div`
     display: flex;
@@ -338,6 +342,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     dataShipping.current = JSON.stringify({
                         sender: {
                             contact_name: doc.data().sender_addresses.name,
+                            company_name: doc.data().sender_addresses.name,
                             street: doc.data().sender_addresses.street_number,
                             zip_code: doc.data().sender_addresses.codigo_postal,
                             neighborhood: doc.data().sender_addresses.neighborhood,
@@ -350,6 +355,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         },
                         receiver: {
                             contact_name: doc.data().receiver_addresses.name,
+                            company_name: doc.data().receiver_addresses.name,
                             street: doc.data().receiver_addresses.street_number,
                             zip_code: doc.data().receiver_addresses.codigo_postal,
                             neighborhood: doc.data().receiver_addresses.neighborhood,
@@ -402,6 +408,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         // console.log('data 2', data);
         // console.log('delivery', delivery);
         console.log('haciendo la peticion al broker');
+
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
         myHeaders.append('Content-Type', 'application/json');
@@ -412,8 +419,16 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             redirect: 'follow',
         };
 
-        const urlRequest = `http://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
-        // console.log('url', urlRequest);
+        // await Promise.all([
+        //     fetch('https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack', requestOptions ),
+        //     fetch('https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex', requestOptions)
+        // ])
+        // .then(([res1, res2]) =>
+        //     Promise.all([res1.json(), res2.json()]),
+        // )
+        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
+        console.log('url', urlRequest);
+
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
             .then(result => {
@@ -626,7 +641,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.NACIONALDIASIGUIENTE,
                                 insurance: getInsurancePrice('fedexDiaSiguiente'),
                             });
-                        //console.log(supplierAvailabilityGeneral.NACIONALDIASIGUIENTE[0])
                         if (entrega === 'fedexEconomico')
                             setSupplierCostFedexEcon({
                                 id: doc.id,
@@ -644,7 +658,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.NACIONALECONOMICO,
                                 insurance: getInsurancePrice('fedexEconomico'),
                             });
-                        //console.log(supplierAvailabilityGeneral.NACIONALECONOMICO[0])
                         if (entrega === 'redpackExpress')
                             setSupplierCostRedpackEx({
                                 id: doc.id,
@@ -662,7 +675,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.EXPRESS,
                                 insurance: getInsurancePrice('redpackExpress'),
                             });
-                        //console.log(supplierAvailabilityGeneral.EXPRESS[0])
                         if (entrega === 'redpackEcoExpress')
                             setSupplierCostRedpackEco({
                                 id: doc.id,
@@ -680,7 +692,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.ECOEXPRESS,
                                 insurance: getInsurancePrice('redpackEcoExpress'),
                             });
-                        //console.log(supplierAvailability.ECOEXPRESS)
                         if (entrega === 'autoencargos')
                             setSupplierCostAutoencargosEcon({
                                 id: doc.id,
@@ -697,7 +708,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     : supplierAvailabilityGeneral.AUTOENCARGOS,
                                 insurance: getInsurancePrice('autoencargos'),
                             });
-                        //console.log(supplierAvailabilityGeneral.AUTOENCARGOS)
                         return;
                     }
                     // else
@@ -905,19 +915,19 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const supplierCard = (proveedor, tipoEnvio, entrega, costos) => (
         <Card className="rainbow-flex rainbow-flex_column rainbow-align_center rainbow-justify_space-around rainbow-p-around_large rainbow-m-around_small">
             {proveedor === 'fedex' && tipoEnvio === 'DiaSiguiente' && (
-                <img src="/assets/fedex-express.png" alt="Fedex" />
+                <img src="/assets/fedex-express.png" style={{ maxWidth: 180 }} alt="Fedex" />
             )}
             {proveedor === 'fedex' && tipoEnvio === 'Economico' && (
-                <img src="/assets/fedex-eco.png" alt="Fedex" />
+                <img src="/assets/fedex-eco.png" style={{ maxWidth: 180 }} alt="Fedex" />
             )}
             {proveedor === 'redpack' && tipoEnvio === 'Express' && (
-                <img src="/assets/redpack-express.png" alt="Redpack" />
+                <img src="/assets/redpack-express.png" style={{ maxWidth: 180 }} alt="Redpack" />
             )}
             {proveedor === 'redpack' && tipoEnvio === 'EcoExpress' && (
-                <img src="/assets/redpack-eco.png" alt="Redpack" />
+                <img src="/assets/redpack-eco.png" style={{ maxWidth: 180 }} alt="Redpack" />
             )}
             {proveedor === 'autoencargos' && tipoEnvio === 'Economico' && (
-                <img src="/assets/autoencar.png" style={{ height: 50 }} alt="Autoencargos" />
+                <img src="/assets/autoencar.png" style={{ maxWidth: 180 }} alt="Autoencargos" />
             )}
             <h6
                 style={{
@@ -1063,7 +1073,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             supplierCard(
                                 'fedex',
                                 'DiaSiguiente',
-                                'Día Siguiente',
+                                '1 a 3 días hábiles',
                                 supplierCostFedexDiaS,
                             )}
                         {supplierAvailability.NACIONALECONOMICO &&
@@ -1095,10 +1105,24 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             supplierCard(
                                 'autoencargos',
                                 'Economico',
-                                '1 a 3 días hábiles',
+                                '1 a 2 días hábiles',
                                 supplierCostAutoencargosEcon,
                             )}
                     </StyledPaneContainer>
+                    <Row className="justify-content-md-center mt-4">
+                        <Link
+                            className="link-package"
+                            to="/mi-cuenta/recargos"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <p>
+                                {' '}
+                                ¿ Tienes duda de algun cargo extra ?{' '}
+                                <b>Consulta nuestra sección de recargos adicionales</b>
+                            </p>
+                        </Link>
+                    </Row>
                     {!(
                         (supplierAvailability.NACIONALDIASIGUIENTE != 'undefined' &&
                             supplierCostFedexDiaS.guia) ||
