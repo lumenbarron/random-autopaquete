@@ -366,7 +366,13 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorState(false);
         }
-        if (placeRef.trim() === '') {
+        if (placeRef.trim() === '' || placeRef.length > 20) {
+            swal.fire({
+                title: '!Lo siento!',
+                text: 'El texto puede ser hasta 20 letras y números, favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
             setError(true);
             setErrorPlaceRef(true);
             return;
