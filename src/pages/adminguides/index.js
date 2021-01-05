@@ -130,9 +130,10 @@ export default function AllGuides({}) {
                     });
                     dataUsers.push(doc.data().name);
                 });
-                dataSingleUser = dataUsers.filter(
-                    (item, index) => dataUsers.indexOf(item) === index,
-                );
+                console.log('dataUsers', dataUsers);
+                dataSingleUser = dataUsers
+                    .filter((item, index) => dataUsers.indexOf(item) === index)
+                    .sort();
                 setHistory(dataGuias);
                 setUsersName(dataSingleUser);
                 setDisplayData(true);
