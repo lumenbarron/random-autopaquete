@@ -77,7 +77,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
     const [error, setError] = useState(false);
-    const getFinalPrice = useRef('');
+
+    // const getFinalPriceFedexDiaS = useRef();
+    // const getFinalPriceFedexEco = useRef();
+    // const getFinalPriceRedExp = useRef();
+    // const getFinalPriceRedEco = useRef();
+    // const getFinalPriceAuto = useRef();
 
     const [profileDoc, setProfileDoc] = useState(false);
 
@@ -325,7 +330,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         } else {
                             delivery_company.current = '';
                         }
-                        // console.log('delivery_company.current', delivery_company.current);
                         getDataGuia(delivery_company.current);
                     });
                 });
@@ -403,13 +407,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             });
     };
 
-    async function getFetch(data) {
-        await Promise.all([fetchGuia(data, 'redpack'), fetchGuia(data, 'fedex')]);
-    }
+    // async function getFetch(data) {
+    //     await Promise.all([fetchGuia(data, 'redpack'), fetchGuia(data, 'fedex')]);
+    // }
 
     const fetchGuia = async (data, delivery) => {
-        // console.log('data 2', data);
-        // console.log('delivery', delivery);
         console.log('haciendo la peticion al broker');
 
         let myHeaders = new Headers();
@@ -455,10 +457,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             extended_area_estimate_cost: {},
                         };
                         suppliersGeneral.push(autoencargos);
-                        // console.log(suppliersGeneral)
                     } else {
                         console.log('aqui no hay autoencargos');
-                        // console.log(suppliersGeneral);
                     }
                     //Se hace un nuevo array con la respuesta de la API para ver si hay zona extendida
                     suppliersGeneral.forEach(element => {
@@ -469,8 +469,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             };
                         }
                     });
-                    console.log(supplierExtendedArea);
-                    // supplierExtended.current = supplierExtendedArea;
                     setSupplierAvailability(supplierExtendedArea);
                     //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, RedpackExiguiente: true}
                     //Se hace un nuevo array con la informacion de cada paqueteria con la respuesta de la API
@@ -482,8 +480,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             element.shipping_service.id,
                         ];
                     });
-                    console.log(supplierShippingName);
-                    //supplierShipping.current = supplierShippingName;
                     setSupplierAvailabilityGeneral(supplierShippingName);
                 }
             })
@@ -494,7 +490,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
         console.log('todos los provedores activos', supplierAvailability);
-        // console.log('toda la info de los provedores activos', supplierAvailabilityGeneral);
 
         //Validaciones del peso
         let pricedWeight = Math.ceil(weight);
@@ -516,7 +511,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
         //Validaciones de valor asegurado
         const getInsurancePrice = company => {
-            //console.log('seguro por provedor', company);
             if (contentValue === '') return 0;
             const baseValue = parseInt(contentValue, 10) * 0.02;
             console.log('valor asegurado ', baseValue);
@@ -556,7 +550,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 typeof supplierAvailability.NACIONALDIASIGUIENTE.zonaExtendida !== 'undefined'
                     ? 150
                     : 0;
-            //console.log('extendedAreaFedexDiaS', extendedAreaFedexDiaS);
         } else {
             console.log('no zona extendida extendedAreaFedexDiaS');
         }
@@ -565,24 +558,27 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 typeof supplierAvailability.NACIONALECONOMICO.zonaExtendida !== 'undefined'
                     ? 150
                     : 0;
-            //console.log('extendedAreaFedexEco', extendedAreaFedexEco);
         } else {
             console.log('no zona extendida extendedAreaFedexEco');
         }
         if (typeof supplierAvailability.EXPRESS !== 'undefined') {
             extendedAreaRedpackExp =
                 typeof supplierAvailability.EXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
-            // console.log('extendedAreaRedpackExp', extendedAreaRedpackExp);
         } else {
             console.log('no zona extendida extendedAreaRedpackExp');
         }
         if (typeof supplierAvailability.ECOEXPRESS !== 'undefined') {
             extendedAreaRedpackEco =
                 typeof supplierAvailability.ECOEXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
-            // console.log('extendedAreaRedpackEco', extendedAreaRedpackEco);
         } else {
             console.log('no zona extendida extendedAreaRedpackEco');
         }
+
+        let getFinalPriceFedexDiaS = { finalPrice: 0, supplier: 'fedexDiaSiguiente' };
+        let getFinalPriceFedexEco = { finalPrice: 0, supplier: 'fedexEconomico' };
+        let getFinalPriceRedExp = { finalPrice: 0, supplier: 'redpackExpress' };
+        let getFinalPriceRedEco = { finalPrice: 0, supplier: 'redpackEcoExpress' };
+        let getFinalPriceAuto = { finalPrice: 0, supplier: 'autoencargos' };
 
         profileDoc.ref
             .collection('rate')
@@ -594,6 +590,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 querySnapshot.forEach(doc => {
                     console.log(doc.data());
                     const { entrega, precio, max, min, kgExtra } = doc.data();
+
                     // Encontramos si hay tarifas que apliquen directo al paquete
                     if (
                         !kgExtra &&
@@ -601,43 +598,44 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         parseInt(max, 10) >= parseInt(pricedWeight, 10)
                     ) {
                         console.log('Encontramos si hay tarifas que apliquen directo al paquete');
-                        //precioTotal = parseInt(precio, 10) * quantity;
-                        getFinalPrice.current = parseInt(precio, 10) * quantity;
-                        //console.log('precioTotal de entrega', precioTotal);
+                        if (entrega === 'fedexDiaSiguiente') {
+                            getFinalPriceFedexDiaS.finalPrice = parseInt(precio, 10);
+                        }
+                        if (entrega === 'fedexEconomico') {
+                            getFinalPriceFedexEco.finalPrice = parseInt(precio, 10);
+                        }
+                        if (entrega === 'redpackExpress') {
+                            getFinalPriceRedExp.finalPrice = parseInt(precio, 10);
+                        }
+                        if (entrega === 'redpackEcoExpress') {
+                            getFinalPriceRedEco.finalPrice = parseInt(precio, 10);
+                        }
+                        if (entrega === 'autoencargos') {
+                            getFinalPriceAuto.finalPrice = parseInt(precio, 10);
+                        }
+
                         let cargoExtraHeight;
                         if (parseInt(height, 10) > 100 && entrega === 'redpackEcoExpress') {
                             cargoExtraHeight = 210;
-                            console.log('cargoExtra redpack', cargoExtraHeight);
                         } else if (parseInt(height, 10) > 120 && entrega === 'fedexDiaSiguiente') {
                             cargoExtraHeight = 280;
-                            console.log('cargoExtra fedexDiaSiguiente', cargoExtraHeight);
                         } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
                             cargoExtraHeight = 110;
-                            console.log('cargoExtra fedexEconomico', cargoExtraHeight);
                         } else {
                             cargoExtraHeight = 0;
-                            console.log('cargoExtra', cargoExtraHeight);
                         }
-                        //const precio = tarifa.guia + kilosExtra + cargoExtra;
 
-                        console.log(
-                            'precioTotal',
-                            precioTotal,
-                            'getFinalPrice',
-                            getFinalPrice.current,
-                            cargoExtraHeight,
-                        );
                         if (entrega === 'fedexDiaSiguiente')
                             setSupplierCostFedexDiaS({
                                 id: doc.id,
                                 precio:
-                                    getFinalPrice.current +
+                                    getFinalPriceFedexDiaS.finalPrice +
                                     getInsurancePrice('fedexDiaSiguiente') +
                                     extendedAreaFedexDiaS +
                                     cargoExtraHeight,
                                 seguro: getInsurancePrice('fedexDiaSiguiente'),
                                 cargoExtraHeight: cargoExtraHeight,
-                                guia: getFinalPrice.current,
+                                guia: getFinalPriceFedexDiaS.finalPrice,
                                 zonaExt: extendedAreaFedexDiaS != 0 ? 150 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.NACIONALDIASIGUIENTE
                                     ? false
@@ -648,13 +646,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             setSupplierCostFedexEcon({
                                 id: doc.id,
                                 precio:
-                                    getFinalPrice.current +
+                                    getFinalPriceFedexEco.finalPrice +
                                     getInsurancePrice('fedexEconomico') +
                                     extendedAreaFedexEco +
                                     cargoExtraHeight,
                                 seguro: getInsurancePrice('fedexEconomico'),
                                 cargoExtraHeight: cargoExtraHeight,
-                                guia: getFinalPrice.current,
+                                guia: getFinalPriceFedexEco.finalPrice,
                                 zonaExt: extendedAreaFedexEco != 0 ? 150 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.NACIONALECONOMICO
                                     ? false
@@ -665,13 +663,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             setSupplierCostRedpackEx({
                                 id: doc.id,
                                 precio:
-                                    getFinalPrice.current +
+                                    getFinalPriceRedExp.finalPrice +
                                     getInsurancePrice('redpackExpress') +
                                     extendedAreaRedpackExp +
                                     cargoExtraHeight,
                                 seguro: getInsurancePrice('redpackExpress'),
                                 cargoExtraHeight: cargoExtraHeight,
-                                guia: getFinalPrice.current,
+                                guia: getFinalPriceRedExp.finalPrice,
                                 zonaExt: extendedAreaRedpackExp != 0 ? 130 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.EXPRESS
                                     ? false
@@ -682,13 +680,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             setSupplierCostRedpackEco({
                                 id: doc.id,
                                 precio:
-                                    getFinalPrice.current +
+                                    getFinalPriceRedEco.finalPrice +
                                     getInsurancePrice('redpackEcoExpress') +
                                     extendedAreaRedpackEco +
                                     cargoExtraHeight,
                                 seguro: getInsurancePrice('redpackEcoExpress'),
                                 cargoExtraHeight: cargoExtraHeight,
-                                guia: getFinalPrice.current,
+                                guia: getFinalPriceRedEco.finalPrice,
                                 zonaExt: extendedAreaRedpackEco != 0 ? 130 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.ECOEXPRESS
                                     ? false
@@ -699,12 +697,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             setSupplierCostAutoencargosEcon({
                                 id: doc.id,
                                 precio:
-                                    getFinalPrice.current +
+                                    getFinalPriceAuto.finalPrice +
                                     getInsurancePrice('autoencargos') +
                                     cargoExtraHeight,
                                 seguro: getInsurancePrice('autoencargos'),
                                 cargoExtraHeight: 0,
-                                guia: getFinalPrice.current,
+                                guia: getFinalPriceAuto.finalPrice,
                                 zonaExt: false,
                                 shippingInfo: !supplierAvailabilityGeneral.AUTOENCARGOS
                                     ? false
@@ -715,37 +713,123 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     }
                     // else
                     //si el peso es mayor al  rango maximo de la tarifa hay kilos extras
-                    if (
-                        parseInt(pricedWeight, 10) > parseInt(max, 10) &&
-                        !getFinalPrice.current &&
-                        !kgExtra
-                    ) {
+                    // if (
+                    //     parseInt(pricedWeight, 10) > parseInt(max, 10) &&
+                    //     !getFinalPrice.current &&
+                    //     !kgExtra
+                    // ) {
+                    //     console.log('entrando a kilos extra');
+                    //     console.log(
+                    //         'precioTotal',
+                    //         precioTotal,
+                    //         'getFinalPrice',
+                    //         getFinalPrice.current,
+                    //     );
+                    //     const diferencia =
+                    //         (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
+                    //     console.log('diferencia', diferencia);
+                    //     console.log(segundaMejorTarifa[entrega]);
+                    //     if (
+                    //         !segundaMejorTarifa[entrega] ||
+                    //         segundaMejorTarifa[entrega].diferencia > diferencia
+                    //     ) {
+                    //         precioTotal = parseInt(precio, 10) * quantity;
+                    //         if (getFinalPrice.current > precioTotal) {
+                    //             precioTotal = getFinalPrice.current;
+                    //         }
+                    //         console.log('precioTotal de entrega', precioTotal);
+                    //         segundaMejorTarifa[entrega] = {
+                    //             id: doc.id,
+                    //             guia: precioTotal,
+                    //             diferencia,
+                    //         };
+                    //         console.log('tarifas de precio extra', segundaMejorTarifa);
+                    //         return;
+                    //     }
+                    // }
+
+                    if (parseInt(pricedWeight, 10) > parseInt(max, 10) && !kgExtra) {
                         console.log('entrando a kilos extra');
-                        console.log(
-                            'precioTotal',
-                            precioTotal,
-                            'getFinalPrice',
-                            getFinalPrice.current,
-                        );
-                        const diferencia =
+                        console.log('precioTotal', precioTotal, 'entrega', entrega);
+                        let diferencia =
                             (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
-                        console.log('diferencia', diferencia);
-                        console.log(segundaMejorTarifa[entrega]);
                         if (
                             !segundaMejorTarifa[entrega] ||
                             segundaMejorTarifa[entrega].diferencia > diferencia
                         ) {
-                            precioTotal = parseInt(precio, 10) * quantity;
-                            if (getFinalPrice.current > precioTotal) {
-                                precioTotal = getFinalPrice.current;
+                            precioTotal = parseInt(precio, 10);
+
+                            if (getFinalPriceFedexDiaS.supplier === entrega) {
+                                console.log('es el mismo proveedor fedex DS');
+                                if (getFinalPriceFedexDiaS.finalPrice > precioTotal) {
+                                    console.log('la tarifa directa es mas alta fedex DS');
+                                    precioTotal = getFinalPriceFedexDiaS.finalPrice;
+                                    diferencia = 0;
+                                } else {
+                                    precioTotal = precioTotal;
+                                    diferencia = diferencia;
+                                }
                             }
-                            console.log('precioTotal de entrega', precioTotal);
+
+                            if (getFinalPriceFedexEco.supplier === entrega) {
+                                console.log('es el mismo proveedor fedex eco');
+                                if (getFinalPriceFedexEco.finalPrice > precioTotal) {
+                                    console.log('la tarifa directa es mas alta fedex eco');
+                                    precioTotal = getFinalPriceFedexEco.finalPrice;
+                                    diferencia = 0;
+                                } else {
+                                    precioTotal = precioTotal;
+                                    diferencia = diferencia;
+                                }
+                            }
+
+                            if (getFinalPriceRedExp.supplier === entrega) {
+                                console.log('es el mismo proveedor redpack exp');
+                                if (getFinalPriceRedExp.finalPrice > precioTotal) {
+                                    console.log('la tarifa directa es mas alta redpack exp');
+                                    precioTotal = getFinalPriceRedExp.finalPrice;
+                                    diferencia = 0;
+                                } else {
+                                    precioTotal = precioTotal;
+                                    diferencia = diferencia;
+                                }
+                            }
+
+                            if (getFinalPriceRedEco.supplier === entrega) {
+                                console.log('es el mismo proveedor redpack eco');
+                                if (getFinalPriceRedEco.finalPrice > precioTotal) {
+                                    console.log('la tarifa directa es mas alta redpack eco');
+                                    precioTotal = getFinalPriceRedEco.finalPrice;
+                                    diferencia = 0;
+                                } else {
+                                    precioTotal = precioTotal;
+                                    diferencia = diferencia;
+                                }
+                            }
+
+                            if (getFinalPriceAuto.supplier === entrega) {
+                                console.log('es el mismo proveedor auto');
+                                if (getFinalPriceAuto.finalPrice > precioTotal) {
+                                    console.log('la tarifa directa es mas alta auto');
+                                    precioTotal = getFinalPriceAuto.finalPrice;
+                                    diferencia = 0;
+                                } else {
+                                    precioTotal = precioTotal;
+                                    diferencia = diferencia;
+                                }
+                            }
+
+                            console.log(
+                                'precioTotal de entrega',
+                                precioTotal,
+                                'diferencia',
+                                diferencia,
+                            );
                             segundaMejorTarifa[entrega] = {
                                 id: doc.id,
                                 guia: precioTotal,
                                 diferencia,
                             };
-                            console.log('tarifas de precio extra', segundaMejorTarifa);
                             return;
                         }
                     }
@@ -771,43 +855,34 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     const tarifa = segundaMejorTarifa[entrega];
                     let cargoExtra;
                     let cargoExtraHeight;
-                    // console.log('tarifa', tarifa);
                     const { guia } = tarifa;
-                    // console.log('guia tarifa', tarifa.diferencia);
-                    console.log('Entrega', entrega);
-                    //console.log('supplierCostFedexDiaS 2', supplierCostFedexDiaS);
                     const kilosExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
                     if (
                         (weight > 30 && entrega === 'fedexDiaSiguiente') ||
                         (weight > 30 && entrega === 'fedexEconomico')
                     ) {
                         cargoExtra = 110;
-                        console.log('cargoExtra', cargoExtra);
                     } else {
                         cargoExtra = 0;
-                        console.log('cargoExtra', cargoExtra);
                     }
-                    console.log('height en kilos extra', height);
 
                     if (
                         (parseInt(height, 10) > 100 && entrega === 'redpackEcoExpress') ||
                         (parseInt(height, 10) > 100 && entrega === 'redpackExpress')
                     ) {
                         cargoExtraHeight = 210;
-                        console.log('cargoExtra redpack', cargoExtraHeight);
                     } else if (parseInt(height, 10) > 120 && entrega === 'fedexDiaSiguiente') {
                         cargoExtraHeight = 280;
-                        console.log('cargoExtra', cargoExtraHeight);
                     } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
                         cargoExtraHeight = 110;
-                        console.log('cargoExtra', cargoExtraHeight);
                     } else {
                         cargoExtraHeight = 0;
-                        console.log('cargoExtra', cargoExtraHeight);
                     }
+
                     const precio = tarifa.guia + kilosExtra + cargoExtra;
                     console.log(
-                        'precio final, sin contar seguro',
+                        'precio final',
+                        precio,
                         tarifa.guia,
                         kilosExtra,
                         cargoExtra,
@@ -862,7 +937,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             seguro: getInsurancePrice('redpackExpress'),
                             kilosExtra,
                             cargoExtraHeight: cargoExtraHeight,
-                            cargoExtra: 0,
+                            cargoExtra,
                             guia,
                             zonaExt: extendedAreaRedpackExp != 0 ? 130 : false,
                             shippingInfo: !supplierAvailabilityGeneral.EXPRESS
@@ -874,14 +949,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         setSupplierCostRedpackEco({
                             id: tarifa.id,
                             precio:
-                                precioTotal +
+                                precio +
                                 getInsurancePrice('redpackEcoExpress') +
                                 extendedAreaRedpackEco +
                                 cargoExtraHeight,
                             seguro: getInsurancePrice('redpackEcoExpress'),
                             kilosExtra,
                             cargoExtraHeight: cargoExtraHeight,
-                            cargoExtra: 0,
+                            cargoExtra,
                             guia,
                             zonaExt: extendedAreaRedpackEco != 0 ? 130 : false,
                             shippingInfo: !supplierAvailabilityGeneral.ECOEXPRESS
@@ -896,7 +971,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             seguro: getInsurancePrice('autoencargos'),
                             kilosExtra,
                             cargoExtraHeight: 0,
-                            cargoExtra: 0,
+                            cargoExtra,
                             guia,
                             zonaExt: false,
                             shippingInfo: !supplierAvailabilityGeneral.AUTOENCARGOS
@@ -959,7 +1034,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             </PriceContainer>
             {costos && (
                 <>
-                    {costos.kilosExtra && (
+                    {costos.kilosExtra > 0 && (
                         <PriceContainer>
                             <PriceLabel>Kg adicionales:</PriceLabel>
                             <PriceNumber>{formatMoney(costos.kilosExtra)}</PriceNumber>
@@ -1120,8 +1195,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             rel="noopener noreferrer"
                         >
                             <p>
-                                {' '}
-                                ¿ Tienes duda de algun cargo extra ?{' '}
+                                ¿ Tienes duda de algun cargo extra ?
                                 <b>Consulta nuestra sección de recargos adicionales</b>
                             </p>
                         </Link>

@@ -230,7 +230,8 @@ const SendPage = () => {
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     console.log(doc.id, ' => ', doc.data());
-                    const newBalance = parseFloat(doc.data().saldo) - cost;
+                    let newBalance = parseFloat(doc.data().saldo) - cost;
+                    newBalance = Math.round((newBalance + Number.EPSILON) * 100) / 100;
                     if (newBalance < 0) {
                         return false;
                     }

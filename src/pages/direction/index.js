@@ -120,6 +120,7 @@ export default function DirectionPage() {
 
     //Aqui esta el error
     const deleteAddress = idDoc => {
+        //db.collection('receiver_addresses')
         db.collection('sender_addresses')
             .doc(idDoc)
             .delete()
