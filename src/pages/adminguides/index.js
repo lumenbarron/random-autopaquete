@@ -5,14 +5,18 @@ import {
     TableWithBrowserPagination,
     Select,
     Spinner,
+    Input,
+    Button,
 } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
 import { StyledAusers } from '../adminusers/styled';
 import ExportReactCSV from '../dowloadData/index';
+import swal from 'sweetalert2';
 
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
@@ -124,8 +128,6 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.data().supplierData.FinalWeight)
-
                     dataGuias.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -136,6 +138,7 @@ export default function AllGuides({}) {
                         ),
                         ...doc.data(),
                     });
+
                     dataUsers.push(doc.data().name);
                 });
                 console.log('dataUsers', dataUsers);
@@ -301,6 +304,75 @@ export default function AllGuides({}) {
             });
     };
 
+    const getIdGuia = trackingNumber => {
+        console.log(trackingNumber);
+        let dataGuia = [];
+        if (trackingNumber == '' || !trackingNumber) {
+            swal.fire(
+                '¡Oh no!',
+                'Parece que no hay alguna guía con ese número, podrías revisar',
+                'error',
+            );
+        } else {
+            db.collection('guia')
+                .where('rastreo', '==', trackingNumber)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        console.log(doc.data());
+                        dataGuia.push({
+                            id: doc.id,
+                            volumetricWeight: Math.ceil(
+                                (doc.data().package.height *
+                                    doc.data().package.width *
+                                    doc.data().package.depth) /
+                                    5000,
+                            ),
+                            ...doc.data(),
+                        });
+                        setHistory(dataGuia);
+                        setDisplayData(true);
+                    });
+                })
+                .catch(function(error) {
+                    swal.fire(
+                        '¡Oh no!',
+                        'Parece que no hay alguna guía con ese número, podrías revisar',
+                        'error',
+                    );
+                    console.log('Error getting documents: ', error);
+                });
+            db.collection('guia')
+                .where('rastreo', 'array-contains', trackingNumber)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        console.log(doc.data());
+                        dataGuia.push({
+                            id: doc.id,
+                            volumetricWeight: Math.ceil(
+                                (doc.data().package.height *
+                                    doc.data().package.width *
+                                    doc.data().package.depth) /
+                                    5000,
+                            ),
+                            ...doc.data(),
+                        });
+                        setHistory(dataGuia);
+                        setDisplayData(true);
+                    });
+                })
+                .catch(function(error) {
+                    swal.fire(
+                        '¡Oh no!',
+                        'Parece que no hay alguna guía con ese número, podrías revisar',
+                        'error',
+                    );
+                    console.log('Error getting documents: ', error);
+                });
+        }
+    };
+
     return (
         <StyledAusers>
             <div className="back">
@@ -312,6 +384,19 @@ export default function AllGuides({}) {
                     <h2 style={{ marginBottom: 0 }}>Filtrar por :</h2>
                 </Row>
                 <Row className="content-header">
+                    <Col>
+                        <Input
+                            id="guia"
+                            placeholder="Numero de guia"
+                            className="rainbow-p-around_medium"
+                            style={{ flex: '1 1' }}
+                            onChange={ev => getIdGuia(ev.target.value)}
+                            icon={
+                                <FontAwesomeIcon icon={faSearch} className="rainbow-color_gray-3" />
+                            }
+                        />
+                        {/* <Button variant="destructive" className="rainbow-m-around_medium" onClick={ev => getIdGuia(ev.target.value)}>Buscar</Button> */}
+                    </Col>
                     <Col>
                         <Select
                             options={tableUsers}
@@ -352,7 +437,7 @@ export default function AllGuides({}) {
                         >
                             <Column header="Fecha " field="date" defaultWidth={105} />
                             <Column header="Name " field="name" defaultWidth={120} />
-                            <Column header="Guía" field="guide" defaultWidth={100} />
+                            <Column header="Guía" field="guide" defaultWidth={120} />
                             <Column header="Nombre Origen" field="nameorigin" defaultWidth={100} />
                             <Column
                                 header="Origen"

@@ -148,6 +148,7 @@ const AdminOverweightPage = () => {
                 .get()
                 .then(function(doc) {
                     if (doc.exists) {
+                        console.log(doc.data());
                         setDocId(doc.id);
                         setName(doc.data().name);
                         setUserId(doc.data().ID);
@@ -157,7 +158,22 @@ const AdminOverweightPage = () => {
                                 .creation_date.toDate()
                                 .toLocaleDateString(),
                         );
-                        setKgdeclarados(doc.data().package.weight);
+                        setKgdeclarados(
+                            doc.data().package.weight >
+                                Math.ceil(
+                                    (doc.data().package.height *
+                                        doc.data().package.width *
+                                        doc.data().package.depth) /
+                                        5000,
+                                )
+                                ? doc.data().package.weight
+                                : Math.ceil(
+                                      (doc.data().package.height *
+                                          doc.data().package.width *
+                                          doc.data().package.depth) /
+                                          5000,
+                                  ),
+                        );
                         setSupplier(doc.data().supplierData.tarifa.entrega);
                     } else {
                         // doc.data() will be undefined in this case
