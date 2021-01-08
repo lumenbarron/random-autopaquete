@@ -121,6 +121,7 @@ const AdminOverweightPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    console.log(doc.data());
                     setGuia(doc.id);
                     setErrorGuia(true);
                 });
@@ -150,7 +151,12 @@ const AdminOverweightPage = () => {
                         setDocId(doc.id);
                         setName(doc.data().name);
                         setUserId(doc.data().ID);
-                        setDate(doc.data().creation_date);
+                        setDate(
+                            doc
+                                .data()
+                                .creation_date.toDate()
+                                .toLocaleDateString(),
+                        );
                         setKgdeclarados(doc.data().package.weight);
                         setSupplier(doc.data().supplierData.tarifa.entrega);
                     } else {
