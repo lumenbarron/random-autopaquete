@@ -9,7 +9,7 @@ import { StyledOverweight } from './styled';
 
 import { useFirebaseApp, useUser } from 'reactfire';
 
-const containerStyles = { height: 312 };
+const containerStyles = { height: 600 };
 const containerTableStyles = { height: 256 };
 
 const StyledTable = styled(Table)`
@@ -38,6 +38,7 @@ const OverweightPage = () => {
 
     function handleOverWeight(snapshot) {
         const overWeightData = snapshot.docs.map(doc => {
+            console.log(doc.data());
             return {
                 id: doc.id,
                 ...doc.data(),
@@ -48,7 +49,9 @@ const OverweightPage = () => {
 
     const data = overWeightData.map((overWeight, idx) => {
         return {
-            date: overWeight.fecha,
+            date: overWeight.fecha.toDate().toLocaleDateString()
+                ? overWeight.fecha.toDate().toLocaleDateString()
+                : 'sin fecha',
             guide: overWeight.rastreo,
             kdeclared: overWeight.kilos_declarados,
             kreal: overWeight.kilos_reales,
@@ -68,7 +71,6 @@ const OverweightPage = () => {
                             pageSize={10}
                             data={data}
                             keyField="id"
-                            style={containerTableStyles}
                             emptyTitle="Oh no!"
                             emptyDescription="No hay ningun registro actualmente..."
                         >
