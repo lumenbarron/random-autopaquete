@@ -124,8 +124,16 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    //console.log(doc.data().supplierData.FinalWeight)
+
                     dataGuias.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         ...doc.data(),
                     });
                     dataUsers.push(doc.data().name);
@@ -158,6 +166,7 @@ export default function AllGuides({}) {
                     Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
 
                     service: historyRecord.supplierData.Supplier,
+                    volumetricWeight: historyRecord.volumetricWeight,
                     weight: historyRecord.package.weight,
                     measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
                     cost: historyRecord.supplierData.Supplier_cost,
@@ -167,6 +176,7 @@ export default function AllGuides({}) {
                             : historyRecord.label,
                 };
             }),
+            console.log(history),
         );
     }, [history]);
 
@@ -193,6 +203,12 @@ export default function AllGuides({}) {
                     console.log('guias del cliente ' + name + ':', doc.data());
                     dataGuiasEachUser.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         ...doc.data(),
                     });
                 });
@@ -220,6 +236,12 @@ export default function AllGuides({}) {
                     console.log('guias del cliente ' + supplier + ':', doc.data());
                     dataGuiasBySupplier.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         ...doc.data(),
                     });
                 });
@@ -250,6 +272,12 @@ export default function AllGuides({}) {
                     //console.log('guias del cliente ' + date + ':', doc.data());
                     dataGuiasByDate.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         sentDate: doc
                             .data()
                             .creation_date.toDate()
@@ -323,26 +351,31 @@ export default function AllGuides({}) {
                             className="direction-table"
                         >
                             <Column header="Fecha " field="date" defaultWidth={105} />
-                            <Column header="Name " field="name" />
-                            <Column header="Guía" field="guide" defaultWidth={85} />
-                            <Column header="Nombre Origen" field="nameorigin" />
+                            <Column header="Name " field="name" defaultWidth={120} />
+                            <Column header="Guía" field="guide" defaultWidth={100} />
+                            <Column header="Nombre Origen" field="nameorigin" defaultWidth={100} />
                             <Column
                                 header="Origen"
                                 component={Origins}
                                 field="origin"
                                 style={{ lineHeight: 25 }}
-                                defaultWidth={125}
+                                // defaultWidth={125}
                             />
-                            <Column header="Nombre Destino" field="namedestination" />
+                            <Column
+                                header="Nombre Destino"
+                                field="namedestination"
+                                defaultWidth={100}
+                            />
                             <Column
                                 header="Destino"
                                 component={Destinations}
                                 field="Destination"
                                 style={{ lineHeight: 25 }}
-                                defaultWidth={125}
+                                // defaultWidth={125}
                             />
                             <Column header="Servicio" field="service" defaultWidth={105} />
-                            <Column header="Peso" field="weight" defaultWidth={50} />
+                            <Column header="PF" field="weight" defaultWidth={70} />
+                            <Column header="PV" field="volumetricWeight" defaultWidth={70} />
                             <Column header="Medidas (cm)" field="measurement" defaultWidth={115} />
                             <Column header="Costo" field="cost" defaultWidth={75} />
                             <Column

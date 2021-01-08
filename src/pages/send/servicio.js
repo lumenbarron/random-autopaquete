@@ -188,6 +188,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     .then(doc => {
                         setError(false);
                         const tarifa = doc.data();
+                        console.log(tarifa);
                         const supplierData = {
                             ID: user.uid,
                             Supplier: `${supplier}${type}`,

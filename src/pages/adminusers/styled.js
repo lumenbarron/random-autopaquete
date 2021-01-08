@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const StyledAusers = styled.div`
-    width: 70%;
+    width: 80%;
     margin: 5rem;
     padding: 2rem;
     //border-radius: 3rem;

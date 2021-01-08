@@ -72,6 +72,12 @@ export default function HistoryUser({ user }) {
                         //console.log('doc.id', doc.data().creation_date);
                         dataGuias.push({
                             id: doc.id,
+                            volumetricWeight: Math.ceil(
+                                (doc.data().package.height *
+                                    doc.data().package.width *
+                                    doc.data().package.depth) /
+                                    5000,
+                            ),
                             //sentDate: doc.data().creation_date.toDate(),
                             ...doc.data(),
                         });
@@ -92,11 +98,12 @@ export default function HistoryUser({ user }) {
                 return {
                     id: historyRecord.id,
                     date: historyRecord.package.creation_date,
-                    status: historyRecord.status,
+                    // status: historyRecord.status,
                     guide: historyRecord.rastreo,
-                    origin: historyRecord.sender_addresses.name,
-                    Destination: historyRecord.receiver_addresses.name,
+                    origin: `${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
+                    Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
                     weight: historyRecord.package.weight,
+                    volumetricWeight: historyRecord.volumetricWeight,
                     service: historyRecord.supplierData.Supplier,
                     cost: historyRecord.supplierData.Supplier_cost,
                     label:
@@ -127,16 +134,17 @@ export default function HistoryUser({ user }) {
                         className="direction-table"
                     >
                         <Column header="Fecha " field="date" defaultWidth={105} />
-                        <Column
+                        {/* <Column
                             header="Status"
                             field="status"
                             component={StatusBadge}
                             defaultWidth={140}
-                        />
+                        /> */}
                         <Column header="Guía" field="guide" defaultWidth={85} />
                         <Column header="Origen" field="origin" />
                         <Column header="Destino" field="Destination" />
-                        <Column header="Peso" field="weight" defaultWidth={65} />
+                        <Column header="PF" field="weight" defaultWidth={65} />
+                        <Column header="PV" field="volumetricWeight" defaultWidth={65} />
                         <Column header="Servicio" field="service" defaultWidth={135} />
 
                         <Column header="Costo" field="cost" defaultWidth={75} />
