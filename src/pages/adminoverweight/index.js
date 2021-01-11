@@ -194,6 +194,7 @@ const AdminOverweightPage = () => {
                 ...doc.data(),
             };
         });
+        console.log(overWeightInformation);
         setOverWeightInformation(overWeightInformation);
     }
 
@@ -458,7 +459,7 @@ const AdminOverweightPage = () => {
                         <Input
                             id="fecha"
                             label="Fecha"
-                            value={date ? new Date(date).toLocaleDateString() : undefined}
+                            value={date ? date : undefined}
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
                             readOnly
