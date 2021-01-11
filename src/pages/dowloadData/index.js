@@ -3,7 +3,7 @@ import { CSVLink } from 'react-csv';
 import { Button } from 'react-rainbow-components';
 
 export default function ExportReactCSV({ data }) {
-    //console.log('data csv', data);
+    console.log('data csv', data);
     const headers = [
         { label: 'ID', key: 'id' },
         { label: 'Nombre', key: 'name' },
@@ -22,7 +22,7 @@ export default function ExportReactCSV({ data }) {
         { label: 'Código Postal Destino', key: 'receiver_addresses.codigo_postal' },
         { label: 'Referencias Destino', key: 'receiver_addresses.place_reference' },
         { label: 'Paquete', key: 'package.content_description' },
-        { label: 'Paquete Peso', key: 'package.weight' },
+        { label: 'Peso Cobrado', key: 'package.weight' },
         { label: 'Paquete Largo', key: 'package.height' },
         { label: 'Paquete Ancho', key: 'package.width' },
         { label: 'Paquete Alto', key: 'package.depth' },
