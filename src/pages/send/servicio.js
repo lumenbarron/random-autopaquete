@@ -188,6 +188,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     .then(doc => {
                         setError(false);
                         const tarifa = doc.data();
+                        console.log(tarifa);
                         const supplierData = {
                             ID: user.uid,
                             Supplier: `${supplier}${type}`,
@@ -386,7 +387,20 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 depth:
                                     doc.data().package.depth != '' ? doc.data().package.depth : 1,
                                 weight:
-                                    doc.data().package.weight != '' ? doc.data().package.weight : 1,
+                                    doc.data().package.weight >
+                                    Math.ceil(
+                                        (doc.data().package.height *
+                                            doc.data().package.width *
+                                            doc.data().package.depth) /
+                                            5000,
+                                    )
+                                        ? doc.data().package.weight
+                                        : Math.ceil(
+                                              (doc.data().package.height *
+                                                  doc.data().package.width *
+                                                  doc.data().package.depth) /
+                                                  5000,
+                                          ),
                                 content_description:
                                     doc.data().package.content_description != ''
                                         ? doc.data().package.content_description
@@ -401,6 +415,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
                     console.log(allRatesData.current.length, 'allRatesData');
                     fetchGuia(dataShipping.current, delivery);
+                    console.log('dataShipping.current', dataShipping.current);
                 } else {
                     console.log('Error getting document:', error);
                 }

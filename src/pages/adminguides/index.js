@@ -5,14 +5,18 @@ import {
     TableWithBrowserPagination,
     Select,
     Spinner,
+    Input,
+    Button,
 } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
 import { StyledAusers } from '../adminusers/styled';
 import ExportReactCSV from '../dowloadData/index';
+import swal from 'sweetalert2';
 
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
@@ -126,8 +130,15 @@ export default function AllGuides({}) {
                 querySnapshot.forEach(function(doc) {
                     dataGuias.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         ...doc.data(),
                     });
+
                     dataUsers.push(doc.data().name);
                 });
                 console.log('dataUsers', dataUsers);
@@ -158,6 +169,7 @@ export default function AllGuides({}) {
                     Destination: `${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
 
                     service: historyRecord.supplierData.Supplier,
+                    volumetricWeight: historyRecord.volumetricWeight,
                     weight: historyRecord.package.weight,
                     measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
                     cost: historyRecord.supplierData.Supplier_cost,
@@ -167,6 +179,7 @@ export default function AllGuides({}) {
                             : historyRecord.label,
                 };
             }),
+            console.log(history),
         );
     }, [history]);
 
@@ -193,6 +206,12 @@ export default function AllGuides({}) {
                     console.log('guias del cliente ' + name + ':', doc.data());
                     dataGuiasEachUser.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         ...doc.data(),
                     });
                 });
@@ -220,6 +239,12 @@ export default function AllGuides({}) {
                     console.log('guias del cliente ' + supplier + ':', doc.data());
                     dataGuiasBySupplier.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         ...doc.data(),
                     });
                 });
@@ -250,6 +275,12 @@ export default function AllGuides({}) {
                     //console.log('guias del cliente ' + date + ':', doc.data());
                     dataGuiasByDate.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         sentDate: doc
                             .data()
                             .creation_date.toDate()
@@ -273,6 +304,75 @@ export default function AllGuides({}) {
             });
     };
 
+    const getIdGuia = trackingNumber => {
+        console.log(trackingNumber);
+        let dataGuia = [];
+        if (trackingNumber == '' || !trackingNumber) {
+            swal.fire(
+                '¡Oh no!',
+                'Parece que no hay alguna guía con ese número, podrías revisar',
+                'error',
+            );
+        } else {
+            db.collection('guia')
+                .where('rastreo', '==', trackingNumber)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        console.log(doc.data());
+                        dataGuia.push({
+                            id: doc.id,
+                            volumetricWeight: Math.ceil(
+                                (doc.data().package.height *
+                                    doc.data().package.width *
+                                    doc.data().package.depth) /
+                                    5000,
+                            ),
+                            ...doc.data(),
+                        });
+                        setHistory(dataGuia);
+                        setDisplayData(true);
+                    });
+                })
+                .catch(function(error) {
+                    swal.fire(
+                        '¡Oh no!',
+                        'Parece que no hay alguna guía con ese número, podrías revisar',
+                        'error',
+                    );
+                    console.log('Error getting documents: ', error);
+                });
+            db.collection('guia')
+                .where('rastreo', 'array-contains', trackingNumber)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        console.log(doc.data());
+                        dataGuia.push({
+                            id: doc.id,
+                            volumetricWeight: Math.ceil(
+                                (doc.data().package.height *
+                                    doc.data().package.width *
+                                    doc.data().package.depth) /
+                                    5000,
+                            ),
+                            ...doc.data(),
+                        });
+                        setHistory(dataGuia);
+                        setDisplayData(true);
+                    });
+                })
+                .catch(function(error) {
+                    swal.fire(
+                        '¡Oh no!',
+                        'Parece que no hay alguna guía con ese número, podrías revisar',
+                        'error',
+                    );
+                    console.log('Error getting documents: ', error);
+                });
+        }
+    };
+
     return (
         <StyledAusers>
             <div className="back">
@@ -284,6 +384,19 @@ export default function AllGuides({}) {
                     <h2 style={{ marginBottom: 0 }}>Filtrar por :</h2>
                 </Row>
                 <Row className="content-header">
+                    <Col>
+                        <Input
+                            id="guia"
+                            placeholder="Numero de guia"
+                            className="rainbow-p-around_medium"
+                            style={{ flex: '1 1' }}
+                            onChange={ev => getIdGuia(ev.target.value)}
+                            icon={
+                                <FontAwesomeIcon icon={faSearch} className="rainbow-color_gray-3" />
+                            }
+                        />
+                        {/* <Button variant="destructive" className="rainbow-m-around_medium" onClick={ev => getIdGuia(ev.target.value)}>Buscar</Button> */}
+                    </Col>
                     <Col>
                         <Select
                             options={tableUsers}
@@ -323,26 +436,31 @@ export default function AllGuides({}) {
                             className="direction-table"
                         >
                             <Column header="Fecha " field="date" defaultWidth={105} />
-                            <Column header="Name " field="name" />
-                            <Column header="Guía" field="guide" defaultWidth={85} />
-                            <Column header="Nombre Origen" field="nameorigin" />
+                            <Column header="Name " field="name" defaultWidth={120} />
+                            <Column header="Guía" field="guide" defaultWidth={120} />
+                            <Column header="Nombre Origen" field="nameorigin" defaultWidth={100} />
                             <Column
                                 header="Origen"
                                 component={Origins}
                                 field="origin"
                                 style={{ lineHeight: 25 }}
-                                defaultWidth={125}
+                                // defaultWidth={125}
                             />
-                            <Column header="Nombre Destino" field="namedestination" />
+                            <Column
+                                header="Nombre Destino"
+                                field="namedestination"
+                                defaultWidth={100}
+                            />
                             <Column
                                 header="Destino"
                                 component={Destinations}
                                 field="Destination"
                                 style={{ lineHeight: 25 }}
-                                defaultWidth={125}
+                                // defaultWidth={125}
                             />
                             <Column header="Servicio" field="service" defaultWidth={105} />
-                            <Column header="Peso" field="weight" defaultWidth={50} />
+                            <Column header="PF" field="weight" defaultWidth={70} />
+                            <Column header="PV" field="volumetricWeight" defaultWidth={70} />
                             <Column header="Medidas (cm)" field="measurement" defaultWidth={115} />
                             <Column header="Costo" field="cost" defaultWidth={75} />
                             <Column
