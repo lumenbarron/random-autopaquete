@@ -119,6 +119,7 @@ const AdminOverweightPage = () => {
     useEffect(() => {
         let cargoExtraCero;
         let cargoExtra;
+        let cargo;
         let maxrate;
 
         console.log(
@@ -137,7 +138,8 @@ const AdminOverweightPage = () => {
         );
         console.log('overweightRatesBase', overweightRatesBase);
         overweightRatesBase.forEach(rates => {
-            //console.log(rates.min, rates.max, rates.entrega);
+            console.log(rates.min, rates.max, rates.precio, rates.entrega);
+
             if (
                 parseInt(rates.min, 10) <= parseInt(kgDeclarados, 10) &&
                 parseInt(rates.max, 10) >= parseInt(kgDeclarados, 10) &&
@@ -147,31 +149,48 @@ const AdminOverweightPage = () => {
             ) {
                 console.log('guardando el max rate de su tarifa');
                 maxrate = parseInt(rates.max, 10);
-                //console.log(maxrate)
-            }
-            if (
-                parseInt(rates.min, 10) <= parseInt(realKg, 10) &&
-                parseInt(rates.max, 10) >= parseInt(realKg, 10) &&
-                rates.precio === costGuia &&
-                rates.entrega === supplier &&
-                !rates.kgExtra
-            ) {
-                console.log('entra en su tarifa');
-                cargoExtraCero = 0;
-                setMatchPrice(`de ${rates.min} hasta  ${rates.max} con ${rates.entrega}`);
+                console.log(maxrate);
+                if (
+                    parseInt(rates.min, 10) <= parseInt(realKg, 10) &&
+                    parseInt(rates.max, 10) >= parseInt(realKg, 10) &&
+                    rates.precio === costGuia &&
+                    rates.entrega === supplier &&
+                    !rates.kgExtra
+                ) {
+                    console.log('entra en su tarifa');
+                    cargoExtraCero = 0;
+                    setMatchPrice(`de ${rates.min} hasta  ${rates.max} con ${rates.entrega}`);
+                } else {
+                    console.log(
+                        'maxrate',
+                        maxrate,
+                        'realKg',
+                        parseInt(realKg, 10),
+                        'kg exta',
+                        rateKgExtra,
+                    );
+                    console.log(parseInt(realKg, 10) - maxrate);
+                    cargoExtra =
+                        (parseInt(realKg, 10) - maxrate) * parseInt(rateKgExtra, 10) * 1.16;
+                }
             } else {
-                //console.log('maxrate',maxrate, 'realKg', parseInt(realKg, 10), 'kg exta', rateKgExtra)
-                //console.log(parseInt(realKg, 10) - maxrate)
-                cargoExtra = (parseInt(realKg, 10) - maxrate) * parseInt(rateKgExtra, 10) * 1.16;
+                console.log('no entra en ninguna tarifa');
+                cargo =
+                    (parseInt(realKg, 10) - parseInt(kgDeclarados, 10)) *
+                    parseInt(rateKgExtra, 10) *
+                    1.16;
             }
         });
-        //console.log('cargoExtraCero', cargoExtraCero, 'cargoExtra', cargoExtra)
+        console.log('cargoExtraCero', cargoExtraCero, 'cargoExtra', cargoExtra, 'cargo', cargo);
         if (cargoExtraCero === 0) {
             setMatchRate(false);
             setCargo(cargoExtraCero);
-        } else {
+        } else if (cargoExtra < cargo) {
             setMatchRate(true);
             setCargo(cargoExtra);
+        } else {
+            setMatchRate(true);
+            setCargo(cargo);
         }
     }, [realKg, kgDeclarados, rateKgExtra, supplier, xlsData]);
 
@@ -582,13 +601,11 @@ const AdminOverweightPage = () => {
                             <Container style={{ flex: '1 1 100%' }}>
                                 <Row>
                                     <Col>
-                                        {' '}
                                         <div className="">
                                             El sobrepeso abarca la tarifa del cliente
-                                        </div>{' '}
+                                        </div>
                                     </Col>
                                     <Col>
-                                        {' '}
                                         <p> Tarifa : {matchPrice} </p>
                                     </Col>
                                 </Row>
@@ -643,7 +660,6 @@ const AdminOverweightPage = () => {
                     </div>
                 </div>
                 <div className="app-spacer height-1" />
-
                 <div className="rainbow-p-bottom_xx-large">
                     <div>
                         <StyledTable
