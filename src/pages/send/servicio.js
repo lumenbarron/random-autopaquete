@@ -387,20 +387,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 depth:
                                     doc.data().package.depth != '' ? doc.data().package.depth : 1,
                                 weight:
-                                    doc.data().package.weight >
-                                    Math.ceil(
-                                        (doc.data().package.height *
-                                            doc.data().package.width *
-                                            doc.data().package.depth) /
-                                            5000,
-                                    )
-                                        ? doc.data().package.weight
-                                        : Math.ceil(
-                                              (doc.data().package.height *
-                                                  doc.data().package.width *
-                                                  doc.data().package.depth) /
-                                                  5000,
-                                          ),
+                                    doc.data().package.weight != '' ? doc.data().package.weight : 1,
+                                // weight:
+                                //     doc.data().package.weight >
+                                //     Math.ceil(
+                                //         (doc.data().package.height *
+                                //             doc.data().package.width *
+                                //             doc.data().package.depth) /
+                                //             5000,
+                                //     )
+                                //         ? doc.data().package.weight
+                                //         : Math.ceil(
+                                //               (doc.data().package.height *
+                                //                   doc.data().package.width *
+                                //                   doc.data().package.depth) /
+                                //                   5000,
+                                //           ),
                                 content_description:
                                     doc.data().package.content_description != ''
                                         ? doc.data().package.content_description

@@ -30,6 +30,8 @@ const AdminOverweightPage = () => {
     const db = firebase.firestore();
 
     const [guia, setGuia] = useState();
+    const [costGuia, setCostGuia] = useState();
+    const [costTotal, setCostTotal] = useState();
     const [userId, setUserId] = useState();
     const [name, setName] = useState('');
     const [date, setDate] = useState();
@@ -67,17 +69,19 @@ const AdminOverweightPage = () => {
                 .onSnapshot(
                     function(profilesSnapshot) {
                         profilesSnapshot.forEach(function(profileDoc) {
+                            console.log(profileDoc.data());
                             setSaldo(profileDoc.data().saldo);
                             setProfileDocId(profileDoc.id);
                             db.collection(`profiles/${profileDoc.id}/rate`)
                                 .get()
                                 .then(function(ratesSnapshot) {
                                     const tmpOverweightRatesBase = [];
-
+                                    // console.log(ratesSnapshot);
                                     ratesSnapshot.forEach(function(rateDoc) {
+                                        //console.log(rateDoc.data());
                                         tmpOverweightRatesBase.push(rateDoc.data());
                                     });
-
+                                    console.log('tmpOverweightRatesBase', tmpOverweightRatesBase);
                                     setOverweightRatesBase(tmpOverweightRatesBase);
                                 })
                                 .catch(function(error) {
@@ -107,6 +111,25 @@ const AdminOverweightPage = () => {
 
     // Calculo para el Kilo extra
     useEffect(() => {
+        console.log(
+            'realKg',
+            realKg,
+            'kgDeclarados',
+            kgDeclarados,
+            'rateKgExtra',
+            rateKgExtra,
+            'CostGuia',
+            costGuia,
+            'CostTotal',
+            costTotal,
+        );
+        console.log('overweightRatesBase', overweightRatesBase);
+        overweightRatesBase.forEach(rates => {
+            console.log(rates.precio);
+            if (rates.precio === costGuia) {
+                console.log('no cargo');
+            }
+        });
         setCargo((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16);
     }, [realKg, kgDeclarados, rateKgExtra, xlsData]);
 
@@ -123,6 +146,24 @@ const AdminOverweightPage = () => {
                 querySnapshot.forEach(function(doc) {
                     console.log(doc.data());
                     setGuia(doc.id);
+                    setCostGuia(doc.data().supplierData.cargos.guia);
+                    setCostTotal(doc.data().supplierData.Supplier_cost);
+                    setErrorGuia(true);
+                });
+            })
+            .catch(function(error) {
+                setErrorGuia(true);
+                console.log('Error getting documents: ', error);
+            });
+        db.collection('guia')
+            .where('rastreo', '==', trackingNumber)
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log(doc.data());
+                    setGuia(doc.id);
+                    setCostGuia(doc.data().supplierData.cargos.guia);
+                    setCostTotal(doc.data().supplierData.Supplier_cost);
                     setErrorGuia(true);
                 });
             })
@@ -143,12 +184,12 @@ const AdminOverweightPage = () => {
             setSupplier('');
         } else {
             const docRef = db.collection('guia').doc(guia);
-
+            console.log('obteniendo datos de la guia');
             docRef
                 .get()
                 .then(function(doc) {
                     if (doc.exists) {
-                        console.log(doc.data());
+                        //console.log(doc.data());
                         setDocId(doc.id);
                         setName(doc.data().name);
                         setUserId(doc.data().ID);
@@ -187,13 +228,16 @@ const AdminOverweightPage = () => {
         }
         setErrorGuia(false);
     }, [guia, getIdGuia]);
+
     function handleOverWeight(snapshot) {
         const overWeightInformation = snapshot.docs.map(doc => {
+            console.log(doc.data());
             return {
                 id: doc.id,
                 ...doc.data(),
             };
         });
+        console.log(overWeightInformation);
         setOverWeightInformation(overWeightInformation);
     }
 
@@ -276,6 +320,7 @@ const AdminOverweightPage = () => {
                                             .get()
                                             .then(function(profilesSnapshot) {
                                                 profilesSnapshot.forEach(function(profileDoc) {
+                                                    console.log(profileDoc);
                                                     db.collection(`profiles/${profileDoc.id}/rate`)
                                                         .get()
                                                         .then(function(ratesSnapshot) {
@@ -458,7 +503,7 @@ const AdminOverweightPage = () => {
                         <Input
                             id="fecha"
                             label="Fecha"
-                            value={date ? new Date(date).toLocaleDateString() : undefined}
+                            value={date ? date : undefined}
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
                             readOnly

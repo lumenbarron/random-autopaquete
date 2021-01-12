@@ -122,6 +122,9 @@ export default function AllGuides({}) {
         let dataGuias = [];
         let dataUsers = [];
         let dataSingleUser = [];
+        let guiasByDate = [];
+        const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
+        let convertDate = new Date().toLocaleDateString('es-US', options);
         db.collection('guia')
             .where('status', '==', 'completed')
             .orderBy('creation_date', 'desc')
@@ -136,16 +139,22 @@ export default function AllGuides({}) {
                                 doc.data().package.depth) /
                                 5000,
                         ),
+                        sentDate: doc
+                            .data()
+                            .creation_date.toDate()
+                            .toLocaleDateString('es-US', options),
                         ...doc.data(),
                     });
 
                     dataUsers.push(doc.data().name);
                 });
                 console.log('dataUsers', dataUsers);
+                guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
+                console.log('guiasByDate', guiasByDate);
                 dataSingleUser = dataUsers
                     .filter((item, index) => dataUsers.indexOf(item) === index)
                     .sort();
-                setHistory(dataGuias);
+                setHistory(guiasByDate);
                 setUsersName(dataSingleUser);
                 setDisplayData(true);
             })
