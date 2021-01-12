@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import {
     Table,
@@ -9,9 +9,12 @@ import {
     ImportRecordsFlow,
 } from 'react-rainbow-components';
 import styled from 'styled-components';
-
+import swal from 'sweetalert2';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import toFixed from 'accounting-js/lib/toFixed';
+import Container from 'react-bootstrap/Container';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 import { useFirebaseApp } from 'reactfire';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport, faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -32,6 +35,8 @@ const AdminOverweightPage = () => {
     const [guia, setGuia] = useState();
     const [costGuia, setCostGuia] = useState();
     const [costTotal, setCostTotal] = useState();
+    const [matchRate, setMatchRate] = useState(false);
+    const [matchPrice, setMatchPrice] = useState(false);
     const [userId, setUserId] = useState();
     const [name, setName] = useState('');
     const [date, setDate] = useState();
@@ -57,6 +62,7 @@ const AdminOverweightPage = () => {
     const [overweightRatesBaseXls, setOverweightRatesBaseXls] = useState([]);
 
     const [cargo, setCargo] = useState();
+    let extraCharge = useRef();
 
     const creationDate = new Date();
     const [rateKgExtra, setRateKgExtra] = useState();
@@ -111,6 +117,10 @@ const AdminOverweightPage = () => {
 
     // Calculo para el Kilo extra
     useEffect(() => {
+        let cargoExtraCero;
+        let cargoExtra;
+        let maxrate;
+
         console.log(
             'realKg',
             realKg,
@@ -122,16 +132,48 @@ const AdminOverweightPage = () => {
             costGuia,
             'CostTotal',
             costTotal,
+            'supplier',
+            supplier,
         );
         console.log('overweightRatesBase', overweightRatesBase);
         overweightRatesBase.forEach(rates => {
-            console.log(rates.precio);
-            if (rates.precio === costGuia) {
-                console.log('no cargo');
+            //console.log(rates.min, rates.max, rates.entrega);
+            if (
+                parseInt(rates.min, 10) <= parseInt(kgDeclarados, 10) &&
+                parseInt(rates.max, 10) >= parseInt(kgDeclarados, 10) &&
+                rates.precio === costGuia &&
+                rates.entrega === supplier &&
+                !rates.kgExtra
+            ) {
+                console.log('guardando el max rate de su tarifa');
+                maxrate = parseInt(rates.max, 10);
+                //console.log(maxrate)
+            }
+            if (
+                parseInt(rates.min, 10) <= parseInt(realKg, 10) &&
+                parseInt(rates.max, 10) >= parseInt(realKg, 10) &&
+                rates.precio === costGuia &&
+                rates.entrega === supplier &&
+                !rates.kgExtra
+            ) {
+                console.log('entra en su tarifa');
+                cargoExtraCero = 0;
+                setMatchPrice(`de ${rates.min} hasta  ${rates.max} con ${rates.entrega}`);
+            } else {
+                //console.log('maxrate',maxrate, 'realKg', parseInt(realKg, 10), 'kg exta', rateKgExtra)
+                //console.log(parseInt(realKg, 10) - maxrate)
+                cargoExtra = (parseInt(realKg, 10) - maxrate) * parseInt(rateKgExtra, 10) * 1.16;
             }
         });
-        setCargo((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16);
-    }, [realKg, kgDeclarados, rateKgExtra, xlsData]);
+        //console.log('cargoExtraCero', cargoExtraCero, 'cargoExtra', cargoExtra)
+        if (cargoExtraCero === 0) {
+            setMatchRate(false);
+            setCargo(cargoExtraCero);
+        } else {
+            setMatchRate(true);
+            setCargo(cargoExtra);
+        }
+    }, [realKg, kgDeclarados, rateKgExtra, supplier, xlsData]);
 
     if (isNaN(cargo)) {
         setCargo(0);
@@ -231,7 +273,7 @@ const AdminOverweightPage = () => {
 
     function handleOverWeight(snapshot) {
         const overWeightInformation = snapshot.docs.map(doc => {
-            console.log(doc.data());
+            //console.log(doc.data());
             return {
                 id: doc.id,
                 ...doc.data(),
@@ -242,6 +284,7 @@ const AdminOverweightPage = () => {
     }
 
     useEffect(() => {
+        console.log('entranfo aqui');
         const reloadOverWeight = () => {
             db.collection('overweights').onSnapshot(handleOverWeight);
         };
@@ -263,6 +306,7 @@ const AdminOverweightPage = () => {
     };
 
     const addOverWeight = () => {
+        swal.fire('Agregado', '', 'success');
         //Datos manualmente
         if (name) {
             const addOverWeightData = {
@@ -290,6 +334,8 @@ const AdminOverweightPage = () => {
                 .update({
                     saldo: toFixed(parseFloat(saldo) - parseFloat(cargo), 2),
                 });
+
+            setGuia('');
         } else {
         }
         //Datos cuando se agregan por medio de csv
@@ -510,7 +556,7 @@ const AdminOverweightPage = () => {
                         />
                         <Input
                             id="kgs"
-                            label="Kgs Declarados"
+                            label="Kgs Cobrados"
                             value={kgDeclarados}
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
@@ -532,6 +578,23 @@ const AdminOverweightPage = () => {
                             style={{ flex: '1 1' }}
                             readOnly
                         />
+                        {!matchRate && (
+                            <Container style={{ flex: '1 1 100%' }}>
+                                <Row>
+                                    <Col>
+                                        {' '}
+                                        <div className="">
+                                            El sobrepeso abarca la tarifa del cliente
+                                        </div>{' '}
+                                    </Col>
+                                    <Col>
+                                        {' '}
+                                        <p> Tarifa : {matchPrice} </p>
+                                    </Col>
+                                </Row>
+                                <div className="app-spacer height-1 height-2" />
+                            </Container>
+                        )}
                         {errorGuia && (
                             <>
                                 <div style={{ flex: '1 1 100%' }}>
