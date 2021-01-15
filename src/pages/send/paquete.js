@@ -14,7 +14,7 @@ import {
 } from './styled';
 import swal from 'sweetalert2';
 
-const numberRegex = RegExp(/^[0-9]+$/);
+const numberRegex = RegExp(/^[1-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
 
 const PackagingRadioOption = ({ packages }) => {
@@ -346,6 +346,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                             <Input
                                 id="height"
                                 name="height"
+                                label="largo"
                                 value={height}
                                 className={`rainbow-p-around_medium ${
                                     errorHeight ? 'empty-space' : ''
@@ -357,6 +358,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                             <Input
                                 id="width"
                                 name="width"
+                                label="ancho"
                                 value={width}
                                 className={`rainbow-p-around_medium ${
                                     errorWidth ? 'empty-space' : ''
@@ -368,6 +370,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                             <Input
                                 id="depth"
                                 name="depth"
+                                label="alto"
                                 value={depth}
                                 className={`rainbow-p-around_medium ${
                                     errorDepth ? 'empty-space' : ''
