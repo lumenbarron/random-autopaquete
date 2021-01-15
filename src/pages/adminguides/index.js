@@ -131,6 +131,13 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    //console.log(doc.id, doc.data().rastreo);
+                    //if ( typeof doc.data().rastreo === 'string' ) {
+                    // console.log('holi')
+                    // db.collection('guia')
+                    // .doc(doc.id)
+                    // .update({rastreo: [doc.data().rastreo]})
+                    //}
                     dataGuias.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -148,9 +155,9 @@ export default function AllGuides({}) {
 
                     dataUsers.push(doc.data().name);
                 });
-                console.log('dataUsers', dataUsers);
+
                 guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
-                console.log('guiasByDate', guiasByDate);
+                //console.log('guiasByDate', guiasByDate.rastreo);
                 dataSingleUser = dataUsers
                     .filter((item, index) => dataUsers.indexOf(item) === index)
                     .sort();
@@ -281,7 +288,6 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('guias del cliente ' + date + ':', doc.data());
                     dataGuiasByDate.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -299,7 +305,6 @@ export default function AllGuides({}) {
                     //console.log('todas las guias', dataGuiasByDate);
                 });
                 guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
-                console.log('guiasByDate', guiasByDate);
                 setHistory(guiasByDate);
                 setDisplayData(true);
                 dateSelected.current = date;

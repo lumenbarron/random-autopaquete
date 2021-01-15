@@ -87,11 +87,11 @@ const AdminOverweightPage = () => {
                                         //console.log(rateDoc.data());
                                         tmpOverweightRatesBase.push(rateDoc.data());
                                     });
-                                    console.log('tmpOverweightRatesBase', tmpOverweightRatesBase);
+                                    console.log('obteniendo las tarifas', tmpOverweightRatesBase);
                                     setOverweightRatesBase(tmpOverweightRatesBase);
                                 })
                                 .catch(function(error) {
-                                    console.log('rates not found');
+                                    console.log('rates not found', error);
                                 });
                         });
                     },
@@ -104,6 +104,7 @@ const AdminOverweightPage = () => {
 
     // display new prices according to overweight rate base change
     useEffect(() => {
+        console.log('obteniendo los kg extra');
         setRateKgExtra(
             overweightRatesBase
                 .filter(kgExtraFilter => {
@@ -136,9 +137,9 @@ const AdminOverweightPage = () => {
             'supplier',
             supplier,
         );
-        console.log('overweightRatesBase', overweightRatesBase);
+        //console.log('overweightRatesBase', overweightRatesBase);
         overweightRatesBase.forEach(rates => {
-            console.log(rates.min, rates.max, rates.precio, rates.entrega);
+            //console.log(rates.min, rates.max, rates.precio, rates.entrega);
 
             if (
                 parseInt(rates.min, 10) <= parseInt(kgDeclarados, 10) &&
@@ -147,9 +148,9 @@ const AdminOverweightPage = () => {
                 rates.entrega === supplier &&
                 !rates.kgExtra
             ) {
-                console.log('guardando el max rate de su tarifa');
+                //console.log('guardando el max rate de su tarifa');
                 maxrate = parseInt(rates.max, 10);
-                console.log(maxrate);
+                //console.log(maxrate);
                 if (
                     parseInt(rates.min, 10) <= parseInt(realKg, 10) &&
                     parseInt(rates.max, 10) >= parseInt(realKg, 10) &&
@@ -157,31 +158,31 @@ const AdminOverweightPage = () => {
                     rates.entrega === supplier &&
                     !rates.kgExtra
                 ) {
-                    console.log('entra en su tarifa');
+                    //console.log('entra en su tarifa');
                     cargoExtraCero = 0;
                     setMatchPrice(`de ${rates.min} hasta  ${rates.max} con ${rates.entrega}`);
                 } else {
-                    console.log(
-                        'maxrate',
-                        maxrate,
-                        'realKg',
-                        parseInt(realKg, 10),
-                        'kg exta',
-                        rateKgExtra,
-                    );
-                    console.log(parseInt(realKg, 10) - maxrate);
+                    // console.log(
+                    //     'maxrate',
+                    //     maxrate,
+                    //     'realKg',
+                    //     parseInt(realKg, 10),
+                    //     'kg exta',
+                    //     rateKgExtra,
+                    // );
+                    //console.log(parseInt(realKg, 10) - maxrate);
                     cargoExtra =
                         (parseInt(realKg, 10) - maxrate) * parseInt(rateKgExtra, 10) * 1.16;
                 }
             } else {
-                console.log('no entra en ninguna tarifa');
+                //console.log('no entra en ninguna tarifa');
                 cargo =
                     (parseInt(realKg, 10) - parseInt(kgDeclarados, 10)) *
                     parseInt(rateKgExtra, 10) *
                     1.16;
             }
         });
-        console.log('cargoExtraCero', cargoExtraCero, 'cargoExtra', cargoExtra, 'cargo', cargo);
+        //console.log('cargoExtraCero', cargoExtraCero, 'cargoExtra', cargoExtra, 'cargo', cargo);
         if (cargoExtraCero === 0) {
             setMatchRate(false);
             setCargo(cargoExtraCero);
@@ -291,23 +292,26 @@ const AdminOverweightPage = () => {
     }, [guia, getIdGuia]);
 
     function handleOverWeight(snapshot) {
+        let overWeightSorted = [];
         const overWeightInformation = snapshot.docs.map(doc => {
-            //console.log(doc.data());
+            //console.log(doc.data().fecha.toDate());
             return {
                 id: doc.id,
+                fecha: doc.data().fecha.toDate(),
                 ...doc.data(),
             };
         });
-        console.log(overWeightInformation);
-        setOverWeightInformation(overWeightInformation);
+        overWeightSorted = overWeightInformation.sort((a, b) => b.fecha - a.fecha);
+        setOverWeightInformation(overWeightSorted);
     }
 
     useEffect(() => {
-        console.log('entranfo aqui');
+        console.log('cargo', cargo);
+        console.log('entrando aqui, 5 use effect');
         const reloadOverWeight = () => {
             db.collection('overweights').onSnapshot(handleOverWeight);
         };
-        setCargo(toFixed((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16), 2);
+        //setCargo(toFixed((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16), 2);
         reloadOverWeight();
     }, []);
 
@@ -326,8 +330,11 @@ const AdminOverweightPage = () => {
 
     const addOverWeight = () => {
         swal.fire('Agregado', '', 'success');
+        console.log('xlsData', xlsData);
+        console.log('cargo', cargo);
         //Datos manualmente
         if (name) {
+            console.log('xlsData', xlsData);
             const addOverWeightData = {
                 ID: userId,
                 usuario: name,
@@ -342,6 +349,8 @@ const AdminOverweightPage = () => {
             db.collection('overweights')
                 .add(addOverWeightData)
                 .then(function(docRef) {
+                    console.log(addOverWeightData);
+                    setGuia('');
                     console.log('Document written');
                 })
                 .catch(function(error) {
@@ -353,8 +362,6 @@ const AdminOverweightPage = () => {
                 .update({
                     saldo: toFixed(parseFloat(saldo) - parseFloat(cargo), 2),
                 });
-
-            setGuia('');
         } else {
         }
         //Datos cuando se agregan por medio de csv
@@ -367,25 +374,60 @@ const AdminOverweightPage = () => {
             if (!overWeight.guia) {
                 console.log('Este valor tiene que tener un valor de guía valida');
             } else {
+                console.log('entrando a la coleccion guia');
+                console.log('xlsData', xlsData);
+                let guia = [overWeight.guia];
+                console.log(guia);
+                let weight;
+                let volWeight;
+                let costGuia;
+                let maxrate;
+                let supplier;
+                let kgDeclarados;
                 db.collection('guia')
                     .where('rastreo', 'array-contains', overWeight.guia)
                     .get()
                     .then(function(querySnapshot) {
                         querySnapshot.forEach(function(doc) {
                             const IdGuiaXls = doc.id;
-
+                            console.log('si entro');
+                            console.log('IdGuiaXls', IdGuiaXls);
                             db.collection('guia')
                                 .doc(IdGuiaXls)
                                 .get()
                                 .then(function(doc) {
                                     if (doc.exists) {
+                                        console.log(doc.data());
+                                        weight = doc.data().package.weight;
+                                        volWeight = Math.ceil(
+                                            (doc.data().package.height *
+                                                doc.data().package.width *
+                                                doc.data().package.depth) /
+                                                5000,
+                                        );
+                                        costGuia = doc.data().supplierData.cargos.guia;
+                                        supplier = doc.data().supplierData.Supplier;
+                                        kgDeclarados = weight > volWeight ? weight : volWeight;
+
+                                        console.log(
+                                            'weight',
+                                            weight,
+                                            'volWeight',
+                                            volWeight,
+                                            'costGuia',
+                                            costGuia,
+                                            'supplier',
+                                            supplier,
+                                            'kgDeclarados',
+                                            kgDeclarados,
+                                        );
                                         setUserId(doc.data().ID);
                                         db.collection('profiles')
                                             .where('ID', '==', doc.data().ID)
                                             .get()
                                             .then(function(profilesSnapshot) {
                                                 profilesSnapshot.forEach(function(profileDoc) {
-                                                    console.log(profileDoc);
+                                                    //console.log(profileDoc);
                                                     db.collection(`profiles/${profileDoc.id}/rate`)
                                                         .get()
                                                         .then(function(ratesSnapshot) {
@@ -399,7 +441,10 @@ const AdminOverweightPage = () => {
                                                             });
 
                                                             const overweightRatesBase = tmpOverweightRatesBase;
-
+                                                            console.log(
+                                                                'obteniendo las tarifas',
+                                                                overweightRatesBase,
+                                                            );
                                                             const overweightRatesBaseXls = overweightRatesBase
                                                                 .filter(kgExtraFilter => {
                                                                     return (
@@ -413,16 +458,126 @@ const AdminOverweightPage = () => {
                                                                 .map(getCostkgExtra => {
                                                                     return getCostkgExtra.kgExtra;
                                                                 });
-
-                                                            const cargoOverweight = toFixed(
-                                                                (overWeight.kilos_reales -
-                                                                    doc.data().package.weight) *
-                                                                    parseInt(
-                                                                        overweightRatesBaseXls,
+                                                            console.log(
+                                                                'obteniendo los kg extra',
+                                                                overweightRatesBaseXls,
+                                                            );
+                                                            console.log(
+                                                                'realKg',
+                                                                overWeight.kilos_reales,
+                                                            );
+                                                            console.log(
+                                                                'overweightRatesBase',
+                                                                overweightRatesBase,
+                                                            );
+                                                            let minmax = overweightRatesBase.map(
+                                                                value => ({
+                                                                    min: value.min,
+                                                                    max: value.max,
+                                                                }),
+                                                            );
+                                                            console.log('minmax', minmax);
+                                                            let cargoOverweight;
+                                                            let cargoExtra;
+                                                            overweightRatesBase.forEach(rates => {
+                                                                if (
+                                                                    parseInt(rates.min, 10) <=
+                                                                        parseInt(
+                                                                            kgDeclarados,
+                                                                            10,
+                                                                        ) &&
+                                                                    parseInt(rates.max, 10) >=
+                                                                        parseInt(
+                                                                            kgDeclarados,
+                                                                            10,
+                                                                        ) &&
+                                                                    rates.precio === costGuia &&
+                                                                    rates.entrega === supplier &&
+                                                                    !rates.kgExtra
+                                                                ) {
+                                                                    console.log(
+                                                                        'guardando el max rate de su tarifa',
+                                                                    );
+                                                                    maxrate = parseInt(
+                                                                        rates.max,
                                                                         10,
-                                                                    ) *
-                                                                    1.16,
-                                                                2,
+                                                                    );
+                                                                    console.log(maxrate);
+                                                                    if (
+                                                                        parseInt(rates.min, 10) <=
+                                                                            parseInt(
+                                                                                overWeight.kilos_reales,
+                                                                                10,
+                                                                            ) &&
+                                                                        parseInt(rates.max, 10) >=
+                                                                            parseInt(
+                                                                                overWeight.kilos_reales,
+                                                                                10,
+                                                                            ) &&
+                                                                        rates.precio === costGuia &&
+                                                                        rates.entrega ===
+                                                                            supplier &&
+                                                                        !rates.kgExtra
+                                                                    ) {
+                                                                        console.log(
+                                                                            'entra en su tarifa',
+                                                                        );
+                                                                        cargoOverweight = 0;
+                                                                    } else {
+                                                                        console.log(
+                                                                            overWeight.kilos_reales -
+                                                                                maxrate,
+                                                                        );
+                                                                        console.log(
+                                                                            'cargo dentro de la tarifa',
+                                                                        );
+                                                                        cargoOverweight = toFixed(
+                                                                            (overWeight.kilos_reales -
+                                                                                maxrate) *
+                                                                                parseInt(
+                                                                                    overweightRatesBaseXls,
+                                                                                    10,
+                                                                                ) *
+                                                                                1.16,
+                                                                        );
+                                                                    }
+                                                                } else {
+                                                                    console.log(
+                                                                        'no entra en ninguna tarifa',
+                                                                    );
+                                                                    cargoExtra = toFixed(
+                                                                        (overWeight.kilos_reales -
+                                                                            kgDeclarados) *
+                                                                            parseInt(
+                                                                                overweightRatesBaseXls,
+                                                                                10,
+                                                                            ) *
+                                                                            1.16,
+                                                                        2,
+                                                                    );
+                                                                }
+                                                            });
+                                                            if (cargoOverweight === 0) {
+                                                                console.log(
+                                                                    'cargoOverweight es igual a',
+                                                                    cargoOverweight,
+                                                                );
+                                                                cargoOverweight = cargoOverweight;
+                                                            } else if (
+                                                                cargoOverweight < cargoExtra
+                                                            ) {
+                                                                console.log(
+                                                                    'cargoOverweight es igual a',
+                                                                    cargoOverweight,
+                                                                );
+                                                                cargoOverweight = cargoOverweight;
+                                                            } else {
+                                                                cargoOverweight = cargoExtra;
+                                                            }
+
+                                                            console.log(
+                                                                'cargoOverweight',
+                                                                cargoOverweight,
                                                             );
                                                             const cargo = db
                                                                 .collection('overweights')
@@ -432,14 +587,15 @@ const AdminOverweightPage = () => {
                                                                     fecha: creationDate,
                                                                     guia: IdGuiaXls,
                                                                     rastreo: overWeight.guia,
-                                                                    kilos_declarados: doc.data()
-                                                                        .package.weight,
+                                                                    kilos_declarados: kgDeclarados,
                                                                     kilos_reales:
                                                                         overWeight.kilos_reales,
                                                                     cargo: cargoOverweight,
                                                                 })
                                                                 .then(function(docRef) {
-                                                                    console.log(docRef);
+                                                                    console.log(
+                                                                        'documento subido exitosamente',
+                                                                    );
                                                                 })
                                                                 .catch(function(error) {
                                                                     console.error(
@@ -644,6 +800,7 @@ const AdminOverweightPage = () => {
                                 onRequestClose={closeModal}
                                 schema={schema}
                                 onComplete={data => {
+                                    //console.log(data)
                                     setxlsData(data);
                                     closeModalImported();
                                 }}
