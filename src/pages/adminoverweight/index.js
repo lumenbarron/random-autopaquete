@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-
 import {
     Table,
     Column,
@@ -62,10 +61,11 @@ const AdminOverweightPage = () => {
     const [overweightRatesBaseXls, setOverweightRatesBaseXls] = useState([]);
 
     const [cargo, setCargo] = useState();
-    let extraCharge = useRef();
+    let guiaRef = useRef('');
 
     const creationDate = new Date();
     const [rateKgExtra, setRateKgExtra] = useState();
+
     // overWeight data
     useEffect(() => {
         if (!userId) {
@@ -197,40 +197,68 @@ const AdminOverweightPage = () => {
         setCargo(0);
     }
 
-    const getIdGuia = trackingNumber => {
-        setTrackingNumber(trackingNumber);
-        db.collection('guia')
-            .where('rastreo', 'array-contains', trackingNumber)
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    console.log(doc.data());
-                    setGuia(doc.id);
-                    setCostGuia(doc.data().supplierData.cargos.guia);
-                    setCostTotal(doc.data().supplierData.Supplier_cost);
+    useEffect(() => {
+        //console.log('cargo', cargo);
+        //console.log('entrando aqui, 5 use effect');
+        const reloadOverWeight = () => {
+            db.collection('overweights').onSnapshot(handleOverWeight);
+        };
+        //setCargo(toFixed((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16), 2);
+        reloadOverWeight();
+    }, []);
+
+    const getIdGuia = e => {
+        // console.log(ev.target.value)
+        // console.log(trackingNumber, 'trackingNumber');
+        guiaRef.current = e.target.value;
+        // console.log(guiaRef.current)
+        // console.log( 'overWeightInformation',overWeightInformation );
+        let overWeightGuide = [];
+
+        overWeightInformation.forEach(item => {
+            //console.log( item.rastreo)
+            overWeightGuide.push(item.rastreo);
+        });
+        //console.log('overWeightGuide', overWeightGuide);
+        if (overWeightGuide.includes(guiaRef.current)) {
+            swal.fire('¡Oh no!', 'Parece que esta guía ya tiene sobrepeso', 'error');
+            guiaRef.current = '';
+        } else {
+            //console.log(guiaRef.current)
+            setTrackingNumber(guiaRef.current);
+            db.collection('guia')
+                .where('rastreo', 'array-contains', guiaRef.current)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        console.log(doc.data());
+                        setGuia(doc.id);
+                        setCostGuia(doc.data().supplierData.cargos.guia);
+                        setCostTotal(doc.data().supplierData.Supplier_cost);
+                        setErrorGuia(true);
+                    });
+                })
+                .catch(function(error) {
                     setErrorGuia(true);
+                    console.log('Error getting documents: ', error);
                 });
-            })
-            .catch(function(error) {
-                setErrorGuia(true);
-                console.log('Error getting documents: ', error);
-            });
-        db.collection('guia')
-            .where('rastreo', '==', trackingNumber)
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    console.log(doc.data());
-                    setGuia(doc.id);
-                    setCostGuia(doc.data().supplierData.cargos.guia);
-                    setCostTotal(doc.data().supplierData.Supplier_cost);
-                    setErrorGuia(true);
-                });
-            })
-            .catch(function(error) {
-                setErrorGuia(true);
-                console.log('Error getting documents: ', error);
-            });
+            // db.collection('guia')
+            //     .where('rastreo', '==', trackingNumber)
+            //     .get()
+            //     .then(function(querySnapshot) {
+            //         querySnapshot.forEach(function(doc) {
+            //             console.log(doc.data());
+            //             setGuia(doc.id);
+            //             setCostGuia(doc.data().supplierData.cargos.guia);
+            //             setCostTotal(doc.data().supplierData.Supplier_cost);
+            //             setErrorGuia(true);
+            //         });
+            //     })
+            //     .catch(function(error) {
+            //         setErrorGuia(true);
+            //         console.log('Error getting documents: ', error);
+            //     });
+        }
     };
 
     //Guide data
@@ -292,7 +320,6 @@ const AdminOverweightPage = () => {
     function handleOverWeight(snapshot) {
         let overWeightSorted = [];
         const overWeightInformation = snapshot.docs.map(doc => {
-            //console.log(doc.data().fecha.toDate());
             return {
                 id: doc.id,
                 fecha: doc.data().fecha.toDate(),
@@ -303,15 +330,15 @@ const AdminOverweightPage = () => {
         setOverWeightInformation(overWeightSorted);
     }
 
-    useEffect(() => {
-        //console.log('cargo', cargo);
-        //console.log('entrando aqui, 5 use effect');
-        const reloadOverWeight = () => {
-            db.collection('overweights').onSnapshot(handleOverWeight);
-        };
-        //setCargo(toFixed((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16), 2);
-        reloadOverWeight();
-    }, []);
+    // useEffect(() => {
+    //     //console.log('cargo', cargo);
+    //     //console.log('entrando aqui, 5 use effect');
+    //     const reloadOverWeight = () => {
+    //         db.collection('overweights').onSnapshot(handleOverWeight);
+    //     };
+    //     //setCargo(toFixed((realKg - kgDeclarados) * parseInt(rateKgExtra, 10) * 1.16), 2);
+    //     reloadOverWeight();
+    // }, []);
 
     const openModal = () => {
         setIsOpen(true);
@@ -360,6 +387,7 @@ const AdminOverweightPage = () => {
                 .update({
                     saldo: toFixed(parseFloat(saldo) - parseFloat(cargo), 2),
                 });
+            guiaRef.current = '';
         } else {
         }
         //Datos cuando se agregan por medio de csv
@@ -466,12 +494,12 @@ const AdminOverweightPage = () => {
                                                                 'overweightRatesBase',
                                                                 overweightRatesBase,
                                                             );
-                                                            let minmax = overweightRatesBase.map(
-                                                                value => ({
-                                                                    min: value.min,
-                                                                    max: value.max,
-                                                                }),
-                                                            );
+                                                            // let minmax = overweightRatesBase.map(
+                                                            //     value => ({
+                                                            //         min: value.min,
+                                                            //         max: value.max,
+                                                            //     }),
+                                                            // );
                                                             let cargoOverweight;
                                                             let cargoExtra;
                                                             overweightRatesBase.forEach(rates => {
@@ -706,7 +734,8 @@ const AdminOverweightPage = () => {
                             label="Numero de guia"
                             className="rainbow-p-around_medium"
                             style={{ flex: '1 1' }}
-                            onChange={ev => getIdGuia(ev.target.value)}
+                            onChange={e => getIdGuia(e)}
+                            value={guiaRef.current}
                         />
                         <Input
                             id="usuario"
