@@ -75,7 +75,7 @@ const AdminOverweightPage = () => {
                 .onSnapshot(
                     function(profilesSnapshot) {
                         profilesSnapshot.forEach(function(profileDoc) {
-                            console.log(profileDoc.data());
+                            //console.log(profileDoc.data());
                             setSaldo(profileDoc.data().saldo);
                             setProfileDocId(profileDoc.id);
                             db.collection(`profiles/${profileDoc.id}/rate`)
@@ -123,24 +123,22 @@ const AdminOverweightPage = () => {
         let cargo;
         let maxrate;
 
-        console.log(
-            'realKg',
-            realKg,
-            'kgDeclarados',
-            kgDeclarados,
-            'rateKgExtra',
-            rateKgExtra,
-            'CostGuia',
-            costGuia,
-            'CostTotal',
-            costTotal,
-            'supplier',
-            supplier,
-        );
-        //console.log('overweightRatesBase', overweightRatesBase);
+        // console.log(
+        //     'realKg',
+        //     realKg,
+        //     'kgDeclarados',
+        //     kgDeclarados,
+        //     'rateKgExtra',
+        //     rateKgExtra,
+        //     'CostGuia',
+        //     costGuia,
+        //     'CostTotal',
+        //     costTotal,
+        //     'supplier',
+        //     supplier,
+        // );
         overweightRatesBase.forEach(rates => {
             //console.log(rates.min, rates.max, rates.precio, rates.entrega);
-
             if (
                 parseInt(rates.min, 10) <= parseInt(kgDeclarados, 10) &&
                 parseInt(rates.max, 10) >= parseInt(kgDeclarados, 10) &&
@@ -306,8 +304,8 @@ const AdminOverweightPage = () => {
     }
 
     useEffect(() => {
-        console.log('cargo', cargo);
-        console.log('entrando aqui, 5 use effect');
+        //console.log('cargo', cargo);
+        //console.log('entrando aqui, 5 use effect');
         const reloadOverWeight = () => {
             db.collection('overweights').onSnapshot(handleOverWeight);
         };
@@ -331,10 +329,10 @@ const AdminOverweightPage = () => {
     const addOverWeight = () => {
         swal.fire('Agregado', '', 'success');
         console.log('xlsData', xlsData);
-        console.log('cargo', cargo);
+        //console.log('cargo', cargo);
         //Datos manualmente
         if (name) {
-            console.log('xlsData', xlsData);
+            //console.log('xlsData', xlsData);
             const addOverWeightData = {
                 ID: userId,
                 usuario: name,
@@ -376,8 +374,6 @@ const AdminOverweightPage = () => {
             } else {
                 console.log('entrando a la coleccion guia');
                 console.log('xlsData', xlsData);
-                let guia = [overWeight.guia];
-                console.log(guia);
                 let weight;
                 let volWeight;
                 let costGuia;
@@ -397,7 +393,7 @@ const AdminOverweightPage = () => {
                                 .get()
                                 .then(function(doc) {
                                     if (doc.exists) {
-                                        console.log(doc.data());
+                                        //console.log(doc.data());
                                         weight = doc.data().package.weight;
                                         volWeight = Math.ceil(
                                             (doc.data().package.height *
@@ -409,18 +405,18 @@ const AdminOverweightPage = () => {
                                         supplier = doc.data().supplierData.Supplier;
                                         kgDeclarados = weight > volWeight ? weight : volWeight;
 
-                                        console.log(
-                                            'weight',
-                                            weight,
-                                            'volWeight',
-                                            volWeight,
-                                            'costGuia',
-                                            costGuia,
-                                            'supplier',
-                                            supplier,
-                                            'kgDeclarados',
-                                            kgDeclarados,
-                                        );
+                                        // console.log(
+                                        //     'weight',
+                                        //     weight,
+                                        //     'volWeight',
+                                        //     volWeight,
+                                        //     'costGuia',
+                                        //     costGuia,
+                                        //     'supplier',
+                                        //     supplier,
+                                        //     'kgDeclarados',
+                                        //     kgDeclarados,
+                                        // );
                                         setUserId(doc.data().ID);
                                         db.collection('profiles')
                                             .where('ID', '==', doc.data().ID)
@@ -476,7 +472,6 @@ const AdminOverweightPage = () => {
                                                                     max: value.max,
                                                                 }),
                                                             );
-                                                            console.log('minmax', minmax);
                                                             let cargoOverweight;
                                                             let cargoExtra;
                                                             overweightRatesBase.forEach(rates => {
