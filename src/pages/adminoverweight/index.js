@@ -547,8 +547,7 @@ const AdminOverweightPage = () => {
                                                                     );
                                                                     cargoExtra = toFixed(
                                                                         (overWeight.kilos_reales -
-                                                                            doc.data().package
-                                                                                .weight) *
+                                                                            kgDeclarados) *
                                                                             parseInt(
                                                                                 overweightRatesBaseXls,
                                                                                 10,

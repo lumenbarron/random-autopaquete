@@ -131,7 +131,13 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.data().rastreo);
+                    //console.log(doc.id, doc.data().rastreo);
+                    //if ( typeof doc.data().rastreo === 'string' ) {
+                    // console.log('holi')
+                    // db.collection('guia')
+                    // .doc(doc.id)
+                    // .update({rastreo: [doc.data().rastreo]})
+                    //}
                     dataGuias.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -149,7 +155,7 @@ export default function AllGuides({}) {
 
                     dataUsers.push(doc.data().name);
                 });
-                //console.log('dataUsers', dataUsers);
+
                 guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
                 //console.log('guiasByDate', guiasByDate.rastreo);
                 dataSingleUser = dataUsers
