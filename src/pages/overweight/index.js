@@ -37,6 +37,7 @@ const OverweightPage = () => {
     }, []);
 
     function handleOverWeight(snapshot) {
+        let overWeightSorted = [];
         const overWeightData = snapshot.docs.map(doc => {
             console.log(doc.data());
             return {
@@ -44,7 +45,8 @@ const OverweightPage = () => {
                 ...doc.data(),
             };
         });
-        setOverWeightData(overWeightData);
+        overWeightSorted = overWeightData.sort((a, b) => b.fecha - a.fecha);
+        setOverWeightData(overWeightSorted);
     }
 
     const data = overWeightData.map((overWeight, idx) => {
