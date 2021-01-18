@@ -37,6 +37,7 @@ const OverweightPage = () => {
     }, []);
 
     function handleOverWeight(snapshot) {
+        let overWeightSorted = [];
         const overWeightData = snapshot.docs.map(doc => {
             console.log(doc.data());
             return {
@@ -44,7 +45,8 @@ const OverweightPage = () => {
                 ...doc.data(),
             };
         });
-        setOverWeightData(overWeightData);
+        overWeightSorted = overWeightData.sort((a, b) => b.fecha - a.fecha);
+        setOverWeightData(overWeightSorted);
     }
 
     const data = overWeightData.map((overWeight, idx) => {
@@ -74,11 +76,11 @@ const OverweightPage = () => {
                             emptyTitle="Oh no!"
                             emptyDescription="No hay ningun registro actualmente..."
                         >
-                            <StyledColumn header="Fecha " field="date" />
-                            <StyledColumn header="Paquete (Guía)" field="guide" />
-                            <StyledColumn header="Kilos Declarados" field="kdeclared" />
-                            <StyledColumn header="Kilos reales" field="kreal" />
-                            <StyledColumn header="Kilos cobrados" field="Kcollected" />
+                            <StyledColumn header="Fecha " field="date" defaultWidth={150} />
+                            <StyledColumn header="Guía" field="guide" defaultWidth={250} />
+                            <StyledColumn header="Kg cobrados Declarados" field="kdeclared" />
+                            <StyledColumn header="Kg reales" field="kreal" />
+                            <StyledColumn header="Sobrepeso" field="Kcollected" />
 
                             <StyledColumn header="Cargos" field="charge" />
                         </StyledTable>

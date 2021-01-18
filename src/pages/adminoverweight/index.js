@@ -6,6 +6,7 @@ import {
     Button,
     FileSelector,
     ImportRecordsFlow,
+    Spinner,
 } from 'react-rainbow-components';
 import styled from 'styled-components';
 import swal from 'sweetalert2';
@@ -62,6 +63,7 @@ const AdminOverweightPage = () => {
 
     const [cargo, setCargo] = useState();
     let guiaRef = useRef('');
+    let kgReal = useRef('');
 
     const creationDate = new Date();
     const [rateKgExtra, setRateKgExtra] = useState();
@@ -277,7 +279,8 @@ const AdminOverweightPage = () => {
                 .get()
                 .then(function(doc) {
                     if (doc.exists) {
-                        //console.log(doc.data());
+                        console.log(doc.data());
+
                         setDocId(doc.id);
                         setName(doc.data().name);
                         setUserId(doc.data().ID);
@@ -388,6 +391,7 @@ const AdminOverweightPage = () => {
                     saldo: toFixed(parseFloat(saldo) - parseFloat(cargo), 2),
                 });
             guiaRef.current = '';
+            setRealKg('');
         } else {
         }
         //Datos cuando se agregan por medio de csv
@@ -677,21 +681,30 @@ const AdminOverweightPage = () => {
     };
 
     const deleteOverWeight = idDoc => {
+        console.log('profileDocId borrando guia', profileDocId);
         if (deleting) return;
         setDeleting(true);
         let costo = null;
+        swal.fire('Eliminado', '', 'success');
         db.collection('overweights')
             .doc(idDoc)
             .get()
             .then(doc => {
                 costo = doc.data().cargo;
-
+                console.log('costo', costo);
+                console.log('saldo', saldo);
                 db.collection('overweights')
                     .doc(idDoc)
                     .delete()
                     .then(function() {
                         console.log('Document successfully deleted!');
                         setDeleting(false);
+
+                        db.collection('profiles')
+                            .doc(profileDocId)
+                            .update({
+                                saldo: toFixed(parseFloat(saldo) + parseFloat(costo), 2),
+                            });
                     })
                     .catch(function(error) {
                         console.error('Error removing document: ', error);
@@ -792,6 +805,7 @@ const AdminOverweightPage = () => {
                                 <div className="app-spacer height-1 height-2" />
                             </Container>
                         )}
+
                         {errorGuia && (
                             <>
                                 <div style={{ flex: '1 1 100%' }}>
@@ -859,7 +873,7 @@ const AdminOverweightPage = () => {
                             />
                             <StyledColumn header="Usuario" field="user" />
                             <StyledColumn header="Fecha " field="date" />
-                            <StyledColumn header="Kilos Declarados" field="kdeclared" />
+                            <StyledColumn header="Kilos Cobrados" field="kdeclared" />
                             <StyledColumn header="Kilos reales" field="kreal" />
                             <StyledColumn header="Cargos Adicionales" field="cadd" />
                             <StyledColumn header="" field="delete" defaultWidth={75} />

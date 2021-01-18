@@ -14,7 +14,7 @@ import {
 } from './styled';
 import swal from 'sweetalert2';
 
-const numberRegex = RegExp(/^[1-9]+$/);
+const numberRegex = RegExp(/^[0-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
 
 const PackagingRadioOption = ({ packages }) => {
@@ -193,21 +193,21 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorName(false);
         }
-        if (height.trim() === '' || !numberRegex.test(height)) {
+        if (height.trim() === '' || !numberRegex.test(height) || height <= 0) {
             setError(true);
             setErrorHeight(true);
             return;
         } else {
             setErrorHeight(false);
         }
-        if (width.trim() === '' || !numberRegex.test(width)) {
+        if (width.trim() === '' || !numberRegex.test(width) || width <= 0) {
             setError(true);
             setErrorWidth(true);
             return;
         } else {
             setErrorWidth(false);
         }
-        if (depth.trim() === '' || !numberRegex.test(depth)) {
+        if (depth.trim() === '' || !numberRegex.test(depth) || depth <= 0) {
             setError(true);
             setErrorDepth(true);
             return;
