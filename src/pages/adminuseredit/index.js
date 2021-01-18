@@ -67,6 +67,10 @@ const AdminUserEditPage = () => {
                 </StyledPanel>
 
                 <StyledPanel>
+                    <Credito user={user} />
+                </StyledPanel>
+
+                <StyledPanel>
                     <HistoryUser user={user} />
                 </StyledPanel>
 

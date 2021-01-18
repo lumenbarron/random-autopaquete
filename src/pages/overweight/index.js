@@ -78,7 +78,7 @@ const OverweightPage = () => {
                         >
                             <StyledColumn header="Fecha " field="date" defaultWidth={150} />
                             <StyledColumn header="Guía" field="guide" defaultWidth={250} />
-                            <StyledColumn header="Kg cobrados Declarados" field="kdeclared" />
+                            <StyledColumn header="Kg cobrados" field="kdeclared" />
                             <StyledColumn header="Kg reales" field="kreal" />
                             <StyledColumn header="Sobrepeso" field="Kcollected" />
 
