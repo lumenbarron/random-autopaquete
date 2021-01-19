@@ -51,7 +51,7 @@ export default function Credito({ user }) {
     const userData = db.collection('profiles').where('ID', '==', user.ID);
 
     const montoTotal = parseInt(monto) + parseInt(saldoActual);
-    console.log('montoTotal', montoTotal, 'monto', monto, 'saldoActual', saldoActual);
+    //console.log('montoTotal', montoTotal, 'monto', monto, 'saldoActual', saldoActual);
     userData.get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
             setDocRef(doc.id);
@@ -60,6 +60,7 @@ export default function Credito({ user }) {
     });
 
     const saveVoucher = url => {
+        console.log(docRef);
         if (user) {
             //const docRef = doc.id;
             const vocherData = {
@@ -117,7 +118,7 @@ export default function Credito({ user }) {
     }
 
     const inforTransacciones = voucherData.map((voucher, idx) => {
-        console.log('voucherData', voucherData);
+        //console.log('voucherData', voucherData);
         return {
             id: voucher.id,
             date: voucher.create_date,
@@ -163,7 +164,7 @@ export default function Credito({ user }) {
 
     return (
         <>
-            <h2>Agregar Crédito</h2>
+            <h2>Agregar Saldo</h2>
             <div className="rainbow-flex rainbow-flex_wrap">
                 <div style={{ flex: '1 1' }}>
                     <Input
