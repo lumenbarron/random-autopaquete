@@ -17,7 +17,9 @@ import { StyledUserEdit, StyledPanel } from './styled';
 import formatMoney from 'accounting-js/lib/formatMoney.js';
 import InfoGeneral from './info-general';
 import HistoryUser from './historial/index';
-import Credito from './credito';
+import Credito from './credito/index';
+import RestCredito from './credito/restCredit';
+import AddCredito from './credito/addCredit';
 import Tarifario from './tarifario';
 
 const AdminUserEditPage = () => {
@@ -67,7 +69,11 @@ const AdminUserEditPage = () => {
                 </StyledPanel>
 
                 <StyledPanel>
-                    <Credito user={user} />
+                    <RestCredito user={user} />
+                </StyledPanel>
+
+                <StyledPanel>
+                    <AddCredito user={user} />
                 </StyledPanel>
 
                 <StyledPanel>
