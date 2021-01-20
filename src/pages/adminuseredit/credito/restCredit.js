@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, Button, Table, Column, TableWithBrowserPagination } from 'react-rainbow-components';
+import { Input, Button, Column, TableWithBrowserPagination } from 'react-rainbow-components';
 import formatMoney from 'accounting-js/lib/formatMoney';
+import toFixed from 'accounting-js/lib/toFixed';
 import styled from 'styled-components';
 import * as firebase from 'firebase';
 import swal from 'sweetalert2';
-
-const numberRegex = RegExp(/^[0-9]+$/);
 
 const StyledPanel = styled.div`
     box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
@@ -50,7 +49,7 @@ export default function RestCredito({ user }) {
     const db = firebase.firestore();
     const userData = db.collection('profiles').where('ID', '==', user.ID);
 
-    const montoTotal = parseInt(saldoActual) - parseInt(monto);
+    const montoTotal = toFixed(parseFloat(saldoActual) - parseFloat(monto), 2);
     //console.log('montoTotal', montoTotal, 'monto', monto, 'saldoActual', saldoActual);
     userData.get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
@@ -60,9 +59,9 @@ export default function RestCredito({ user }) {
     });
 
     const updateSaldo = docRef => {
-        console.log(docRef);
+        //console.log(docRef);
         if (user) {
-            console.log('montoTotal', montoTotal);
+            //console.log('montoTotal', montoTotal);
             const profilesCollectionAdd = db
                 .collection('profiles')
                 .doc(docRef)
@@ -82,18 +81,21 @@ export default function RestCredito({ user }) {
         const reloadVoucher = () => {
             db.collection('restCredit')
                 .where('ID', '==', user.ID)
+                .orderBy('create_date', 'desc')
                 .onSnapshot(handleVouncher);
         };
         reloadVoucher();
     }, []);
 
-    function handleVouncher(snapshot) {
-        const voucherData = snapshot.docs.map(doc => {
-            return {
+    function handleVouncher(querySnapshot) {
+        let voucherData = [];
+        querySnapshot.forEach(doc => {
+            voucherData.push({
                 id: doc.id,
                 ...doc.data(),
-            };
+            });
         });
+        //console.log('voucherData', voucherData);
         setVouncherData(voucherData);
     }
 
@@ -110,39 +112,39 @@ export default function RestCredito({ user }) {
 
     const restCredit = () => {
         let autor;
-        console.log('monto', monto, 'concepto', concepto, 'password', password);
+        //console.log('monto', monto, 'concepto', concepto, 'password', password);
 
         if (password === passJulio) {
             autor = 'Julio Arroyo';
             rightPass.current = true;
-            console.log('autor', autor);
+            // console.log('autor', autor);
         }
         if (password === passJoce) {
             autor = 'Jocelyn Guillen';
             rightPass.current = true;
-            console.log('autor', autor);
+            // console.log('autor', autor);
         }
         if (password === passCitlaly) {
             autor = 'Citlaly Lara';
             rightPass.current = true;
-            console.log('autor', autor);
+            // console.log('autor', autor);
         }
         if (password === passBlanca) {
             autor = 'Blanca Gzl';
             rightPass.current = true;
-            console.log('autor', autor);
+            // console.log('autor', autor);
         }
         if (password === passJose) {
             autor = 'José García';
             rightPass.current = true;
-            console.log('autor', autor);
+            // console.log('autor', autor);
         }
         if (password === passLucy) {
             autor = 'Lucy Mendez';
             rightPass.current = true;
-            console.log('autor', autor);
+            // console.log('autor', autor);
         }
-        if (monto.trim() === '' || !numberRegex.test(monto)) {
+        if (monto.trim() === '' || isNaN(monto)) {
             swal.fire('¡Oh no!', 'Parece que no hay un monto válido, favor de verificar', 'error');
         } else if (concepto.trim() === '' || !concepto) {
             swal.fire('¡Oh no!', 'Parece que no hay un concepto, favor de verificar', 'error');
@@ -150,7 +152,7 @@ export default function RestCredito({ user }) {
             swal.fire('¡Oh no!', 'Parece que no hay ninguna contraseña', 'error');
         } else if (monto && concepto && rightPass.current) {
             swal.fire('Restado', '', 'success');
-            console.log('monto', monto, 'concepto', concepto, 'password', password);
+            //console.log('monto', monto, 'concepto', concepto, 'password', password);
             const restCreditData = {
                 ID: user.ID,
                 create_date: date,

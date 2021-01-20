@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useFirebaseApp } from 'reactfire';
-
-import {
-    Table,
-    Column,
-    Badge,
-    MenuItem,
-    Input,
-    Button,
-    RadioGroup,
-    Textarea,
-} from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useHistory, useParams } from 'react-router-dom';
 import { StyledUserEdit, StyledPanel } from './styled';
