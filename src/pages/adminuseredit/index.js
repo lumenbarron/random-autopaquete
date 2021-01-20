@@ -6,6 +6,7 @@ import { StyledUserEdit, StyledPanel } from './styled';
 import formatMoney from 'accounting-js/lib/formatMoney.js';
 import InfoGeneral from './info-general';
 import HistoryUser from './historial/index';
+import OverweightUser from './historial/overweight';
 import Credito from './credito/index';
 import RestCredito from './credito/restCredit';
 import AddCredito from './credito/addCredit';
@@ -67,6 +68,10 @@ const AdminUserEditPage = () => {
 
                 <StyledPanel>
                     <HistoryUser user={user} />
+                </StyledPanel>
+
+                <StyledPanel>
+                    <OverweightUser user={user} />
                 </StyledPanel>
 
                 <StyledPanel>
