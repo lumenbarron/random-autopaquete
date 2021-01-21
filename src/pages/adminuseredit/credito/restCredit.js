@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, Button, Column, TableWithBrowserPagination } from 'react-rainbow-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import toFixed from 'accounting-js/lib/toFixed';
 import styled from 'styled-components';
@@ -31,6 +33,8 @@ export default function RestCredito({ user }) {
     const [monto, setMonto] = useState('');
     const [concepto, setConcepto] = useState('');
     const [password, setPassword] = useState('');
+    const [referencia, setReferencia] = useState('');
+
     const rightPass = useRef(false);
 
     const [saldoActual, setSaldoActual] = useState();
@@ -95,7 +99,7 @@ export default function RestCredito({ user }) {
                 ...doc.data(),
             });
         });
-        //console.log('voucherData', voucherData);
+        console.log('voucherData', voucherData);
         setVouncherData(voucherData);
     }
 
@@ -107,12 +111,23 @@ export default function RestCredito({ user }) {
             monto: formatMoney(voucher.saldo, 2),
             concepto: voucher.concepto,
             autor: voucher.autor,
+            referencia: voucher.referencia ? voucher.referencia : 'sin ref',
+            delete: <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteAddress(voucher.id)} />,
         };
     });
 
     const restCredit = () => {
         let autor;
-        //console.log('monto', monto, 'concepto', concepto, 'password', password);
+        console.log(
+            'monto',
+            monto,
+            'concepto',
+            concepto,
+            'password',
+            password,
+            'referencia',
+            referencia,
+        );
 
         if (password === passJulio) {
             autor = 'Julio Arroyo';
@@ -148,6 +163,8 @@ export default function RestCredito({ user }) {
             swal.fire('¡Oh no!', 'Parece que no hay un monto válido, favor de verificar', 'error');
         } else if (concepto.trim() === '' || !concepto) {
             swal.fire('¡Oh no!', 'Parece que no hay un concepto, favor de verificar', 'error');
+        } else if (referencia.trim() === '' || !referencia) {
+            swal.fire('¡Oh no!', 'Parece que no hay una referencia, favor de verificar', 'error');
         } else if (password.trim() === '' || !password) {
             swal.fire('¡Oh no!', 'Parece que no hay ninguna contraseña', 'error');
         } else if (monto && concepto && rightPass.current) {
@@ -159,6 +176,7 @@ export default function RestCredito({ user }) {
                 saldo: monto,
                 concepto: concepto,
                 autor: autor,
+                referencia: referencia,
             };
 
             db.collection('restCredit')
@@ -168,6 +186,7 @@ export default function RestCredito({ user }) {
                     setMonto('');
                     setConcepto('');
                     setPassword('');
+                    setReferencia('');
                     rightPass.current = false;
                     updateSaldo(docRef);
                 })
@@ -177,6 +196,19 @@ export default function RestCredito({ user }) {
         } else {
             swal.fire('¡Oh no!', 'Parece que hay un error', 'error');
         }
+    };
+
+    const deleteAddress = idDoc => {
+        console.log('idDoc', idDoc);
+        db.collection('restCredit')
+            .doc(idDoc)
+            .delete()
+            .then(function() {
+                console.log('Document successfully deleted from sender_addresses!', idDoc);
+            })
+            .catch(function(error) {
+                console.error('Error removing document: ', error);
+            });
     };
 
     return (
@@ -216,6 +248,16 @@ export default function RestCredito({ user }) {
                 </div>
                 <div style={{ flex: '1 1' }}>
                     <Input
+                        id="referencia"
+                        label="Referencia"
+                        className="rainbow-p-around_medium"
+                        style={{ width: '100%' }}
+                        value={referencia}
+                        onChange={ev => setReferencia(ev.target.value)}
+                    />
+                </div>
+                <div style={{ flex: '1 1' }}>
+                    <Input
                         id="password"
                         label="Contraseña"
                         placeholder="****"
@@ -241,7 +283,9 @@ export default function RestCredito({ user }) {
                     <StyledColumn header="Fecha " field="date" />
                     <StyledColumn header="Monto" field="monto" />
                     <StyledColumn header="Concepto" field="concepto" />
+                    <StyledColumn header="Referencia" field="referencia" />
                     <StyledColumn header="Realizado por" field="autor" />
+                    {/* <StyledColumn header="" field="delete" /> */}
                 </StyledTable>
             </StyledPanel>
         </>
