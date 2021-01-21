@@ -139,6 +139,11 @@ const AdminOverweightPage = () => {
         //     'supplier',
         //     supplier,
         // );
+        if (parseInt(realKg, 10) < parseInt(kgDeclarados, 10)) {
+            console.log('cargo 0');
+            cargoExtraCero = 0;
+        }
+
         overweightRatesBase.forEach(rates => {
             //console.log(rates.min, rates.max, rates.precio, rates.entrega);
             if (
@@ -458,10 +463,12 @@ const AdminOverweightPage = () => {
                                                             //     'obteniendo los kg extra',
                                                             //     overweightRatesBaseXls,
                                                             // );
-                                                            // console.log(
-                                                            //     'realKg',
-                                                            //     overWeight.kilos_reales,
-                                                            // );
+                                                            console.log(
+                                                                'realKg',
+                                                                overWeight.kilos_reales,
+                                                                'kgDeclarados',
+                                                                kgDeclarados,
+                                                            );
                                                             // console.log(
                                                             //     'overweightRatesBase',
                                                             //     overweightRatesBase,
@@ -474,8 +481,17 @@ const AdminOverweightPage = () => {
                                                             // );
                                                             let cargoOverweight;
                                                             let cargoExtra;
+
                                                             overweightRatesBase.forEach(rates => {
                                                                 if (
+                                                                    parseInt(
+                                                                        overWeight.kilos_reales,
+                                                                        10,
+                                                                    ) < parseInt(kgDeclarados, 10)
+                                                                ) {
+                                                                    console.log('cargo 0');
+                                                                    cargoOverweight = 0;
+                                                                } else if (
                                                                     parseInt(rates.min, 10) <=
                                                                         parseInt(
                                                                             kgDeclarados,
@@ -552,6 +568,10 @@ const AdminOverweightPage = () => {
                                                                     );
                                                                 }
                                                             });
+                                                            console.log(
+                                                                'cargoOverweight',
+                                                                cargoOverweight,
+                                                            );
                                                             if (cargoOverweight === 0) {
                                                                 // console.log(
                                                                 //     'cargoOverweight es igual a',

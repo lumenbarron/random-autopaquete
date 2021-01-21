@@ -37,10 +37,6 @@ const AccountPage = () => {
 
     //Mostrar mensaje cuando se tiene menos de $2000 en la cuenta
     useEffect(() => {
-        // if (creditAmount <= 0 || isNaN(creditAmount)) {
-        //     // setCreditAmount(0)
-        //     setCreditAmountError(true);
-        // } else
         if (creditAmount < 2000) {
             setCreditAmountError(true);
         } else {
