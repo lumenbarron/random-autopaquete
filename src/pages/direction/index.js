@@ -59,8 +59,8 @@ const StatePicklistOptions = () => {
     return allStates;
 };
 
-const containerStyles = { height: 312 };
-const containerTableStyles = { height: 356 };
+const containerStyles = { height: 'auto' };
+const containerTableStyles = { height: 'auto' };
 
 export default function DirectionPage() {
     const firebase = useFirebaseApp();
@@ -103,7 +103,7 @@ export default function DirectionPage() {
                 ...doc.data(),
             };
         });
-        console.log(data);
+        console.log(data, 'data Sender');
         setSenderAddresses(data);
     }
 
@@ -114,22 +114,41 @@ export default function DirectionPage() {
                 ...doc.data(),
             };
         });
-        console.log(data);
+        console.log(data, 'data Receiver');
         setReceiverAddresses(data);
     }
 
     //Aqui esta el error
     const deleteAddress = idDoc => {
-        db.collection('receiver_addresses')
-            //db.collection('sender_addresses')
-            .doc(idDoc)
-            .delete()
-            .then(function() {
-                console.log('Document successfully deleted!', idDoc);
-            })
-            .catch(function(error) {
-                console.error('Error removing document: ', error);
-            });
+        // console.log('idDoc', idDoc)
+        // console.log('dataSender', dataSender);
+        // console.log('dataReceiver', dataReceiver);
+
+        if (dataSender.filter(item => item.id.includes(idDoc))) {
+            //console.log('includes dataSender')
+            db.collection('sender_addresses')
+                .doc(idDoc)
+                .delete()
+                .then(function() {
+                    console.log('Document successfully deleted from sender_addresses!', idDoc);
+                })
+                .catch(function(error) {
+                    console.error('Error removing document: ', error);
+                });
+        }
+
+        if (dataReceiver.filter(item => item.id.includes(idDoc))) {
+            //console.log('includes dataReceiver')
+            db.collection('receiver_addresses')
+                .doc(idDoc)
+                .delete()
+                .then(function() {
+                    console.log('Document successfully deleted from receiver_addresses!', idDoc);
+                })
+                .catch(function(error) {
+                    console.error('Error removing document: ', error);
+                });
+        }
     };
 
     function mapAddresses(address, idx) {
@@ -146,7 +165,7 @@ export default function DirectionPage() {
         };
     }
 
-    const data = senderAddresses
+    const dataReceiver = receiverAddresses
         .filter(address => {
             if (filter === null) {
                 return address;
@@ -154,81 +173,100 @@ export default function DirectionPage() {
                 return address;
             }
         })
-        .map(mapAddresses)
-        .concat(
-            receiverAddresses
-                .filter(address => {
-                    if (filter === null) {
-                        return address;
-                    } else if (
-                        address.name.includes(filter) ||
-                        address.street_number.includes(filter)
-                    ) {
-                        return address;
-                    }
-                })
-                .map(mapAddresses),
-        );
+        .map(mapAddresses);
+
+    const dataSender = senderAddresses
+        .filter(address => {
+            if (filter === null) {
+                return address;
+            } else if (address.name.includes(filter) || address.street_number.includes(filter)) {
+                return address;
+            }
+        })
+        .map(mapAddresses);
+
+    // const data = senderAddresses
+    //     .filter(address => {
+    //         if (filter === null) {
+    //             return address;
+    //         } else if (address.name.includes(filter) || address.street_number.includes(filter)) {
+    //             return address;
+    //         }
+    //     })
+    //     .map(mapAddresses)
+    //     .concat(
+    //         receiverAddresses
+    //             .filter(address => {
+    //                 if (filter === null) {
+    //                     return address;
+    //                 } else if (
+    //                     address.name.includes(filter) ||
+    //                     address.street_number.includes(filter)
+    //                 ) {
+    //                     return address;
+    //                 }
+    //             })
+    //             .map(mapAddresses),
+    //     );
 
     const search = e => {
         let keyword = e.target.value;
         setFilter(keyword);
     };
 
-    const registerDirecction = () => {
-        if (
-            name.trim() === '' ||
-            CP.trim() === '' ||
-            neighborhood.trim() === '' ||
-            country.trim() === '' ||
-            streetNumber.trim() === '' ||
-            placeRef.trim() === '' ||
-            phone.trim() === ''
-        ) {
-            setError(true);
-            return;
-        }
-        const duplicateName = data.map((searchStree, idx) => {
-            return searchStree.name;
-        });
-        if (duplicateName.includes(name)) {
-            console.log('Necesitas poner una calle diferente');
-            return;
-        }
+    // const registerDirecction = () => {
+    //     if (
+    //         name.trim() === '' ||
+    //         CP.trim() === '' ||
+    //         neighborhood.trim() === '' ||
+    //         country.trim() === '' ||
+    //         streetNumber.trim() === '' ||
+    //         placeRef.trim() === '' ||
+    //         phone.trim() === ''
+    //     ) {
+    //         setError(true);
+    //         return;
+    //     }
+    //     const duplicateName = data.map((searchStree, idx) => {
+    //         return searchStree.name;
+    //     });
+    //     if (duplicateName.includes(name)) {
+    //         console.log('Necesitas poner una calle diferente');
+    //         return;
+    //     }
 
-        const directionsCollectionAdd = db.collection('sender_addresses').add({
-            name,
-            codigo_postal: CP,
-            neighborhood,
-            country,
-            state: state.value,
-            street_number: streetNumber,
-            place_reference: placeRef,
-            phone,
-            ID: user.uid,
-            creation_date: creationDate.toLocaleDateString(),
-        });
+    //     const directionsCollectionAdd = db.collection('sender_addresses').add({
+    //         name,
+    //         codigo_postal: CP,
+    //         neighborhood,
+    //         country,
+    //         state: state.value,
+    //         street_number: streetNumber,
+    //         place_reference: placeRef,
+    //         phone,
+    //         ID: user.uid,
+    //         creation_date: creationDate.toLocaleDateString(),
+    //     });
 
-        directionsCollectionAdd
-            .then(function(docRef) {
-                console.log('Document written with ID (origen): ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            });
-    };
+    //     directionsCollectionAdd
+    //         .then(function(docRef) {
+    //             console.log('Document written with ID (origen): ', docRef.id);
+    //         })
+    //         .catch(function(error) {
+    //             console.error('Error adding document: ', error);
+    //         });
+    // };
     return (
         <StyledDirection>
             <DirectionContainer>
                 <div className="directions-table">
                     <div>
                         <h1>Mis direcciones</h1>
-
                         <div>
                             <Input
                                 value={filter}
                                 className="rainbow-p-around_medium"
-                                placeholder="Buscar"
+                                placeholder="Buscar por nombre o calle"
                                 icon={
                                     <FontAwesomeIcon
                                         icon={faSearch}
@@ -241,9 +279,32 @@ export default function DirectionPage() {
 
                         <div className="rainbow-p-bottom_xx-large">
                             <div style={containerStyles}>
+                                <h2>Origen</h2>
                                 <TableWithBrowserPagination
-                                    data={data}
-                                    pageSize={10}
+                                    data={dataSender}
+                                    // pageSize={10}
+                                    keyField="id"
+                                    style={containerTableStyles}
+                                    emptyTitle="Oh no!"
+                                    emptyDescription="No hay ningun registro actualmente..."
+                                >
+                                    <Column header="Fecha " field="date" />
+                                    <Column header="Nombre" field="name" />
+                                    <Column header="Cod. Postal" field="codigo_postal" />
+                                    <Column header="Ciudad" field="country" />
+                                    <Column header="Colonia" field="neighborhood" />
+                                    <Column header="Direccion" field="street_number" />
+                                    <Column header="Telefono" field="phone" />
+                                    <Column header="" field="delete" defaultWidth={75} />
+                                </TableWithBrowserPagination>
+                            </div>
+                        </div>
+                        <div className="rainbow-p-bottom_xx-large">
+                            <div style={containerStyles}>
+                                <h2>Destino</h2>
+                                <TableWithBrowserPagination
+                                    data={dataReceiver}
+                                    // pageSize={10}
                                     keyField="id"
                                     style={containerTableStyles}
                                     emptyTitle="Oh no!"
@@ -262,7 +323,7 @@ export default function DirectionPage() {
                         </div>
                     </div>
                 </div>
-                <div>
+                {/* <div>
                     <Accordion id="accordion-1">
                         <AccordionSection
                             label="Agregar Dirección de origen"
@@ -368,7 +429,7 @@ export default function DirectionPage() {
                             </div>
                         </AccordionSection>
                     </Accordion>
-                </div>
+                </div> */}
             </DirectionContainer>
         </StyledDirection>
     );

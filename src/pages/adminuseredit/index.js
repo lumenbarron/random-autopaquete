@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useFirebaseApp } from 'reactfire';
-
-import {
-    Table,
-    Column,
-    Badge,
-    MenuItem,
-    Input,
-    Button,
-    RadioGroup,
-    Textarea,
-} from 'react-rainbow-components';
 import styled from 'styled-components';
 import { useHistory, useParams } from 'react-router-dom';
 import { StyledUserEdit, StyledPanel } from './styled';
 import formatMoney from 'accounting-js/lib/formatMoney.js';
 import InfoGeneral from './info-general';
 import HistoryUser from './historial/index';
+import OverweightUser from './historial/overweight';
 import Credito from './credito/index';
 import RestCredito from './credito/restCredit';
 import AddCredito from './credito/addCredit';
@@ -78,6 +68,10 @@ const AdminUserEditPage = () => {
 
                 <StyledPanel>
                     <HistoryUser user={user} />
+                </StyledPanel>
+
+                <StyledPanel>
+                    <OverweightUser user={user} />
                 </StyledPanel>
 
                 <StyledPanel>
