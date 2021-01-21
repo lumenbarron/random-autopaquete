@@ -32,7 +32,6 @@ export default function OverweightUser({ user }) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.data());
                         dataOverweights.push({
                             id: doc.id,
                             guide: doc.data().rastreo,
