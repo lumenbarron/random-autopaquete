@@ -118,7 +118,7 @@ export default function Credito({ user }) {
     }
 
     const inforTransacciones = voucherData.map((voucher, idx) => {
-        //console.log('voucherData', voucherData);
+        console.log('voucherData', voucherData);
         return {
             id: voucher.id,
             date: voucher.create_date,

@@ -118,16 +118,16 @@ export default function RestCredito({ user }) {
 
     const restCredit = () => {
         let autor;
-        console.log(
-            'monto',
-            monto,
-            'concepto',
-            concepto,
-            'password',
-            password,
-            'referencia',
-            referencia,
-        );
+        // console.log(
+        //     'monto',
+        //     monto,
+        //     'concepto',
+        //     concepto,
+        //     'password',
+        //     password,
+        //     'referencia',
+        //     referencia,
+        // );
 
         if (password === passJulio) {
             autor = 'Julio Arroyo';
@@ -204,7 +204,7 @@ export default function RestCredito({ user }) {
             .doc(idDoc)
             .delete()
             .then(function() {
-                console.log('Document successfully deleted from sender_addresses!', idDoc);
+                console.log('Document successfully deleted', idDoc);
             })
             .catch(function(error) {
                 console.error('Error removing document: ', error);
