@@ -34,12 +34,28 @@ export const RecordContainer = styled.div`
     color: #fff;
     border-radius: 25px;
     padding: 8px 16px;
-
     }
-
 
     .btn-new:hover {
     background-color: #C94141;
     color: white;
     padding: 8px 16px;
+    }
+
+    .row-header {
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 2rem;
+        button {
+            margin: 0;
+            font-size: 0.8rem !important;
+            margin-right: 2rem;
+            background-color: #ab0000;
+            a {
+                color: white;
+            }
+    }
 `;
