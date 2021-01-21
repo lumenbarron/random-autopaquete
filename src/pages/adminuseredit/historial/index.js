@@ -83,7 +83,7 @@ export default function HistoryUser({ user }) {
                         });
                     });
                     setHistory(dataGuias);
-                    console.log('data', dataGuias);
+                    console.log('guias', dataGuias);
                 })
                 .catch(function(error) {
                     console.log('Error getting documents: ', error);
