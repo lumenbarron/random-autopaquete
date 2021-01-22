@@ -131,7 +131,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.id, doc.data().rastreo);
+                    //console.log(doc.id, doc.data().volumetricWeight);
                     // if ( typeof doc.data().rastreo === 'string' ) {
                     // console.log('holi')
                     // db.collection('guia')

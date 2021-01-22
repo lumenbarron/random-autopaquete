@@ -55,15 +55,15 @@ const AdminUserEditPage = () => {
                 </StyledPanel>
 
                 <StyledPanel>
-                    <Credito user={user} />
+                    <AddCredito user={user} />
                 </StyledPanel>
+
+                {/* <StyledPanel>
+                    <Credito user={user} />
+                </StyledPanel> */}
 
                 <StyledPanel>
                     <RestCredito user={user} />
-                </StyledPanel>
-
-                <StyledPanel>
-                    <AddCredito user={user} />
                 </StyledPanel>
 
                 <StyledPanel>
