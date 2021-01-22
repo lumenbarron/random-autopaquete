@@ -80,7 +80,7 @@ export default function AddCredito({ user }) {
 
     useEffect(() => {
         const reloadVoucher = () => {
-            db.collection('addCredit')
+            db.collection('voucher')
                 .where('ID', '==', user.ID)
                 .orderBy('create_date', 'desc')
                 .onSnapshot(handleVouncher);
@@ -106,8 +106,8 @@ export default function AddCredito({ user }) {
             id: voucher.id,
             date: voucher.create_date,
             monto: formatMoney(voucher.saldo, 2),
-            concepto: voucher.concepto,
-            autor: voucher.autor,
+            concepto: voucher.concepto ? voucher.concepto : 'sin concepto',
+            autor: voucher.autor ? voucher.autor : 'desconocido',
             referencia: voucher.referencia ? voucher.referencia : 'sin ref',
             delete: <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteAddress(voucher.id)} />,
         };
@@ -115,16 +115,16 @@ export default function AddCredito({ user }) {
 
     const addCredit = () => {
         let autor;
-        console.log(
-            'monto',
-            monto,
-            'concepto',
-            concepto,
-            'password',
-            password,
-            'referencia',
-            referencia,
-        );
+        // console.log(
+        //     'monto',
+        //     monto,
+        //     'concepto',
+        //     concepto,
+        //     'password',
+        //     password,
+        //     'referencia',
+        //     referencia,
+        // );
 
         if (password === passJulio) {
             autor = 'Julio Arroyo';
@@ -176,7 +176,7 @@ export default function AddCredito({ user }) {
                 referencia: referencia,
             };
 
-            db.collection('addCredit')
+            db.collection('voucher')
                 .add(restCreditData)
                 .then(function() {
                     console.log('agregando credito exitosamente');
@@ -282,7 +282,7 @@ export default function AddCredito({ user }) {
                     <StyledColumn header="Concepto" field="concepto" />
                     <StyledColumn header="Referencia" field="referencia" />
                     <StyledColumn header="Realizado por" field="autor" />
-                    <StyledColumn header="" field="delete" />
+                    {/* <StyledColumn header="" field="delete" /> */}
                 </StyledTable>
             </StyledPanel>
         </>
