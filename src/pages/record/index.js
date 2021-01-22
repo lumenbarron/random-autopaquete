@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Column, Badge, TableWithBrowserPagination, Input } from 'react-rainbow-components';
 import styled from 'styled-components';
+import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
 import { StyledRecord, RecordContainer } from './styled';
+import ExportReactCSV from '../dowloadData/index';
 
 const StyledBadge = styled(Badge)`
     color: #09d3ac;
@@ -85,6 +87,12 @@ const RecordPage = () => {
                     console.log('data guias', doc.data(), 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
                         sentDate: doc.data().creation_date.toDate(),
                         ...doc.data(),
                     });
@@ -113,11 +121,12 @@ const RecordPage = () => {
                         id: historyRecord.id,
                         date: historyRecord.package.creation_date,
                         guide: historyRecord.rastreo ? historyRecord.rastreo : 'sin guia',
-                        origin: historyRecord.sender_addresses.name,
-                        Destination: historyRecord.receiver_addresses.name,
+                        origin: `${historyRecord.sender_addresses.name}, ${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
+                        Destination: `${historyRecord.receiver_addresses.name}, ${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
                         weight: historyRecord.package.weight,
+                        volumetricWeight: historyRecord.volumetricWeight,
                         service: historyRecord.supplierData.Supplier,
-                        status: 'Finalizado',
+                        // status: 'Finalizado',
                         cost: historyRecord.supplierData.Supplier_cost,
                         label:
                             historyRecord.supplierData.Supplier === 'autoencargosEconomico'
@@ -141,60 +150,58 @@ const RecordPage = () => {
     return (
         <StyledRecord>
             <RecordContainer>
+                {/* <div>
+                    <div> */}
+                <Row className="row-header">
+                    <h1>Mis envíos</h1>
+                    <ExportReactCSV data={recordsData} />
+                </Row>
                 <div>
-                    <div>
-                        <h1>Mis envíos</h1>
+                    <Input
+                        value={filter}
+                        className="rainbow-p-around_medium"
+                        placeholder="Buscar"
+                        icon={<FontAwesomeIcon icon={faSearch} className="rainbow-color_gray-3" />}
+                        onChange={e => search(e)}
+                    />
+                </div>
 
-                        <div>
-                            <Input
-                                value={filter}
-                                className="rainbow-p-around_medium"
-                                placeholder="Buscar"
-                                icon={
-                                    <FontAwesomeIcon
-                                        icon={faSearch}
-                                        className="rainbow-color_gray-3"
-                                    />
-                                }
-                                onChange={e => search(e)}
-                            />
-                        </div>
-
-                        <div className="rainbow-p-bottom_xx-large">
-                            <div style={containerStyles}>
-                                <StyledTable
-                                    data={tableData}
-                                    pageSize={10}
-                                    keyField="id"
-                                    style={containerTableStyles}
-                                    emptyTitle="Oh no!"
-                                    emptyDescription="No hay ningun registro actualmente..."
-                                    className="direction-table"
-                                >
-                                    <Column header="Fecha " field="date" defaultWidth={105} />
-                                    <Column header="Guía" field="guide" defaultWidth={275} />
-                                    <Column header="Origen" field="origin" />
-                                    <Column header="Destino" field="Destination" />
-                                    <Column header="Peso" field="weight" defaultWidth={75} />
-                                    <Column header="Servicio" field="service" />
-                                    <Column
+                <div className="rainbow-p-bottom_xx-large">
+                    <div style={containerStyles}>
+                        <StyledTable
+                            data={tableData}
+                            pageSize={10}
+                            keyField="id"
+                            style={containerTableStyles}
+                            emptyTitle="Oh no!"
+                            emptyDescription="No hay ningun registro actualmente..."
+                            className="direction-table"
+                        >
+                            <Column header="Fecha " field="date" defaultWidth={105} />
+                            <Column header="Guía" field="guide" defaultWidth={85} />
+                            <Column header="Origen" field="origin" />
+                            <Column header="Destino" field="Destination" />
+                            <Column header="PF" field="weight" defaultWidth={65} />
+                            <Column header="PV" field="volumetricWeight" defaultWidth={65} />
+                            <Column header="Servicio" field="service" defaultWidth={135} />
+                            {/* <Column
                                         header="Status"
                                         field="status"
                                         component={StatusBadge}
-                                    />
-                                    <Column header="Costo" field="cost" defaultWidth={75} />
-                                    <Column
-                                        header="Etiqueta"
-                                        component={DownloadLabel}
-                                        field="label"
-                                        style={{ width: '10px!important' }}
-                                        defaultWidth={100}
-                                    />
-                                </StyledTable>
-                            </div>
-                        </div>
+                                    /> */}
+                            <Column header="Costo" field="cost" defaultWidth={75} />
+                            <Column
+                                header="Etiqueta"
+                                component={DownloadLabel}
+                                field="label"
+                                style={{ width: '10px!important' }}
+                                defaultWidth={100}
+                            />
+                        </StyledTable>
                     </div>
                 </div>
+                {/* </div>
+                </div> */}
                 <div>
                     <button className="btn-new" onClick={pushSend}>
                         Enviar uno nuevo

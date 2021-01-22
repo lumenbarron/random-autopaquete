@@ -69,7 +69,6 @@ export default function HistoryUser({ user }) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        //console.log('doc.id', doc.data().creation_date);
                         dataGuias.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(

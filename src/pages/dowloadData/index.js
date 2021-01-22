@@ -3,7 +3,7 @@ import { CSVLink } from 'react-csv';
 import { Button } from 'react-rainbow-components';
 
 export default function ExportReactCSV({ data }) {
-    //console.log('data csv', data);
+    console.log('data csv', data);
     const headers = [
         { label: 'ID', key: 'id' },
         { label: 'Nombre', key: 'name' },
@@ -22,11 +22,14 @@ export default function ExportReactCSV({ data }) {
         { label: 'Código Postal Destino', key: 'receiver_addresses.codigo_postal' },
         { label: 'Referencias Destino', key: 'receiver_addresses.place_reference' },
         { label: 'Paquete', key: 'package.content_description' },
-        { label: 'Peso Cobrado', key: 'package.weight' },
-        { label: 'Paquete Largo', key: 'package.height' },
-        { label: 'Paquete Ancho', key: 'package.width' },
-        { label: 'Paquete Alto', key: 'package.depth' },
+        { label: 'Largo', key: 'package.height' },
+        { label: 'Ancho', key: 'package.width' },
+        { label: 'Alto', key: 'package.depth' },
+        { label: 'Peso Físico', key: 'package.weight' },
+        { label: 'Peso Volumetrico', key: 'volumetricWeight' },
         { label: 'Servicios', key: 'supplierData.Supplier' },
+        { label: 'Zona Extendida', key: 'supplierData.cargos.zonaExt' },
+        { label: 'Cargo seguro', key: 'supplierData.cargos.insurance' },
         { label: 'Costo', key: 'supplierData.Supplier_cost' },
     ];
     return (

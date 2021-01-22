@@ -21,7 +21,11 @@ const AccountPage = () => {
             const cancelSnapshot = docRef.onSnapshot(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     console.log(doc.data().saldo);
-                    setCreditAmount(doc.data().saldo);
+                    if (doc.data().saldo < 0) {
+                        setCreditAmount(0);
+                    } else {
+                        setCreditAmount(doc.data().saldo);
+                    }
                 });
             });
 
@@ -49,7 +53,7 @@ const AccountPage = () => {
                     <h2>{formatMoney(creditAmount, 2)}</h2>
                     {creditAmountError && (
                         <div className="alert-error">
-                            {creditAmount === 0
+                            {creditAmount <= 0
                                 ? 'Nota: El saldo se ha agotado'
                                 : 'Nota: Su saldo esta por agotarse'}
                         </div>

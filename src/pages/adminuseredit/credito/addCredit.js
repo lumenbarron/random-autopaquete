@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, Button, Column, TableWithBrowserPagination } from 'react-rainbow-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import toFixed from 'accounting-js/lib/toFixed';
 import styled from 'styled-components';
@@ -31,6 +33,7 @@ export default function AddCredito({ user }) {
     const [monto, setMonto] = useState('');
     const [concepto, setConcepto] = useState('');
     const [password, setPassword] = useState('');
+    const [referencia, setReferencia] = useState('');
     const rightPass = useRef(false);
 
     const [saldoActual, setSaldoActual] = useState();
@@ -77,7 +80,7 @@ export default function AddCredito({ user }) {
 
     useEffect(() => {
         const reloadVoucher = () => {
-            db.collection('addCredit')
+            db.collection('voucher')
                 .where('ID', '==', user.ID)
                 .orderBy('create_date', 'desc')
                 .onSnapshot(handleVouncher);
@@ -103,14 +106,25 @@ export default function AddCredito({ user }) {
             id: voucher.id,
             date: voucher.create_date,
             monto: formatMoney(voucher.saldo, 2),
-            concepto: voucher.concepto,
-            autor: voucher.autor,
+            concepto: voucher.concepto ? voucher.concepto : 'sin concepto',
+            autor: voucher.autor ? voucher.autor : 'desconocido',
+            referencia: voucher.referencia ? voucher.referencia : 'sin ref',
+            delete: <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteAddress(voucher.id)} />,
         };
     });
 
-    const restCredit = () => {
+    const addCredit = () => {
         let autor;
-        // console.log('monto', monto, 'concepto', concepto, 'password', password);
+        // console.log(
+        //     'monto',
+        //     monto,
+        //     'concepto',
+        //     concepto,
+        //     'password',
+        //     password,
+        //     'referencia',
+        //     referencia,
+        // );
 
         if (password === passJulio) {
             autor = 'Julio Arroyo';
@@ -146,6 +160,8 @@ export default function AddCredito({ user }) {
             swal.fire('¡Oh no!', 'Parece que no hay un monto válido, favor de verificar', 'error');
         } else if (concepto.trim() === '' || !concepto) {
             swal.fire('¡Oh no!', 'Parece que no hay un concepto, favor de verificar', 'error');
+        } else if (referencia.trim() === '' || !referencia) {
+            swal.fire('¡Oh no!', 'Parece que no hay una referencia, favor de verificar', 'error');
         } else if (password.trim() === '' || !password) {
             swal.fire('¡Oh no!', 'Parece que no hay ninguna contraseña', 'error');
         } else if (monto && concepto && rightPass.current) {
@@ -157,15 +173,17 @@ export default function AddCredito({ user }) {
                 saldo: monto,
                 concepto: concepto,
                 autor: autor,
+                referencia: referencia,
             };
 
-            db.collection('addCredit')
+            db.collection('voucher')
                 .add(restCreditData)
                 .then(function() {
                     console.log('agregando credito exitosamente');
                     setMonto('');
                     setConcepto('');
                     setPassword('');
+                    setReferencia('');
                     rightPass.current = false;
                     updateSaldo(docRef);
                 })
@@ -175,6 +193,19 @@ export default function AddCredito({ user }) {
         } else {
             swal.fire('¡Oh no!', 'Parece que hay un error', 'error');
         }
+    };
+
+    const deleteAddress = idDoc => {
+        console.log('idDoc', idDoc);
+        db.collection('addCredit')
+            .doc(idDoc)
+            .delete()
+            .then(function() {
+                console.log('Document successfully deleted', idDoc);
+            })
+            .catch(function(error) {
+                console.error('Error removing document: ', error);
+            });
     };
 
     return (
@@ -214,6 +245,16 @@ export default function AddCredito({ user }) {
                 </div>
                 <div style={{ flex: '1 1' }}>
                     <Input
+                        id="referencia"
+                        label="Referencia"
+                        className="rainbow-p-around_medium"
+                        style={{ width: '100%' }}
+                        value={referencia}
+                        onChange={ev => setReferencia(ev.target.value)}
+                    />
+                </div>
+                <div style={{ flex: '1 1' }}>
+                    <Input
                         id="password"
                         label="Contraseña"
                         placeholder="****"
@@ -225,7 +266,7 @@ export default function AddCredito({ user }) {
                     />
                 </div>
                 <div style={{ flex: '1 1' }}>
-                    <Button className="btn-confirm" label="Confirmar" onClick={restCredit} />
+                    <Button className="btn-confirm" label="Confirmar" onClick={addCredit} />
                 </div>
             </div>
             <StyledPanel>
@@ -239,7 +280,9 @@ export default function AddCredito({ user }) {
                     <StyledColumn header="Fecha " field="date" />
                     <StyledColumn header="Monto" field="monto" />
                     <StyledColumn header="Concepto" field="concepto" />
+                    <StyledColumn header="Referencia" field="referencia" />
                     <StyledColumn header="Realizado por" field="autor" />
+                    {/* <StyledColumn header="" field="delete" /> */}
                 </StyledTable>
             </StyledPanel>
         </>
