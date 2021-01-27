@@ -99,7 +99,7 @@ export default function RestCredito({ user }) {
                 ...doc.data(),
             });
         });
-        console.log('voucherData', voucherData);
+        //console.log('rest data', voucherData);
         setVouncherData(voucherData);
     }
 

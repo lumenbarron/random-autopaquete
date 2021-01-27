@@ -80,7 +80,7 @@ export default function AddCredito({ user }) {
 
     useEffect(() => {
         const reloadVoucher = () => {
-            db.collection('voucher')
+            db.collection('addCredit')
                 .where('ID', '==', user.ID)
                 .orderBy('create_date', 'desc')
                 .onSnapshot(handleVouncher);
@@ -96,12 +96,12 @@ export default function AddCredito({ user }) {
                 ...doc.data(),
             });
         });
-        // console.log('voucherData', voucherData);
+        console.log('add data', voucherData);
         setVouncherData(voucherData);
     }
 
     const inforTransacciones = voucherData.map((voucher, idx) => {
-        //console.log('voucherData', voucherData);
+        //console.log('add data', voucherData), depósito;
         return {
             id: voucher.id,
             date: voucher.create_date,
@@ -132,7 +132,7 @@ export default function AddCredito({ user }) {
             // console.log('autor', autor);
         }
         if (password === passJoce) {
-            autor = 'Jocelyn Guillen';
+            autor = 'Jocelyn Guillén';
             rightPass.current = true;
             // console.log('autor', autor);
         }

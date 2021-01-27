@@ -127,24 +127,6 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     let idGuia;
     let pickedDirection;
 
-    // useEffect(() => {
-    //     let myHeaders = new Headers();
-    //     myHeaders.append('Authorization', tokenProd);
-    //     myHeaders.append('Content-Type', 'application/json');
-    //     let requestOptions = {
-    //         method: 'POST',
-    //         headers: myHeaders,
-    //         body: JSON.stringify({ shipping_id: 82696346 }),
-    //         redirect: 'follow',
-    //     };
-    //     const urlRequest = `https://autopaquete.simplestcode.com/api/tracking-shipping/redpack`;
-    //     console.log('url', urlRequest);
-    //     fetch(urlRequest, requestOptions)
-    //         .then(response => response.text())
-    //         .then(result => console.log(result))
-    //         .catch(error => console.log('error', error));
-    // }, []);
-
     //Se busca los datos de envío (si hay algun envío efectuandose)
     useEffect(() => {
         if (user) {
