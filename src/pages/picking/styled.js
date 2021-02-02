@@ -132,9 +132,7 @@ export const StyledRightPane = styled(StyledPane)`
         display: flex;
         width: 100%;
     }
-    .col-margin {
-        margin-top: 7rem;
-    }
+
     @media (max-width: 992px) {
         .col-margin {
             margin-top: 2rem;
@@ -147,6 +145,7 @@ export const StyledRightPane = styled(StyledPane)`
 
 export const StyledRadioGroup = styled(RadioGroup)`
     max-height: 465px;
+    height: 200px;
 
     & label span {
         display: inline-flex;

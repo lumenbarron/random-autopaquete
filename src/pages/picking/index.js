@@ -28,8 +28,10 @@ import { log } from 'firebase-functions/lib/logger';
 import swal from 'sweetalert2';
 
 const cpRegex = RegExp(/^[0-9]{5}$/);
+const numberRegex = RegExp(/^[0-9]+$/);
 const phoneRegex = RegExp(/^[0-9]{10}$/);
 const addressRegex = RegExp(/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/);
+const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
 
 const states = {
     AG: 'Aguascalientes',
@@ -70,13 +72,19 @@ const StatePicklistOptions = () => {
     const allStates = Object.keys(states).map(code => {
         return <Option key={code} value={code} name={states[code]} label={states[code]} />;
     });
-
     return allStates;
 };
 
-let idPickup;
+// const NeighborhoodPicklistOptions = () => {
+//     neighborhoodSelect.map(code => {
+//         return <Option key={code} value={code} name={code} label={code} />;
+//     });
+
+//     return allStates;
+// };
 
 const AddressRadioOption = ({ directions }) => {
+    let idPickup;
     const {
         neighborhood,
         Referencias_lugar,
@@ -105,7 +113,7 @@ const AddressRadioOption = ({ directions }) => {
     );
 };
 
-const containerStyles = { height: 200 };
+const containerStyles = { height: '95%', margin: 0 };
 
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
@@ -123,39 +131,59 @@ const PickingPage = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
-    // const creationDate = new Date();
-    // console.log('creationDate', creationDate);
-
+    let creationDate = new Date();
+    let monthInitial = creationDate.getMonth();
+    //let monthInitial = (creationDate.getMonth() + 1).toString();
+    let dayInitial = creationDate.getDate();
+    let nextDay = creationDate.getDate() + 1;
+    let yearInitial = creationDate.getFullYear();
+    let initialHour = new Date().getHours() + 1;
+    if (initialHour > 13) {
+        dayInitial = dayInitial + 1;
+        // console.log('tomorrow', yearInitial , monthInitial , nextDay);
+        creationDate = new Date(yearInitial, monthInitial, nextDay);
+        // console.log(creationDate)
+        nextDay = nextDay + 1;
+        //console.log(nextDay);
+    }
+    // console.log('min date ', yearInitial, monthInitial, dayInitial );
+    // console.log('max date', yearInitial, monthInitial, nextDay)
+    let minDate = new Date(yearInitial, monthInitial, dayInitial);
+    let maxDate = new Date(yearInitial, monthInitial, nextDay);
+    // console.log(minDate, maxDate);
     const [error, setError] = useState(false);
 
+    const [errorGuide, setErrorGuide] = useState(false);
+    const [errorSupplier, setErrorSupplier] = useState(false);
     const [errorName, setErrorName] = useState(false);
     const [errorNameDuplicate, setErrorNameDuplicate] = useState(false);
     const [errorCP, setErrorCP] = useState(false);
     const [errorStreetName, setErrorStreetName] = useState(false);
     const [errorStreetNumber, setErrorStreetNumber] = useState(false);
     const [errorNeighborhood, setErrorNeighborhood] = useState(false);
-    const [errorCountry, setErrorCountry] = useState(false);
-    const [errorState, setErrorState] = useState(false);
-    const [errorNumber, setErrorNumber] = useState(false);
     const [errorPlaceRef, setErrorPlaceRef] = useState(false);
     const [errorPhone, setErrorPhone] = useState(false);
     const [errorCredits, setErrorCredits] = useState(false);
     const [errorHeight, setErrorHeight] = useState(false);
     const [errorWidth, setErrorWidth] = useState(false);
     const [errorDepth, setErrorDepth] = useState(false);
+    const [errorQuantity, setErrorQuantity] = useState(false);
+    const [errorWeightTotal, setErrorWeightTotal] = useState(false);
 
     const [directionData, setDirectionData] = useState([]);
 
     const [value, setValue] = useState();
-    const idPickup = useRef(null);
+    // const idPickup = useRef(null);
     const idGuide = useRef('');
     const typeSupplier = useRef('');
     const typeCity = useRef('');
+    const neighborhoodSel = useRef();
 
     const [filter, setFilter] = useState('');
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
+    const [neighborhoodSelect, setNeighborhoodSelect] = useState();
     const [country, setCountry] = useState('');
     const [state, setState] = useState({ label: '', value: '' });
     const [streetName, setStreetName] = useState('');
@@ -169,32 +197,16 @@ const PickingPage = () => {
     const [height, setHeight] = useState('');
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
-    const [selectDate, setSelectDate] = useState({ date: new Date() });
-    const [startHour, setStartHour] = useState({ time: '16:32' });
-    const [endHour, setEndHour] = useState({ time: '16:32' });
+    const [selectDate, setSelectDate] = useState({ date: creationDate });
+    const [startHour, setStartHour] = useState({ time: initialHour + ':00' });
+    const [endHour, setEndHour] = useState({ time: '19:00' });
     const [checkBox, setCheckBox] = useState(true);
     const [available, setAvailable] = useState(false);
     const [userName, setUserName] = useState('');
-    const [status, setStatus] = useState();
-    const [registerSAT, setRegisterSAT] = useState('');
+    const [pickups, setPickups] = useState([]);
+    const [tableData, setTableData] = useState();
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
-    let idGuia;
     let pickedDirection;
-
-    let allSuppliers = [
-        {
-            value: 'paquetería',
-            label: 'paquetería',
-        },
-        {
-            value: 'FEDEX',
-            label: 'Fedex',
-        },
-        {
-            value: 'REDPACK',
-            label: 'Redpack',
-        },
-    ];
 
     //Tracking
     //     useEffect(() => {
@@ -232,136 +244,36 @@ const PickingPage = () => {
     //     }]
     // }
 
-    //PickUp
-
-    //     useEffect(() => {
-    // let myHeaders = new Headers();
-    // myHeaders.append('Authorization', 'Token 358d5793ff5972a4365f8f608da9910afcfd231b');
-    // myHeaders.append('Content-Type', 'application/json');
-    // let requestOptions = {
-    //     method: 'POST',
-    //     headers: myHeaders,
-    //              body: JSON.stringify({
-    //                 "sender":{"contact_name":"CHISTIAN ALEJANDRO AMEZCUA",
-    //                 "company_name":"CHISTIAN ALEJANDRO AMEZCUA",
-    //                 "street":"JOSE MARIA MERCADO",
-    //                 "city":"Guadalajara",
-    //                 "zip_code":"44360",
-    //                 "neighborhood":"SAN JUAN DE DIOS",
-    //                 "country":"MX",
-    //                 "state":"JALISCO",
-    //                 "street_number":"24",
-    //                 "place_reference":"GIGANTES Y OBREGON",
-    //                 "phone":"3312364881"},
-    //                 "total_packages": 20,
-    //                 "total_weight": 300,
-    //                 "shipping_company": "FEDEX",
-    //                 "shipping_id": 83952839,
-    //                 "pickup_date": "2021-01-27",
-    //                 "pickup_time": "14:00",
-    //                 "company_close_time": "18:00"
-    // }),
-    // body: JSON.stringify({
-    //     "sender":{"contact_name":"RAVISA HAUS",
-    //     "company_name":"RAVISA HAUS",
-    //     "street":"LATERAL BLVD BERNARDO QUINTANA",
-    //     "city":"Querétaro",
-    //     "zip_code":"45010",
-    //     "neighborhood":"SAN PABLO",
-    //     "country":"MX",
-    //     "state":"Querétaro",
-    //     "street_number":"5112",
-    //     "place_reference":".",
-    //     "phone":"4422429001"},
-    //     "packages_size" : "60x30x30",
-    //     "total_packages": 1,
-    //     "total_weight": 11,
-    //     "shipping_company": "REDPACK",
-    //     "shipping_id": 95385018,
-    //     "pickup_date": "2021-01-27",
-    //     "pickup_time": "14:00",
-    //     "company_close_time": "18:00"
-    // }),
-    //             redirect: 'follow',
-    //         };
-    //         const urlRequest = `https://autopaquete.simplestcode.com/api/pickup-shipping/`;
-    //         console.log('url', urlRequest);
-    //         fetch(urlRequest, requestOptions)
-    //             .then(response => response.json())
-    //             .then(result => console.log(result))
-    //             .catch(error => console.log('error', error));
-    //     }, []);
-
-    //Response Redpack
-    // pickup_data:
-    // calle: "una calle"
-    // ciudad: "Zapopan"
-    // codigoPostal: 28175
-    // colonia_Asentamiento: "Tuzania"
-    // contacto: "Lucy"
-    // email: "17:00:00"
-    // estado: "Jalisco"
-    // nombre_Compania: "lucy prueba"
-    // numeroExterior: "986"
-    // numeroInterior: ""
-    // pais: "MX"
-    // telefonos: [{…}]
-    // pickup_date: "2021-01-26T17:00:00"
-    // pickup_id: "10562124"
-    // shipping_id: "82696379"
-
-    //Response Fedex
-    // pickup_date: "2021-01-26T17:00:00"
-    // pickup_id: "1056"
-    //calle
-
-    const getSupplier = supplier => {
-        console.log('selectSupplier', supplier);
-        console.log('guia', idGuide.current);
-        typeSupplier.current = supplier;
-        setSelectSupplier(supplier);
-        if (idGuide.current != '') {
-            getIdGuia(idGuide.current);
-        }
-    };
-
-    const getIdGuia = trackingNumber => {
-        console.log('selectSupplier', typeSupplier.current);
-        console.log(trackingNumber);
-        idGuide.current = trackingNumber;
+    const getIdGuia = e => {
+        console.log('selectSupplier', selectSupplier);
+        idGuide.current = e.target.value;
+        console.log(idGuide.current);
         let dataGuia = [];
-        if (trackingNumber == '' || !trackingNumber) {
+        if (idGuide.current == '' || !idGuide.current) {
             swal.fire(
                 '¡Oh no!',
                 'Parece que no hay alguna guía con ese número, podrías revisar',
                 'error',
             );
+            setErrorGuide(true);
         } else {
             db.collection('guia')
-                .where('rastreo', 'array-contains', trackingNumber)
+                .where('rastreo', 'array-contains', idGuide.current)
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
                         console.log(doc.data());
-                        console.log(doc.data().supplierData.cargos.shippingInfo[0]);
-                        let supplierType = doc.data().supplierData.cargos.shippingInfo[0];
-                        if (supplierType === typeSupplier.current) {
-                            setAvailable(true);
-                            setState({
-                                value: doc.data().sender_addresses.state,
-                                label: states[doc.data().sender_addresses.state],
-                            });
-                            typeCity.current = doc.data().sender_addresses.country;
-                            setCountry(doc.data().sender_addresses.country);
-                            getDirections(doc.data().sender_addresses.country);
-                        } else {
-                            setAvailable(false);
-                            swal.fire(
-                                '¡Oh no!',
-                                'Parece que esta guía no corresponde a la paquetería seleccionada',
-                                'error',
-                            );
-                        }
+                        // console.log(doc.data().supplierData.cargos.shippingInfo[0]);
+                        typeCity.current = doc.data().sender_addresses.country;
+                        typeSupplier.current = doc.data().supplierData.cargos.shippingInfo[0];
+                        setAvailable(true);
+                        setState({
+                            value: doc.data().sender_addresses.state,
+                            label: states[doc.data().sender_addresses.state],
+                        });
+                        setCountry(doc.data().sender_addresses.country);
+                        setSelectSupplier(doc.data().supplierData.cargos.shippingInfo[0]);
+                        getDirections(doc.data().sender_addresses.country);
                     });
                 })
                 .catch(function(error) {
@@ -377,7 +289,6 @@ const PickingPage = () => {
 
     //Obteniendo las direcciones de pickup
     const getDirections = city => {
-        console.log('id del user', user.uid, 'city', city);
         let dataAddress = [];
         let dataAddressFilter = [];
         if (user) {
@@ -392,45 +303,34 @@ const PickingPage = () => {
                                 ...doc.data(),
                             });
                         });
-                        console.log(dataAddress);
                         //Filtrando Direcciones
                         dataAddressFilter = dataAddress.filter(item => item.city.includes(city));
                         setDirectionData(dataAddressFilter);
-                        console.log('pickup_addresses filtered', dataAddressFilter);
                     });
             };
             reloadDirectios();
         }
     };
 
-    // useEffect(() => {
-    //     console.log('pickup id addres', idPickup.current);
-    //     if (user) {
-    //         if(idPickup.current) {
-    //             db.collection('pickup_addresses')
-    //                 .doc(idPickup.current)
-    //                 .get()
-    //                 .then(function(doc) {
-    //                     if (doc.exists) {
-    //                         setName(doc.data().name);
-    //                         setCP(doc.data().codigo_postal);
-    //                         setNeighborhood(doc.data().neighborhood);
-    //                         setState({
-    //                             value: doc.data().state,
-    //                             label: states[doc.data().state],
-    //                         });
-    //                         setStreetNumber(doc.data().street_number);
-    //                         setPlaceRef(doc.data().place_reference);
-    //                         setPhone(doc.data().phone);
-    //                         setCheckBox(false);
-    //                     } else {
-    //                         console.log('No such document!');
-    //                     }
-    //                 });
-    //             }
-    //     }
-    // }, [idGuiaGlobal]);
+    const options = directionData
+        .filter(directions => {
+            if (filter === null) {
+                return directions;
+            } else if (
+                directions.name.includes(filter) ||
+                directions.street_number.includes(filter)
+            ) {
+                return directions;
+            }
+        })
+        .map(directions => {
+            return {
+                value: directions.id + '',
+                label: <AddressRadioOption key={directions.id} directions={directions} />,
+            };
+        });
 
+    //verificacion de CP
     useEffect(() => {
         if (CP.length === 5) {
             fetch(`https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified`)
@@ -451,9 +351,25 @@ const PickingPage = () => {
                 })
                 .then(data => {
                     if (data.response) {
+                        let coloniasSelect = [];
                         console.log(data.response);
-                        console.log(typeCity.current, 'ciudad guarada');
-                        if (data.response.ciudad !== typeCity.current) {
+                        console.log(typeCity.current, 'ciudad guardada');
+                        let colonias = data.response.asentamiento;
+                        colonias.forEach(col => {
+                            coloniasSelect.push({
+                                label: col,
+                                value: col,
+                            });
+                        });
+                        console.log(coloniasSelect);
+                        neighborhoodSel.current = coloniasSelect;
+                        setNeighborhoodSelect(coloniasSelect);
+                        //coloniasSelect.map(({value, label}, index) =>  <Option name={label} label={label} value={value} /> )
+                        // setNeighborhood({ label: states[stateKey], value: stateKey })
+                        //const stateKey = Object.keys(colonias).map( );
+                        //console.log(stateKey);
+                        //setState({ label: states[stateKey], value: stateKey });
+                        if (data.response.municipio !== typeCity.current) {
                             // setTimeout(() => {
                             swal.fire({
                                 title: '!Lo siento!',
@@ -462,147 +378,13 @@ const PickingPage = () => {
                                 confirmButtonText: 'Ok',
                             });
                             setCP('');
+
                             // }, 1000);
                         }
                     }
                 });
         }
     }, [CP]);
-
-    // const saveServiceData = supplierData => {
-    //     // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
-    //     console.log('supplierData', supplierData);
-    //     let costGuia = supplierData.Supplier_cost;
-    //     console.log('costGuia', costGuia);
-    //     const directionsGuiasCollectionAdd = db
-    //         .collection('guia')
-    //         .doc(idGuiaGlobal.current)
-    //         .update({ status: 'completed', supplierData });
-
-    //     if (supplierData.Supplier === 'autoencargosEconomico') {
-    //         console.log('autoencargos pdf');
-    //         console.log(idGuiaGlobal.current);
-    //         newBalance(costGuia);
-    //         setguiaReady(true);
-    //         setCurrentStepName('descarga');
-    //     } else {
-    //         setCurrentStepName('descarga');
-    //         let myHeaders = new Headers();
-    //         myHeaders.append('Authorization', tokenProd);
-    //         myHeaders.append('Content-Type', 'application/json');
-    //         console.log('obteniendo los valores de firestore');
-    //         //Asignando los valores desde el doc guia del firestore
-    //         db.collection('guia')
-    //             .doc(idGuiaGlobal.current)
-    //             .get()
-    //             .then(function(doc) {
-    //                 if (doc.exists) {
-    //                     console.log('Document data:', doc.data());
-    //                     let data = JSON.stringify({
-    //                         sender: {
-    //                             contact_name: doc.data().sender_addresses.name,
-    //                             company_name: doc.data().sender_addresses.name,
-    //                             street: doc.data().sender_addresses.street_number,
-    //                             zip_code: doc.data().sender_addresses.codigo_postal,
-    //                             neighborhood: doc.data().sender_addresses.neighborhood,
-    //                             city: doc.data().sender_addresses.country,
-    //                             country: 'MX',
-    //                             state: doc.data().sender_addresses.state,
-    //                             street_number: '-',
-    //                             place_reference: doc.data().sender_addresses.place_reference,
-    //                             phone: doc.data().sender_addresses.phone,
-    //                         },
-    //                         receiver: {
-    //                             contact_name: doc.data().receiver_addresses.name,
-    //                             company_name: doc.data().receiver_addresses.name,
-    //                             street: doc.data().receiver_addresses.street_number,
-    //                             zip_code: doc.data().receiver_addresses.codigo_postal,
-    //                             neighborhood: doc.data().receiver_addresses.neighborhood,
-    //                             city: doc.data().receiver_addresses.country,
-    //                             country: 'MX',
-    //                             state: doc.data().receiver_addresses.state,
-    //                             street_number: '-',
-    //                             place_reference: doc.data().receiver_addresses.place_reference,
-    //                             phone: doc.data().receiver_addresses.phone,
-    //                         },
-    //                         packages: [
-    //                             {
-    //                                 name: doc.data().package.name,
-    //                                 height: doc.data().package.height,
-    //                                 width: doc.data().package.width,
-    //                                 depth: doc.data().package.depth,
-    //                                 weight: doc.data().package.weight,
-    //                                 content_description: doc.data().package.content_description,
-    //                                 quantity: doc.data().package.quantity,
-    //                             },
-    //                         ],
-    //                         shipping_company: doc.data().supplierData.cargos.shippingInfo[0],
-    //                         shipping_service: {
-    //                             name: doc.data().supplierData.cargos.shippingInfo[1],
-    //                             description: doc.data().supplierData.cargos.shippingInfo[2],
-    //                             id: doc.data().supplierData.cargos.shippingInfo[3],
-    //                         },
-    //                         shipping_secure:
-    //                             doc.data().supplierData.cargos.insurance === 0 ? false : true,
-    //                         shipping_secure_data: {
-    //                             notes: doc.data().package.content_description,
-    //                             amount: doc.data().supplierData.cargos.insurance,
-    //                         },
-    //                     });
-    //                     console.log('data 2', data);
-    //                     let requestOptions = {
-    //                         method: 'POST',
-    //                         headers: myHeaders,
-    //                         body: data,
-    //                         redirect: 'follow',
-    //                     };
-    //                     fetch(
-    //                         'https://autopaquete.simplestcode.com/api/do-shipping/',
-    //                         requestOptions,
-    //                     )
-    //                         .then(response => response.json())
-    //                         .then(result => {
-    //                             console.log(result);
-    //                             let responseFetch = Object.keys(result);
-    //                             if (responseFetch.length === 0) {
-    //                                 setEmptyResult(true);
-    //                             } else {
-    //                                 console.log(result.pdf_b64);
-    //                                 console.log(result.id_shipping);
-    //                                 db.collection('guia')
-    //                                     .doc(idGuiaGlobal.current)
-    //                                     .update({
-    //                                         label: result.pdf_b64,
-    //                                         rastreo: result.id_shipping,
-    //                                     });
-    //                                 // setCurrentStepName('descarga');
-    //                                 newBalance(costGuia);
-    //                                 setguiaReady(true);
-    //                             }
-    //                         })
-    //                         .catch(error => console.log('error', error));
-    //                 }
-    //             });
-    //     }
-    // };
-
-    const options = directionData
-        .filter(directions => {
-            if (filter === null) {
-                return directions;
-            } else if (
-                directions.name.includes(filter) ||
-                directions.street_number.includes(filter)
-            ) {
-                return directions;
-            }
-        })
-        .map(directions => {
-            return {
-                value: directions.id + '',
-                label: <AddressRadioOption key={directions.id} directions={directions} />,
-            };
-        });
 
     //Se obtienen las direcciones guardadas
     useEffect(() => {
@@ -646,238 +428,321 @@ const PickingPage = () => {
         }
     }, [value]);
 
-    // useEffect(() => {
-    //     if (user) {
-    //         db.collection('profiles')
-    //             .where('ID', '==', user.uid)
-    //             .get()
-    //             .then(function(querySnapshot) {
-    //                 querySnapshot.forEach(function(doc) {
-    //                     console.log('primer data', doc.data(), doc.id);
-    //                     setUserName(doc.data().name);
-    //                     setStatus(doc.data().status);
-    //                     if (doc.data().persona === 'Física') {
-    //                         setRegisterSAT(doc.data().nombre_fiscal);
-    //                     } else if (doc.data().persona === 'Moral') {
-    //                         setRegisterSAT(doc.data().razon_social);
-    //                     } else {
-    //                         setRegisterSAT('');
-    //                     }
-    //                 });
-    //             })
-    //             .catch(function(error) {
-    //                 console.log('Error getting documents: ', error);
-    //             });
-    //     }
-    // }, []);
+    //Obteniendo las recolecciones
+    useEffect(() => {
+        if (user) {
+            const reloadDirectios = () => {
+                db.collection('pickups')
+                    .where('ID', '==', user.uid)
+                    .orderBy('pickup_date', 'desc')
+                    .onSnapshot(handleDirections);
+            };
+            reloadDirectios();
+        }
+    }, []);
 
-    // const addPicking = () => {
-    //     //Se validan todos los inputs uno por uno
-    //     if (name.trim() === '' || !addressRegex.test(name) || name.length > 35) {
-    //         swal.fire({
-    //             title: '!Lo siento!',
-    //             text:
-    //                 'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
-    //             icon: 'error',
-    //             confirmButtonText: 'Ok',
-    //         });
-    //         setErrorName(true);
-    //         setError(true);
-    //         return;
-    //     } else {
-    //         setErrorName(false);
-    //     }
-    //     if (CP.trim() === '' || !cpRegex.test(CP)) {
-    //         setErrorCP(true);
-    //         setError(true);
-    //         return;
-    //     } else {
-    //         setErrorCP(false);
-    //     }
-    //     if (
-    //         streetNumber.trim() === '' ||
-    //         !addressRegex.test(streetNumber) ||
-    //         streetNumber.length > 35
-    //     ) {
-    //         swal.fire({
-    //             title: '!Lo siento!',
-    //             text:
-    //                 'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
-    //             icon: 'error',
-    //             confirmButtonText: 'Ok',
-    //         });
-    //         setErrorStreetNumber(true);
-    //         setError(true);
-    //         return;
-    //     } else {
-    //         setErrorStreetNumber(false);
-    //     }
-    //     if (
-    //         neighborhood.trim() === '' ||
-    //         !addressRegex.test(neighborhood) ||
-    //         neighborhood.length > 35
-    //     ) {
-    //         swal.fire({
-    //             title: '!Lo siento!',
-    //             text:
-    //                 'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
-    //             icon: 'error',
-    //             confirmButtonText: 'Ok',
-    //         });
-    //         setErrorNeighborhood(true);
-    //         setError(true);
-    //         return;
-    //     } else {
-    //         setErrorNeighborhood(false);
-    //     }
-    //     if (country.trim() === '') {
-    //         setErrorCountry(true);
-    //         setError(true);
-    //         return;
-    //     } else {
-    //         setErrorCountry(false);
-    //     }
-    //     if (state.value.trim() === '') {
-    //         setError(true);
-    //         setErrorState(true);
-    //         return;
-    //     } else {
-    //         setErrorState(false);
-    //     }
-    //     if (placeRef.trim() === '' || placeRef.length > 20) {
-    //         swal.fire({
-    //             title: '!Lo siento!',
-    //             text: 'El texto puede ser hasta 20 letras y números, favor de verificar.',
-    //             icon: 'error',
-    //             confirmButtonText: 'Ok',
-    //         });
-    //         setError(true);
-    //         setErrorPlaceRef(true);
-    //         return;
-    //     } else {
-    //         setErrorPlaceRef(false);
-    //     }
-    //     if (phone.trim() === '' || !phoneRegex.test(phone)) {
-    //         swal.fire({
-    //             title: '!Lo siento!',
-    //             text: 'El teléfono debe ser de 10 números,favor de verificar.',
-    //             icon: 'error',
-    //             confirmButtonText: 'Ok',
-    //         });
-    //         setErrorPhone(true);
-    //         setError(true);
-    //         return;
-    //     } else {
-    //         setErrorPhone(false);
-    //     }
-    //     if (status !== 'Aprobado') {
-    //         setErrorCredits(true);
-    //         return;
-    //     }
-    //     //Si el usuario quiere guardar la dirección se guarda en la colleccion de sender_addresses
-    //     if (checkBox) {
-    //         const duplicateName = directionData.map((searchName, idx) => {
-    //             return searchName.name;
-    //         });
-    //         if (duplicateName.includes(name)) {
-    //             setErrorNameDuplicate(true);
-    //             setError(false);
-    //             return;
-    //         }
-    //         setErrorNameDuplicate(false);
-    //         setError(false);
+    function handleDirections(snapshot) {
+        let allPickups = [];
+        snapshot.docs.forEach(doc => {
+            allPickups.push({
+                id: doc.id,
+                ...doc.data(),
+            });
+        });
+        setPickups(allPickups);
+    }
 
-    //         const directionsCollectionAdd = db.collection('sender_addresses').add({
-    //             name,
-    //             codigo_postal: CP,
-    //             neighborhood,
-    //             country,
-    //             state: state.value,
-    //             street_number: streetNumber,
-    //             place_reference: placeRef,
-    //             phone,
-    //             ID: user.uid,
-    //             creation_date: creationDate.toLocaleDateString(),
-    //         });
+    useEffect(() => {
+        setTableData(
+            pickups.map(pick => {
+                return {
+                    id: pick.id,
+                    date: pick.pickup_date.slice(0, 10),
+                    order: pick.pickup_id,
+                    origen: pick.name,
+                    guide: pick.guide,
+                    supplier: pick.shipping_company,
+                };
+            }),
+            console.log(pickups),
+        );
+    }, [pickups]);
 
-    //         directionsCollectionAdd
-    //             .then(function(docRef) {
-    //                 console.log('Document written with ID (origen): ', docRef.id);
-    //             })
-    //             .catch(function(error) {
-    //                 console.error('Error adding document: ', error);
-    //             });
-    //     }
+    const addPicking = () => {
+        let date = selectDate.date;
+        let month = (date.getMonth() + 1).toString();
+        let day = date.getDate();
+        let year = date.getFullYear();
 
-    //     const directionsGuiasCollectionAdd = db.collection('guia').add({
-    //         ID: user.uid,
-    //         name: userName,
-    //         razon_social: registerSAT,
-    //         creation_date: creationDate,
-    //         status: 'incomplete',
-    //         sender_addresses: {
-    //             name,
-    //             codigo_postal: CP,
-    //             neighborhood,
-    //             country,
-    //             state: state.value,
-    //             street_number: streetNumber,
-    //             place_reference: placeRef,
-    //             phone,
-    //             ID: user.uid,
-    //             creation_date: creationDate.toLocaleDateString(),
-    //         },
-    //         receiver_addresses: {
-    //             name: '',
-    //             codigo_postal: '',
-    //             neighborhood: '',
-    //             country: '',
-    //             state: '',
-    //             street_number: '',
-    //             place_reference: '',
-    //             phone: '',
-    //             ID: '',
-    //             creation_date: '',
-    //         },
-    //         package: {
-    //             name: '',
-    //             height: '',
-    //             width: '',
-    //             depth: '',
-    //             weight: '',
-    //             content_description: '',
-    //             quantity: '',
-    //             content_value: '',
-    //             creation_date: '',
-    //         },
-    //     });
+        if (month.length < 2) {
+            month = '0' + month;
+        }
+        if (day.length < 2) {
+            day = '0' + day;
+        }
+        let pickupDate = year + '-' + month + '-' + day;
 
-    //     const searchDuplicate = db.collection('sender_addresses').get();
+        //Se validan todos los inputs uno por uno
+        if (name.trim() === '' || !addressRegex.test(name)) {
+            setErrorName(true);
+            setError(true);
+            return;
+        } else {
+            setErrorName(false);
+        }
+        if (CP.trim() === '' || !cpRegex.test(CP)) {
+            setErrorCP(true);
+            setError(true);
+            return;
+        } else {
+            setErrorCP(false);
+        }
+        if (streetName.trim() === '' || !addressRegex.test(streetName)) {
+            setErrorStreetName(true);
+            setError(true);
+            return;
+        } else {
+            setErrorStreetName(false);
+        }
+        if (
+            streetNumber.trim() === '' ||
+            streetNumber.length > 10 ||
+            !addressRegex.test(streetNumber)
+        ) {
+            setErrorStreetNumber(true);
+            setError(true);
+            return;
+        } else {
+            setErrorStreetNumber(false);
+        }
+        if (neighborhood.trim() === '' || !addressRegex.test(neighborhood)) {
+            setErrorNeighborhood(true);
+            setError(true);
+            return;
+        } else {
+            setErrorNeighborhood(false);
+        }
 
-    //     directionsGuiasCollectionAdd
-    //         .then(function(docRef) {
-    //             idGuia = docRef.id;
-    //             console.log('Se crea y se guarda el id de la guía', idGuia);
-    //             onSave({ idGuia });
-    //         })
-    //         .catch(function(error) {
-    //             console.error('Error adding document: ', error);
-    //         });
-    // };
+        if (placeRef.trim() === '' || placeRef.length > 20) {
+            swal.fire({
+                title: '!Lo siento!',
+                text: 'El texto puede ser hasta 20 letras y números, favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+            setError(true);
+            setErrorPlaceRef(true);
+            return;
+        } else {
+            setErrorPlaceRef(false);
+        }
+        if (phone.trim() === '' || !phoneRegex.test(phone)) {
+            swal.fire({
+                title: '!Lo siento!',
+                text: 'El teléfono debe ser de 10 números,favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+            setErrorPhone(true);
+            setError(true);
+            return;
+        } else {
+            setErrorPhone(false);
+        }
+        if (
+            (height.trim() === '' && typeSupplier.current === 'REDPACK') ||
+            (!numberRegex.test(height) && typeSupplier.current === 'REDPACK') ||
+            (height <= 0 && typeSupplier.current === 'REDPACK')
+        ) {
+            setErrorHeight(true);
+            setError(true);
+        } else {
+            setErrorHeight(false);
+        }
+        if (
+            (width.trim() === '' && typeSupplier.current === 'REDPACK') ||
+            (!numberRegex.test(width) && typeSupplier.current === 'REDPACK') ||
+            (width <= 0 && typeSupplier.current === 'REDPACK')
+        ) {
+            setErrorWidth(true);
+
+            setError(true);
+        } else {
+            setErrorWidth(false);
+        }
+        if (
+            (depth.trim() === '' && typeSupplier.current === 'REDPACK') ||
+            (!numberRegex.test(depth) && typeSupplier.current === 'REDPACK') ||
+            (depth <= 0 && typeSupplier.current === 'REDPACK')
+        ) {
+            setErrorDepth(true);
+
+            setError(true);
+        } else {
+            setErrorDepth(false);
+        }
+        if (quantity.trim() === '' || !numberWithDecimalRegex.test(quantity) || quantity <= 0) {
+            setErrorQuantity(true);
+
+            setError(true);
+        } else {
+            setErrorQuantity(false);
+        }
+        if (
+            weightTotal.trim() === '' ||
+            !numberWithDecimalRegex.test(weightTotal) ||
+            weightTotal <= 0
+        ) {
+            setErrorWeightTotal(true);
+
+            setError(true);
+        } else {
+            setErrorWeightTotal(false);
+        }
+
+        //Si el usuario quiere guardar la dirección se guarda en la colleccion de sender_addresses
+        if (checkBox) {
+            const duplicateName = directionData.map((searchName, idx) => {
+                return searchName.name;
+            });
+            if (duplicateName.includes(name)) {
+                setErrorNameDuplicate(true);
+                setError(false);
+
+                return;
+            }
+            setErrorNameDuplicate(false);
+            setError(false);
+
+            const directionsCollectionAdd = db.collection('pickup_addresses').add({
+                ID: user.uid,
+                city: typeCity.current,
+                name,
+                codigo_postal: CP,
+                neighborhood,
+                state: state.value,
+                street_name: streetName,
+                street_number: streetNumber,
+                place_reference: placeRef,
+                phone,
+                creation_date: creationDate.toLocaleDateString(),
+            });
+
+            directionsCollectionAdd
+                .then(function(docRef) {
+                    console.log('Document written with ID (origen): ', docRef.id);
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+        }
+
+        //Si el proveedor es Redpack se mandan medidas
+        console.log('supplier', typeSupplier.current);
+        let packSize;
+        if (typeSupplier.current === 'REDPACK') {
+            packSize = height + 'x' + width + 'x' + depth;
+        } else {
+            packSize = '-';
+        }
+        console.log(packSize, 'packSize');
+
+        //Peticion de recoleccion a la API
+        let myHeaders = new Headers();
+        myHeaders.append('Authorization', tokenProd);
+        myHeaders.append('Content-Type', 'application/json');
+        let requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: JSON.stringify({
+                sender: {
+                    contact_name: name,
+                    company_name: name,
+                    street: streetName,
+                    city: typeCity.current,
+                    zip_code: CP,
+                    neighborhood: neighborhood,
+                    country: 'MX',
+                    state: state.value,
+                    street_number: streetNumber,
+                    place_reference: placeRef,
+                    phone: phone,
+                },
+                packages_size: packSize,
+                total_packages: quantity,
+                total_weight: weightTotal,
+                shipping_company: selectSupplier,
+                shipping_id: idGuide.current.slice(0, 8),
+                pickup_date: pickupDate,
+                pickup_time: startHour.time,
+                company_close_time: endHour.time,
+            }),
+            redirect: 'follow',
+        };
+        const urlRequest = `https://autopaquete.simplestcode.com/api/pickup-shipping/`;
+        console.log('url', urlRequest);
+        fetch(urlRequest, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                if (result.data) {
+                    console.log('si hay data');
+                    const directionsPickupAdd = db.collection('pickups').add({
+                        ID: user.uid,
+                        pickup_date: result.data.pickup_date,
+                        name: name,
+                        guide: idGuide.current,
+                        pickup_id: result.data.pickup_id,
+                        shipping_company: selectSupplier,
+                    });
+                    directionsPickupAdd
+                        .then(function(docRef) {
+                            swal.fire('Programada', '', 'success');
+                            console.log('recolección exitosa ', docRef.id);
+                        })
+                        .catch(function(error) {
+                            console.error('Error adding document: ', error);
+                        });
+
+                    idGuide.current = '';
+                    typeCity.current = '';
+                    typeSupplier.current = '';
+                    setName('');
+                    setSelectSupplier('');
+                    setCP('');
+                    setNeighborhood('');
+                    setStreetName('');
+                    setStreetNumber('');
+                    setCountry('');
+                    setState({ label: '', value: '' });
+                    setPlaceRef('');
+                    setPhone('');
+                    setCheckBox(true);
+                    setHeight('');
+                    setWidth('');
+                    setDepth('');
+                    setQuantity('');
+                    setWeightTotal('');
+                } else {
+                    console.log('lo sentimos ');
+                    swal.fire({
+                        title: '!Lo siento!',
+                        text:
+                            'Podrías revisar el día, la hora o contactar a tu asesor para mayor ayuda',
+                        icon: 'error',
+                        confirmButtonText: 'Ok',
+                    });
+                }
+            })
+            .catch(error => {
+                console.log('error', error);
+            });
+    };
 
     const search = e => {
         let keyword = e.target.value;
         setFilter(keyword);
     };
-
-    const tableData = [
-        {
-            id: 1,
-            date: '25/01/2021',
-            order: '1234567',
-            origen: 'mi casa',
-        },
-    ];
 
     return (
         <StyledSendPage>
@@ -885,47 +750,60 @@ const PickingPage = () => {
                 <h1>Recolecciones</h1>
             </Row>
             <StyledPaneContainer>
-                <StyledLeftPane>
-                    <h4>Mis direcciones</h4>
-                    <Input
-                        value={filter}
-                        placeholder="Buscar por nombre o calle"
-                        iconPosition="right"
-                        icon={<FontAwesomeIcon icon={faSearch} />}
-                        onChange={e => search(e)}
-                    />
-                    <StyledRadioGroup
-                        id="radio-group-component-1"
-                        options={options}
-                        value={value}
-                        className="rainbow-m-around_small"
-                        onChange={e => setValue(e.target.value)}
-                    />
-                </StyledLeftPane>
-                <StyledRightPane>
-                    <h4>Mis recolecciones</h4>
-                    <div className="rainbow-flex_wrap">
-                        <div style={containerStyles}>
-                            <StyledTable
-                                data={tableData}
-                                pageSize={10}
-                                keyField="id"
-                                // style={containerTableStyles}
-                                emptyTitle="Oh no!"
-                                emptyDescription="No hay ningun registro actualmente..."
-                                className="direction-table"
-                            >
-                                <Column header="Fecha" field="date" defaultWidth={105} />
-                                <Column
-                                    header="No. de Recolección"
-                                    field="order"
-                                    defaultWidth={85}
+                <Row style={{ width: '100%' }}>
+                    <Col className=" col-12 col-xl-6 boder-right">
+                        <StyledLeftPane>
+                            <h4>Mis direcciones</h4>
+                            <Input
+                                value={filter}
+                                placeholder="Buscar por nombre o calle"
+                                iconPosition="right"
+                                icon={<FontAwesomeIcon icon={faSearch} />}
+                                onChange={e => search(e)}
+                            />
+                            <div>
+                                <StyledRadioGroup
+                                    id="radio-group-component-1"
+                                    options={options}
+                                    value={value}
+                                    className="rainbow-m-around_small"
+                                    onChange={e => setValue(e.target.value)}
                                 />
-                                <Column header="Origen" field="origen" />
-                            </StyledTable>
-                        </div>
-                    </div>
-                </StyledRightPane>
+                            </div>
+                        </StyledLeftPane>
+                    </Col>
+                    <Col className=" col-12 col-xl-6 boder-right">
+                        <StyledRightPane style={containerStyles}>
+                            <h4>Mis recolecciones</h4>
+                            <div className="rainbow-flex_wrap">
+                                <div>
+                                    <StyledTable
+                                        data={tableData}
+                                        pageSize={10}
+                                        keyField="id"
+                                        emptyTitle="Oh no!"
+                                        emptyDescription="No hay ningun registro actualmente..."
+                                        className="direction-table"
+                                    >
+                                        <Column header="Fecha" field="date" defaultWidth={125} />
+                                        <Column header="Guía" field="guide" defaultWidth={125} />
+                                        <Column
+                                            header="Paquetería"
+                                            field="supplier"
+                                            defaultWidth={105}
+                                        />
+                                        <Column
+                                            header="Recolección"
+                                            field="order"
+                                            defaultWidth={125}
+                                        />
+                                        <Column header="Origen" field="origen" />
+                                    </StyledTable>
+                                </div>
+                            </div>
+                        </StyledRightPane>
+                    </Col>
+                </Row>
             </StyledPaneContainer>
 
             <StyledPaneContainer>
@@ -934,31 +812,25 @@ const PickingPage = () => {
                         <Col className=" col-12 col-xl-6 boder-right">
                             <h4>Datos de la guía</h4>
                             <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Select
-                                    options={allSuppliers}
-                                    id="example-select-2"
-                                    style={{ width: '50%' }}
-                                    value={selectSupplier}
-                                    label="Selecciona la paquetería"
-                                    required
-                                    onChange={ev => getSupplier(ev.target.value)}
-                                    className="rainbow-p-around_medium rainbow-m_auto"
-                                />
                                 <Input
                                     id="guia"
                                     placeholder="Numero de Guia"
                                     label="Numero de Guia"
-                                    disabled={
-                                        selectSupplier === 'FEDEX' || selectSupplier === 'REDPACK'
-                                            ? false
-                                            : true
-                                    }
-                                    className="rainbow-p-around_medium rainbow-m_auto"
+                                    className={`rainbow-p-around_medium ${
+                                        errorGuide ? 'empty-space' : ''
+                                    }`}
                                     required
-                                    // style={{ flex: '1 1' }}
+                                    value={idGuide.current}
                                     style={{ width: '50%' }}
-                                    // value={guide}
-                                    onChange={ev => getIdGuia(ev.target.value)}
+                                    onChange={e => getIdGuia(e)}
+                                />
+                                <Input
+                                    readOnly
+                                    style={{ width: '50%' }}
+                                    value={selectSupplier}
+                                    label="Paquetería"
+                                    onChange={value => setSelectSupplier(value)}
+                                    className="rainbow-p-around_medium rainbow-m_auto"
                                 />
                             </div>
                             <h4>Dirección de recolección</h4>
@@ -975,7 +847,6 @@ const PickingPage = () => {
                                     style={{ width: '70%' }}
                                     onChange={e => setName(e.target.value)}
                                 />
-
                                 <Input
                                     id="cp"
                                     label="C.P."
@@ -994,11 +865,6 @@ const PickingPage = () => {
                                     <span className="alert-error">
                                         El nombre ya se encuentra registrado
                                     </span>
-                                </div>
-                            )}
-                            {errorCP && (
-                                <div className="alert-error pl-4">
-                                    CP no validado, favor de verificarlo
                                 </div>
                             )}
                             <div className="rainbow-align-content_center rainbow-flex_wrap">
@@ -1038,6 +904,18 @@ const PickingPage = () => {
                                     style={{ flex: '1 1' }}
                                     onChange={e => setNeighborhood(e.target.value)}
                                 />
+                                {/* <Select
+                                    id="colonia"
+                                    readOnly
+                                    label="Colonia"
+                                    options={ !neighborhoodSel.current ? neighborhoodSel.current : ''}
+                                    name="colonia"
+                                    value={neighborhood}
+                                    className='rainbow-p-around_medium'
+                                    style={{ flex: '1 1' }}
+                                    onChange={value => setNeighborhoodSelect(value)}
+                                    required
+                                /> */}
                             </div>
                             <div className="rainbow-align-content_center rainbow-flex_wrap">
                                 <Input
@@ -1098,7 +976,6 @@ const PickingPage = () => {
                                     />
                                 </div>
                             </div>
-
                             {errorCredits && (
                                 <div className="alert-error pl-4">
                                     Es necesario tener un estatus aprobatorio para relizar envíos
@@ -1119,10 +996,9 @@ const PickingPage = () => {
                                                 label="Largo"
                                                 name="height"
                                                 value={height}
-                                                //className={`rainbow-p-around_medium ${errorHeight ? 'empty-space' : ''}`}
-                                                className="rainbow-p-around_medium"
-                                                // style={{ width: '70%' }}
-                                                // style={{ width: '30%' }}
+                                                className={`rainbow-p-around_medium ${
+                                                    errorHeight ? 'empty-space' : ''
+                                                }`}
                                                 onChange={e => setHeight(e.target.value)}
                                             />
                                         </Col>
@@ -1132,9 +1008,9 @@ const PickingPage = () => {
                                                 name="width"
                                                 label="Ancho"
                                                 value={width}
-                                                // className={`rainbow-p-around_medium ${
-                                                //     errorWidth ? 'empty-space' : ''
-                                                // }`}
+                                                className={`rainbow-p-around_medium ${
+                                                    errorWidth ? 'empty-space' : ''
+                                                }`}
                                                 className="rainbow-p-around_medium"
                                                 onChange={e => setWidth(e.target.value)}
                                             />
@@ -1145,18 +1021,15 @@ const PickingPage = () => {
                                                 name="depth"
                                                 label="Alto"
                                                 value={depth}
-                                                className="rainbow-p-around_medium"
-                                                // className={`rainbow-p-around_medium ${
-                                                //     errorDepth ? 'empty-space' : ''
-                                                // }`}
-                                                // style={{ width: '30%' }}
+                                                className={`rainbow-p-around_medium ${
+                                                    errorDepth ? 'empty-space' : ''
+                                                }`}
                                                 onChange={e => setDepth(e.target.value)}
                                             />
                                         </Col>
                                     </Row>
                                 </div>
                             )}
-
                             <div className="rainbow-align-content_center rainbow-flex_wrap">
                                 <Row className="">
                                     <Col className="">
@@ -1165,10 +1038,11 @@ const PickingPage = () => {
                                             label="Cantidad total"
                                             name="cantidad"
                                             value={quantity}
-                                            //className={`rainbow-p-around_medium ${errorQuantity ? 'empty-space' : ''}`}
+                                            disabled={available ? false : true}
+                                            className={`rainbow-p-around_medium ${
+                                                errorQuantity ? 'empty-space' : ''
+                                            }`}
                                             className="rainbow-p-around_medium"
-                                            // style={{ width: '70%' }}
-                                            // style={{ width: '30%' }}
                                             onChange={e => setQuantity(e.target.value)}
                                         />
                                     </Col>
@@ -1178,9 +1052,10 @@ const PickingPage = () => {
                                             label="Peso total"
                                             name="weightT"
                                             value={weightTotal}
-                                            //className={`rainbow-p-around_medium ${errorWeightTotal ? 'empty-space' : ''}`}
-                                            className="rainbow-p-around_medium"
-                                            // style={{ width: '30%' }}
+                                            disabled={available ? false : true}
+                                            className={`rainbow-p-around_medium ${
+                                                errorWeightTotal ? 'empty-space' : ''
+                                            }`}
                                             onChange={e => setWeightTotal(e.target.value)}
                                         />
                                     </Col>
@@ -1190,20 +1065,14 @@ const PickingPage = () => {
                                             label="Fecha de recolección"
                                             value={selectDate.date}
                                             // style={{ width: '30%' }}
+                                            minDate={minDate}
+                                            maxDate={maxDate}
                                             className="rainbow-p-around_medium"
-                                            //onChange={value => searchByDate(value)}
+                                            onChange={value => setSelectDate({ date: value })}
                                         />
                                     </Col>
                                 </Row>
                             </div>
-                            {/* {errorNameDuplicate && (
-                        <div className="w-75 pl-4">
-                            <span className="alert-error">El nombre ya se encuentra registrado</span>
-                        </div>
-                    )}
-                    {errorCP && (
-                        <div className="alert-error pl-4">CP no validado, favor de verificarlo</div>
-                    )} */}
                             <div
                                 className="rainbow-align-content_center rainbow-flex_wrap flex-col"
                                 style={{}}
@@ -1213,38 +1082,29 @@ const PickingPage = () => {
                                     <TimePicker
                                         value={startHour.time}
                                         label="Desde"
-                                        onChange={value => setStartHour({ time: startHour })}
-                                        // style={containerStyles}
+                                        onChange={value => setStartHour({ time: value })}
                                         className="rainbow-p-around_medium rainbow-m_auto"
                                         hour24
                                     />
                                     <TimePicker
                                         value={endHour.time}
                                         label="Hasta"
-                                        onChange={value => setEndHour({ time: endHour })}
-                                        // style={containerStyles}
+                                        onChange={value => setEndHour({ time: value })}
                                         className="rainbow-p-around_medium rainbow-m_auto"
                                         hour24
                                     />
                                 </div>
                             </div>
-                            {/* <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Input
-                                    id="referencia"
-                                    label="Observaciones"
-                                    name="referencia"
-                                    value={placeRef}
-                                    className={`rainbow-p-around_medium ${errorPlaceRef ? 'empty-space' : ''}`}
-                                    style={{ flex: '2 2' }}
-                                    onChange={e => setPlaceRef(e.target.value)}
-                                />
-                            </div> */}
+                            {error && (
+                                <div className="alert-error pl-4">Corregir los campos marcados</div>
+                            )}
                             <div className="rainbow-align-content_center rainbow-flex_wrap">
                                 <Button
                                     variant="brand"
                                     className="rainbow-m-around_medium"
                                     style={{ width: '100%' }}
-                                    //onClick={() => addPicking()}
+                                    disabled={available ? false : true}
+                                    onClick={() => addPicking()}
                                 >
                                     Programar recolección
                                 </Button>
