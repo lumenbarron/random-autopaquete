@@ -115,6 +115,8 @@ const AddressRadioOption = ({ directions }) => {
 
 const containerStyles = { height: '95%', margin: 0 };
 
+const styleText = { textAlign: 'center' };
+
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
         > div {
@@ -154,7 +156,6 @@ const PickingPage = () => {
     const [error, setError] = useState(false);
 
     const [errorGuide, setErrorGuide] = useState(false);
-    const [errorSupplier, setErrorSupplier] = useState(false);
     const [errorName, setErrorName] = useState(false);
     const [errorNameDuplicate, setErrorNameDuplicate] = useState(false);
     const [errorCP, setErrorCP] = useState(false);
@@ -178,6 +179,8 @@ const PickingPage = () => {
     const typeSupplier = useRef('');
     const typeCity = useRef('');
     const neighborhoodSel = useRef();
+    const errorRepeat = useRef(false);
+    const errorRepeatGuide = useRef(false);
 
     const [filter, setFilter] = useState('');
     const [name, setName] = useState('');
@@ -351,19 +354,19 @@ const PickingPage = () => {
                 })
                 .then(data => {
                     if (data.response) {
-                        let coloniasSelect = [];
-                        console.log(data.response);
-                        console.log(typeCity.current, 'ciudad guardada');
-                        let colonias = data.response.asentamiento;
-                        colonias.forEach(col => {
-                            coloniasSelect.push({
-                                label: col,
-                                value: col,
-                            });
-                        });
-                        console.log(coloniasSelect);
-                        neighborhoodSel.current = coloniasSelect;
-                        setNeighborhoodSelect(coloniasSelect);
+                        // console.log(data.response);
+                        // console.log(typeCity.current, 'ciudad guardada');
+                        //let coloniasSelect = [];
+                        // let colonias = data.response.asentamiento;
+                        // colonias.forEach(col => {
+                        //     coloniasSelect.push({
+                        //         label: col,
+                        //         value: col,
+                        //     });
+                        // });
+                        // console.log(coloniasSelect);
+                        // neighborhoodSel.current = coloniasSelect;
+                        // setNeighborhoodSelect(coloniasSelect);
                         //coloniasSelect.map(({value, label}, index) =>  <Option name={label} label={label} value={value} /> )
                         // setNeighborhood({ label: states[stateKey], value: stateKey })
                         //const stateKey = Object.keys(colonias).map( );
@@ -401,7 +404,7 @@ const PickingPage = () => {
                     // Document was found in the cache. If no cached document exists,
                     // an error will be returned to the 'catch' block below.
                     pickedDirection = doc.data();
-                    console.log('Cached document data:', pickedDirection);
+                    //console.log('Cached document data:', pickedDirection);
                 })
                 .catch(function(error) {
                     console.log('Error getting cached document:', error);
@@ -469,7 +472,9 @@ const PickingPage = () => {
     }, [pickups]);
 
     const addPicking = () => {
+        //console.log('all pickups', pickups, 'cp', CP, 'guia', idGuide.current);
         let date = selectDate.date;
+        console.log('date', date);
         let month = (date.getMonth() + 1).toString();
         let day = date.getDate();
         let year = date.getFullYear();
@@ -523,13 +528,7 @@ const PickingPage = () => {
             setErrorNeighborhood(false);
         }
 
-        if (placeRef.trim() === '' || placeRef.length > 20) {
-            swal.fire({
-                title: '!Lo siento!',
-                text: 'El texto puede ser hasta 20 letras y números, favor de verificar.',
-                icon: 'error',
-                confirmButtonText: 'Ok',
-            });
+        if (placeRef.trim() === '') {
             setError(true);
             setErrorPlaceRef(true);
             return;
@@ -556,6 +555,7 @@ const PickingPage = () => {
         ) {
             setErrorHeight(true);
             setError(true);
+            return;
         } else {
             setErrorHeight(false);
         }
@@ -565,8 +565,8 @@ const PickingPage = () => {
             (width <= 0 && typeSupplier.current === 'REDPACK')
         ) {
             setErrorWidth(true);
-
             setError(true);
+            return;
         } else {
             setErrorWidth(false);
         }
@@ -576,15 +576,15 @@ const PickingPage = () => {
             (depth <= 0 && typeSupplier.current === 'REDPACK')
         ) {
             setErrorDepth(true);
-
             setError(true);
+            return;
         } else {
             setErrorDepth(false);
         }
         if (quantity.trim() === '' || !numberWithDecimalRegex.test(quantity) || quantity <= 0) {
             setErrorQuantity(true);
-
             setError(true);
+            return;
         } else {
             setErrorQuantity(false);
         }
@@ -594,13 +594,71 @@ const PickingPage = () => {
             weightTotal <= 0
         ) {
             setErrorWeightTotal(true);
-
             setError(true);
+            return;
         } else {
             setErrorWeightTotal(false);
         }
 
-        //Si el usuario quiere guardar la dirección se guarda en la colleccion de sender_addresses
+        console.log(
+            'all pickups',
+            pickups,
+            'cp',
+            CP,
+            'guia',
+            idGuide.current,
+            pickupDate,
+            'pickupDate',
+        );
+        pickups.forEach(doc => {
+            if (
+                doc.CP === CP &&
+                doc.pickup_date === pickupDate &&
+                doc.shipping_company === typeSupplier.current
+            ) {
+                console.log('mismo cp, mismo dia, misma paqueteria');
+                errorRepeat.current = true;
+            } else {
+                errorRepeat.current = false;
+            }
+            if (doc.guide === idGuide.current) {
+                console.log('misma guia');
+                errorRepeatGuide.current = true;
+            } else {
+                errorRepeatGuide.current = false;
+            }
+        });
+
+        if (errorRepeat.current === true) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'Estas haciendo una recolección para el mismo día, paquetería y CP de alguna ya programada',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+            setError(true);
+            return;
+        } else {
+            errorRepeat.current = false;
+            setError(false);
+        }
+        if (errorRepeatGuide.current === true) {
+            swal.fire({
+                title: '!Lo siento!',
+                text: 'Esta guía ya tiene una recolección programada, favor de verificar',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+            setErrorGuide(true);
+            setError(true);
+            return;
+        } else {
+            errorRepeatGuide.current = false;
+            setErrorGuide(false);
+            setError(false);
+        }
+        //Si el usuario quiere guardar la dirección se guarda en la colleccion de pickups_addresses
         if (checkBox) {
             const duplicateName = directionData.map((searchName, idx) => {
                 return searchName.name;
@@ -689,11 +747,20 @@ const PickingPage = () => {
                     console.log('si hay data');
                     const directionsPickupAdd = db.collection('pickups').add({
                         ID: user.uid,
-                        pickup_date: result.data.pickup_date,
-                        name: name,
+                        pickup_date: pickupDate,
+                        name,
                         guide: idGuide.current,
                         pickup_id: result.data.pickup_id,
                         shipping_company: selectSupplier,
+                        CP,
+                        streetName,
+                        streetNumber,
+                        neighborhood,
+                        placeRef,
+                        phone,
+                        quantity,
+                        weightTotal,
+                        packSize,
                     });
                     directionsPickupAdd
                         .then(function(docRef) {
@@ -723,6 +790,7 @@ const PickingPage = () => {
                     setDepth('');
                     setQuantity('');
                     setWeightTotal('');
+                    setAvailable(false);
                 } else {
                     console.log('lo sentimos ');
                     swal.fire({
@@ -815,7 +883,7 @@ const PickingPage = () => {
                                 <Input
                                     id="guia"
                                     placeholder="Numero de Guia"
-                                    label="Numero de Guia"
+                                    label="Numero de Guia (primeros 8 dígitos para Redpack)"
                                     className={`rainbow-p-around_medium ${
                                         errorGuide ? 'empty-space' : ''
                                     }`}
@@ -904,18 +972,6 @@ const PickingPage = () => {
                                     style={{ flex: '1 1' }}
                                     onChange={e => setNeighborhood(e.target.value)}
                                 />
-                                {/* <Select
-                                    id="colonia"
-                                    readOnly
-                                    label="Colonia"
-                                    options={ !neighborhoodSel.current ? neighborhoodSel.current : ''}
-                                    name="colonia"
-                                    value={neighborhood}
-                                    className='rainbow-p-around_medium'
-                                    style={{ flex: '1 1' }}
-                                    onChange={value => setNeighborhoodSelect(value)}
-                                    required
-                                /> */}
                             </div>
                             <div className="rainbow-align-content_center rainbow-flex_wrap">
                                 <Input
@@ -1064,7 +1120,6 @@ const PickingPage = () => {
                                             formatStyle="large"
                                             label="Fecha de recolección"
                                             value={selectDate.date}
-                                            // style={{ width: '30%' }}
                                             minDate={minDate}
                                             maxDate={maxDate}
                                             className="rainbow-p-around_medium"
@@ -1073,10 +1128,7 @@ const PickingPage = () => {
                                     </Col>
                                 </Row>
                             </div>
-                            <div
-                                className="rainbow-align-content_center rainbow-flex_wrap flex-col"
-                                style={{}}
-                            >
+                            <div className="rainbow-align-content_center rainbow-flex_wrap flex-col">
                                 <h5>Horario de Recolección</h5>
                                 <div className="flex-row">
                                     <TimePicker
@@ -1113,6 +1165,14 @@ const PickingPage = () => {
                     </Row>
                 </StyledRightPane>
             </StyledPaneContainer>
+            <Row className="justify-content-md-center mt-4 ">
+                <p className="p-text" style={styleText}>
+                    {' '}
+                    Toma en cuenta que la hora máxima para la recolección el mismo día es a las 2:00
+                    pm ( varia en cada ciudad), después de este horario se programará para el día
+                    siguiente
+                </p>
+            </Row>
         </StyledSendPage>
     );
 };

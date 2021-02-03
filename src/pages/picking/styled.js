@@ -27,7 +27,10 @@ export const StyledSendPage = styled.div`
             text-align: center;
         }
 
-
+    .p-text {
+        text-align: center;
+        font-size: 1rem;
+    }
 
     @media (max-width: 768px) {
         padding: 3rem 0;
