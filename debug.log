@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 
+=======
+[0126/093053.874:ERROR:directory_reader_win.cc(43)] FindFirstFile: El sistema no puede encontrar la ruta especificada. (0x3)
+>>>>>>> a7dd5ce9ff6bc69cf9860b0ec488d7c446a815ed

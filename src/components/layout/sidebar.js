@@ -502,6 +502,13 @@ export function AccountSidebar() {
                         label="Enviar"
                     />
                 </Link>
+                <Link to="/mi-cuenta/recolecciones">
+                    <StyledSidebarItem
+                        icon={<img src="/assets/icon-send.png" alt="" />}
+                        name="Recolecciones"
+                        label="Recolecciones"
+                    />
+                </Link>
                 <Link to="/mi-cuenta/historial">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-records.png" alt="" />}

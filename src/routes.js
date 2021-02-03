@@ -23,6 +23,7 @@ import ConditionsPage from './pages/conditions';
 import LoginPage from './pages/login';
 import SignUpPage from './pages/signup';
 import Layout from './components/layout';
+import PickingPage from './pages/picking';
 import { StyledMain } from './components/layout/styled';
 import { AccountSidebar, AdminSidebar } from './components/layout/sidebar';
 
@@ -51,6 +52,7 @@ const AppRoutes = () => {
                         <Route path="/mi-cuenta/empaques" component={PackagePage} />
                         <Route path="/mi-cuenta/recargos" component={ChargePage} />
                         <Route path="/mi-cuenta/direcciones" component={DirectionPage} />
+                        <Route path="/mi-cuenta/recolecciones" component={PickingPage} />
                         <Route path="/mi-cuenta/contacto" component={ContactPage} />
                         <Route path="/mi-cuenta/enviar/:idGuia/:step" component={SendPage} />
                         <Route path="/mi-cuenta/enviar" component={SendPage} />

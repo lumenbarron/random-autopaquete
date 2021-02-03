@@ -184,11 +184,11 @@ const LoginPage = () => {
                                 Iniciar sesión
                             </Button>
                         </div>
-                        <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        {/* <div className="rainbow-align-content_center rainbow-flex_wrap">
                             <a href="/login" onClick={restorePass}>
                                 ¿Olvidaste tu constraseña?
                             </a>
-                        </div>
+                        </div> */}
                     </form>
                 </div>
             </StyledLoginSection>
