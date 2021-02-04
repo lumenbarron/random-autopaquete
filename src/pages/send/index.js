@@ -107,17 +107,17 @@ const SendPage = () => {
 
     const saveServiceData = supplierData => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
-        console.log('supplierData', supplierData);
+        // console.log('supplierData', supplierData);
         let costGuia = supplierData.Supplier_cost;
-        console.log('costGuia', costGuia);
+        // console.log('costGuia', costGuia);
         const directionsGuiasCollectionAdd = db
             .collection('guia')
             .doc(idGuiaGlobal.current)
             .update({ status: 'completed', supplierData });
 
         if (supplierData.Supplier === 'autoencargosEconomico') {
-            console.log('autoencargos pdf');
-            console.log(idGuiaGlobal.current);
+            // console.log('autoencargos pdf');
+            // console.log(idGuiaGlobal.current);
             newBalance(costGuia);
             setguiaReady(true);
             setCurrentStepName('descarga');
@@ -126,38 +126,46 @@ const SendPage = () => {
             let myHeaders = new Headers();
             myHeaders.append('Authorization', tokenProd);
             myHeaders.append('Content-Type', 'application/json');
-            console.log('obteniendo los valores de firestore');
+            // console.log('obteniendo los valores de firestore');
             //Asignando los valores desde el doc guia del firestore
             db.collection('guia')
                 .doc(idGuiaGlobal.current)
                 .get()
                 .then(function(doc) {
                     if (doc.exists) {
-                        console.log('Document data:', doc.data());
+                        // console.log('Document data:', doc.data());
                         let data = JSON.stringify({
                             sender: {
                                 contact_name: doc.data().sender_addresses.name,
                                 company_name: doc.data().sender_addresses.name,
-                                street: doc.data().sender_addresses.street_number,
+                                street: doc.data().sender_addresses.street_name
+                                    ? doc.data().sender_addresses.street_name
+                                    : '',
                                 zip_code: doc.data().sender_addresses.codigo_postal,
                                 neighborhood: doc.data().sender_addresses.neighborhood,
                                 city: doc.data().sender_addresses.country,
                                 country: 'MX',
                                 state: doc.data().sender_addresses.state,
-                                street_number: '-',
+                                street_number: doc.data().sender_addresses.street_number
+                                    ? doc.data().sender_addresses.street_number
+                                    : '',
                                 place_reference: doc.data().sender_addresses.place_reference,
                                 phone: doc.data().sender_addresses.phone,
                             },
                             receiver: {
                                 contact_name: doc.data().receiver_addresses.name,
                                 company_name: doc.data().receiver_addresses.name,
-                                street: doc.data().receiver_addresses.street_number,
+                                street: doc.data().receiver_addresses.street_name
+                                    ? doc.data().receiver_addresses.street_name
+                                    : '',
                                 zip_code: doc.data().receiver_addresses.codigo_postal,
                                 neighborhood: doc.data().receiver_addresses.neighborhood,
                                 city: doc.data().receiver_addresses.country,
                                 country: 'MX',
                                 state: doc.data().receiver_addresses.state,
-                                street_number: '-',
+                                street_number: doc.data().receiver_addresses.street_number
+                                    ? doc.data().receiver_addresses.street_number
+                                    : '',
                                 place_reference: doc.data().receiver_addresses.place_reference,
                                 phone: doc.data().receiver_addresses.phone,
                             },
@@ -185,7 +193,7 @@ const SendPage = () => {
                                 amount: doc.data().supplierData.cargos.insurance,
                             },
                         });
-                        console.log('data 2', data);
+                        // console.log('data 2', data);
                         let requestOptions = {
                             method: 'POST',
                             headers: myHeaders,
@@ -198,13 +206,13 @@ const SendPage = () => {
                         )
                             .then(response => response.json())
                             .then(result => {
-                                console.log(result);
+                                // console.log(result);
                                 let responseFetch = Object.keys(result);
                                 if (responseFetch.length === 0) {
                                     setEmptyResult(true);
                                 } else {
-                                    console.log(result.pdf_b64);
-                                    console.log(result.id_shipping);
+                                    // console.log(result.pdf_b64);
+                                    // console.log(result.id_shipping);
                                     db.collection('guia')
                                         .doc(idGuiaGlobal.current)
                                         .update({
@@ -223,24 +231,24 @@ const SendPage = () => {
     };
 
     const newBalance = cost => {
-        console.log('cost', cost);
+        // console.log('cost', cost);
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log(doc.id, ' => ', doc.data());
+                    // console.log(doc.id, ' => ', doc.data());
                     let newBalance = parseFloat(doc.data().saldo) - cost;
                     newBalance = Math.round((newBalance + Number.EPSILON) * 100) / 100;
                     if (newBalance < 0) {
                         return false;
                     }
-                    console.log('newBalance', newBalance);
+                    // console.log('newBalance', newBalance);
                     db.collection('profiles')
                         .doc(doc.id)
                         .update({ saldo: newBalance })
                         .then(() => {
-                            console.log('get it');
+                            // console.log('get it');
                         });
                 });
             })
@@ -266,7 +274,7 @@ const SendPage = () => {
             name,
             creation_date,
         } = ogGuia.data();
-        console.log('ogGuia.data()', ogGuia.data());
+        // console.log('ogGuia.data()', ogGuia.data());
         const newGuia = await db.collection('guia').add({
             ID,
             receiver_addresses: rAddress,

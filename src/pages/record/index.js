@@ -84,7 +84,7 @@ const RecordPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('data guias', doc.data(), 'doc.id', doc.id);
+                    // console.log('data guias', doc.data(), 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -105,7 +105,6 @@ const RecordPage = () => {
     }, []);
 
     useEffect(() => {
-        console.log('filter', filter);
         setTableData(
             recordsData
                 .filter(historyRecord => {
@@ -116,13 +115,13 @@ const RecordPage = () => {
                     }
                 })
                 .map(historyRecord => {
-                    console.log('datos dentro del map', historyRecord);
+                    // console.log('datos dentro del map', historyRecord);
                     return {
                         id: historyRecord.id,
                         date: historyRecord.package.creation_date,
                         guide: historyRecord.rastreo ? historyRecord.rastreo : 'sin guia',
-                        origin: `${historyRecord.sender_addresses.name}, ${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
-                        Destination: `${historyRecord.receiver_addresses.name}, ${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
+                        origin: `${historyRecord.sender_addresses.name}, ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
+                        Destination: `${historyRecord.receiver_addresses.name}, ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
                         weight: historyRecord.package.weight,
                         volumetricWeight: historyRecord.volumetricWeight,
                         service: historyRecord.supplierData.Supplier,

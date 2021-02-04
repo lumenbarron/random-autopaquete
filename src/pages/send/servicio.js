@@ -57,6 +57,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [neighborhoodSender, setNeighborhoodSender] = useState('');
     const [countrySender, setCountrySender] = useState('');
     const [streetNumberSender, setStreetNumberSender] = useState('');
+    const [streetNameSender, setStreetNameSender] = useState('');
     const [phoneSender, setPhoneSender] = useState('');
     // Receiver states
     const [nameReceiver, setNameReceiver] = useState();
@@ -65,6 +66,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [neighborhoodReceiver, setNeighborhoodReceiver] = useState('');
     const [countryReceiver, setCountryReceiver] = useState('');
     const [streetNumberReceiver, setStreetNumberReceiver] = useState('');
+    const [streetNameReceiver, setStreetNameReceiver] = useState('');
     const [phoneReceiver, setPhoneReceiver] = useState('');
     // Package information
     const [namePackage, setNamePackage] = useState('');
@@ -134,14 +136,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
-        console.log('supplier', supplier);
-        console.log('cargos', cargos);
+        // console.log('supplier', supplier);
+        // console.log('cargos', cargos);
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log(doc.id, ' => ', doc.data());
+                    // console.log(doc.id, ' => ', doc.data());
                     // console.log(idGuiaGlobal, 'idGuiaGlobal');
                     if (parseFloat(precioNeto) > parseFloat(doc.data().saldo)) {
                         setError(true);
@@ -152,8 +154,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         if (newBalance < 0) {
                             return false;
                         }
-                        console.log('precioNeto', precioNeto);
-                        console.log('updating data');
+                        // console.log('precioNeto', precioNeto);
+                        // console.log('updating data');
                         addSupplier(supplier, type, { id, precioNeto, ...cargos });
 
                         // console.log('newBalance', newBalance);
@@ -188,7 +190,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     .then(doc => {
                         setError(false);
                         const tarifa = doc.data();
-                        console.log(tarifa);
+                        // console.log(tarifa);
                         const supplierData = {
                             ID: user.uid,
                             Supplier: `${supplier}${type}`,
@@ -197,7 +199,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargos,
                             FinalWeight: getFinalWeight.current,
                         };
-                        console.log(supplierData);
+                        // console.log(supplierData);
                         onSave(supplierData);
                     });
             });
@@ -211,7 +213,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     useEffect(() => {
-        console.log('obteniendo los valores, primer use effect');
         //Asignando los valores desde el doc guia del firestore
         db.collection('guia')
             .doc(idGuiaGlobal)
@@ -223,6 +224,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 getCPSender.current = doc.data().sender_addresses.codigo_postal;
                 setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
                 setCountrySender(doc.data().sender_addresses.country);
+                setStreetNameSender(doc.data().sender_addresses.street_name);
                 setStreetNumberSender(doc.data().sender_addresses.street_number);
                 setPhoneSender(doc.data().sender_addresses.phone);
                 // Get snapshot to receive Receiver information
@@ -231,6 +233,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 getCPReceiver.current = doc.data().receiver_addresses.codigo_postal;
                 setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
                 setCountryReceiver(doc.data().receiver_addresses.country);
+                setStreetNameReceiver(doc.data().receiver_addresses.street_name);
                 setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
                 setPhoneReceiver(doc.data().receiver_addresses.phone);
                 // Get snapshot to receive package information
@@ -248,7 +251,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         //Si el código postal coincide con los códigos postales de Autoencargos se agrega al supplierAvailability
-        console.log('corroborando codigo para autoencargos, segundo use effect');
+        // console.log('corroborando codigo para autoencargos, segundo use effect');
         Promise.all([
             fetch(
                 'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara',
@@ -302,11 +305,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         });
                         //setHasActivatedSuppliers asigna a hasActivatedSuppliers el numero de doc de rate para que se muestren los provedores
                         setHasActivatedSuppliers(querySnapshot.size > 0);
-                        console.log(
-                            'numero de tarifas que tiene este usuario :',
-                            querySnapshot.size,
-                        );
-                        console.log('todas las tarifas del cliente', allRatesData.current);
+                        // console.log(
+                        //     'numero de tarifas que tiene este usuario :',
+                        //     querySnapshot.size,
+                        // );
+                        // console.log('todas las tarifas del cliente', allRatesData.current);
                         //Se verifica que si las tarifas tienen el proveedor asignado
                         allRatesData.current.forEach(supplier => {
                             if (
@@ -339,38 +342,45 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     }, [user]);
 
     const getDataGuia = async delivery => {
-        console.log('asignando los valores');
         await db
             .collection('guia')
             .doc(idGuiaGlobal)
             .get()
             .then(function(doc) {
                 if (doc.exists) {
-                    console.log('Document data:', doc.data());
+                    // console.log('Document data:', doc.data());
                     dataShipping.current = JSON.stringify({
                         sender: {
                             contact_name: doc.data().sender_addresses.name,
                             company_name: doc.data().sender_addresses.name,
-                            street: doc.data().sender_addresses.street_number,
+                            street: doc.data().sender_addresses.street_name
+                                ? doc.data().sender_addresses.street_name
+                                : '',
                             zip_code: doc.data().sender_addresses.codigo_postal,
                             neighborhood: doc.data().sender_addresses.neighborhood,
                             city: doc.data().sender_addresses.country,
                             country: 'MX',
                             state: doc.data().sender_addresses.state,
-                            street_number: '-',
+                            street_number: doc.data().sender_addresses.street_number
+                                ? doc.data().sender_addresses.street_number
+                                : '',
                             place_reference: doc.data().sender_addresses.place_reference,
                             phone: doc.data().sender_addresses.phone,
                         },
                         receiver: {
                             contact_name: doc.data().receiver_addresses.name,
                             company_name: doc.data().receiver_addresses.name,
-                            street: doc.data().receiver_addresses.street_number,
+                            street: doc.data().receiver_addresses.street_name
+                                ? doc.data().receiver_addresses.street_name
+                                : '',
                             zip_code: doc.data().receiver_addresses.codigo_postal,
                             neighborhood: doc.data().receiver_addresses.neighborhood,
                             city: doc.data().receiver_addresses.country,
                             country: 'MX',
                             state: doc.data().receiver_addresses.state,
-                            street_number: '-',
+                            street_number: doc.data().receiver_addresses.street_number
+                                ? doc.data().receiver_addresses.street_number
+                                : '',
                             place_reference: doc.data().receiver_addresses.place_reference,
                             phone: doc.data().receiver_addresses.phone,
                         },
@@ -415,9 +425,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         ],
                     });
 
-                    console.log(allRatesData.current.length, 'allRatesData');
+                    // console.log(allRatesData.current.length, 'allRatesData');
                     fetchGuia(dataShipping.current, delivery);
-                    console.log('dataShipping.current', dataShipping.current);
+                    // console.log('dataShipping.current', dataShipping.current);
                 } else {
                     console.log('Error getting document:', error);
                 }
@@ -429,7 +439,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     // }
 
     const fetchGuia = async (data, delivery) => {
-        console.log('haciendo la peticion al broker');
+        // console.log('haciendo la peticion al broker');
 
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
@@ -448,8 +458,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         // .then(([res1, res2]) =>
         //     Promise.all([res1.json(), res2.json()]),
         // )
+
         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
-        console.log('url', urlRequest);
+        // console.log('url', urlRequest);
 
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
@@ -459,7 +470,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     console.log('numero de provedores disponibles', result.length);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
                     let suppliersGeneral = result;
-                    console.log('suppliersGeneral', suppliersGeneral);
+                    // console.log('suppliersGeneral', suppliersGeneral);
                     if (cpsAvailabilityAutoencargos.current === true) {
                         console.log('aqui si hay autoencargos');
                         let autoencargos = {
@@ -506,7 +517,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     useEffect(() => {
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
-        console.log('todos los provedores activos', supplierAvailability);
+        // console.log('todos los provedores activos', supplierAvailability);
 
         //Validaciones del peso
         let pricedWeight = Math.ceil(weight);
@@ -515,22 +526,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
 
         if (volumetricWeight > weight) {
-            console.log('el peso volumetrico es mayor que el peso declarado');
+            // console.log('el peso volumetrico es mayor que el peso declarado');
             pricedWeight = volumetricWeight;
-            console.log('pricedWeight', pricedWeight);
+            // console.log('pricedWeight', pricedWeight);
             setFinalWeight(pricedWeight);
             getFinalWeight.current = pricedWeight;
         } else {
             setFinalWeight(pricedWeight);
             getFinalWeight.current = pricedWeight;
-            console.log('pricedWeight', pricedWeight);
+            // console.log('pricedWeight', pricedWeight);
         }
 
         //Validaciones de valor asegurado
         const getInsurancePrice = company => {
             if (contentValue === '') return 0;
             const baseValue = parseInt(contentValue, 10) * 0.02;
-            console.log('valor asegurado ', baseValue);
+            // console.log('valor asegurado ', baseValue);
             const extraValue = 40;
             if (company === 'autoencargos' && baseValue > 0) {
                 return Math.max(baseValue, 20);
@@ -568,7 +579,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ? 150
                     : 0;
         } else {
-            console.log('no zona extendida extendedAreaFedexDiaS');
+            // console.log('no zona extendida extendedAreaFedexDiaS');
         }
         if (typeof supplierAvailability.NACIONALECONOMICO !== 'undefined') {
             extendedAreaFedexEco =
@@ -576,19 +587,19 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ? 150
                     : 0;
         } else {
-            console.log('no zona extendida extendedAreaFedexEco');
+            // console.log('no zona extendida extendedAreaFedexEco');
         }
         if (typeof supplierAvailability.EXPRESS !== 'undefined') {
             extendedAreaRedpackExp =
                 typeof supplierAvailability.EXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
         } else {
-            console.log('no zona extendida extendedAreaRedpackExp');
+            // console.log('no zona extendida extendedAreaRedpackExp');
         }
         if (typeof supplierAvailability.ECOEXPRESS !== 'undefined') {
             extendedAreaRedpackEco =
                 typeof supplierAvailability.ECOEXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
         } else {
-            console.log('no zona extendida extendedAreaRedpackEco');
+            // console.log('no zona extendida extendedAreaRedpackEco');
         }
 
         let getFinalPriceFedexDiaS = { finalPrice: 0, supplier: 'fedexDiaSiguiente' };
@@ -605,7 +616,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 const kgsExtraTarifas = {};
                 let precioTotal;
                 querySnapshot.forEach(doc => {
-                    console.log(doc.data());
+                    // console.log(doc.data());
                     const { entrega, precio, max, min, kgExtra } = doc.data();
 
                     // Encontramos si hay tarifas que apliquen directo al paquete
@@ -614,7 +625,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         parseInt(min, 10) <= parseInt(pricedWeight, 10) &&
                         parseInt(max, 10) >= parseInt(pricedWeight, 10)
                     ) {
-                        console.log('Encontramos si hay tarifas que apliquen directo al paquete');
+                        // console.log('Encontramos si hay tarifas que apliquen directo al paquete');
                         if (entrega === 'fedexDiaSiguiente') {
                             getFinalPriceFedexDiaS.finalPrice = parseInt(precio, 10);
                         }
@@ -728,46 +739,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             });
                         return;
                     }
-                    // else
-                    //si el peso es mayor al  rango maximo de la tarifa hay kilos extras
-                    // if (
-                    //     parseInt(pricedWeight, 10) > parseInt(max, 10) &&
-                    //     !getFinalPrice.current &&
-                    //     !kgExtra
-                    // ) {
-                    //     console.log('entrando a kilos extra');
-                    //     console.log(
-                    //         'precioTotal',
-                    //         precioTotal,
-                    //         'getFinalPrice',
-                    //         getFinalPrice.current,
-                    //     );
-                    //     const diferencia =
-                    //         (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
-                    //     console.log('diferencia', diferencia);
-                    //     console.log(segundaMejorTarifa[entrega]);
-                    //     if (
-                    //         !segundaMejorTarifa[entrega] ||
-                    //         segundaMejorTarifa[entrega].diferencia > diferencia
-                    //     ) {
-                    //         precioTotal = parseInt(precio, 10) * quantity;
-                    //         if (getFinalPrice.current > precioTotal) {
-                    //             precioTotal = getFinalPrice.current;
-                    //         }
-                    //         console.log('precioTotal de entrega', precioTotal);
-                    //         segundaMejorTarifa[entrega] = {
-                    //             id: doc.id,
-                    //             guia: precioTotal,
-                    //             diferencia,
-                    //         };
-                    //         console.log('tarifas de precio extra', segundaMejorTarifa);
-                    //         return;
-                    //     }
-                    // }
-
                     if (parseInt(pricedWeight, 10) > parseInt(max, 10) && !kgExtra) {
-                        console.log('entrando a kilos extra');
-                        console.log('precioTotal', precioTotal, 'entrega', entrega);
+                        // console.log('entrando a kilos extra');
+                        // console.log('precioTotal', precioTotal, 'entrega', entrega);
                         let diferencia =
                             (parseInt(pricedWeight, 10) - parseInt(max, 10)) * quantity;
                         if (
@@ -777,9 +751,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             precioTotal = parseInt(precio, 10);
 
                             if (getFinalPriceFedexDiaS.supplier === entrega) {
-                                console.log('es el mismo proveedor fedex DS');
+                                // console.log('es el mismo proveedor fedex DS');
                                 if (getFinalPriceFedexDiaS.finalPrice > precioTotal) {
-                                    console.log('la tarifa directa es mas alta fedex DS');
+                                    // console.log('la tarifa directa es mas alta fedex DS');
                                     precioTotal = getFinalPriceFedexDiaS.finalPrice;
                                     diferencia = 0;
                                 } else {
@@ -789,9 +763,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             }
 
                             if (getFinalPriceFedexEco.supplier === entrega) {
-                                console.log('es el mismo proveedor fedex eco');
+                                // console.log('es el mismo proveedor fedex eco');
                                 if (getFinalPriceFedexEco.finalPrice > precioTotal) {
-                                    console.log('la tarifa directa es mas alta fedex eco');
+                                    // console.log('la tarifa directa es mas alta fedex eco');
                                     precioTotal = getFinalPriceFedexEco.finalPrice;
                                     diferencia = 0;
                                 } else {
@@ -801,9 +775,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             }
 
                             if (getFinalPriceRedExp.supplier === entrega) {
-                                console.log('es el mismo proveedor redpack exp');
+                                // console.log('es el mismo proveedor redpack exp');
                                 if (getFinalPriceRedExp.finalPrice > precioTotal) {
-                                    console.log('la tarifa directa es mas alta redpack exp');
+                                    // console.log('la tarifa directa es mas alta redpack exp');
                                     precioTotal = getFinalPriceRedExp.finalPrice;
                                     diferencia = 0;
                                 } else {
@@ -813,9 +787,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             }
 
                             if (getFinalPriceRedEco.supplier === entrega) {
-                                console.log('es el mismo proveedor redpack eco');
+                                // console.log('es el mismo proveedor redpack eco');
                                 if (getFinalPriceRedEco.finalPrice > precioTotal) {
-                                    console.log('la tarifa directa es mas alta redpack eco');
+                                    // console.log('la tarifa directa es mas alta redpack eco');
                                     precioTotal = getFinalPriceRedEco.finalPrice;
                                     diferencia = 0;
                                 } else {
@@ -825,9 +799,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             }
 
                             if (getFinalPriceAuto.supplier === entrega) {
-                                console.log('es el mismo proveedor auto');
+                                // console.log('es el mismo proveedor auto');
                                 if (getFinalPriceAuto.finalPrice > precioTotal) {
-                                    console.log('la tarifa directa es mas alta auto');
+                                    // console.log('la tarifa directa es mas alta auto');
                                     precioTotal = getFinalPriceAuto.finalPrice;
                                     diferencia = 0;
                                 } else {
@@ -836,12 +810,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 }
                             }
 
-                            console.log(
-                                'precioTotal de entrega',
-                                precioTotal,
-                                'diferencia',
-                                diferencia,
-                            );
+                            // console.log(
+                            //     'precioTotal de entrega',
+                            //     precioTotal,
+                            //     'diferencia',
+                            //     diferencia,
+                            // );
                             segundaMejorTarifa[entrega] = {
                                 id: doc.id,
                                 guia: precioTotal,
@@ -857,18 +831,18 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             kgExtra,
                             10,
                         );
-                        console.log('tiene tarifa de kilos extra', kgsExtraTarifas);
+                        // console.log('tiene tarifa de kilos extra', kgsExtraTarifas);
                         return;
                     }
 
                     // Si el peso es menor al mínimo de kgs de la tarifa, no aplica
                     if (parseInt(pricedWeight, 10) < parseInt(min, 10)) {
-                        console.log('el peso es menor al mínimo de kgs de la tarifa, no aplica');
+                        // console.log('el peso es menor al mínimo de kgs de la tarifa, no aplica');
                         return;
                     }
                 });
                 Object.keys(segundaMejorTarifa).forEach(entrega => {
-                    console.log('entrando a los objects keys');
+                    // console.log('entrando a los objects keys');
                     const tarifa = segundaMejorTarifa[entrega];
                     let cargoExtra;
                     let cargoExtraHeight;
@@ -897,14 +871,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     }
 
                     const precio = tarifa.guia + kilosExtra + cargoExtra;
-                    console.log(
-                        'precio final',
-                        precio,
-                        tarifa.guia,
-                        kilosExtra,
-                        cargoExtra,
-                        cargoExtraHeight,
-                    );
+                    // console.log(
+                    //     'precio final',
+                    //     precio,
+                    //     tarifa.guia,
+                    //     kilosExtra,
+                    //     cargoExtra,
+                    //     cargoExtraHeight,
+                    // );
                     if (entrega === 'fedexDiaSiguiente')
                         setSupplierCostFedexDiaS({
                             id: tarifa.id,

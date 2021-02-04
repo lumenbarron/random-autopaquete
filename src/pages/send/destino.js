@@ -95,6 +95,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
     const [errorName, setErrorName] = useState(false);
     const [errorCP, setErrorCP] = useState(false);
     const [errorStreetNumber, setErrorStreetNumber] = useState(false);
+    const [errorStreetName, setErrorStreetName] = useState(false);
     const [errorNeighborhood, setErrorNeighborhood] = useState(false);
     const [errorCountry, setErrorCountry] = useState(false);
     const [errorState, setErrorState] = useState(false);
@@ -110,6 +111,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
     const [country, setCountry] = useState('');
     const [state, setState] = useState('');
     const [streetNumber, setStreetNumber] = useState('');
+    const [streetName, setStreetName] = useState('');
     const [placeRef, setPlaceRef] = useState('');
     const [phone, setPhone] = useState('');
 
@@ -135,6 +137,11 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                                 value: doc.data().receiver_addresses.state,
                                 label: states[doc.data().receiver_addresses.state],
                             });
+                            setStreetName(
+                                doc.data().sender_addresses.street_name
+                                    ? doc.data().sender_addresses.street_name
+                                    : '',
+                            );
                             setStreetNumber(doc.data().receiver_addresses.street_number);
                             setPlaceRef(doc.data().receiver_addresses.place_reference);
                             setPhone(doc.data().receiver_addresses.phone);
@@ -163,7 +170,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                 ...doc.data(),
             };
         });
-        console.log('receiver_addresses', directionDataa);
+        // console.log('receiver_addresses', directionDataa);
         setDirectionDataa(directionDataa);
     }
 
@@ -231,6 +238,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                         setNeighborhood(doc.data().neighborhood);
                         setCountry(doc.data().country);
                         setState({ value: doc.data().state, label: states[doc.data().state] });
+                        setStreetName(doc.data().street_name ? doc.data().street_name : '');
                         setStreetNumber(doc.data().street_number);
                         setPlaceRef(doc.data().place_reference);
                         setPhone(doc.data().phone);
@@ -246,6 +254,8 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
     }, [value]);
 
     const registerDirecction = () => {
+        let fullStreet = streetName.concat(' ', streetNumber);
+
         if (name.trim() === '' || !addressRegex.test(name) || name.length > 35) {
             swal.fire({
                 title: '!Lo siento!',
@@ -267,15 +277,25 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorCP(false);
         }
-        if (
-            streetNumber.trim() === '' ||
-            !addressRegex.test(streetNumber) ||
-            streetNumber.length > 35
-        ) {
+        if (streetName.trim() === '' || !addressRegex.test(streetName)) {
             swal.fire({
                 title: '!Lo siento!',
                 text:
-                    'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                    'El texto tiene que ser sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+            setErrorStreetName(true);
+            setError(true);
+            return;
+        } else {
+            setErrorStreetName(false);
+        }
+        if (streetNumber.trim() === '' || !addressRegex.test(streetNumber)) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'El texto tiene que ser sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
                 icon: 'error',
                 confirmButtonText: 'Ok',
             });
@@ -284,6 +304,20 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
             return;
         } else {
             setErrorStreetNumber(false);
+        }
+        if (fullStreet.length > 35) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+            setErrorStreetName(true);
+            setError(true);
+            return;
+        } else {
+            setErrorStreetName(false);
         }
         if (
             neighborhood.trim() === '' ||
@@ -350,6 +384,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
             neighborhood,
             country,
             state: state.value,
+            street_name: streetName,
             street_number: streetNumber,
             place_reference: placeRef,
             phone,
@@ -364,6 +399,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                 neighborhood,
                 country,
                 state: state.value,
+                street_name: streetName,
                 street_number: streetNumber,
                 place_reference: placeRef,
                 phone,
@@ -441,8 +477,19 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
                         id="domicilio"
-                        label="Nombre de la calle, número exterior e interior"
+                        label="Nombre de la calle"
                         name="domicilio"
+                        value={streetName}
+                        className={`rainbow-p-around_medium ${
+                            errorStreetName ? 'empty-space' : ''
+                        }`}
+                        style={{ flex: '1 1' }}
+                        onChange={e => setStreetName(e.target.value)}
+                    />
+                    <Input
+                        id="num-domicilio"
+                        label="Número"
+                        name="num-domicilio"
                         value={streetNumber}
                         className={`rainbow-p-around_medium ${
                             errorStreetNumber ? 'empty-space' : ''

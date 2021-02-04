@@ -87,14 +87,13 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     const db = firebase.firestore();
     const user = useUser();
     const creationDate = new Date();
-    console.log('creationDate', creationDate);
 
     const [error, setError] = useState(false);
-
     const [errorName, setErrorName] = useState(false);
     const [errorNameDuplicate, setErrorNameDuplicate] = useState(false);
     const [errorCP, setErrorCP] = useState(false);
     const [errorStreetNumber, setErrorStreetNumber] = useState(false);
+    const [errorStreetName, setErrorStreetName] = useState(false);
     const [errorNeighborhood, setErrorNeighborhood] = useState(false);
     const [errorCountry, setErrorCountry] = useState(false);
     const [errorState, setErrorState] = useState(false);
@@ -102,19 +101,16 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     const [errorPlaceRef, setErrorPlaceRef] = useState(false);
     const [errorPhone, setErrorPhone] = useState(false);
     const [errorCredits, setErrorCredits] = useState(false);
-
     const [directionData, setDirectionData] = useState([]);
-
     const [value, setValue] = useState();
-
     const [filter, setFilter] = useState('');
-
     const [name, setName] = useState('');
     const [CP, setCP] = useState('');
     const [neighborhood, setNeighborhood] = useState('');
     const [country, setCountry] = useState('');
     const [state, setState] = useState({ label: '', value: '' });
     const [streetNumber, setStreetNumber] = useState('');
+    const [streetName, setStreetName] = useState('');
     const [placeRef, setPlaceRef] = useState('');
     const [phone, setPhone] = useState('');
 
@@ -144,6 +140,11 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                                 value: doc.data().sender_addresses.state,
                                 label: states[doc.data().sender_addresses.state],
                             });
+                            setStreetName(
+                                doc.data().sender_addresses.street_name
+                                    ? doc.data().sender_addresses.street_name
+                                    : '',
+                            );
                             setStreetNumber(doc.data().sender_addresses.street_number);
                             setPlaceRef(doc.data().sender_addresses.place_reference);
                             setPhone(doc.data().sender_addresses.phone);
@@ -204,7 +205,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
             };
         });
         setDirectionData(directionData);
-        console.log('sender_addresses', directionData);
+        //console.log('sender_addresses', directionData);
     }
 
     const options = directionData
@@ -239,7 +240,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                     // Document was found in the cache. If no cached document exists,
                     // an error will be returned to the 'catch' block below.
                     pickedDirection = doc.data();
-                    console.log('Cached document data:', pickedDirection);
+                    //console.log('Cached document data:', pickedDirection);
                 })
                 .catch(function(error) {
                     console.log('Error getting cached document:', error);
@@ -253,6 +254,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                         setNeighborhood(doc.data().neighborhood);
                         setCountry(doc.data().country);
                         setState({ value: doc.data().state, label: states[doc.data().state] });
+                        setStreetName(doc.data().street_name ? doc.data().street_name : '');
                         setStreetNumber(doc.data().street_number);
                         setPlaceRef(doc.data().place_reference);
                         setPhone(doc.data().phone);
@@ -275,7 +277,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log('primer data', doc.data(), doc.id);
+                        // console.log('primer data', doc.data(), doc.id);
                         setUserName(doc.data().name);
                         setStatus(doc.data().status);
                         if (doc.data().persona === 'Física') {
@@ -294,6 +296,8 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     }, []);
 
     const registerDirecction = () => {
+        let fullStreet = streetName.concat(' ', streetNumber);
+        // console.log('fullStreet', fullStreet, fullStreet.length)
         //Se validan todos los inputs uno por uno
         if (name.trim() === '' || !addressRegex.test(name) || name.length > 35) {
             swal.fire({
@@ -316,15 +320,25 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorCP(false);
         }
-        if (
-            streetNumber.trim() === '' ||
-            !addressRegex.test(streetNumber) ||
-            streetNumber.length > 35
-        ) {
+        if (streetName.trim() === '' || !addressRegex.test(streetName)) {
             swal.fire({
                 title: '!Lo siento!',
                 text:
-                    'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                    'El texto tiene que ser sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+            setErrorStreetName(true);
+            setError(true);
+            return;
+        } else {
+            setErrorStreetName(false);
+        }
+        if (streetNumber.trim() === '' || !addressRegex.test(streetNumber)) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'El texto tiene que ser sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
                 icon: 'error',
                 confirmButtonText: 'Ok',
             });
@@ -333,6 +347,20 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
             return;
         } else {
             setErrorStreetNumber(false);
+        }
+        if (fullStreet.length > 35) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+            setErrorStreetName(true);
+            setError(true);
+            return;
+        } else {
+            setErrorStreetName(false);
         }
         if (
             neighborhood.trim() === '' ||
@@ -415,6 +443,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 neighborhood,
                 country,
                 state: state.value,
+                street_name: streetName,
                 street_number: streetNumber,
                 place_reference: placeRef,
                 phone,
@@ -443,6 +472,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 neighborhood,
                 country,
                 state: state.value,
+                street_name: streetName,
                 street_number: streetNumber,
                 place_reference: placeRef,
                 phone,
@@ -546,8 +576,19 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
                         id="domicilio"
-                        label="Nombre de la calle, número exterior e interior"
+                        label="Nombre de la calle"
                         name="domicilio"
+                        value={streetName}
+                        className={`rainbow-p-around_medium ${
+                            errorStreetName ? 'empty-space' : ''
+                        }`}
+                        style={{ flex: '1 1' }}
+                        onChange={e => setStreetName(e.target.value)}
+                    />
+                    <Input
+                        id="num-domicilio"
+                        label="Número"
+                        name="num-domicilio"
                         value={streetNumber}
                         className={`rainbow-p-around_medium ${
                             errorStreetNumber ? 'empty-space' : ''
