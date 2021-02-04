@@ -138,7 +138,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                                 label: states[doc.data().receiver_addresses.state],
                             });
                             setStreetName(
-                                doc.data().sender_addresses.street_name
+                                doc.data().receiver_addresses.street_name
                                     ? doc.data().sender_addresses.street_name
                                     : '',
                             );
