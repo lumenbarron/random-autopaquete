@@ -25,7 +25,6 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
     const history = useHistory();
 
     useEffect(() => {
-        console.log('este usde effect');
         const prepareDownload = () => {
             db.collection('guia')
                 .doc(idGuiaGlobal)
@@ -34,14 +33,6 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                     allData.current = doc.data();
                     company.current = doc.data().razon_social;
                     rastreo.current = doc.data().rastreo;
-                    console.log(
-                        'data descarga',
-                        allData.current,
-                        'razon social',
-                        company.current,
-                        'rastreo',
-                        rastreo.current,
-                    );
                     if (data.supplierData.Supplier === 'autoencargosEconomico') {
                         setPDFAuto(true);
                     }

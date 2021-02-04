@@ -504,7 +504,7 @@ export function AccountSidebar() {
                 </Link>
                 <Link to="/mi-cuenta/recolecciones">
                     <StyledSidebarItem
-                        icon={<img src="/assets/icon-send.png" alt="" />}
+                        icon={<img src="/assets/icon-recoleccion.svg" alt="" />}
                         name="Recolecciones"
                         label="Recolecciones"
                     />
