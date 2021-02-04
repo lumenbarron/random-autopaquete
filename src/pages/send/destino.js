@@ -137,11 +137,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                                 value: doc.data().receiver_addresses.state,
                                 label: states[doc.data().receiver_addresses.state],
                             });
-                            setStreetName(
-                                doc.data().receiver_addresses.street_name
-                                    ? doc.data().sender_addresses.street_name
-                                    : '',
-                            );
+                            setStreetName(doc.data().receiver_addresses.street_name);
                             setStreetNumber(doc.data().receiver_addresses.street_number);
                             setPlaceRef(doc.data().receiver_addresses.place_reference);
                             setPhone(doc.data().receiver_addresses.phone);
@@ -238,7 +234,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                         setNeighborhood(doc.data().neighborhood);
                         setCountry(doc.data().country);
                         setState({ value: doc.data().state, label: states[doc.data().state] });
-                        setStreetName(doc.data().street_name ? doc.data().street_name : '');
+                        setStreetName(doc.data().street_name);
                         setStreetNumber(doc.data().street_number);
                         setPlaceRef(doc.data().place_reference);
                         setPhone(doc.data().phone);

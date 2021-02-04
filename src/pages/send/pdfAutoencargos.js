@@ -14,6 +14,7 @@ export const PdfAutoencargos = data => {
     const [CPSender, setCPSender] = useState('');
     const [neighborhoodSender, setNeighborhoodSender] = useState('');
     const [countrySender, setCountrySender] = useState('');
+    const [streetNameSender, setStreetNameSender] = useState('');
     const [streetNumberSender, setStreetNumberSender] = useState('');
     const [phoneSender, setPhoneSender] = useState('');
     const [refSenderStreet, setRefSenderStreet] = useState('');
@@ -23,6 +24,7 @@ export const PdfAutoencargos = data => {
     const [CPReceiver, setCPReceiver] = useState('');
     const [neighborhoodReceiver, setNeighborhoodReceiver] = useState('');
     const [countryReceiver, setCountryReceiver] = useState('');
+    const [streetNameReceiver, setStreetNameReceiver] = useState('');
     const [streetNumberReceiver, setStreetNumberReceiver] = useState('');
     const [phoneReceiver, setPhoneReceiver] = useState('');
     const [refReceiverStreet, setRefReceiverStreet] = useState('');
@@ -47,6 +49,7 @@ export const PdfAutoencargos = data => {
         setDate(allData.package.creation_date);
         //Sender information
         setNameSender(allData.name);
+        setStreetNameSender(allData.sender_addresses.street_name);
         setStreetNumberSender(allData.sender_addresses.street_number);
         setNeighborhoodSender(allData.sender_addresses.neighborhood);
         setCountrySender(allData.sender_addresses.country);
@@ -55,6 +58,7 @@ export const PdfAutoencargos = data => {
         setRefSenderStreet(allData.sender_addresses.place_reference);
         //Receiver information
         setNameReceiver(allData.receiver_addresses.name);
+        setStreetNameReceiver(allData.receiver_addresses.street_name);
         setStreetNumberReceiver(allData.receiver_addresses.street_number);
         setNeighborhoodReceiver(allData.receiver_addresses.neighborhood);
         setCountryReceiver(allData.receiver_addresses.country);
@@ -71,7 +75,6 @@ export const PdfAutoencargos = data => {
         }
 
         setTimeout(() => {
-            console.log('settime');
             setRenderReady(true);
         }, 5000);
     }, []);
@@ -98,6 +101,8 @@ export const PdfAutoencargos = data => {
                                         origin={'ORIGEN'}
                                         name={nameSender}
                                         adress={
+                                            streetNameSender +
+                                            `,` +
                                             streetNumberSender +
                                             `,` +
                                             neighborhoodSender +
@@ -113,6 +118,8 @@ export const PdfAutoencargos = data => {
                                         origin={'DESTINO'}
                                         name={nameReceiver}
                                         adress={
+                                            streetNameReceiver +
+                                            `,` +
                                             streetNumberReceiver +
                                             `,` +
                                             neighborhoodReceiver +
