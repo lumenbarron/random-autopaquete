@@ -128,10 +128,11 @@ export default function AllGuides({}) {
         db.collection('guia')
             .where('status', '==', 'completed')
             .orderBy('creation_date', 'desc')
+            .limit(150)
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.id, doc.data().volumetricWeight);
+                    //console.log(doc.id, doc.data().razon_social);
                     // if ( typeof doc.data().rastreo === 'string' ) {
                     // console.log('holi')
                     // db.collection('guia')

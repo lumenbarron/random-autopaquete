@@ -80,7 +80,7 @@ export default function AddCredito({ user }) {
 
     useEffect(() => {
         const reloadVoucher = () => {
-            db.collection('addCredit')
+            db.collection('voucher')
                 .where('ID', '==', user.ID)
                 .orderBy('create_date', 'desc')
                 .onSnapshot(handleVouncher);
@@ -96,7 +96,7 @@ export default function AddCredito({ user }) {
                 ...doc.data(),
             });
         });
-        console.log('add data', voucherData);
+        //console.log('add data', voucherData);
         setVouncherData(voucherData);
     }
 
