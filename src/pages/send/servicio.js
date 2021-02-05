@@ -348,7 +348,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .get()
             .then(function(doc) {
                 if (doc.exists) {
-                    console.log('Document data:', doc.data());
+                    // console.log('Document data:', doc.data());
                     dataShipping.current = JSON.stringify({
                         sender: {
                             contact_name: doc.data().sender_addresses.name,

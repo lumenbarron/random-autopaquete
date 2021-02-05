@@ -195,7 +195,7 @@ export default function AllGuides({}) {
                             : historyRecord.label,
                 };
             }),
-            console.log(history),
+            // console.log(history),
         );
     }, [history]);
 
@@ -219,7 +219,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('guias del cliente ' + name + ':', doc.data());
+                    // console.log('guias del cliente ' + name + ':', doc.data());
                     dataGuiasEachUser.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -239,7 +239,7 @@ export default function AllGuides({}) {
                     setSelectSupplier('');
                     setSelectDate({ date: new Date() });
                 }
-                console.log('dataGuiasEachUser', dataGuiasEachUser);
+                // console.log('dataGuiasEachUser', dataGuiasEachUser);
             });
     };
 
@@ -252,7 +252,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('guias del cliente ' + supplier + ':', doc.data());
+                    // console.log('guias del cliente ' + supplier + ':', doc.data());
                     dataGuiasBySupplier.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -272,7 +272,7 @@ export default function AllGuides({}) {
                     setSelectName('');
                     setSelectDate({ date: new Date() });
                 }
-                console.log('dataGuiasBySupplier', dataGuiasBySupplier);
+                // console.log('dataGuiasBySupplier', dataGuiasBySupplier);
             });
     };
 
@@ -319,7 +319,7 @@ export default function AllGuides({}) {
     };
 
     const getIdGuia = trackingNumber => {
-        console.log(trackingNumber);
+        // console.log(trackingNumber);
         let dataGuia = [];
         if (trackingNumber == '' || !trackingNumber) {
             swal.fire(
@@ -333,7 +333,7 @@ export default function AllGuides({}) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.data());
+                        // console.log(doc.data());
                         dataGuia.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(
@@ -361,7 +361,7 @@ export default function AllGuides({}) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.data());
+                        // console.log(doc.data());
                         dataGuia.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(

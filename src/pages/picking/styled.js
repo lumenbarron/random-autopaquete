@@ -106,6 +106,17 @@ const StyledPane = styled.div.attrs(props => {
 
 export const StyledLeftPane = styled(StyledPane)`
     flex: 1 1;
+
+    .timeline {
+        h1 {
+            color: rgba(63, 73, 84, 1);
+            font-size: 0.8rem;
+            padding: 0;
+        }
+        p {
+            font-size: 0.8rem;
+        }
+    }
 `;
 
 export const StyledRightPane = styled(StyledPane)`
@@ -129,6 +140,8 @@ export const StyledRightPane = styled(StyledPane)`
     }
     .flex-col {
         flex-direction: column;
+        text-align: center;
+        width: 50%;
     }
     .flex-row {
         flex-direction: row;

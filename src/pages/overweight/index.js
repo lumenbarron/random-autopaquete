@@ -39,7 +39,7 @@ const OverweightPage = () => {
     function handleOverWeight(snapshot) {
         let overWeightSorted = [];
         const overWeightData = snapshot.docs.map(doc => {
-            console.log(doc.data());
+            // console.log(doc.data());
             return {
                 id: doc.id,
                 ...doc.data(),
@@ -51,6 +51,7 @@ const OverweightPage = () => {
 
     const data = overWeightData.map((overWeight, idx) => {
         return {
+            id: overWeight.id,
             date: overWeight.fecha.toDate().toLocaleDateString()
                 ? overWeight.fecha.toDate().toLocaleDateString()
                 : 'sin fecha',

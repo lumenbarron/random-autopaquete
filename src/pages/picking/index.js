@@ -6,16 +6,16 @@ import {
     Button,
     Picklist,
     Option,
-    Select,
-    Column,
     TimePicker,
-    Badge,
     DatePicker,
     TableWithBrowserPagination,
+    ActivityTimeline,
+    Avatar,
+    TimelineMarker,
 } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Row, Col } from 'react-bootstrap';
 import {
     StyledLeftPane,
@@ -75,59 +75,7 @@ const StatePicklistOptions = () => {
     return allStates;
 };
 
-// const NeighborhoodPicklistOptions = () => {
-//     neighborhoodSelect.map(code => {
-//         return <Option key={code} value={code} name={code} label={code} />;
-//     });
-
-//     return allStates;
-// };
-
-const AddressRadioOption = ({ directions }) => {
-    let idPickup;
-    const {
-        neighborhood,
-        Referencias_lugar,
-        Telefono,
-        street_number,
-        country,
-        state,
-        codigo_postal,
-        name,
-    } = directions;
-
-    idPickup = directions.id;
-
-    return (
-        <>
-            <span>
-                <b>{name}</b>
-            </span>
-            <p>{street_number}</p>
-            <p>{neighborhood}</p>
-            <p>{state}</p>
-            <p>{country}</p>
-            <p>C.P. {codigo_postal}</p>
-            <p>Tel {Telefono}</p>
-        </>
-    );
-};
-
-const containerStyles = { height: '95%', margin: 0 };
-
 const styleText = { textAlign: 'center' };
-
-const StyledTable = styled(TableWithBrowserPagination)`
-    td[data-label='Guía'] {
-        > div {
-            line-height: 1.2rem;
-            > span {
-                white-space: break-spaces;
-                font-size: 12px;
-            }
-        }
-    }
-`;
 
 const PickingPage = () => {
     const firebase = useFirebaseApp();
@@ -140,7 +88,7 @@ const PickingPage = () => {
     let nextDay = creationDate.getDate() + 1;
     let yearInitial = creationDate.getFullYear();
     let initialHour = new Date().getHours() + 1;
-    if (initialHour > 13) {
+    if (initialHour > 14) {
         dayInitial = dayInitial + 1;
         // console.log('tomorrow', yearInitial , monthInitial , nextDay);
         creationDate = new Date(yearInitial, monthInitial, nextDay);
@@ -205,12 +153,10 @@ const PickingPage = () => {
     const [endHour, setEndHour] = useState({ time: '19:00' });
     const [checkBox, setCheckBox] = useState(true);
     const [available, setAvailable] = useState(false);
-    const [userName, setUserName] = useState('');
     const [pickups, setPickups] = useState([]);
     const [tableData, setTableData] = useState();
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
     let pickedDirection;
-
     //Tracking
     //     useEffect(() => {
     //     let myHeaders = new Headers();
@@ -266,17 +212,24 @@ const PickingPage = () => {
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
                         console.log(doc.data());
-                        // console.log(doc.data().supplierData.cargos.shippingInfo[0]);
                         typeCity.current = doc.data().sender_addresses.country;
                         typeSupplier.current = doc.data().supplierData.cargos.shippingInfo[0];
                         setAvailable(true);
+                        setName(doc.data().sender_addresses.name);
+                        setCP(doc.data().sender_addresses.codigo_postal);
+                        setNeighborhood(doc.data().sender_addresses.neighborhood);
+                        setStreetName(doc.data().sender_addresses.street_name);
+                        setStreetNumber(doc.data().sender_addresses.street_number);
+                        setPlaceRef(doc.data().sender_addresses.place_reference);
+                        setPhone(doc.data().sender_addresses.phone);
                         setState({
                             value: doc.data().sender_addresses.state,
                             label: states[doc.data().sender_addresses.state],
                         });
                         setCountry(doc.data().sender_addresses.country);
                         setSelectSupplier(doc.data().supplierData.cargos.shippingInfo[0]);
-                        getDirections(doc.data().sender_addresses.country);
+                        // getDirections(doc.data().sender_addresses.country);
+                        setCheckBox(false);
                     });
                 })
                 .catch(function(error) {
@@ -291,47 +244,29 @@ const PickingPage = () => {
     };
 
     //Obteniendo las direcciones de pickup
-    const getDirections = city => {
-        let dataAddress = [];
-        let dataAddressFilter = [];
-        if (user) {
-            const reloadDirectios = () => {
-                db.collection('pickup_addresses')
-                    .where('ID', '==', user.uid)
-                    .onSnapshot(function(querySnapshot) {
-                        querySnapshot.forEach(doc => {
-                            dataAddress.push({
-                                id: doc.id,
-                                city: doc.data().city,
-                                ...doc.data(),
-                            });
-                        });
-                        //Filtrando Direcciones
-                        dataAddressFilter = dataAddress.filter(item => item.city.includes(city));
-                        setDirectionData(dataAddressFilter);
-                    });
-            };
-            reloadDirectios();
-        }
-    };
-
-    const options = directionData
-        .filter(directions => {
-            if (filter === null) {
-                return directions;
-            } else if (
-                directions.name.includes(filter) ||
-                directions.street_number.includes(filter)
-            ) {
-                return directions;
-            }
-        })
-        .map(directions => {
-            return {
-                value: directions.id + '',
-                label: <AddressRadioOption key={directions.id} directions={directions} />,
-            };
-        });
+    // const getDirections = city => {
+    //     let dataAddress = [];
+    //     let dataAddressFilter = [];
+    //     if (user) {
+    //         const reloadDirectios = () => {
+    //             db.collection('pickup_addresses')
+    //                 .where('ID', '==', user.uid)
+    //                 .onSnapshot(function(querySnapshot) {
+    //                     querySnapshot.forEach(doc => {
+    //                         dataAddress.push({
+    //                             id: doc.id,
+    //                             city: doc.data().city,
+    //                             ...doc.data(),
+    //                         });
+    //                     });
+    //                     //Filtrando Direcciones
+    //                     dataAddressFilter = dataAddress.filter(item => item.city.includes(city));
+    //                     // setDirectionData(dataAddressFilter);
+    //                 });
+    //         };
+    //         reloadDirectios();
+    //     }
+    // };
 
     //verificacion de CP
     useEffect(() => {
@@ -373,7 +308,6 @@ const PickingPage = () => {
                         //console.log(stateKey);
                         //setState({ label: states[stateKey], value: stateKey });
                         if (data.response.municipio !== typeCity.current) {
-                            // setTimeout(() => {
                             swal.fire({
                                 title: '!Lo siento!',
                                 text: 'El código postal, no es de esa ciudad, favor de verificar.',
@@ -381,8 +315,6 @@ const PickingPage = () => {
                                 confirmButtonText: 'Ok',
                             });
                             setCP('');
-
-                            // }, 1000);
                         }
                     }
                 });
@@ -390,46 +322,46 @@ const PickingPage = () => {
     }, [CP]);
 
     //Se obtienen las direcciones guardadas
-    useEffect(() => {
-        console.log('use effect');
-        if (value) {
-            const docRef = db.collection('pickup_addresses').doc(value);
-            //Obteniendo la direccion seleccionada
-            let getOptions = {
-                source: 'cache',
-            };
-            docRef
-                .get(getOptions)
-                .then(function(doc) {
-                    // Document was found in the cache. If no cached document exists,
-                    // an error will be returned to the 'catch' block below.
-                    pickedDirection = doc.data();
-                    //console.log('Cached document data:', pickedDirection);
-                })
-                .catch(function(error) {
-                    console.log('Error getting cached document:', error);
-                });
-            docRef
-                .get()
-                .then(function(doc) {
-                    if (doc.exists) {
-                        setName(doc.data().name);
-                        setCP(doc.data().codigo_postal);
-                        setNeighborhood(doc.data().neighborhood);
-                        setStreetName(doc.data().street_name);
-                        setStreetNumber(doc.data().street_number);
-                        setPlaceRef(doc.data().place_reference);
-                        setPhone(doc.data().phone);
-                        setCheckBox(false);
-                    } else {
-                        console.log('No such document!');
-                    }
-                })
-                .catch(function(error) {
-                    console.log('Error getting document:', error);
-                });
-        }
-    }, [value]);
+    // useEffect(() => {
+    //     console.log('use effect');
+    //     if (value) {
+    //         const docRef = db.collection('pickup_addresses').doc(value);
+    //         //Obteniendo la direccion seleccionada
+    //         let getOptions = {
+    //             source: 'cache',
+    //         };
+    //         docRef
+    //             .get(getOptions)
+    //             .then(function(doc) {
+    //                 // Document was found in the cache. If no cached document exists,
+    //                 // an error will be returned to the 'catch' block below.
+    //                 pickedDirection = doc.data();
+    //                 //console.log('Cached document data:', pickedDirection);
+    //             })
+    //             .catch(function(error) {
+    //                 console.log('Error getting cached document:', error);
+    //             });
+    //         docRef
+    //             .get()
+    //             .then(function(doc) {
+    //                 if (doc.exists) {
+    //                     setName(doc.data().name);
+    //                     setCP(doc.data().codigo_postal);
+    //                     setNeighborhood(doc.data().neighborhood);
+    //                     setStreetName(doc.data().street_name);
+    //                     setStreetNumber(doc.data().street_number);
+    //                     setPlaceRef(doc.data().place_reference);
+    //                     setPhone(doc.data().phone);
+    //                     setCheckBox(false);
+    //                 } else {
+    //                     console.log('No such document!');
+    //                 }
+    //             })
+    //             .catch(function(error) {
+    //                 console.log('Error getting document:', error);
+    //             });
+    //     }
+    // }, [value]);
 
     //Obteniendo las recolecciones
     useEffect(() => {
@@ -452,24 +384,48 @@ const PickingPage = () => {
                 ...doc.data(),
             });
         });
-        setPickups(allPickups);
+        //setPickups(allPickups);
+        setDirectionData(allPickups);
     }
 
-    useEffect(() => {
-        setTableData(
-            pickups.map(pick => {
-                return {
-                    id: pick.id,
-                    date: pick.pickup_date.slice(0, 10),
-                    order: pick.pickup_id,
-                    origen: pick.name,
-                    guide: pick.guide,
-                    supplier: pick.shipping_company,
-                };
-            }),
-            console.log(pickups),
-        );
-    }, [pickups]);
+    // useEffect(() => {
+    //     setTableData(
+    //         pickups.map(pick => {
+    //             return {
+    //                 id: pick.id,
+    //                 date: pick.pickup_date.slice(0, 10),
+    //                 order: pick.pickup_id,
+    //                 origen: pick.name,
+    //                 guide: pick.guide,
+    //                 supplier: pick.shipping_company,
+    //             };
+    //         }),
+    //         console.log(pickups),
+    //     );
+    // }, [pickups]);
+
+    const options = directionData
+        .filter(directions => {
+            if (filter === null) {
+                return directions;
+            } else if (directions.name.includes(filter)) {
+                return directions;
+            }
+        })
+        .map(directions => {
+            console.log(directions);
+            const { id, pickup_date, pickup_id, shipping_company, name } = directions;
+            return (
+                <TimelineMarker
+                    key={id}
+                    name={name}
+                    label={`Orden: ${pickup_id} , ${shipping_company}`}
+                    icon={<FontAwesomeIcon icon={faCheckCircle} />}
+                    datetime={pickup_date}
+                    description={name}
+                />
+            );
+        });
 
     const addPicking = () => {
         //console.log('all pickups', pickups, 'cp', CP, 'guia', idGuide.current);
@@ -514,6 +470,12 @@ const PickingPage = () => {
             streetNumber.length > 10 ||
             !addressRegex.test(streetNumber)
         ) {
+            swal.fire({
+                title: '!Lo siento!',
+                text: 'El texto puede ser hasta 10 letras y números,favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
             setErrorStreetNumber(true);
             setError(true);
             return;
@@ -807,10 +769,10 @@ const PickingPage = () => {
             });
     };
 
-    const search = e => {
-        let keyword = e.target.value;
-        setFilter(keyword);
-    };
+    // const search = e => {
+    //     let keyword = e.target.value;
+    //     setFilter(keyword);
+    // };
 
     return (
         <StyledSendPage>
@@ -818,352 +780,281 @@ const PickingPage = () => {
                 <h1>Recolecciones</h1>
             </Row>
             <StyledPaneContainer>
-                <Row style={{ width: '100%' }}>
-                    <Col className=" col-12 col-xl-6 boder-right">
-                        <StyledLeftPane>
-                            <h4>Mis direcciones</h4>
-                            <Input
-                                value={filter}
-                                placeholder="Buscar por nombre o calle"
-                                iconPosition="right"
-                                icon={<FontAwesomeIcon icon={faSearch} />}
-                                onChange={e => search(e)}
-                            />
-                            <div>
-                                <StyledRadioGroup
-                                    id="radio-group-component-1"
-                                    options={options}
-                                    value={value}
-                                    className="rainbow-m-around_small"
-                                    onChange={e => setValue(e.target.value)}
-                                />
-                            </div>
-                        </StyledLeftPane>
-                    </Col>
-                    <Col className=" col-12 col-xl-6 boder-right">
-                        <StyledRightPane style={containerStyles}>
-                            <h4>Mis recolecciones</h4>
-                            <div className="rainbow-flex_wrap">
-                                <div>
-                                    <StyledTable
-                                        data={tableData}
-                                        pageSize={10}
-                                        keyField="id"
-                                        emptyTitle="Oh no!"
-                                        emptyDescription="No hay ningun registro actualmente..."
-                                        className="direction-table"
-                                    >
-                                        <Column header="Fecha" field="date" defaultWidth={125} />
-                                        <Column header="Guía" field="guide" defaultWidth={125} />
-                                        <Column
-                                            header="Paquetería"
-                                            field="supplier"
-                                            defaultWidth={105}
-                                        />
-                                        <Column
-                                            header="Recolección"
-                                            field="order"
-                                            defaultWidth={125}
-                                        />
-                                        <Column header="Origen" field="origen" />
-                                    </StyledTable>
-                                </div>
-                            </div>
-                        </StyledRightPane>
-                    </Col>
-                </Row>
-            </StyledPaneContainer>
-
-            <StyledPaneContainer>
                 <StyledRightPane>
-                    <Row className="">
-                        <Col className=" col-12 col-xl-6 boder-right">
-                            <h4>Datos de la guía</h4>
-                            <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Input
-                                    id="guia"
-                                    placeholder="Numero de Guia"
-                                    label="Numero de Guia (primeros 8 dígitos para Redpack)"
-                                    className={`rainbow-p-around_medium ${
-                                        errorGuide ? 'empty-space' : ''
-                                    }`}
-                                    required
-                                    value={idGuide.current}
-                                    style={{ width: '50%' }}
-                                    onChange={e => getIdGuia(e)}
-                                />
-                                <Input
-                                    readOnly
-                                    style={{ width: '50%' }}
-                                    value={selectSupplier}
-                                    label="Paquetería"
-                                    onChange={value => setSelectSupplier(value)}
-                                    className="rainbow-p-around_medium rainbow-m_auto"
-                                />
-                            </div>
-                            <h4>Dirección de recolección</h4>
-                            <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Input
-                                    id="nombre"
-                                    label="Nombre del contacto"
-                                    disabled={available ? false : true}
-                                    name="nombre"
-                                    value={name}
-                                    className={`rainbow-p-around_medium ${
-                                        errorName ? 'empty-space' : ''
-                                    }`}
-                                    style={{ width: '70%' }}
-                                    onChange={e => setName(e.target.value)}
-                                />
-                                <Input
-                                    id="cp"
-                                    label="C.P."
-                                    disabled={available ? false : true}
-                                    name="cp"
-                                    value={CP}
-                                    className={`rainbow-p-around_medium ${
-                                        errorCP ? 'empty-space' : ''
-                                    }`}
-                                    style={{ width: '30%' }}
-                                    onChange={e => setCP(e.target.value)}
-                                />
-                            </div>
-                            {errorNameDuplicate && (
-                                <div className="w-75 pl-4">
-                                    <span className="alert-error">
-                                        El nombre ya se encuentra registrado
-                                    </span>
-                                </div>
-                            )}
-                            <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Input
-                                    id="domicilio"
-                                    label="Nombre de la calle"
-                                    disabled={available ? false : true}
-                                    name="domicilio"
-                                    value={streetName}
-                                    className={`rainbow-p-around_medium ${
-                                        errorStreetName ? 'empty-space' : ''
-                                    }`}
-                                    style={{ flex: '1 1' }}
-                                    onChange={e => setStreetName(e.target.value)}
-                                />
-                                <Input
-                                    id="domicilio"
-                                    label="Número exterior e interior"
-                                    disabled={available ? false : true}
-                                    name="domicilio"
-                                    value={streetNumber}
-                                    className={`rainbow-p-around_medium ${
-                                        errorStreetNumber ? 'empty-space' : ''
-                                    }`}
-                                    style={{ flex: '1 1' }}
-                                    onChange={e => setStreetNumber(e.target.value)}
-                                />
-                                <Input
-                                    id="colonia"
-                                    label="Colonia"
-                                    disabled={available ? false : true}
-                                    name="colonia"
-                                    value={neighborhood}
-                                    className={`rainbow-p-around_medium ${
-                                        errorNeighborhood ? 'empty-space' : ''
-                                    }`}
-                                    style={{ flex: '1 1' }}
-                                    onChange={e => setNeighborhood(e.target.value)}
-                                />
-                            </div>
-                            <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Input
-                                    id="ciudad"
-                                    readOnly
-                                    label="Ciudad"
-                                    name="ciudad"
-                                    value={country}
-                                    className="rainbow-p-around_medium"
-                                    style={{ flex: '1 1' }}
-                                    onChange={e => setCountry(e.target.value)}
-                                />
-                                <Picklist
-                                    id="estado"
-                                    readOnly
-                                    label="Estado"
-                                    name="estado"
-                                    value={state}
-                                    className="rainbow-p-around_medium"
-                                    style={{ flex: '1 1' }}
-                                    onChange={value => setState(value)}
-                                    required
-                                >
-                                    <StatePicklistOptions />
-                                </Picklist>
-                            </div>
-                            <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Input
-                                    id="referencia"
-                                    label="Referencias del Lugar"
-                                    disabled={available ? false : true}
-                                    name="referencia"
-                                    value={placeRef}
-                                    className={`rainbow-p-around_medium ${
-                                        errorPlaceRef ? 'empty-space' : ''
-                                    }`}
-                                    style={{ flex: '2 2' }}
-                                    onChange={e => setPlaceRef(e.target.value)}
-                                />
-                                <Input
-                                    id="telefono"
-                                    label="Telefono"
-                                    disabled={available ? false : true}
-                                    name="telefono"
-                                    value={phone}
-                                    className={`rainbow-p-around_medium ${
-                                        errorPhone ? 'empty-space' : ''
-                                    }`}
-                                    style={{ flex: '2 2' }}
-                                    onChange={e => setPhone(e.target.value)}
-                                />
-                                <div style={{ flex: '1 1', textAlign: 'right' }}>
-                                    <CheckboxToggle
-                                        id="guardar"
-                                        label="Guardar"
-                                        value={checkBox}
-                                        onChange={e => setCheckBox(e.target.checked)}
+                    <h4>Datos de la guía</h4>
+                    <div className="rainbow-align-content_center rainbow-flex_wrap mb-3">
+                        <div className="flex-col">
+                            <Input
+                                id="guia"
+                                placeholder="Numero de Guia"
+                                label="Numero de Guia"
+                                className={`rainbow-p-around_medium ${
+                                    errorGuide ? 'empty-space' : ''
+                                }`}
+                                required
+                                value={idGuide.current}
+                                onChange={e => getIdGuia(e)}
+                            />
+                            <p className>(primeros 8 dígitos para Redpack)</p>
+                        </div>
+                        <Input
+                            readOnly
+                            style={{ width: '50%' }}
+                            value={selectSupplier}
+                            label="Paquetería"
+                            onChange={value => setSelectSupplier(value)}
+                            className="rainbow-p-around_medium rainbow-m_auto"
+                        />
+                    </div>
+                    <h4>Dirección de recolección</h4>
+                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        <Input
+                            id="nombre"
+                            label="Nombre del contacto"
+                            disabled={available ? false : true}
+                            name="nombre"
+                            value={name}
+                            className={`rainbow-p-around_medium ${errorName ? 'empty-space' : ''}`}
+                            style={{ width: '70%' }}
+                            onChange={e => setName(e.target.value)}
+                        />
+                        <Input
+                            id="cp"
+                            label="C.P."
+                            disabled={available ? false : true}
+                            name="cp"
+                            value={CP}
+                            className={`rainbow-p-around_medium ${errorCP ? 'empty-space' : ''}`}
+                            style={{ width: '30%' }}
+                            onChange={e => setCP(e.target.value)}
+                        />
+                    </div>
+                    {errorNameDuplicate && (
+                        <div className="w-75 pl-4">
+                            <span className="alert-error">
+                                El nombre ya se encuentra registrado
+                            </span>
+                        </div>
+                    )}
+                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        <Input
+                            id="domicilio-name"
+                            label="Nombre de la calle"
+                            disabled={available ? false : true}
+                            name="domicilio"
+                            value={streetName}
+                            className={`rainbow-p-around_medium ${
+                                errorStreetName ? 'empty-space' : ''
+                            }`}
+                            style={{ width: '40%' }}
+                            onChange={e => setStreetName(e.target.value)}
+                        />
+                        <Input
+                            id="domicilio-number"
+                            label="Número"
+                            disabled={available ? false : true}
+                            name="domicilio"
+                            value={streetNumber}
+                            className={`rainbow-p-around_medium ${
+                                errorStreetNumber ? 'empty-space' : ''
+                            }`}
+                            style={{ width: '20%' }}
+                            onChange={e => setStreetNumber(e.target.value)}
+                        />
+                        <Input
+                            id="colonia"
+                            label="Colonia"
+                            disabled={available ? false : true}
+                            name="colonia"
+                            value={neighborhood}
+                            className={`rainbow-p-around_medium ${
+                                errorNeighborhood ? 'empty-space' : ''
+                            }`}
+                            style={{ width: '40%' }}
+                            onChange={e => setNeighborhood(e.target.value)}
+                        />
+                    </div>
+                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        <Input
+                            id="ciudad"
+                            readOnly
+                            label="Ciudad"
+                            name="ciudad"
+                            value={country}
+                            className="rainbow-p-around_medium"
+                            style={{ flex: '1 1' }}
+                            onChange={e => setCountry(e.target.value)}
+                        />
+                        <Picklist
+                            id="estado"
+                            readOnly
+                            label="Estado"
+                            name="estado"
+                            value={state}
+                            className="rainbow-p-around_medium"
+                            style={{ flex: '1 1' }}
+                            onChange={value => setState(value)}
+                            required
+                        >
+                            <StatePicklistOptions />
+                        </Picklist>
+                    </div>
+                    <div className="rainbow-align-content_center rainbow-flex_wrap mb-3">
+                        <Input
+                            id="referencia"
+                            label="Referencias del Lugar"
+                            disabled={available ? false : true}
+                            name="referencia"
+                            value={placeRef}
+                            className={`rainbow-p-around_medium ${
+                                errorPlaceRef ? 'empty-space' : ''
+                            }`}
+                            style={{ flex: '2 2' }}
+                            onChange={e => setPlaceRef(e.target.value)}
+                        />
+                        <Input
+                            id="telefono"
+                            label="Telefono"
+                            disabled={available ? false : true}
+                            name="telefono"
+                            value={phone}
+                            className={`rainbow-p-around_medium ${errorPhone ? 'empty-space' : ''}`}
+                            style={{ flex: '2 2' }}
+                            onChange={e => setPhone(e.target.value)}
+                        />
+                        {/* <div style={{ flex: '1 1', textAlign: 'right' }}>
+                            <CheckboxToggle
+                                id="guardar"
+                                label="Guardar"
+                                value={checkBox}
+                                onChange={e => setCheckBox(e.target.checked)}
+                            />
+                        </div> */}
+                    </div>
+                    {errorCredits && (
+                        <div className="alert-error pl-4">
+                            Es necesario tener un estatus aprobatorio para relizar envíos
+                        </div>
+                    )}
+                    {error && <div className="alert-error pl-4">Corregir los campos marcados</div>}
+                    <h4>Información del paquete</h4>
+                    {selectSupplier === 'REDPACK' && (
+                        <div className="rainbow-align-content_center rainbow-flex_wrap">
+                            <Row className="flex-row">
+                                <Col className="p-0">
+                                    <Input
+                                        id="height"
+                                        label="Largo"
+                                        name="height"
+                                        value={height}
+                                        className={`rainbow-p-around_medium ${
+                                            errorHeight ? 'empty-space' : ''
+                                        }`}
+                                        onChange={e => setHeight(e.target.value)}
                                     />
-                                </div>
-                            </div>
-                            {errorCredits && (
-                                <div className="alert-error pl-4">
-                                    Es necesario tener un estatus aprobatorio para relizar envíos
-                                </div>
-                            )}
-                            {error && (
-                                <div className="alert-error pl-4">Corregir los campos marcados</div>
-                            )}
-                        </Col>
-                        <Col className="col-12 col-xl-6 col-margin">
-                            <h4>Información del paquete</h4>
-                            {selectSupplier === 'REDPACK' && (
-                                <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                    <Row className="">
-                                        <Col className="">
-                                            <Input
-                                                id="height"
-                                                label="Largo"
-                                                name="height"
-                                                value={height}
-                                                className={`rainbow-p-around_medium ${
-                                                    errorHeight ? 'empty-space' : ''
-                                                }`}
-                                                onChange={e => setHeight(e.target.value)}
-                                            />
-                                        </Col>
-                                        <Col className="">
-                                            <Input
-                                                id="width"
-                                                name="width"
-                                                label="Ancho"
-                                                value={width}
-                                                className={`rainbow-p-around_medium ${
-                                                    errorWidth ? 'empty-space' : ''
-                                                }`}
-                                                className="rainbow-p-around_medium"
-                                                onChange={e => setWidth(e.target.value)}
-                                            />
-                                        </Col>
-                                        <Col className="">
-                                            <Input
-                                                id="depth"
-                                                name="depth"
-                                                label="Alto"
-                                                value={depth}
-                                                className={`rainbow-p-around_medium ${
-                                                    errorDepth ? 'empty-space' : ''
-                                                }`}
-                                                onChange={e => setDepth(e.target.value)}
-                                            />
-                                        </Col>
-                                    </Row>
-                                </div>
-                            )}
-                            <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Row className="">
-                                    <Col className="">
-                                        <Input
-                                            id="cantidad"
-                                            label="Cantidad total"
-                                            name="cantidad"
-                                            value={quantity}
-                                            disabled={available ? false : true}
-                                            className={`rainbow-p-around_medium ${
-                                                errorQuantity ? 'empty-space' : ''
-                                            }`}
-                                            className="rainbow-p-around_medium"
-                                            onChange={e => setQuantity(e.target.value)}
-                                        />
-                                    </Col>
-                                    <Col className="">
-                                        <Input
-                                            id="weightT"
-                                            label="Peso total"
-                                            name="weightT"
-                                            value={weightTotal}
-                                            disabled={available ? false : true}
-                                            className={`rainbow-p-around_medium ${
-                                                errorWeightTotal ? 'empty-space' : ''
-                                            }`}
-                                            onChange={e => setWeightTotal(e.target.value)}
-                                        />
-                                    </Col>
-                                    <Col className="">
-                                        <DatePicker
-                                            formatStyle="large"
-                                            label="Fecha de recolección"
-                                            value={selectDate.date}
-                                            minDate={minDate}
-                                            maxDate={maxDate}
-                                            className="rainbow-p-around_medium"
-                                            onChange={value => setSelectDate({ date: value })}
-                                        />
-                                    </Col>
-                                </Row>
-                            </div>
-                            <div className="rainbow-align-content_center rainbow-flex_wrap flex-col">
-                                <h5>Horario de Recolección</h5>
-                                <div className="flex-row">
-                                    <TimePicker
-                                        value={startHour.time}
-                                        label="Desde"
-                                        onChange={value => setStartHour({ time: value })}
-                                        className="rainbow-p-around_medium rainbow-m_auto"
-                                        hour24
+                                </Col>
+                                <Col className="p-0">
+                                    <Input
+                                        id="width"
+                                        name="width"
+                                        label="Ancho"
+                                        value={width}
+                                        className={`rainbow-p-around_medium ${
+                                            errorWidth ? 'empty-space' : ''
+                                        }`}
+                                        className="rainbow-p-around_medium"
+                                        onChange={e => setWidth(e.target.value)}
                                     />
-                                    <TimePicker
-                                        value={endHour.time}
-                                        label="Hasta"
-                                        onChange={value => setEndHour({ time: value })}
-                                        className="rainbow-p-around_medium rainbow-m_auto"
-                                        hour24
+                                </Col>
+                                <Col className="p-0">
+                                    <Input
+                                        id="depth"
+                                        name="depth"
+                                        label="Alto"
+                                        value={depth}
+                                        className={`rainbow-p-around_medium ${
+                                            errorDepth ? 'empty-space' : ''
+                                        }`}
+                                        onChange={e => setDepth(e.target.value)}
                                     />
-                                </div>
-                            </div>
-                            {error && (
-                                <div className="alert-error pl-4">Corregir los campos marcados</div>
-                            )}
-                            <div className="rainbow-align-content_center rainbow-flex_wrap">
-                                <Button
-                                    variant="brand"
-                                    className="rainbow-m-around_medium"
-                                    style={{ width: '100%' }}
-                                    disabled={available ? false : true}
-                                    onClick={() => addPicking()}
-                                >
-                                    Programar recolección
-                                </Button>
-                            </div>
-                        </Col>
-                    </Row>
+                                </Col>
+                            </Row>
+                        </div>
+                    )}
+                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        <Input
+                            id="cantidad"
+                            label="Cantidad total"
+                            name="cantidad"
+                            value={quantity}
+                            disabled={available ? false : true}
+                            className={`rainbow-p-around_medium ${
+                                errorQuantity ? 'empty-space' : ''
+                            }`}
+                            style={{ width: '30%' }}
+                            onChange={e => setQuantity(e.target.value)}
+                        />
+                        <Input
+                            id="weightT"
+                            label="Peso total"
+                            name="weightT"
+                            value={weightTotal}
+                            disabled={available ? false : true}
+                            className={`rainbow-p-around_medium ${
+                                errorWeightTotal ? 'empty-space' : ''
+                            }`}
+                            style={{ width: '30%' }}
+                            onChange={e => setWeightTotal(e.target.value)}
+                        />
+                        <DatePicker
+                            formatStyle="large"
+                            label="Fecha de recolección"
+                            value={selectDate.date}
+                            minDate={minDate}
+                            maxDate={maxDate}
+                            className="rainbow-p-around_medium"
+                            style={{ width: '40%' }}
+                            onChange={value => setSelectDate({ date: value })}
+                        />
+                    </div>
+                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        {/* <h5>Horario de Recolección</h5> */}
+                        <div className="flex-row">
+                            <TimePicker
+                                value={startHour.time}
+                                label="Desde"
+                                onChange={value => setStartHour({ time: value })}
+                                className="rainbow-p-around_medium rainbow-m_auto"
+                                hour24
+                            />
+                            <TimePicker
+                                value={endHour.time}
+                                label="Hasta"
+                                onChange={value => setEndHour({ time: value })}
+                                className="rainbow-p-around_medium rainbow-m_auto"
+                                hour24
+                            />
+                        </div>
+                    </div>
+                    {error && <div className="alert-error pl-4">Corregir los campos marcados</div>}
+                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        <Button
+                            variant="brand"
+                            className="rainbow-m-around_medium"
+                            style={{ width: '100%' }}
+                            disabled={available ? false : true}
+                            onClick={() => addPicking()}
+                        >
+                            Programar recolección
+                        </Button>
+                    </div>
                 </StyledRightPane>
+                <StyledLeftPane>
+                    <h4 className="mb-4">Mis recolecciones</h4>
+                    <div className="timeline">
+                        <ActivityTimeline>{options}</ActivityTimeline>
+                    </div>
+                </StyledLeftPane>
             </StyledPaneContainer>
             <Row className="justify-content-md-center mt-4 ">
                 <p className="p-text" style={styleText}>
