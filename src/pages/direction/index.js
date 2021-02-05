@@ -103,7 +103,7 @@ export default function DirectionPage() {
                 ...doc.data(),
             };
         });
-        console.log(data, 'data Sender');
+        //console.log(data, 'data Sender');
         setSenderAddresses(data);
     }
 
@@ -114,16 +114,11 @@ export default function DirectionPage() {
                 ...doc.data(),
             };
         });
-        console.log(data, 'data Receiver');
+        //console.log(data, 'data Receiver');
         setReceiverAddresses(data);
     }
 
-    //Aqui esta el error
     const deleteAddress = idDoc => {
-        // console.log('idDoc', idDoc)
-        // console.log('dataSender', dataSender);
-        // console.log('dataReceiver', dataReceiver);
-
         if (dataSender.filter(item => item.id.includes(idDoc))) {
             //console.log('includes dataSender')
             db.collection('sender_addresses')

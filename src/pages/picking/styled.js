@@ -129,6 +129,8 @@ export const StyledRightPane = styled(StyledPane)`
     }
     .flex-col {
         flex-direction: column;
+        text-align: center;
+        width: 50%;
     }
     .flex-row {
         flex-direction: row;
