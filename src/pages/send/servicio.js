@@ -348,39 +348,31 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .get()
             .then(function(doc) {
                 if (doc.exists) {
-                    // console.log('Document data:', doc.data());
+                    console.log('Document data:', doc.data());
                     dataShipping.current = JSON.stringify({
                         sender: {
                             contact_name: doc.data().sender_addresses.name,
                             company_name: doc.data().sender_addresses.name,
-                            street: doc.data().sender_addresses.street_name
-                                ? doc.data().sender_addresses.street_name
-                                : '',
+                            street: doc.data().sender_addresses.street_name,
                             zip_code: doc.data().sender_addresses.codigo_postal,
                             neighborhood: doc.data().sender_addresses.neighborhood,
                             city: doc.data().sender_addresses.country,
                             country: 'MX',
                             state: doc.data().sender_addresses.state,
-                            street_number: doc.data().sender_addresses.street_number
-                                ? doc.data().sender_addresses.street_number
-                                : '',
+                            street_number: doc.data().sender_addresses.street_number,
                             place_reference: doc.data().sender_addresses.place_reference,
                             phone: doc.data().sender_addresses.phone,
                         },
                         receiver: {
                             contact_name: doc.data().receiver_addresses.name,
                             company_name: doc.data().receiver_addresses.name,
-                            street: doc.data().receiver_addresses.street_name
-                                ? doc.data().receiver_addresses.street_name
-                                : '',
+                            street: doc.data().receiver_addresses.street_name,
                             zip_code: doc.data().receiver_addresses.codigo_postal,
                             neighborhood: doc.data().receiver_addresses.neighborhood,
                             city: doc.data().receiver_addresses.country,
                             country: 'MX',
                             state: doc.data().receiver_addresses.state,
-                            street_number: doc.data().receiver_addresses.street_number
-                                ? doc.data().receiver_addresses.street_number
-                                : '',
+                            street_number: doc.data().receiver_addresses.street_number,
                             place_reference: doc.data().receiver_addresses.place_reference,
                             phone: doc.data().receiver_addresses.phone,
                         },

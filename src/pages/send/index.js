@@ -146,18 +146,14 @@ const SendPage = () => {
                                 city: doc.data().sender_addresses.country,
                                 country: 'MX',
                                 state: doc.data().sender_addresses.state,
-                                street_number: doc.data().sender_addresses.street_number
-                                    ? doc.data().sender_addresses.street_number
-                                    : '',
+                                street_number: doc.data().sender_addresses.street_number,
                                 place_reference: doc.data().sender_addresses.place_reference,
                                 phone: doc.data().sender_addresses.phone,
                             },
                             receiver: {
                                 contact_name: doc.data().receiver_addresses.name,
                                 company_name: doc.data().receiver_addresses.name,
-                                street: doc.data().receiver_addresses.street_name
-                                    ? doc.data().receiver_addresses.street_name
-                                    : '',
+                                street: doc.data().receiver_addresses.street_name,
                                 zip_code: doc.data().receiver_addresses.codigo_postal,
                                 neighborhood: doc.data().receiver_addresses.neighborhood,
                                 city: doc.data().receiver_addresses.country,
