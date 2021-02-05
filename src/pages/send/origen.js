@@ -481,6 +481,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 neighborhood: '',
                 country: '',
                 state: '',
+                street_name: '',
                 street_number: '',
                 place_reference: '',
                 phone: '',
