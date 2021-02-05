@@ -6,16 +6,16 @@ import {
     Button,
     Picklist,
     Option,
-    Select,
-    Column,
     TimePicker,
-    Badge,
     DatePicker,
     TableWithBrowserPagination,
+    ActivityTimeline,
+    Avatar,
+    TimelineMarker,
 } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Row, Col } from 'react-bootstrap';
 import {
     StyledLeftPane,
@@ -75,59 +75,7 @@ const StatePicklistOptions = () => {
     return allStates;
 };
 
-// const NeighborhoodPicklistOptions = () => {
-//     neighborhoodSelect.map(code => {
-//         return <Option key={code} value={code} name={code} label={code} />;
-//     });
-
-//     return allStates;
-// };
-
-const AddressRadioOption = ({ directions }) => {
-    let idPickup;
-    const {
-        neighborhood,
-        Referencias_lugar,
-        Telefono,
-        street_number,
-        country,
-        state,
-        codigo_postal,
-        name,
-    } = directions;
-
-    idPickup = directions.id;
-
-    return (
-        <>
-            <span>
-                <b>{name}</b>
-            </span>
-            <p>{street_number}</p>
-            <p>{neighborhood}</p>
-            <p>{state}</p>
-            <p>{country}</p>
-            <p>C.P. {codigo_postal}</p>
-            <p>Tel {Telefono}</p>
-        </>
-    );
-};
-
-const containerStyles = { height: '95%', margin: 0 };
-
 const styleText = { textAlign: 'center' };
-
-const StyledTable = styled(TableWithBrowserPagination)`
-    td[data-label='Guía'] {
-        > div {
-            line-height: 1.2rem;
-            > span {
-                white-space: break-spaces;
-                font-size: 12px;
-            }
-        }
-    }
-`;
 
 const PickingPage = () => {
     const firebase = useFirebaseApp();
@@ -205,12 +153,10 @@ const PickingPage = () => {
     const [endHour, setEndHour] = useState({ time: '19:00' });
     const [checkBox, setCheckBox] = useState(true);
     const [available, setAvailable] = useState(false);
-    const [userName, setUserName] = useState('');
     const [pickups, setPickups] = useState([]);
     const [tableData, setTableData] = useState();
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
     let pickedDirection;
-
     //Tracking
     //     useEffect(() => {
     //     let myHeaders = new Headers();
@@ -266,7 +212,6 @@ const PickingPage = () => {
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
                         console.log(doc.data());
-                        // console.log(doc.data().supplierData.cargos.shippingInfo[0]);
                         typeCity.current = doc.data().sender_addresses.country;
                         typeSupplier.current = doc.data().supplierData.cargos.shippingInfo[0];
                         setAvailable(true);
@@ -277,14 +222,13 @@ const PickingPage = () => {
                         setStreetNumber(doc.data().sender_addresses.street_number);
                         setPlaceRef(doc.data().sender_addresses.place_reference);
                         setPhone(doc.data().sender_addresses.phone);
-
                         setState({
                             value: doc.data().sender_addresses.state,
                             label: states[doc.data().sender_addresses.state],
                         });
                         setCountry(doc.data().sender_addresses.country);
                         setSelectSupplier(doc.data().supplierData.cargos.shippingInfo[0]);
-                        getDirections(doc.data().sender_addresses.country);
+                        // getDirections(doc.data().sender_addresses.country);
                         setCheckBox(false);
                     });
                 })
@@ -300,47 +244,29 @@ const PickingPage = () => {
     };
 
     //Obteniendo las direcciones de pickup
-    const getDirections = city => {
-        let dataAddress = [];
-        let dataAddressFilter = [];
-        if (user) {
-            const reloadDirectios = () => {
-                db.collection('pickup_addresses')
-                    .where('ID', '==', user.uid)
-                    .onSnapshot(function(querySnapshot) {
-                        querySnapshot.forEach(doc => {
-                            dataAddress.push({
-                                id: doc.id,
-                                city: doc.data().city,
-                                ...doc.data(),
-                            });
-                        });
-                        //Filtrando Direcciones
-                        dataAddressFilter = dataAddress.filter(item => item.city.includes(city));
-                        setDirectionData(dataAddressFilter);
-                    });
-            };
-            reloadDirectios();
-        }
-    };
-
-    const options = directionData
-        .filter(directions => {
-            if (filter === null) {
-                return directions;
-            } else if (
-                directions.name.includes(filter) ||
-                directions.street_number.includes(filter)
-            ) {
-                return directions;
-            }
-        })
-        .map(directions => {
-            return {
-                value: directions.id + '',
-                label: <AddressRadioOption key={directions.id} directions={directions} />,
-            };
-        });
+    // const getDirections = city => {
+    //     let dataAddress = [];
+    //     let dataAddressFilter = [];
+    //     if (user) {
+    //         const reloadDirectios = () => {
+    //             db.collection('pickup_addresses')
+    //                 .where('ID', '==', user.uid)
+    //                 .onSnapshot(function(querySnapshot) {
+    //                     querySnapshot.forEach(doc => {
+    //                         dataAddress.push({
+    //                             id: doc.id,
+    //                             city: doc.data().city,
+    //                             ...doc.data(),
+    //                         });
+    //                     });
+    //                     //Filtrando Direcciones
+    //                     dataAddressFilter = dataAddress.filter(item => item.city.includes(city));
+    //                     // setDirectionData(dataAddressFilter);
+    //                 });
+    //         };
+    //         reloadDirectios();
+    //     }
+    // };
 
     //verificacion de CP
     useEffect(() => {
@@ -382,7 +308,6 @@ const PickingPage = () => {
                         //console.log(stateKey);
                         //setState({ label: states[stateKey], value: stateKey });
                         if (data.response.municipio !== typeCity.current) {
-                            // setTimeout(() => {
                             swal.fire({
                                 title: '!Lo siento!',
                                 text: 'El código postal, no es de esa ciudad, favor de verificar.',
@@ -390,8 +315,6 @@ const PickingPage = () => {
                                 confirmButtonText: 'Ok',
                             });
                             setCP('');
-
-                            // }, 1000);
                         }
                     }
                 });
@@ -399,46 +322,46 @@ const PickingPage = () => {
     }, [CP]);
 
     //Se obtienen las direcciones guardadas
-    useEffect(() => {
-        console.log('use effect');
-        if (value) {
-            const docRef = db.collection('pickup_addresses').doc(value);
-            //Obteniendo la direccion seleccionada
-            let getOptions = {
-                source: 'cache',
-            };
-            docRef
-                .get(getOptions)
-                .then(function(doc) {
-                    // Document was found in the cache. If no cached document exists,
-                    // an error will be returned to the 'catch' block below.
-                    pickedDirection = doc.data();
-                    //console.log('Cached document data:', pickedDirection);
-                })
-                .catch(function(error) {
-                    console.log('Error getting cached document:', error);
-                });
-            docRef
-                .get()
-                .then(function(doc) {
-                    if (doc.exists) {
-                        setName(doc.data().name);
-                        setCP(doc.data().codigo_postal);
-                        setNeighborhood(doc.data().neighborhood);
-                        setStreetName(doc.data().street_name);
-                        setStreetNumber(doc.data().street_number);
-                        setPlaceRef(doc.data().place_reference);
-                        setPhone(doc.data().phone);
-                        setCheckBox(false);
-                    } else {
-                        console.log('No such document!');
-                    }
-                })
-                .catch(function(error) {
-                    console.log('Error getting document:', error);
-                });
-        }
-    }, [value]);
+    // useEffect(() => {
+    //     console.log('use effect');
+    //     if (value) {
+    //         const docRef = db.collection('pickup_addresses').doc(value);
+    //         //Obteniendo la direccion seleccionada
+    //         let getOptions = {
+    //             source: 'cache',
+    //         };
+    //         docRef
+    //             .get(getOptions)
+    //             .then(function(doc) {
+    //                 // Document was found in the cache. If no cached document exists,
+    //                 // an error will be returned to the 'catch' block below.
+    //                 pickedDirection = doc.data();
+    //                 //console.log('Cached document data:', pickedDirection);
+    //             })
+    //             .catch(function(error) {
+    //                 console.log('Error getting cached document:', error);
+    //             });
+    //         docRef
+    //             .get()
+    //             .then(function(doc) {
+    //                 if (doc.exists) {
+    //                     setName(doc.data().name);
+    //                     setCP(doc.data().codigo_postal);
+    //                     setNeighborhood(doc.data().neighborhood);
+    //                     setStreetName(doc.data().street_name);
+    //                     setStreetNumber(doc.data().street_number);
+    //                     setPlaceRef(doc.data().place_reference);
+    //                     setPhone(doc.data().phone);
+    //                     setCheckBox(false);
+    //                 } else {
+    //                     console.log('No such document!');
+    //                 }
+    //             })
+    //             .catch(function(error) {
+    //                 console.log('Error getting document:', error);
+    //             });
+    //     }
+    // }, [value]);
 
     //Obteniendo las recolecciones
     useEffect(() => {
@@ -461,24 +384,48 @@ const PickingPage = () => {
                 ...doc.data(),
             });
         });
-        setPickups(allPickups);
+        //setPickups(allPickups);
+        setDirectionData(allPickups);
     }
 
-    useEffect(() => {
-        setTableData(
-            pickups.map(pick => {
-                return {
-                    id: pick.id,
-                    date: pick.pickup_date.slice(0, 10),
-                    order: pick.pickup_id,
-                    origen: pick.name,
-                    guide: pick.guide,
-                    supplier: pick.shipping_company,
-                };
-            }),
-            console.log(pickups),
-        );
-    }, [pickups]);
+    // useEffect(() => {
+    //     setTableData(
+    //         pickups.map(pick => {
+    //             return {
+    //                 id: pick.id,
+    //                 date: pick.pickup_date.slice(0, 10),
+    //                 order: pick.pickup_id,
+    //                 origen: pick.name,
+    //                 guide: pick.guide,
+    //                 supplier: pick.shipping_company,
+    //             };
+    //         }),
+    //         console.log(pickups),
+    //     );
+    // }, [pickups]);
+
+    const options = directionData
+        .filter(directions => {
+            if (filter === null) {
+                return directions;
+            } else if (directions.name.includes(filter)) {
+                return directions;
+            }
+        })
+        .map(directions => {
+            console.log(directions);
+            const { id, pickup_date, pickup_id, shipping_company, name } = directions;
+            return (
+                <TimelineMarker
+                    key={id}
+                    name={name}
+                    label={`Orden: ${pickup_id} , ${shipping_company}`}
+                    icon={<FontAwesomeIcon icon={faCheckCircle} />}
+                    datetime={pickup_date}
+                    description={name}
+                />
+            );
+        });
 
     const addPicking = () => {
         //console.log('all pickups', pickups, 'cp', CP, 'guia', idGuide.current);
@@ -822,73 +769,16 @@ const PickingPage = () => {
             });
     };
 
-    const search = e => {
-        let keyword = e.target.value;
-        setFilter(keyword);
-    };
+    // const search = e => {
+    //     let keyword = e.target.value;
+    //     setFilter(keyword);
+    // };
 
     return (
         <StyledSendPage>
             <Row className="pb-4 pl-3">
                 <h1>Recolecciones</h1>
             </Row>
-            {/* <StyledPaneContainer>
-                <Row style={{ width: '100%' }}>
-                    <Col className=" col-12 col-xl-6 boder-right">
-                        <StyledLeftPane>
-                            <h4>Mis direcciones</h4>
-                            <Input
-                                value={filter}
-                                placeholder="Buscar por nombre o calle"
-                                iconPosition="right"
-                                icon={<FontAwesomeIcon icon={faSearch} />}
-                                onChange={e => search(e)}
-                            />
-                            <div>
-                                <StyledRadioGroup
-                                    id="radio-group-component-1"
-                                    options={options}
-                                    value={value}
-                                    className="rainbow-m-around_small"
-                                    onChange={e => setValue(e.target.value)}
-                                />
-                            </div>
-                        </StyledLeftPane>
-                    </Col>
-                    <Col className=" col-12 col-xl-6 boder-right">
-                        <StyledRightPane style={containerStyles}>
-                            <h4>Mis recolecciones</h4>
-                            <div className="rainbow-flex_wrap">
-                                <div>
-                                    <StyledTable
-                                        data={tableData}
-                                        pageSize={10}
-                                        keyField="id"
-                                        emptyTitle="Oh no!"
-                                        emptyDescription="No hay ningun registro actualmente..."
-                                        className="direction-table"
-                                    >
-                                        <Column header="Fecha" field="date" defaultWidth={125} />
-                                        <Column header="Guía" field="guide" defaultWidth={125} />
-                                        <Column
-                                            header="Paquetería"
-                                            field="supplier"
-                                            defaultWidth={105}
-                                        />
-                                        <Column
-                                            header="Recolección"
-                                            field="order"
-                                            defaultWidth={125}
-                                        />
-                                        <Column header="Origen" field="origen" />
-                                    </StyledTable>
-                                </div>
-                            </div>
-                        </StyledRightPane>
-                    </Col>
-                </Row>
-            </StyledPaneContainer> */}
-
             <StyledPaneContainer>
                 <StyledRightPane>
                     <h4>Datos de la guía</h4>
@@ -1032,14 +922,14 @@ const PickingPage = () => {
                             style={{ flex: '2 2' }}
                             onChange={e => setPhone(e.target.value)}
                         />
-                        <div style={{ flex: '1 1', textAlign: 'right' }}>
+                        {/* <div style={{ flex: '1 1', textAlign: 'right' }}>
                             <CheckboxToggle
                                 id="guardar"
                                 label="Guardar"
                                 value={checkBox}
                                 onChange={e => setCheckBox(e.target.checked)}
                             />
-                        </div>
+                        </div> */}
                     </div>
                     {errorCredits && (
                         <div className="alert-error pl-4">
@@ -1050,8 +940,8 @@ const PickingPage = () => {
                     <h4>Información del paquete</h4>
                     {selectSupplier === 'REDPACK' && (
                         <div className="rainbow-align-content_center rainbow-flex_wrap">
-                            <Row className="">
-                                <Col className="">
+                            <Row className="flex-row">
+                                <Col className="p-0">
                                     <Input
                                         id="height"
                                         label="Largo"
@@ -1063,7 +953,7 @@ const PickingPage = () => {
                                         onChange={e => setHeight(e.target.value)}
                                     />
                                 </Col>
-                                <Col className="">
+                                <Col className="p-0">
                                     <Input
                                         id="width"
                                         name="width"
@@ -1076,7 +966,7 @@ const PickingPage = () => {
                                         onChange={e => setWidth(e.target.value)}
                                     />
                                 </Col>
-                                <Col className="">
+                                <Col className="p-0">
                                     <Input
                                         id="depth"
                                         name="depth"
@@ -1092,8 +982,6 @@ const PickingPage = () => {
                         </div>
                     )}
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
-                        {/* <Row className="">
-                                    <Col className=""> */}
                         <Input
                             id="cantidad"
                             label="Cantidad total"
@@ -1106,8 +994,6 @@ const PickingPage = () => {
                             style={{ width: '30%' }}
                             onChange={e => setQuantity(e.target.value)}
                         />
-                        {/* </Col>
-                                    <Col className=""> */}
                         <Input
                             id="weightT"
                             label="Peso total"
@@ -1120,8 +1006,6 @@ const PickingPage = () => {
                             style={{ width: '30%' }}
                             onChange={e => setWeightTotal(e.target.value)}
                         />
-                        {/* </Col>
-                                    <Col className=""> */}
                         <DatePicker
                             formatStyle="large"
                             label="Fecha de recolección"
@@ -1132,8 +1016,6 @@ const PickingPage = () => {
                             style={{ width: '40%' }}
                             onChange={value => setSelectDate({ date: value })}
                         />
-                        {/* </Col>
-                                </Row> */}
                     </div>
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
                         {/* <h5>Horario de Recolección</h5> */}
@@ -1168,22 +1050,9 @@ const PickingPage = () => {
                     </div>
                 </StyledRightPane>
                 <StyledLeftPane>
-                    <h4>Mis recolecciones</h4>
-                    <Input
-                        value={filter}
-                        placeholder="Buscar por nombre o calle"
-                        iconPosition="right"
-                        icon={<FontAwesomeIcon icon={faSearch} />}
-                        onChange={e => search(e)}
-                    />
-                    <div>
-                        <StyledRadioGroup
-                            id="radio-group-component-1"
-                            options={options}
-                            value={value}
-                            className="rainbow-m-around_small"
-                            onChange={e => setValue(e.target.value)}
-                        />
+                    <h4 className="mb-4">Mis recolecciones</h4>
+                    <div className="timeline">
+                        <ActivityTimeline>{options}</ActivityTimeline>
                     </div>
                 </StyledLeftPane>
             </StyledPaneContainer>

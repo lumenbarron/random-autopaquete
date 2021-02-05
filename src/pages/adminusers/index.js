@@ -98,7 +98,7 @@ const AdminUsersPage = () => {
 
     function handleProfiles(snapshot) {
         const data = snapshot.docs.map(doc => {
-            console.log(doc.data().ID, doc.data().name);
+            // console.log(doc.data().ID, doc.data().name);
             let profile = {
                 id: doc.id,
                 fullname: doc.data().name + ' ' + doc.data().lastname,
@@ -116,7 +116,7 @@ const AdminUsersPage = () => {
 
     function editUser(e, profile) {
         e.preventDefault();
-        console.log(profile.ID);
+        // console.log(profile.ID);
         history.push('/admin/usuario/' + profile.ID);
     }
 
