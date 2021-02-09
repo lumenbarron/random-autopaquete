@@ -302,9 +302,10 @@ export default function AllGuides({}) {
                             .toLocaleDateString('es-US', options),
                         ...doc.data(),
                     });
-                    //console.log('todas las guias', dataGuiasByDate);
+                    // console.log('todas las guias', dataGuiasByDate);
                 });
                 guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
+                console.log('todas las guias', guiasByDate);
                 setHistory(guiasByDate);
                 setDisplayData(true);
                 dateSelected.current = date;
@@ -333,7 +334,7 @@ export default function AllGuides({}) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        // console.log(doc.data());
+                        console.log(doc.data());
                         dataGuia.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(
@@ -361,7 +362,7 @@ export default function AllGuides({}) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        // console.log(doc.data());
+                        console.log(doc.data());
                         dataGuia.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(
@@ -497,3 +498,76 @@ export default function AllGuides({}) {
 }
 
 //[{id: '1', date : "20/11/20"}, {id: '2', date : "20/12/20"}, {id: '3', date : "10/11/20"} , {id: '4', date : "10/12/20"}, {id: '5', date : "20/11/20"},{id: '6', date : "20/12/20"},{id: '7', date : "10/11/20"} ]
+// {"name": "-", "Shipper":
+// {"Address":
+//  {"City": "Guadalajara",
+//  "PostalCode": "44600",
+//  "CountryCode": "MX",
+//  "StreetLines": ["juan alvarez 2440 -", "ladron de Guevara"],
+//   "StateOrProvinceCode": ""},
+//   "Contact":
+//   {"PersonName": "Itzel garcia duenas", "CompanyName": "Itzel garcia duenas",
+//   "PhoneNumber": "3322364660"}},
+//    "Recipient":
+//    {"Address":
+//    {"City": "Hermosillo",
+//    "PostalCode": "83150",
+//    "CountryCode": "MX",
+//     "StreetLines": ["ponciano arriaga -", "constitucion"],
+//     "StateOrProvinceCode": ""},
+//     "Contact": {"PersonName": "tienda green feeling",
+//     "CompanyName": "tienda green feeling", "PhoneNumber": "6621901991"}}
+//     , "DropoffType": "REGULAR_PICKUP",
+//      "ServiceType": "FEDEX_EXPRESS_SAVER",
+//       "TotalWeight": {"Units": "KG", "Value": 1.0},
+//        "PackageCount": 1, "ShipTimestamp": "2020-11-24T03:28:53.769000Z",
+//         "RateRequestTypes": "PREFERRED",
+//         "PreferredCurrency": "MXN",
+//          "TotalInsuredValue": {"Amount": 300.0, "Currency": "USD"},
+//          "content_description": "-",
+//          "ShippingChargesPayment":
+//          {"Payor": {"ResponsibleParty": {"Contact": {"ContactId": "1234",
+//           "PersonName": "Itzel garcia duenas"}, "AccountNumber": 620582212}},
+//            "PaymentType": "SENDER"},
+//             "RequestedPackageLineItems": [{"Weight": {"Units": "KG", "Value": 1.0},
+//              "Dimensions": {"Units": "CM", "Width": 13, "Height": 21, "Length": 10},
+//              "GroupNumber": 1, "ContentRecords": {"ItemNumber": "-", "PartNumber": "-",
+//              "Description": "suplemento alimenticios", "ReceivedQuantity": 1},
+//               "SequenceNumber": 1, "GroupPackageCount": 1}]}
+
+// {"name": "-",
+// "Shipper":
+// {"Address":
+// {"City": "Zapopan",
+// "PostalCode": "45140",
+//  "CountryCode": "MX",
+//   "StreetLines": ["Santa Catalina 323", "Santa Margarita 1a seccion"],
+//   "StateOrProvinceCode": ""},
+//    "Contact": {"PersonName":
+//    "Karen Angelica Gonzalez Ortega",
+//    "CompanyName": "Karen Angelica Gonzalez Ortega",
+//    "PhoneNumber": "3317485634"}},
+//    "Recipient":
+//     {"Address":
+//      {"City": "Los Cabos",
+//       "PostalCode": "23473",
+//       "CountryCode": "MX",
+//       "StreetLines": ["Santa Barbara Calle Zarcero casa 57", "Brisas del Pacifico"],
+//        "StateOrProvinceCode": ""},
+//        "Contact":
+//         {"PersonName": "Maximiliano Pelayo Santana",
+//          "CompanyName": "Maximiliano Pelayo Santana",
+//          "PhoneNumber": "6241715436"}}, "DropoffType":
+//          "REGULAR_PICKUP", "ServiceType":
+//          "FEDEX_EXPRESS_SAVER",
+//           "TotalWeight": {"Units": "KG", "Value": 8.0},
+//           "PackageCount": 1,
+//            "ShipTimestamp": "2020-11-24T03:28:53.769000Z",
+//            "RateRequestTypes": "PREFERRED",
+//             "PreferredCurrency": "MXN", "TotalInsuredValue": {"Amount": 70.0, "Currency": "USD"},
+//              "content_description": "-", "ShippingChargesPayment": {"Payor":
+//              {"ResponsibleParty": {"Contact": {"ContactId": "1234", "PersonName": "Karen Angelica Gonzalez Ortega"},
+//              "AccountNumber": 620582212}}, "PaymentType": "SENDER"}, "RequestedPackageLineItems":
+//              [{"Weight": {"Units": "KG", "Value": 8.0}, "Dimensions": {"Units": "CM", "Width": 10, "Height": 58, "Length": 46},
+//               "GroupNumber": 1, "ContentRecords": {"ItemNumber": "-", "PartNumber": "-", "Description": "x box one",
+//               "ReceivedQuantity": 1}, "SequenceNumber": 1, "GroupPackageCount": 1}]}

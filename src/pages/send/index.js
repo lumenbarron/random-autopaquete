@@ -133,7 +133,7 @@ const SendPage = () => {
                 .get()
                 .then(function(doc) {
                     if (doc.exists) {
-                        // console.log('Document data:', doc.data());
+                        console.log('Document data:', doc.data());
                         let data = JSON.stringify({
                             sender: {
                                 contact_name: doc.data().sender_addresses.name,
@@ -182,14 +182,16 @@ const SendPage = () => {
                                 description: doc.data().supplierData.cargos.shippingInfo[2],
                                 id: doc.data().supplierData.cargos.shippingInfo[3],
                             },
-                            shipping_secure:
-                                doc.data().supplierData.cargos.insurance === 0 ? false : true,
+                            shipping_secure: false,
+                            // doc.data().supplierData.cargos.insurance === true,
                             shipping_secure_data: {
-                                notes: doc.data().package.content_description,
-                                amount: doc.data().supplierData.cargos.insurance,
+                                notes: '-',
+                                // doc.data().package.content_description,
+                                amount: 0,
+                                // doc.data().supplierData.cargos.insurance,
                             },
                         });
-                        // console.log('data 2', data);
+                        console.log('data 2', data);
                         let requestOptions = {
                             method: 'POST',
                             headers: myHeaders,
@@ -202,7 +204,7 @@ const SendPage = () => {
                         )
                             .then(response => response.json())
                             .then(result => {
-                                // console.log(result);
+                                console.log(result);
                                 let responseFetch = Object.keys(result);
                                 if (responseFetch.length === 0) {
                                     setEmptyResult(true);

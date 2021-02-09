@@ -194,6 +194,8 @@ const PickingPage = () => {
     // }
 
     const getIdGuia = e => {
+        e.preventDefault();
+        setGuide(e.target.value);
         console.log('selectSupplier', selectSupplier);
         idGuide.current = e.target.value;
         console.log(idGuide.current);
@@ -289,24 +291,9 @@ const PickingPage = () => {
                 })
                 .then(data => {
                     if (data.response) {
-                        // console.log(data.response);
+                        console.log(data.response);
                         // console.log(typeCity.current, 'ciudad guardada');
-                        //let coloniasSelect = [];
-                        // let colonias = data.response.asentamiento;
-                        // colonias.forEach(col => {
-                        //     coloniasSelect.push({
-                        //         label: col,
-                        //         value: col,
-                        //     });
-                        // });
-                        // console.log(coloniasSelect);
-                        // neighborhoodSel.current = coloniasSelect;
-                        // setNeighborhoodSelect(coloniasSelect);
-                        //coloniasSelect.map(({value, label}, index) =>  <Option name={label} label={label} value={value} /> )
-                        // setNeighborhood({ label: states[stateKey], value: stateKey })
-                        //const stateKey = Object.keys(colonias).map( );
-                        //console.log(stateKey);
-                        //setState({ label: states[stateKey], value: stateKey });
+                        // setCountry(data.response.municipio);
                         if (data.response.municipio !== typeCity.current) {
                             swal.fire({
                                 title: '!Lo siento!',
@@ -384,7 +371,7 @@ const PickingPage = () => {
                 ...doc.data(),
             });
         });
-        //setPickups(allPickups);
+        setPickups(allPickups);
         setDirectionData(allPickups);
     }
 
@@ -413,7 +400,7 @@ const PickingPage = () => {
             }
         })
         .map(directions => {
-            console.log(directions);
+            // console.log(directions);
             const { id, pickup_date, pickup_id, shipping_company, name } = directions;
             return (
                 <TimelineMarker
@@ -459,6 +446,13 @@ const PickingPage = () => {
             setErrorCP(false);
         }
         if (streetName.trim() === '' || !addressRegex.test(streetName)) {
+            swal.fire({
+                title: '!Lo siento!',
+                text:
+                    'El texto tiene que ser sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
             setErrorStreetName(true);
             setError(true);
             return;
@@ -472,7 +466,8 @@ const PickingPage = () => {
         ) {
             swal.fire({
                 title: '!Lo siento!',
-                text: 'El texto puede ser hasta 10 letras y números,favor de verificar.',
+                text:
+                    'El texto puede ser hasta 10 letras y números,sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
                 icon: 'error',
                 confirmButtonText: 'Ok',
             });
@@ -562,36 +557,49 @@ const PickingPage = () => {
             setErrorWeightTotal(false);
         }
 
-        console.log(
-            'all pickups',
-            pickups,
-            'cp',
-            CP,
-            'guia',
-            idGuide.current,
-            pickupDate,
-            'pickupDate',
-        );
         pickups.forEach(doc => {
+            console.log(doc.CP, doc.pickup_date, doc.shipping_company);
             if (
                 doc.CP === CP &&
                 doc.pickup_date === pickupDate &&
                 doc.shipping_company === typeSupplier.current
             ) {
                 console.log('mismo cp, mismo dia, misma paqueteria');
+                // swal.fire({
+                //     title: '!Lo siento!',
+                //     text:
+                //         'Estas haciendo una recolección para el mismo día, paquetería y CP de alguna ya programada',
+                //     icon: 'error',
+                //     confirmButtonText: 'Ok',
+                // });
                 errorRepeat.current = true;
             } else {
                 errorRepeat.current = false;
+                setError(false);
+                return;
             }
             if (doc.guide === idGuide.current) {
                 console.log('misma guia');
                 errorRepeatGuide.current = true;
+                // swal.fire({
+                //     title: '!Lo siento!',
+                //     text: 'Esta guía ya tiene una recolección programada, favor de verificar',
+                //     icon: 'error',
+                //     confirmButtonText: 'Ok',
+                // });
+                setErrorGuide(true);
+                setError(true);
+                return;
             } else {
                 errorRepeatGuide.current = false;
+                setErrorGuide(false);
+                setError(false);
+                return;
             }
         });
 
-        if (errorRepeat.current === true) {
+        if (errorRepeat.current) {
+            console.log('una recolección para el mismo día');
             swal.fire({
                 title: '!Lo siento!',
                 text:
@@ -605,7 +613,8 @@ const PickingPage = () => {
             errorRepeat.current = false;
             setError(false);
         }
-        if (errorRepeatGuide.current === true) {
+        if (errorRepeatGuide.current) {
+            console.log('recolección programada');
             swal.fire({
                 title: '!Lo siento!',
                 text: 'Esta guía ya tiene una recolección programada, favor de verificar',
@@ -736,6 +745,7 @@ const PickingPage = () => {
                     idGuide.current = '';
                     typeCity.current = '';
                     typeSupplier.current = '';
+                    setGuide('');
                     setName('');
                     setSelectSupplier('');
                     setCP('');
@@ -792,8 +802,8 @@ const PickingPage = () => {
                                     errorGuide ? 'empty-space' : ''
                                 }`}
                                 required
-                                value={idGuide.current}
                                 onChange={e => getIdGuia(e)}
+                                value={guide}
                             />
                             <p className>(primeros 8 dígitos para Redpack)</p>
                         </div>

@@ -348,7 +348,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .get()
             .then(function(doc) {
                 if (doc.exists) {
-                    // console.log('Document data:', doc.data());
+                    console.log('Document data:', doc.data());
                     dataShipping.current = JSON.stringify({
                         sender: {
                             contact_name: doc.data().sender_addresses.name,
@@ -457,12 +457,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
             .then(result => {
-                // console.log(result, result.length)
+                console.log(result);
                 if (result.length >= 1) {
                     console.log('numero de provedores disponibles', result.length);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
                     let suppliersGeneral = result;
-                    // console.log('suppliersGeneral', suppliersGeneral);
+                    console.log('suppliersGeneral', suppliersGeneral);
                     if (cpsAvailabilityAutoencargos.current === true) {
                         console.log('aqui si hay autoencargos');
                         let autoencargos = {
