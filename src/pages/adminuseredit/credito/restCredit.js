@@ -94,17 +94,19 @@ export default function RestCredito({ user }) {
     function handleVouncher(querySnapshot) {
         let voucherData = [];
         querySnapshot.forEach(doc => {
+            //console.log(doc.data().ID, doc.id, 'al');
+            // db.collection('guia')
+            // .doc(doc.id)
+            // .update({ID: 'ix60Cn71xXY4PD2Ed7dLWLdaxYs2'})
             voucherData.push({
                 id: doc.id,
                 ...doc.data(),
             });
         });
-        //console.log('rest data', voucherData);
         setVouncherData(voucherData);
     }
 
     const inforTransacciones = voucherData.map((voucher, idx) => {
-        //console.log('voucherData', voucherData);
         return {
             id: voucher.id,
             date: voucher.create_date,

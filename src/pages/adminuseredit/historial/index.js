@@ -69,6 +69,7 @@ export default function HistoryUser({ user }) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
+                        console.log(doc.data().ID, doc.id, 'al');
                         dataGuias.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(
@@ -77,7 +78,6 @@ export default function HistoryUser({ user }) {
                                     doc.data().package.depth) /
                                     5000,
                             ),
-                            //sentDate: doc.data().creation_date.toDate(),
                             ...doc.data(),
                         });
                     });
