@@ -185,8 +185,10 @@ const SendPage = () => {
                             shipping_secure: false,
                             // doc.data().supplierData.cargos.insurance === true,
                             shipping_secure_data: {
-                                notes: doc.data().package.content_description,
-                                amount: doc.data().supplierData.cargos.insurance,
+                                notes: '-',
+                                // doc.data().package.content_description,
+                                amount: 0,
+                                // doc.data().supplierData.cargos.insurance,
                             },
                         });
                         console.log('data 2', data);
