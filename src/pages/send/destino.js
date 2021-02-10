@@ -60,6 +60,7 @@ const AddressRadioOption = ({ directions }) => {
         place_reference,
         phone,
         street_number,
+        street_name,
         country,
         state,
         codigo_postal,
@@ -71,6 +72,7 @@ const AddressRadioOption = ({ directions }) => {
             <span>
                 <b>{name}</b>
             </span>
+            <p>{street_name}</p>
             <p>{street_number}</p>
             <p>{neighborhood}</p>
             <p>
