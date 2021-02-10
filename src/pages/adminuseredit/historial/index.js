@@ -69,7 +69,7 @@ export default function HistoryUser({ user }) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.data().ID, doc.id, 'al');
+                        console.log(doc.data(), doc.id);
                         dataGuias.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(

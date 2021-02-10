@@ -259,11 +259,11 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             }
             setErrorNameDuplicate(false);
             let pricedWeight = Math.ceil(weight);
-            console.log(pricedWeight, 'peso fisico');
+            // console.log(pricedWeight, 'peso fisico');
             const volumetricWeight = Math.ceil((height * width * depth) / 5000);
-            console.log(volumetricWeight, 'peso volumetrico');
+            // console.log(volumetricWeight, 'peso volumetrico');
             const heavyWeight = Math.ceil(parseInt(height, 10) + 2 * width + 2 * depth);
-            console.log('heavyWeight', heavyWeight);
+            // console.log('heavyWeight', heavyWeight);
             // if (volumetricWeight > weight) {
             //     pricedWeight = volumetricWeight;
             //     console.log(pricedWeight, 'precio real');
