@@ -161,7 +161,7 @@ export default function AllGuides({}) {
                 dataSingleUser = dataUsers
                     .filter((item, index) => dataUsers.indexOf(item) === index)
                     .sort();
-                setHistory(guiasByDate);
+                setHistory(dataGuias);
                 setUsersName(dataSingleUser);
                 setDisplayData(true);
             })
