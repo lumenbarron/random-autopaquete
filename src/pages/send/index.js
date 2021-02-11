@@ -182,13 +182,16 @@ const SendPage = () => {
                                 description: doc.data().supplierData.cargos.shippingInfo[2],
                                 id: doc.data().supplierData.cargos.shippingInfo[3],
                             },
-                            shipping_secure: false,
-                            // doc.data().supplierData.cargos.insurance === true,
+                            shipping_secure:
+                                //false,
+                                doc.data().supplierData.cargos.insurance === 0 ? false : true,
                             shipping_secure_data: {
-                                notes: '-',
-                                // doc.data().package.content_description,
-                                amount: 0,
-                                // doc.data().supplierData.cargos.insurance,
+                                notes:
+                                    // '-',
+                                    doc.data().package.content_description,
+                                amount:
+                                    // 0,
+                                    doc.data().supplierData.cargos.insurance,
                             },
                         });
                         //console.log('data 2', data);
@@ -235,6 +238,7 @@ const SendPage = () => {
                                         .update({
                                             label: result.pdf_b64,
                                             rastreo: result.id_shipping,
+                                            body: data,
                                         });
                                     // setCurrentStepName('descarga');
                                     newBalance(costGuia);

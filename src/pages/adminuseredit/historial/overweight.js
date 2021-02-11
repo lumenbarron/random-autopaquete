@@ -45,7 +45,7 @@ export default function OverweightUser({ user }) {
                         });
                     });
                     setHistory(dataOverweights);
-                    console.log('sobrepesos', dataOverweights);
+                    //console.log('sobrepesos', dataOverweights);
                 })
                 .catch(function(error) {
                     console.log('Error getting documents: ', error);
