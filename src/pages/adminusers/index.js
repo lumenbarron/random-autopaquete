@@ -98,7 +98,7 @@ const AdminUsersPage = () => {
 
     function handleProfiles(snapshot) {
         const data = snapshot.docs.map(doc => {
-            // console.log(doc.data().ID, doc.data().name);
+            //console.log(doc.data().ID, doc.data().name);
             let profile = {
                 id: doc.id,
                 fullname: doc.data().name + ' ' + doc.data().lastname,
@@ -109,7 +109,7 @@ const AdminUsersPage = () => {
         });
         //console.log('data', data);
         const sorted = data.sort((a, b) => a.fullname.localeCompare(b.fullname));
-        //console.log('sorted', sorted);
+        console.log('sorted', sorted);
         setUsers(sorted);
         setLoaded(false);
     }

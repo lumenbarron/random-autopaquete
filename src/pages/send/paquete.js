@@ -405,7 +405,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         onChange={e => setContentDescription(e.target.value)}
                     />
                 </div>
-                {/* <div className="rainbow-align-content_center  rainbow-flex_wrap content-value">
+                <div className="rainbow-align-content_center  rainbow-flex_wrap content-value">
                     <CheckboxToggle
                         id="asegurar"
                         label="¿Desea asegurar?"
@@ -440,7 +440,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                             onChange={e => setContentValue(e.target.value)}
                         />
                     )}
-                </div> */}
+                </div>
                 <div style={{ textAlign: 'right' }}>
                     <CheckboxToggle
                         id="guardar"
