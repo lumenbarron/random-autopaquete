@@ -80,12 +80,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [contentValue, setContentValue] = useState('');
     const [error, setError] = useState(false);
 
-    // const getFinalPriceFedexDiaS = useRef();
-    // const getFinalPriceFedexEco = useRef();
-    // const getFinalPriceRedExp = useRef();
-    // const getFinalPriceRedEco = useRef();
-    // const getFinalPriceAuto = useRef();
-
     const [profileDoc, setProfileDoc] = useState(false);
 
     let dataShipping = useRef();

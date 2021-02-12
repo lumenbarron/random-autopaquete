@@ -69,11 +69,10 @@ export default function HistoryUser({ user }) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(
-                            doc.data().supplierData.cargos.insurance,
-                            doc.data().supplierData.cargos.seguro,
-                            doc.data().rastreo,
-                        );
+                        // console.log(
+                        //     doc.data(),
+                        //     doc.id,
+                        // );
                         // db.collection('sender_addresses')
                         // .doc(doc.id)
                         // .update({ID : 'XMIlDAVlEnPZ55iTbuhXQrTUrFs1'})
@@ -89,7 +88,7 @@ export default function HistoryUser({ user }) {
                         });
                     });
                     setHistory(dataGuias);
-                    console.log('guias', dataGuias);
+                    //console.log('guias', dataGuias);
                 })
                 .catch(function(error) {
                     console.log('Error getting documents: ', error);

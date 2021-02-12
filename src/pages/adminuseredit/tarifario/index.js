@@ -514,7 +514,7 @@ export default function Tarifario({ user }) {
                 ...doc.data(),
             };
         });
-        console.log('tarifasMap', tarifasMap);
+        //console.log('tarifasMap', tarifasMap);
         setTarifas(tarifasMap);
     }
 

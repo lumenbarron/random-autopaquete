@@ -84,7 +84,7 @@ const RecordPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('data guias', doc.data(), 'doc.id', doc.id);
+                    //console.log('data guias', doc.data(), 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(

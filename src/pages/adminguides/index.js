@@ -120,19 +120,19 @@ export default function AllGuides({}) {
 
     useEffect(() => {
         let dataGuias = [];
-        let dataUsers = [];
-        let dataSingleUser = [];
+        //let dataUsers = [];
+        //let dataSingleUser = [];
         let guiasByDate = [];
         const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
         let convertDate = new Date().toLocaleDateString('es-US', options);
         db.collection('guia')
             .where('status', '==', 'completed')
             .orderBy('creation_date', 'desc')
-            .limit(150)
+            .limit(100)
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.id, doc.data().razon_social);
+                    //console.log(doc.id, doc.data().supplierData.cargos.insurance, doc.id, doc.data().supplierData.cargos.seguro );
                     // if ( typeof doc.data().rastreo === 'string' ) {
                     // console.log('holi')
                     // db.collection('guia')
@@ -153,22 +153,39 @@ export default function AllGuides({}) {
                             .toLocaleDateString('es-US', options),
                         ...doc.data(),
                     });
-
-                    dataUsers.push(doc.data().name);
                 });
 
                 guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
-                dataSingleUser = dataUsers
-                    .filter((item, index) => dataUsers.indexOf(item) === index)
-                    .sort();
-                setHistory(dataGuias);
-                setUsersName(dataSingleUser);
+                setHistory(guiasByDate);
+                //console.log(guiasByDate);
                 setDisplayData(true);
+                searchName();
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
             });
     }, []);
+
+    const searchName = () => {
+        let dataUsers = [];
+        let dataSingleUser = [];
+        db.collection('guia')
+            .where('status', '==', 'completed')
+            .orderBy('creation_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    //console.log(doc.data().name)
+                    dataUsers.push(doc.data().name);
+                });
+                //console.log(dataUsers);
+                dataSingleUser = dataUsers
+                    .filter((item, index) => dataUsers.indexOf(item) === index)
+                    .sort();
+                //onsole.log(dataSingleUser);
+                setUsersName(dataSingleUser);
+            });
+    };
 
     useEffect(() => {
         // console.log('name filtered', nameSelected.current);
@@ -219,7 +236,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    // console.log('guias del cliente ' + name + ':', doc.data());
+                    console.log('guias del cliente ' + name + ':', doc.id);
                     dataGuiasEachUser.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -230,7 +247,13 @@ export default function AllGuides({}) {
                         ),
                         ...doc.data(),
                     });
+                    //dataUsers.push(doc.data().name);
                 });
+                // dataSingleUser = dataUsers
+                // .filter((item, index) => dataUsers.indexOf(item) === index)
+                // .sort();
+                // console.log(dataSingleUser);
+                // setUsersName(dataSingleUser);
                 setHistory(dataGuiasEachUser);
                 setDisplayData(true);
                 nameSelected.current = name;
