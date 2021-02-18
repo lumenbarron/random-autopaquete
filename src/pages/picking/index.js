@@ -95,6 +95,7 @@ const PickingPage = () => {
         // console.log(creationDate)
         nextDay = nextDay + 1;
         //console.log(nextDay);
+        initialHour = 10;
     }
     // console.log('min date ', yearInitial, monthInitial, dayInitial );
     // console.log('max date', yearInitial, monthInitial, nextDay)
@@ -714,7 +715,14 @@ const PickingPage = () => {
             .then(response => response.json())
             .then(result => {
                 console.log(result);
-                if (result.data) {
+                if (result.data.error) {
+                    swal.fire({
+                        title: '!Lo siento!',
+                        text: 'Esta guía ya tiene una recolección programada, favor de verificar',
+                        icon: 'error',
+                        confirmButtonText: 'Ok',
+                    });
+                } else if (result.data) {
                     console.log('si hay data');
                     const directionsPickupAdd = db.collection('pickups').add({
                         ID: user.uid,
@@ -1068,10 +1076,12 @@ const PickingPage = () => {
             </StyledPaneContainer>
             <Row className="justify-content-md-center mt-4 ">
                 <p className="p-text" style={styleText}>
-                    {' '}
-                    Toma en cuenta que la hora máxima para la recolección el mismo día es a las 2:00
-                    pm ( varia en cada ciudad), después de este horario se programará para el día
-                    siguiente
+                    Toma en cuenta que la hora de inicio máxima para la recolección el mismo día es
+                    a las 2:00 pm ( varia en cada ciudad), después de este horario se programará
+                    para el día siguiente
+                </p>
+                <p className="p-text" style={styleText}>
+                    Las recolecciones en sábado tienen un costo extra de $220 SÓLO en Fedex
                 </p>
             </Row>
         </StyledSendPage>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons';
 import * as firebase from 'firebase';
 import { Link } from 'react-router-dom';
 import { useFirebaseApp, useUser } from 'reactfire';
@@ -320,6 +320,13 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
         <StyledPaneContainer>
             <StyledLeftPane>
                 <h4>Mis empaques</h4>
+                <Input
+                    value={filter}
+                    placeholder="Buscar"
+                    iconPosition="right"
+                    icon={<FontAwesomeIcon icon={faSearch} />}
+                    onChange={e => search(e)}
+                />
                 <StyledRadioGroup
                     id="radio-group-component-1"
                     options={options}

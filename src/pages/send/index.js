@@ -225,11 +225,24 @@ const SendPage = () => {
                                 // shipping_labels: [{…}]
 
                                 //{'error': 'Mensaje de error'}
+
                                 let responseFetch = Object.keys(result);
                                 if (responseFetch.length === 0) {
                                     setEmptyResult(true);
-                                } else if (result.pdf_b64 === 0 || result.pdf_b64 == '') {
+                                    supplierData.Supplier_cost = '0.00';
+                                    db.collection('guia')
+                                        .doc(idGuiaGlobal.current)
+                                        .update({
+                                            supplierData,
+                                        });
+                                } else if (result.pdf_b64.length === 0 || result.pdf_b64 == '') {
                                     setEmptyResult(true);
+                                    supplierData.Supplier_cost = '0.00';
+                                    db.collection('guia')
+                                        .doc(idGuiaGlobal.current)
+                                        .update({
+                                            supplierData,
+                                        });
                                 } else {
                                     // console.log(result.pdf_b64);
                                     // console.log(result.id_shipping);
