@@ -569,13 +569,33 @@ export default function Tarifario({ user }) {
 
     const [autoencargos, autoencargosExtra] = getTarifasDeServicio('autoencargos');
 
-    // const [autoencargosDiaSiguiente, autoencargosDiaSiguienteExtra] = getTarifasDeServicio(
-    //     'autoencargosDiaSiguiente',
-    // );
+    const [estafetaDiaSiguiente, estafetaDiaSiguienteExtra] = getTarifasDeServicio(
+        'estafetaDiaSiguiente',
+    );
+
+    const [estafetaEconomico, estafetaEconomicoExtra] = getTarifasDeServicio('estafetaEconomico');
 
     return (
         <>
             <h2>Tarifario del cliente</h2>
+            <h3 style={{ marginTop: '1rem' }}>Estafeta</h3>
+            <Accordion id="accordion-estafeta" multiple>
+                <TarifarioPorServicio
+                    label="Estafeta Día Siguiente"
+                    tarifas={estafetaDiaSiguiente}
+                    kgExtra={estafetaDiaSiguienteExtra}
+                    entrega="estafetaDiaSiguiente"
+                    user={user}
+                />
+
+                <TarifarioPorServicio
+                    label="Estafeta Terrestre"
+                    tarifas={estafetaEconomico}
+                    kgExtra={estafetaEconomicoExtra}
+                    entrega="estafetaEconomico"
+                    user={user}
+                />
+            </Accordion>
             <h3 style={{ marginTop: '1rem' }}>Redpack</h3>
             <Accordion id="accordion-estafeta" multiple>
                 <TarifarioPorServicio

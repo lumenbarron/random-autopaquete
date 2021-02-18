@@ -5,7 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { StyledUserEdit, StyledPanel } from './styled';
 import formatMoney from 'accounting-js/lib/formatMoney.js';
 import InfoGeneral from './info-general';
-import HistoryUser from './historial/index2';
+import HistoryUser from './historial/index';
 import OverweightUser from './historial/overweight';
 import Credito from './credito/index';
 import RestCredito from './credito/restCredit';

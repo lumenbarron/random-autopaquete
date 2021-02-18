@@ -247,13 +247,7 @@ export default function AllGuides({}) {
                         ),
                         ...doc.data(),
                     });
-                    //dataUsers.push(doc.data().name);
                 });
-                // dataSingleUser = dataUsers
-                // .filter((item, index) => dataUsers.indexOf(item) === index)
-                // .sort();
-                // console.log(dataSingleUser);
-                // setUsersName(dataSingleUser);
                 setHistory(dataGuiasEachUser);
                 setDisplayData(true);
                 nameSelected.current = name;

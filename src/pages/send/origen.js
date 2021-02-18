@@ -6,6 +6,7 @@ import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledLeftPane, StyledRightPane, StyledPaneContainer, StyledRadioGroup } from './styled';
 import { log } from 'firebase-functions/lib/logger';
 import swal from 'sweetalert2';
+import { element, func } from 'prop-types';
 
 const cpRegex = RegExp(/^[0-9]{5}$/);
 const phoneRegex = RegExp(/^[0-9]{10}$/);
@@ -124,6 +125,88 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
     let idGuia;
     let pickedDirection;
+
+    // useEffect( () =>{
+
+    //     let data = JSON.stringify({
+    //         sender: {
+    //             contact_name: 'name',
+    //             company_name: 'name',
+    //             street: 'street_name',
+    //             zip_code: '45010',
+    //             neighborhood: 'neighborhood',
+    //             city: 'Zapopan',
+    //             country: 'MX',
+    //             state: 'Jalisco',
+    //             street_number: '1',
+    //             place_reference: 'place_reference',
+    //             phone: 'phone',
+    //         },
+    //         receiver: {
+    //             contact_name: 'name',
+    //             company_name: 'name',
+    //             street: 'street_name',
+    //             zip_code: '45040',
+    //             neighborhood: 'neighborhood',
+    //             city: 'Guadalajara',
+    //             country: 'MX',
+    //             state: 'Jalisco',
+    //             street_number: '1',
+    //             place_reference: 'place_reference',
+    //             phone: 'phone',
+    //         },
+    //         packages: [
+    //             {
+    //                 name:'estandar',
+    //                 height: 1,
+    //                 width: 1,
+    //                 depth: 1,
+    //                 weight: 1,
+    //                 content_description:'s-d',
+    //                 quantity: 1,
+    //             },
+    //         ],
+    //     });
+    //     let myHeaders = new Headers();
+    //     myHeaders.append('Authorization', tokenProd);
+    //     myHeaders.append('Content-Type', 'application/json');
+    //     let requestOptions = {
+    //         method: 'POST',
+    //         headers: myHeaders,
+    //         body: data,
+    //         redirect: 'follow',
+    //     };
+
+    //     async function fetchData () {
+    //         console.log('fetching');
+    //         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/`;
+    //         await fetch(urlRequest, requestOptions)
+    //         .then(response => response.json())
+    //         // await Promise.all([
+    //         //     fetch('https://autopaquete.simplestcode.com/api/do-shipping-quote/pakke', requestOptions),
+    //         //     fetch('https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex', requestOptions),
+    //         //     fetch('https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack', requestOptions ),
+
+    //         // ])
+    //         // .then(([res1, res2, res3]) =>
+    //         // Promise.all([(res1.json(),res2.json(),res3.json())]),
+    //         // )
+    //         // .then(async ([res1, res2, res3]) => {
+    //         //     const result1 = await res1.json();
+    //         //     const result2 = await res2.json();
+    //         //     const result3 = await res3.json();
+    //         //    console.log(result1,result2 ,result3);
+    //         // return [result1.concat(result2 ,result3)]
+    //         // })
+
+    //         .then(result => {
+    //             console.log(result)
+    //             console.log(result.length);
+    //         })
+    //         .catch(err => console.log('error', err));
+    //     };
+    //     fetchData();
+    // }, []);
 
     //Se busca los datos de envío (si hay algun envío efectuandose)
     useEffect(() => {
