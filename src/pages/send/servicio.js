@@ -1025,21 +1025,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 Entrega Estimada
             </h6>
             <p>{entrega}</p>
-            {costos.delivery !== 'NORMAL' && (
-                <>
-                    <h6
-                        style={{
-                            color: 'red',
-                            fontWeight: 'bold',
-                            marginTop: '1rem',
-                            marginBottom: '0.5rem',
-                        }}
-                    >
-                        Tipo de Entrega
-                    </h6>
-                    <p style={{ color: 'red' }}>{costos.delivery}</p>
-                </>
-            )}
+            {costos.delivery !== 'NORMAL' ||
+                (costos.delivery !== 'NORMAL' && (
+                    <>
+                        <h6
+                            style={{
+                                color: 'red',
+                                fontWeight: 'bold',
+                                marginTop: '1rem',
+                                marginBottom: '0.5rem',
+                            }}
+                        >
+                            Tipo de Entrega
+                        </h6>
+                        <p style={{ color: 'red' }}>{costos.delivery}</p>
+                    </>
+                ))}
             <h6
                 style={{
                     color: 'gray',

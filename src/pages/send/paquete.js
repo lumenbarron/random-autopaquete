@@ -219,8 +219,8 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             setError(true);
             setErrorWeight(true);
             return;
-        } else if (weight > 68) {
-            swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 68 kg', 'error');
+        } else if (weight > 70) {
+            swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 70 kg', 'error');
             setError(true);
             setErrorWeight(true);
             return;
@@ -263,25 +263,27 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             const volumetricWeight = Math.ceil((height * width * depth) / 5000);
             // console.log(volumetricWeight, 'peso volumetrico');
             const heavyWeight = Math.ceil(parseInt(height, 10) + 2 * width + 2 * depth);
-            // console.log('heavyWeight', heavyWeight);
-            // if (volumetricWeight > weight) {
-            //     pricedWeight = volumetricWeight;
-            //     console.log(pricedWeight, 'precio real');
-            // }
+            console.log('heavyWeight', heavyWeight);
+            if (volumetricWeight > weight) {
+                pricedWeight = volumetricWeight;
+                console.log(pricedWeight, 'precio real');
+            }
 
             if (volumetricWeight > 68) {
                 swal.fire('¡Oh no!', 'Por el momento no puedes enviar más de 68 kg', 'error');
                 setError(true);
                 setErrorHeight(true);
-            } else if (heavyWeight > 330) {
-                swal.fire(
-                    '¡Oh no!',
-                    'Parace que tu paquete es extra grande. ¿ Podrías revisar las medidas ?',
-                    'error',
-                );
-                setError(true);
-                setErrorHeight(true);
-            } else {
+            }
+            // else if (heavyWeight > 330) {
+            //     swal.fire(
+            //         '¡Oh no!',
+            //         'Parace que tu paquete es extra grande. ¿ Podrías revisar las medidas ?',
+            //         'error',
+            //     );
+            //     setError(true);
+            //     setErrorHeight(true);
+            // }
+            else {
                 const packageDataToFirebase = {
                     ID: user.uid,
                     name,

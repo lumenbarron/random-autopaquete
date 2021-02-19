@@ -27,7 +27,23 @@ export const StyledAusers = styled.div`
             margin-bottom : 0;
         }
         button {
-            background-color: #ab0000;
+            
+            a {
+                color: white;
+            }
+    }
+
+    .content-header-2 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
+
+        h1 {
+            margin-bottom : 0;
+        }
+        button {
+            
             a {
                 color: white;
             }

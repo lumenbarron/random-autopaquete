@@ -79,13 +79,17 @@ export default function AllGuides({}) {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const [history, setHistory] = useState([]);
+    const [allGuides, setAllGuides] = useState([]);
     const [usersName, setUsersName] = useState([]);
     const [tableData, setTableData] = useState();
     const [tableUsers, setTableUsers] = useState();
     const [selectName, setSelectName] = useState();
     const [selectSupplier, setSelectSupplier] = useState();
     const [selectDate, setSelectDate] = useState({ date: new Date() });
+    const [startDate, setStartDate] = useState({ date: new Date() });
+    const [endDate, setEndDate] = useState({ date: new Date() });
     const [displayData, setDisplayData] = useState(false);
+    const [available, setAvailable] = useState(false);
     const nameSelected = useRef('usuario');
     const supplierSelected = useRef('servicio');
     const dateFrom = useRef('');
@@ -117,14 +121,13 @@ export default function AllGuides({}) {
             label: 'Autoencargos',
         },
     ];
+    const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
+    //Get the first 100 guides, show only for today
     useEffect(() => {
         let dataGuias = [];
-        //let dataUsers = [];
-        //let dataSingleUser = [];
         let guiasByDate = [];
-        const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
-        let convertDate = new Date().toLocaleDateString('es-US', options);
+        let convertDate = new Date().toLocaleDateString('es-US', optionsDate);
         db.collection('guia')
             .where('status', '==', 'completed')
             .orderBy('creation_date', 'desc')
@@ -150,7 +153,7 @@ export default function AllGuides({}) {
                         sentDate: doc
                             .data()
                             .creation_date.toDate()
-                            .toLocaleDateString('es-US', options),
+                            .toLocaleDateString('es-US', optionsDate),
                         ...doc.data(),
                     });
                 });
@@ -160,11 +163,45 @@ export default function AllGuides({}) {
                 //console.log(guiasByDate);
                 setDisplayData(true);
                 searchName();
+                allGuidesEver();
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
             });
     }, []);
+
+    //Get all the guides, all the times
+    const allGuidesEver = () => {
+        let dataALLGuias = [];
+        db.collection('guia')
+            .where('status', '==', 'completed')
+            .orderBy('creation_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    dataALLGuias.push({
+                        id: doc.id,
+                        volumetricWeight: Math.ceil(
+                            (doc.data().package.height *
+                                doc.data().package.width *
+                                doc.data().package.depth) /
+                                5000,
+                        ),
+                        sentDate: doc
+                            .data()
+                            .creation_date.toDate()
+                            .toLocaleDateString('es-US', optionsDate),
+                        ...doc.data(),
+                    });
+                });
+                //console.log(dataALLGuias);
+                setAllGuides(dataALLGuias);
+                setAvailable(true);
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+    };
 
     const searchName = () => {
         let dataUsers = [];
@@ -188,7 +225,7 @@ export default function AllGuides({}) {
     };
 
     useEffect(() => {
-        // console.log('name filtered', nameSelected.current);
+        console.log(history);
         setTableData(
             history.map(historyRecord => {
                 return {
@@ -289,51 +326,81 @@ export default function AllGuides({}) {
                     setSelectName('');
                     setSelectDate({ date: new Date() });
                 }
-                // console.log('dataGuiasBySupplier', dataGuiasBySupplier);
             });
     };
 
-    const searchByDate = date => {
-        let dataGuiasByDate = [];
-        let guiasByDate = [];
-        const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
-        let convertDate = new Date(date).toLocaleDateString('es-US', options);
-        setSelectDate({ date: date });
-        db.collection('guia')
-            .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    dataGuiasByDate.push({
-                        id: doc.id,
-                        volumetricWeight: Math.ceil(
-                            (doc.data().package.height *
-                                doc.data().package.width *
-                                doc.data().package.depth) /
-                                5000,
-                        ),
-                        sentDate: doc
-                            .data()
-                            .creation_date.toDate()
-                            .toLocaleDateString('es-US', options),
-                        ...doc.data(),
-                    });
-                    // console.log('todas las guias', dataGuiasByDate);
-                });
-                guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
-                console.log('todas las guias', guiasByDate);
-                setHistory(guiasByDate);
-                setDisplayData(true);
-                dateSelected.current = date;
-                if (nameSelected.current != 'usuario' || supplierSelected.current != 'servicio') {
-                    setSelectName('');
-                    setSelectSupplier('');
-                }
-            })
-            .catch(function(error) {
-                console.log('Error getting documents: ', error);
-            });
+    // const searchByDate = date => {
+    //     let dataGuiasByDate = [];
+    //     let guiasByDate = [];
+    //     const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
+    //     let convertDate = new Date(date).toLocaleDateString('es-US', options);
+    //     setSelectDate({ date: date });
+    //     db.collection('guia')
+    //         .where('status', '==', 'completed')
+    //         .orderBy('creation_date', 'desc')
+    //         .get()
+    //         .then(function(querySnapshot) {
+    //             querySnapshot.forEach(function(doc) {
+    //                 dataGuiasByDate.push({
+    //                     id: doc.id,
+    //                     volumetricWeight: Math.ceil(
+    //                         (doc.data().package.height *
+    //                             doc.data().package.width *
+    //                             doc.data().package.depth) /
+    //                             5000,
+    //                     ),
+    //                     sentDate: doc
+    //                         .data()
+    //                         .creation_date.toDate()
+    //                         .toLocaleDateString('es-US', options),
+    //                     ...doc.data(),
+    //                 });
+    //                 // console.log('todas las guias', dataGuiasByDate);
+    //             });
+    //             guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
+    //             console.log('todas las guias', guiasByDate);
+    //             setHistory(guiasByDate);
+    //             setDisplayData(true);
+    //             dateSelected.current = date;
+    //             if (nameSelected.current != 'usuario' || supplierSelected.current != 'servicio') {
+    //                 setSelectName('');
+    //                 setSelectSupplier('');
+    //             }
+    //         })
+    //         .catch(function(error) {
+    //             console.log('Error getting documents: ', error);
+    //         });
+    // };
+
+    const searchByDate = (startDate, endDate) => {
+        console.log(startDate, endDate, allGuides);
+        let newdates = [];
+        let infoDates = [];
+
+        const getDaysArray = (start, end) => {
+            console.log(start);
+            console.log(end);
+            for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
+                arr.push(new Date(dt));
+            }
+            arr.push(new Date(end));
+            return arr;
+        };
+        let daylist = getDaysArray(new Date(startDate), new Date(endDate));
+        console.log('daylist', daylist);
+        daylist.forEach(dat => {
+            newdates.push(dat.toLocaleDateString('es-US', optionsDate).slice(0, 10));
+        });
+        //console.log(newdates)
+        allGuides.forEach(e => {
+            // console.log(e.date)
+            if (newdates.includes(e.sentDate)) {
+                infoDates.push(e);
+            }
+        });
+        setHistory(infoDates);
+        setDisplayData(true);
+        console.log(infoDates);
     };
 
     const getIdGuia = trackingNumber => {
@@ -414,6 +481,30 @@ export default function AllGuides({}) {
                 </Row>
                 <Row className="content-header">
                     <h2 style={{ marginBottom: 0 }}>Filtrar por :</h2>
+                    <Col md="3">
+                        <DatePicker
+                            // formatStyle="medium"
+                            value={startDate.date}
+                            onChange={value => setStartDate({ date: value })}
+                        />
+                    </Col>
+                    <Col md="3">
+                        <DatePicker
+                            // formatStyle="small"
+                            value={endDate.date}
+                            onChange={value => setEndDate({ date: value })}
+                        />
+                    </Col>
+                    <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        <Button
+                            disabled={available ? false : true}
+                            className="rainbow-m-around_medium"
+                            onClick={() => searchByDate(startDate.date, endDate.date)}
+                        >
+                            {' '}
+                            Buscar{' '}
+                        </Button>
+                    </div>
                 </Row>
                 <Row className="content-header">
                     <Col>
@@ -449,13 +540,13 @@ export default function AllGuides({}) {
                             className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
                         />
                     </Col>
-                    <Col>
+                    {/* <Col>
                         <DatePicker
                             formatStyle="large"
                             value={selectDate.date}
                             onChange={value => searchByDate(value)}
                         />
-                    </Col>
+                    </Col> */}
                 </Row>
                 <div className="rainbow-p-bottom_xx-large">
                     {displayData ? (
@@ -513,78 +604,3 @@ export default function AllGuides({}) {
         </StyledAusers>
     );
 }
-
-//[{id: '1', date : "20/11/20"}, {id: '2', date : "20/12/20"}, {id: '3', date : "10/11/20"} , {id: '4', date : "10/12/20"}, {id: '5', date : "20/11/20"},{id: '6', date : "20/12/20"},{id: '7', date : "10/11/20"} ]
-// {"name": "-", "Shipper":
-// {"Address":
-//  {"City": "Guadalajara",
-//  "PostalCode": "44600",
-//  "CountryCode": "MX",
-//  "StreetLines": ["juan alvarez 2440 -", "ladron de Guevara"],
-//   "StateOrProvinceCode": ""},
-//   "Contact":
-//   {"PersonName": "Itzel garcia duenas", "CompanyName": "Itzel garcia duenas",
-//   "PhoneNumber": "3322364660"}},
-//    "Recipient":
-//    {"Address":
-//    {"City": "Hermosillo",
-//    "PostalCode": "83150",
-//    "CountryCode": "MX",
-//     "StreetLines": ["ponciano arriaga -", "constitucion"],
-//     "StateOrProvinceCode": ""},
-//     "Contact": {"PersonName": "tienda green feeling",
-//     "CompanyName": "tienda green feeling", "PhoneNumber": "6621901991"}}
-//     , "DropoffType": "REGULAR_PICKUP",
-//      "ServiceType": "FEDEX_EXPRESS_SAVER",
-//       "TotalWeight": {"Units": "KG", "Value": 1.0},
-//        "PackageCount": 1, "ShipTimestamp": "2020-11-24T03:28:53.769000Z",
-//         "RateRequestTypes": "PREFERRED",
-//         "PreferredCurrency": "MXN",
-//          "TotalInsuredValue": {"Amount": 300.0, "Currency": "USD"},
-//          "content_description": "-",
-//          "ShippingChargesPayment":
-//          {"Payor": {"ResponsibleParty": {"Contact": {"ContactId": "1234",
-//           "PersonName": "Itzel garcia duenas"}, "AccountNumber": 620582212}},
-//            "PaymentType": "SENDER"},
-//             "RequestedPackageLineItems": [{"Weight": {"Units": "KG", "Value": 1.0},
-//              "Dimensions": {"Units": "CM", "Width": 13, "Height": 21, "Length": 10},
-//              "GroupNumber": 1, "ContentRecords": {"ItemNumber": "-", "PartNumber": "-",
-//              "Description": "suplemento alimenticios", "ReceivedQuantity": 1},
-//               "SequenceNumber": 1, "GroupPackageCount": 1}]}
-
-// {"name": "-",
-// "Shipper":
-// {"Address":
-// {"City": "Zapopan",
-// "PostalCode": "45140",
-//  "CountryCode": "MX",
-//   "StreetLines": ["Santa Catalina 323", "Santa Margarita 1a seccion"],
-//   "StateOrProvinceCode": ""},
-//    "Contact": {"PersonName":
-//    "Karen Angelica Gonzalez Ortega",
-//    "CompanyName": "Karen Angelica Gonzalez Ortega",
-//    "PhoneNumber": "3317485634"}},
-//    "Recipient":
-//     {"Address":
-//      {"City": "Los Cabos",
-//       "PostalCode": "23473",
-//       "CountryCode": "MX",
-//       "StreetLines": ["Santa Barbara Calle Zarcero casa 57", "Brisas del Pacifico"],
-//        "StateOrProvinceCode": ""},
-//        "Contact":
-//         {"PersonName": "Maximiliano Pelayo Santana",
-//          "CompanyName": "Maximiliano Pelayo Santana",
-//          "PhoneNumber": "6241715436"}}, "DropoffType":
-//          "REGULAR_PICKUP", "ServiceType":
-//          "FEDEX_EXPRESS_SAVER",
-//           "TotalWeight": {"Units": "KG", "Value": 8.0},
-//           "PackageCount": 1,
-//            "ShipTimestamp": "2020-11-24T03:28:53.769000Z",
-//            "RateRequestTypes": "PREFERRED",
-//             "PreferredCurrency": "MXN", "TotalInsuredValue": {"Amount": 70.0, "Currency": "USD"},
-//              "content_description": "-", "ShippingChargesPayment": {"Payor":
-//              {"ResponsibleParty": {"Contact": {"ContactId": "1234", "PersonName": "Karen Angelica Gonzalez Ortega"},
-//              "AccountNumber": 620582212}}, "PaymentType": "SENDER"}, "RequestedPackageLineItems":
-//              [{"Weight": {"Units": "KG", "Value": 8.0}, "Dimensions": {"Units": "CM", "Width": 10, "Height": 58, "Length": 46},
-//               "GroupNumber": 1, "ContentRecords": {"ItemNumber": "-", "PartNumber": "-", "Description": "x box one",
-//               "ReceivedQuantity": 1}, "SequenceNumber": 1, "GroupPackageCount": 1}]}

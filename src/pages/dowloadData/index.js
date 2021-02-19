@@ -35,7 +35,11 @@ export default function ExportReactCSV({ data }) {
         { label: 'Costo', key: 'supplierData.Supplier_cost' },
     ];
     return (
-        <Button variant="destructive" className="rainbow-m-around_medium">
+        <Button
+            variant="destructive"
+            className="rainbow-m-around_medium"
+            style={{ backgroundColor: '#ab0000' }}
+        >
             <CSVLink
                 data={data}
                 headers={headers}
