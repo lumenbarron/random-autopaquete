@@ -41,6 +41,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [supplierCostFedexDiaS, setSupplierCostFedexDiaS] = useState(false);
     const [supplierCostFedexEcon, setSupplierCostFedexEcon] = useState(false);
 
+    const [supplierCostEstafetaDiaS, setSupplierCostEstafetaDiaS] = useState(false);
+    const [supplierCostEstafetaEcon, setSupplierCostEstafetaEcon] = useState(false);
+
     const [supplierCostRedpackEx, setSupplierCostRedpackEx] = useState(false);
     const [supplierCostRedpackEco, setSupplierCostRedpackEco] = useState(false);
 
@@ -649,6 +652,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             // console.log('no zona extendida extendedAreaRedpackEco');
         }
+        if (typeof supplierAvailability.ESTAFETATERRESTRECONSUMO !== 'undefined') {
+            extendedAreaEstafetaEco =
+                typeof supplierAvailability.ESTAFETATERRESTRECONSUMO.zonaExtendida !== 'undefined'
+                    ? 150
+                    : 0;
+        } else {
+            // console.log('no zona extendida extendedAreaEstafetaEco');
+        }
+        if (typeof supplierAvailability.ESTAFETADIASIGUIENTE !== 'undefined') {
+            extendedAreaEstafetaDiaS =
+                typeof supplierAvailability.ESTAFETADIASIGUIENTE.zonaExtendida !== 'undefined'
+                    ? 150
+                    : 0;
+        } else {
+            // console.log('no zona extendida extendedAreaEstafetaDiaS');
+        }
         if (typeof supplierAvailability.AUTOENCARGOS !== 'undefined') {
             extendedAreaAutoencargos =
                 typeof supplierAvailability.AUTOENCARGOS.zonaExtendida !== 'undefined' ? 40 : 0;
@@ -693,6 +712,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         }
                         if (entrega === 'redpackEcoExpress') {
                             getFinalPriceRedEco.finalPrice = parseInt(precio, 10);
+                        }
+                        if (entrega === 'estafetaDiaSiguiente') {
+                            getFinalPriceEstafetaDiaS.finalPrice = parseInt(precio, 10);
+                        }
+                        if (entrega === 'estafetaEconomico') {
+                            getFinalPriceEstafetaEco.finalPrice = parseInt(precio, 10);
                         }
                         if (entrega === 'autoencargos') {
                             getFinalPriceAuto.finalPrice = parseInt(precio, 10);
@@ -742,6 +767,40 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     ? false
                                     : supplierAvailabilityGeneral.NACIONALECONOMICO,
                                 insurance: getInsurancePrice('fedexEconomico'),
+                            });
+                        if (entrega === 'estafetaDiaSiguiente')
+                            setSupplierCostEstafetaDiaS({
+                                id: doc.id,
+                                precio:
+                                    getFinalPriceEstafetaDiaS.finalPrice +
+                                    getInsurancePrice('estafetaDiaSiguiente') +
+                                    extendedAreaEstafetaDiaS +
+                                    cargoExtraHeight,
+                                delivery: 'NORMAL',
+                                cargoExtraHeight: cargoExtraHeight,
+                                guia: getFinalPriceEstafetaDiaS.finalPrice,
+                                zonaExt: extendedAreaEstafetaDiaS != 0 ? 150 : false,
+                                shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
+                                    ? false
+                                    : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
+                                insurance: getInsurancePrice('estafetaDiaSiguiente'),
+                            });
+                        if (entrega === 'estafetaEconomico')
+                            setSupplierCostEstafetaEcon({
+                                id: doc.id,
+                                precio:
+                                    getFinalPriceEstafetaEco.finalPrice +
+                                    getInsurancePrice('estafetaEconomico') +
+                                    extendedAreaEstafetaEco +
+                                    cargoExtraHeight,
+                                delivery: 'NORMAL',
+                                cargoExtraHeight: cargoExtraHeight,
+                                guia: getFinalPriceEstafetaEco.finalPrice,
+                                zonaExt: extendedAreaEstafetaEco != 0 ? 150 : false,
+                                shippingInfo: !supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO
+                                    ? false
+                                    : supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO,
+                                insurance: getInsurancePrice('estafetaEconomico'),
                             });
                         if (entrega === 'redpackExpress')
                             setSupplierCostRedpackEx({
@@ -824,6 +883,30 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 if (getFinalPriceFedexEco.finalPrice > precioTotal) {
                                     // console.log('la tarifa directa es mas alta fedex eco');
                                     precioTotal = getFinalPriceFedexEco.finalPrice;
+                                    diferencia = 0;
+                                } else {
+                                    precioTotal = precioTotal;
+                                    diferencia = diferencia;
+                                }
+                            }
+
+                            if (getFinalPriceEstafetaDiaS.supplier === entrega) {
+                                // console.log('es el mismo proveedor Estafeta DS');
+                                if (getFinalPriceEstafetaDiaS.finalPrice > precioTotal) {
+                                    // console.log('la tarifa directa es mas alta Estafeta DS');
+                                    precioTotal = getFinalPriceEstafetaDiaS.finalPrice;
+                                    diferencia = 0;
+                                } else {
+                                    precioTotal = precioTotal;
+                                    diferencia = diferencia;
+                                }
+                            }
+
+                            if (getFinalPriceEstafetaEco.supplier === entrega) {
+                                // console.log('es el mismo proveedor Estafeta eco');
+                                if (getFinalPriceEstafetaEco.finalPrice > precioTotal) {
+                                    // console.log('la tarifa directa es mas alta Estafeta eco');
+                                    precioTotal = getFinalPriceEstafetaEco.finalPrice;
                                     diferencia = 0;
                                 } else {
                                     precioTotal = precioTotal;
@@ -974,6 +1057,45 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 : supplierAvailabilityGeneral.NACIONALECONOMICO,
                             insurance: getInsurancePrice('fedexEconomico'),
                         });
+                    if (entrega === 'estafetaDiaSiguiente')
+                        setSupplierCostEstafetaDiaS({
+                            id: tarifa.id,
+                            precio:
+                                precio +
+                                getInsurancePrice('estafetaDiaSiguiente') +
+                                extendedAreaEstafetaDiaS +
+                                cargoExtraHeight,
+
+                            delivery: 'NORMAL',
+                            kilosExtra,
+                            cargoExtraHeight,
+                            cargoExtra,
+                            guia,
+                            zonaExt: extendedAreaEstafetaDiaS != 0 ? 150 : false,
+                            shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
+                                ? false
+                                : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
+                            insurance: getInsurancePrice('estafetaDiaSiguiente'),
+                        });
+                    if (entrega === 'estafetaEconomico')
+                        setSupplierCostEstafetaEcon({
+                            id: tarifa.id,
+                            precio:
+                                precio +
+                                getInsurancePrice('estafetaEconomico') +
+                                extendedAreaEstafetaEco +
+                                cargoExtraHeight,
+                            delivery: 'NORMAL',
+                            kilosExtra,
+                            cargoExtraHeight,
+                            cargoExtra,
+                            guia,
+                            zonaExt: extendedAreaEstafetaEco != 0 ? 150 : false,
+                            shippingInfo: !supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO
+                                ? false
+                                : supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO,
+                            insurance: getInsurancePrice('estafetaEconomico'),
+                        });
                     if (entrega === 'redpackExpress')
                         setSupplierCostRedpackEx({
                             id: tarifa.id,
@@ -1055,6 +1177,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             )}
             {proveedor === 'redpack' && tipoEnvio === 'EcoExpress' && (
                 <img src="/assets/redpack-eco.png" style={{ maxWidth: 180 }} alt="Redpack" />
+            )}
+            {proveedor === 'estafeta' && tipoEnvio === 'DiaSiguiente' && (
+                <img src="/assets/estafeta-express.png" style={{ maxWidth: 180 }} alt="estafeta" />
+            )}
+            {proveedor === 'estafeta' && tipoEnvio === 'Economico' && (
+                <img src="/assets/estafeta-eco.png" style={{ maxWidth: 180 }} alt="estafeta" />
             )}
             {proveedor === 'autoencargos' && tipoEnvio === 'Economico' && (
                 <img src="/assets/autoencar.png" style={{ maxWidth: 180 }} alt="Autoencargos" />
@@ -1247,6 +1375,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 'EcoExpress',
                                 '3 a 5 días hábiles',
                                 supplierCostRedpackEco,
+                            )}
+                        {supplierAvailability.ESTAFETATERRESTRECONSUMO &&
+                            supplierCostEstafetaEcon.guia &&
+                            supplierCard(
+                                'estafeta',
+                                'Economico',
+                                '3 a 5 días hábiles',
+                                supplierCostEstafetaEcon,
+                            )}
+                        {supplierAvailability.ESTAFETADIASIGUIENTE &&
+                            supplierCostEstafetaDiaS.guia &&
+                            supplierCard(
+                                'estafeta',
+                                'DiaSiguiente',
+                                '3 a 5 días hábiles',
+                                supplierCostEstafetaDiaS,
                             )}
                         {supplierAvailability.AUTOENCARGOS &&
                             supplierCostAutoencargosEcon.guia &&
