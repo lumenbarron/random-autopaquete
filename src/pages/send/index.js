@@ -210,29 +210,7 @@ const SendPage = () => {
                                 console.log(result);
                                 let finalResult = result;
                                 let responseFetch = Object.keys(result);
-                                if (responseFetch.length === 0) {
-                                    setEmptyResult(true);
-                                    db.collection('guia')
-                                        .doc(idGuiaGlobal.current)
-                                        .update({ finalResult, body: data });
-                                    // supplierData.Supplier_cost = '0.00';
-                                    // db.collection('guia')
-                                    //     .doc(idGuiaGlobal.current)
-                                    //     .update({
-                                    //         supplierData,
-                                    //     });
-                                } else if (result.pdf_b64.length === 0 || result.pdf_b64 == '') {
-                                    setEmptyResult(true);
-                                    db.collection('guia')
-                                        .doc(idGuiaGlobal.current)
-                                        .update({ finalResult, body: data });
-                                    // supplierData.Supplier_cost = '0.00';
-                                    // db.collection('guia')
-                                    //     .doc(idGuiaGlobal.current)
-                                    //     .update({
-                                    //         supplierData,
-                                    //     });
-                                } else {
+                                if (result.pdf_b64.length >= 0 && result.pdf_b64 !== '') {
                                     // console.log(result.pdf_b64);
                                     // console.log(result.id_shipping);
                                     db.collection('guia')
@@ -241,11 +219,15 @@ const SendPage = () => {
                                             label: result.pdf_b64,
                                             rastreo: result.id_shipping,
                                             body: data,
-                                            finalResult,
+                                            result: finalResult,
                                         });
-                                    // setCurrentStepName('descarga');
                                     newBalance(costGuia);
                                     setguiaReady(true);
+                                } else {
+                                    setEmptyResult(true);
+                                    db.collection('guia')
+                                        .doc(idGuiaGlobal.current)
+                                        .update({ result: finalResult, body: data });
                                 }
                             })
                             .catch(error => console.log('error', error));

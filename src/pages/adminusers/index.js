@@ -109,7 +109,7 @@ const AdminUsersPage = () => {
         });
         //console.log('data', data);
         const sorted = data.sort((a, b) => a.fullname.localeCompare(b.fullname));
-        console.log('sorted', sorted);
+        //console.log('sorted', sorted);
         setUsers(sorted);
         setLoaded(false);
     }
