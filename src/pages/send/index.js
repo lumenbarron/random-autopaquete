@@ -208,41 +208,30 @@ const SendPage = () => {
                             .then(response => response.json())
                             .then(result => {
                                 console.log(result);
-                                //REDPACK
-                                //id_shipping: ["82696454"]
-                                // message: "GENERACIÓN CORRECTA"
-                                // pdf_b64: ["JVBERi0xLjQKJeLjz9MKMiAwIG9iaiA8PC9Db2xvclNwYWNlL0…gNiAwIFIvU2l6ZSA4Pj4Kc3RhcnR4cmVmCjQ2MTEKJSVFT0YK"]
-                                // shipping_labels: Array(1)
-                                // 0: {label: "/media/shipping_labels/82696454_package_0.pdf"}
-
-                                //FEDEX
-                                // delivery_type: "NORMAL"
-                                // extended_area: false
-                                // extended_area_estimate_cost: {}
-                                // id_shipping: ["783598706290"]
-                                // message: "Generación Exitosa"
-                                // pdf_b64: ["JVBERi0xLjQKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovUG…KL1Jvb3QgMSAwIFIKPj4Kc3RhcnR4cmVmCjcwNzIKJSVFT0YK"]
-                                // shipping_labels: [{…}]
-
-                                //{'error': 'Mensaje de error'}
-
+                                let finalResult = result;
                                 let responseFetch = Object.keys(result);
                                 if (responseFetch.length === 0) {
                                     setEmptyResult(true);
-                                    supplierData.Supplier_cost = '0.00';
                                     db.collection('guia')
                                         .doc(idGuiaGlobal.current)
-                                        .update({
-                                            supplierData,
-                                        });
+                                        .update({ finalResult, body: data });
+                                    // supplierData.Supplier_cost = '0.00';
+                                    // db.collection('guia')
+                                    //     .doc(idGuiaGlobal.current)
+                                    //     .update({
+                                    //         supplierData,
+                                    //     });
                                 } else if (result.pdf_b64.length === 0 || result.pdf_b64 == '') {
                                     setEmptyResult(true);
-                                    supplierData.Supplier_cost = '0.00';
                                     db.collection('guia')
                                         .doc(idGuiaGlobal.current)
-                                        .update({
-                                            supplierData,
-                                        });
+                                        .update({ finalResult, body: data });
+                                    // supplierData.Supplier_cost = '0.00';
+                                    // db.collection('guia')
+                                    //     .doc(idGuiaGlobal.current)
+                                    //     .update({
+                                    //         supplierData,
+                                    //     });
                                 } else {
                                     // console.log(result.pdf_b64);
                                     // console.log(result.id_shipping);
@@ -252,6 +241,7 @@ const SendPage = () => {
                                             label: result.pdf_b64,
                                             rastreo: result.id_shipping,
                                             body: data,
+                                            finalResult,
                                         });
                                     // setCurrentStepName('descarga');
                                     newBalance(costGuia);

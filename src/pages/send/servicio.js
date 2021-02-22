@@ -55,6 +55,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [CPSender, setCPSender] = useState('');
     const getCPSender = useRef('');
     const cpsAvailabilityAutoencargos = useRef(false);
+    const cpsAvailabilityZEAutoencargos = useRef(false);
     const [neighborhoodSender, setNeighborhoodSender] = useState('');
     const [countrySender, setCountrySender] = useState('');
     const [streetNumberSender, setStreetNumberSender] = useState('');
@@ -130,6 +131,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         '45626',
         '45627',
     ];
+
+    let extendedAreaAE = ['45646', '45200', '45650', '45654', '45655'];
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
@@ -218,6 +221,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
+                console.log(doc.data().sender_addresses.codigo_postal, 'cp sender');
                 getCPSender.current = doc.data().sender_addresses.codigo_postal;
                 setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
                 setCountrySender(doc.data().sender_addresses.country);
@@ -227,6 +231,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot to receive Receiver information
                 setNameReceiver(doc.data().receiver_addresses.name);
                 setCPReceiver(doc.data().receiver_addresses.codigo_postal);
+                console.log(doc.data().receiver_addresses.codigo_postal, 'cp receiver');
                 getCPReceiver.current = doc.data().receiver_addresses.codigo_postal;
                 setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
                 setCountryReceiver(doc.data().receiver_addresses.country);
@@ -272,11 +277,21 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 let allCpsZMG = allZMG.filter(item => {
                     return !notCoverCpsZMG.includes(item);
                 });
-                let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
+                // console.log( getCPReceiver.current ,CPReceiver)
                 let cpSender = allCpsZMG.includes(getCPSender.current);
+                let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
+                let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
+                let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
+
+                console.log(cpSenderExt, cpReceiverExt);
                 if (cpReceiver === true && cpSender === true) {
                     console.log('codigos postales ZMG');
                     cpsAvailabilityAutoencargos.current = true;
+                    cpsAvailabilityZEAutoencargos.current = false;
+                } else if (cpReceiverExt === true || cpSenderExt === true) {
+                    console.log('codigos postales ZE ZMG');
+                    cpsAvailabilityAutoencargos.current = true;
+                    cpsAvailabilityZEAutoencargos.current = true;
                 } else {
                     console.log('codigos no postales ZMG');
                     cpsAvailabilityAutoencargos.current = false;
@@ -467,7 +482,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
                     let suppliersGeneral = result;
                     //console.log('suppliersGeneral', suppliersGeneral);
-                    if (cpsAvailabilityAutoencargos.current === true) {
+                    if (
+                        cpsAvailabilityAutoencargos.current === true &&
+                        cpsAvailabilityZEAutoencargos.current === false
+                    ) {
                         //console.log('aqui si hay autoencargos');
                         let autoencargos = {
                             shipping_company: 'AUTOENCARGOS',
@@ -478,6 +496,24 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 id: 5,
                             },
                             extended_area: false,
+                            extended_area_estimate_cost: {},
+                        };
+                        suppliersGeneral.push(autoencargos);
+                    }
+                    if (
+                        cpsAvailabilityAutoencargos.current === true &&
+                        cpsAvailabilityZEAutoencargos.current === true
+                    ) {
+                        console.log('aqui si hay autoencargos con zona extendida');
+                        let autoencargos = {
+                            shipping_company: 'AUTOENCARGOS',
+                            shipping_cost: 90.0,
+                            shipping_service: {
+                                name: 'AUTOENCARGOS',
+                                description: 'ESTANDAR',
+                                id: 5,
+                            },
+                            extended_area: true,
                             extended_area_estimate_cost: {},
                         };
                         suppliersGeneral.push(autoencargos);
@@ -585,7 +621,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         let extendedAreaEstafetaEco = 0;
         let extendedAreaRedpackExp = 0;
         let extendedAreaRedpackEco = 0;
-        // let extendedAreaAutoencargos = 0;
+        let extendedAreaAutoencargos = 0;
 
         if (typeof supplierAvailability.NACIONALDIASIGUIENTE !== 'undefined') {
             extendedAreaFedexDiaS =
@@ -612,6 +648,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (typeof supplierAvailability.ECOEXPRESS !== 'undefined') {
             extendedAreaRedpackEco =
                 typeof supplierAvailability.ECOEXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
+        } else {
+            // console.log('no zona extendida extendedAreaRedpackEco');
+        }
+        if (typeof supplierAvailability.AUTOENCARGOS !== 'undefined') {
+            extendedAreaAutoencargos =
+                typeof supplierAvailability.AUTOENCARGOS.zonaExtendida !== 'undefined' ? 40 : 0;
         } else {
             // console.log('no zona extendida extendedAreaRedpackEco');
         }
@@ -743,11 +785,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 precio:
                                     getFinalPriceAuto.finalPrice +
                                     getInsurancePrice('autoencargos') +
+                                    extendedAreaAutoencargos +
                                     cargoExtraHeight,
                                 delivery: 'NORMAL',
                                 cargoExtraHeight: 0,
                                 guia: getFinalPriceAuto.finalPrice,
-                                zonaExt: false,
+                                zonaExt: extendedAreaAutoencargos != 0 ? 40 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.AUTOENCARGOS
                                     ? false
                                     : supplierAvailabilityGeneral.AUTOENCARGOS,
@@ -974,13 +1017,17 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     if (entrega === 'autoencargos')
                         setSupplierCostAutoencargosEcon({
                             id: tarifa.id,
-                            precio: precio + getInsurancePrice('autoencargos') + cargoExtraHeight,
+                            precio:
+                                precio +
+                                getInsurancePrice('autoencargos') +
+                                extendedAreaAutoencargos +
+                                cargoExtraHeight,
                             delivery: 'NORMAL',
                             kilosExtra,
                             cargoExtraHeight: 0,
                             cargoExtra,
                             guia,
-                            zonaExt: false,
+                            zonaExt: extendedAreaAutoencargos != 0 ? 40 : false,
                             shippingInfo: !supplierAvailabilityGeneral.AUTOENCARGOS
                                 ? false
                                 : supplierAvailabilityGeneral.AUTOENCARGOS,

@@ -135,12 +135,9 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.id, doc.data().supplierData.cargos.insurance, doc.id, doc.data().supplierData.cargos.seguro );
-                    // if ( typeof doc.data().rastreo === 'string' ) {
-                    // console.log('holi')
-                    // db.collection('guia')
-                    // .doc(doc.id)
-                    // .update({rastreo: [doc.data().rastreo]})
+                    //console.log(doc.id, doc.data().label );
+                    // if ( typeof doc.data().label == 'undefined' ) {
+                    // console.log(doc.id, doc.data())
                     // }
                     dataGuias.push({
                         id: doc.id,
@@ -225,7 +222,7 @@ export default function AllGuides({}) {
     };
 
     useEffect(() => {
-        console.log(history);
+        //console.log(history);
         setTableData(
             history.map(historyRecord => {
                 return {
