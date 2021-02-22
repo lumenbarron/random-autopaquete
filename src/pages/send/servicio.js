@@ -221,7 +221,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
-                console.log(doc.data().sender_addresses.codigo_postal, 'cp sender');
                 getCPSender.current = doc.data().sender_addresses.codigo_postal;
                 setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
                 setCountrySender(doc.data().sender_addresses.country);
@@ -231,7 +230,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot to receive Receiver information
                 setNameReceiver(doc.data().receiver_addresses.name);
                 setCPReceiver(doc.data().receiver_addresses.codigo_postal);
-                console.log(doc.data().receiver_addresses.codigo_postal, 'cp receiver');
                 getCPReceiver.current = doc.data().receiver_addresses.codigo_postal;
                 setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
                 setCountryReceiver(doc.data().receiver_addresses.country);
@@ -283,7 +281,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
                 let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
 
-                console.log(cpSenderExt, cpReceiverExt);
+                // console.log(cpSenderExt, cpReceiverExt);
                 if (cpReceiver === true && cpSender === true) {
                     console.log('codigos postales ZMG');
                     cpsAvailabilityAutoencargos.current = true;

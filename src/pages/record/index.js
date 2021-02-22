@@ -126,7 +126,10 @@ const RecordPage = () => {
                         volumetricWeight: historyRecord.volumetricWeight,
                         service: historyRecord.supplierData.Supplier,
                         // status: 'Finalizado',
-                        cost: historyRecord.supplierData.Supplier_cost,
+                        cost:
+                            typeof historyRecord.label != 'undefined'
+                                ? historyRecord.supplierData.Supplier_cost
+                                : '0.00',
                         label:
                             historyRecord.supplierData.Supplier === 'autoencargosEconomico'
                                 ? 'no disponible'
