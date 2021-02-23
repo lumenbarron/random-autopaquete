@@ -281,14 +281,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
 
                 // console.log(cpSenderExt, cpReceiverExt);
-                if (cpReceiver === true && cpSender === true) {
-                    console.log('codigos postales ZMG');
-                    cpsAvailabilityAutoencargos.current = true;
-                    cpsAvailabilityZEAutoencargos.current = false;
-                } else if (cpReceiverExt === true || cpSenderExt === true) {
+                if (
+                    (cpReceiverExt === true && cpSender === true) ||
+                    (cpReceiver === true && cpSenderExt === true) ||
+                    (cpReceiverExt === true && cpSenderExt === true)
+                ) {
                     console.log('codigos postales ZE ZMG');
                     cpsAvailabilityAutoencargos.current = true;
-                    cpsAvailabilityZEAutoencargos.current = true;
+                    cpsAvailabilityZEAutoencargos.current = false;
                 } else if (cpReceiver === true && cpSender === true) {
                     console.log('codigos postales ZMG');
                     cpsAvailabilityAutoencargos.current = true;
