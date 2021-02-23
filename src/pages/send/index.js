@@ -230,7 +230,12 @@ const SendPage = () => {
                                         .update({ result: finalResult, body: data });
                                 }
                             })
-                            .catch(error => console.log('error', error));
+                            .catch(error => {
+                                console.log('error', error);
+                                db.collection('guia')
+                                    .doc(idGuiaGlobal.current)
+                                    .update({ result: error, body: data });
+                            });
                     }
                 });
         }
