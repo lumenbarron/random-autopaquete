@@ -133,7 +133,7 @@ const SendPage = () => {
                 .get()
                 .then(function(doc) {
                     if (doc.exists) {
-                        //console.log('Document data:', doc.data());
+                        console.log('Document data:', doc.data());
                         let data = JSON.stringify({
                             sender: {
                                 contact_name: doc.data().sender_addresses.name,
@@ -194,7 +194,7 @@ const SendPage = () => {
                                     doc.data().supplierData.cargos.insurance,
                             },
                         });
-                        //console.log('data 2', data);
+                        console.log('data 2', data);
                         let requestOptions = {
                             method: 'POST',
                             headers: myHeaders,
@@ -232,9 +232,7 @@ const SendPage = () => {
                             })
                             .catch(error => {
                                 console.log('error', error);
-                                db.collection('guia')
-                                    .doc(idGuiaGlobal.current)
-                                    .update({ result: error, body: data });
+                                setEmptyResult(true);
                             });
                     }
                 });
