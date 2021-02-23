@@ -135,7 +135,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.id, doc.data().label );
+                    //console.log(doc.id, doc.data() );
                     // if ( typeof doc.data().label == 'undefined' ) {
                     // console.log(doc.id, doc.data())
                     // }
@@ -222,7 +222,6 @@ export default function AllGuides({}) {
     };
 
     useEffect(() => {
-        //console.log(history);
         setTableData(
             history.map(historyRecord => {
                 return {
@@ -239,7 +238,10 @@ export default function AllGuides({}) {
                     volumetricWeight: historyRecord.volumetricWeight,
                     weight: historyRecord.package.weight,
                     measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
-                    cost: historyRecord.supplierData.Supplier_cost,
+                    cost:
+                        typeof historyRecord.rastreo != 'undefined'
+                            ? historyRecord.supplierData.Supplier_cost
+                            : '0.00',
                     label:
                         historyRecord.supplierData.Supplier === 'autoencargosEconomico'
                             ? 'no disponible'
@@ -303,6 +305,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    //console.log(doc.id, doc.data() );
                     // console.log('guias del cliente ' + supplier + ':', doc.data());
                     dataGuiasBySupplier.push({
                         id: doc.id,

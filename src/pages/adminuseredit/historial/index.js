@@ -70,6 +70,9 @@ export default function HistoryUser({ user }) {
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
                         //console.log(doc.data(), doc.id);
+                        //                         if ( typeof doc.data().label == 'undefined' ) {
+                        // console.log(doc.id, doc.data())
+                        // }
                         // db.collection('sender_addresses')
                         // .doc(doc.id)
                         // .update({ID : 'XMIlDAVlEnPZ55iTbuhXQrTUrFs1'})
@@ -107,7 +110,10 @@ export default function HistoryUser({ user }) {
                     weight: historyRecord.package.weight,
                     volumetricWeight: historyRecord.volumetricWeight,
                     service: historyRecord.supplierData.Supplier,
-                    cost: historyRecord.supplierData.Supplier_cost,
+                    cost:
+                        typeof historyRecord.rastreo != 'undefined'
+                            ? historyRecord.supplierData.Supplier_cost
+                            : '0.00',
                     label:
                         historyRecord.supplierData.Supplier === 'autoencargosEconomico'
                             ? 'no disponible'
