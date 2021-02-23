@@ -119,7 +119,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     ];
 
     let notCoverCpsZMG = [
-        '45200',
         '45220',
         '45221',
         '45226',
@@ -293,6 +292,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     console.log('codigos postales ZE ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = true;
+                } else if (cpReceiver === true && cpSender === true) {
+                    console.log('codigos postales ZMG');
+                    cpsAvailabilityAutoencargos.current = true;
+                    cpsAvailabilityZEAutoencargos.current = false;
                 } else {
                     console.log('codigos no postales ZMG');
                     cpsAvailabilityAutoencargos.current = false;
@@ -477,7 +480,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
             .then(result => {
-                console.log(result);
+                //console.log(result);
                 if (result.length >= 1) {
                     //console.log('numero de provedores disponibles', result.length);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
@@ -541,7 +544,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             ];
                         }
                     });
-                    console.log('delivey', supplierDelivery);
+                    //console.log('delivey', supplierDelivery);
                     setSupplierAvailabilityDelivery(supplierDelivery);
 
                     //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, RedpackExiguiente: true}
@@ -554,7 +557,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             element.shipping_service.id,
                         ];
                     });
-                    console.log('supplierShippingName', supplierShippingName);
+                    // console.log('supplierShippingName', supplierShippingName);
                     setSupplierAvailabilityGeneral(supplierShippingName);
                 }
             })

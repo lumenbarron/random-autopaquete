@@ -127,7 +127,7 @@ const RecordPage = () => {
                         service: historyRecord.supplierData.Supplier,
                         // status: 'Finalizado',
                         cost:
-                            typeof historyRecord.label != 'undefined'
+                            typeof historyRecord.rastreo != 'undefined'
                                 ? historyRecord.supplierData.Supplier_cost
                                 : '0.00',
                         label:

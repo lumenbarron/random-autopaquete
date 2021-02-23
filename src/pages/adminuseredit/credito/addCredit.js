@@ -91,7 +91,7 @@ export default function AddCredito({ user }) {
     function handleVouncher(querySnapshot) {
         let voucherData = [];
         querySnapshot.forEach(doc => {
-            //console.log(doc.data().ID, doc.id);
+            console.log(doc.data().ID, doc.id);
             // db.collection('voucher')
             // .doc(doc.id)
             // .update({ID: 'wLueGTJb2phxh9Gl1U5n5yxMSYp2'})

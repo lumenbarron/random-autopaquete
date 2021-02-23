@@ -239,7 +239,7 @@ export default function AllGuides({}) {
                     weight: historyRecord.package.weight,
                     measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
                     cost:
-                        typeof historyRecord.label != 'undefined'
+                        typeof historyRecord.rastreo != 'undefined'
                             ? historyRecord.supplierData.Supplier_cost
                             : '0.00',
                     label:
@@ -305,6 +305,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    //console.log(doc.id, doc.data() );
                     // console.log('guias del cliente ' + supplier + ':', doc.data());
                     dataGuiasBySupplier.push({
                         id: doc.id,

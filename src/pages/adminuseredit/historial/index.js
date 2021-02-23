@@ -69,7 +69,7 @@ export default function HistoryUser({ user }) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.data(), doc.id);
+                        //console.log(doc.data(), doc.id);
                         //                         if ( typeof doc.data().label == 'undefined' ) {
                         // console.log(doc.id, doc.data())
                         // }
@@ -111,7 +111,7 @@ export default function HistoryUser({ user }) {
                     volumetricWeight: historyRecord.volumetricWeight,
                     service: historyRecord.supplierData.Supplier,
                     cost:
-                        typeof historyRecord.label != 'undefined'
+                        typeof historyRecord.rastreo != 'undefined'
                             ? historyRecord.supplierData.Supplier_cost
                             : '0.00',
                     label:
