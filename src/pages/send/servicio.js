@@ -113,10 +113,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         '45643',
         '45645',
         '45647',
+        // '45646',
+        // '45200',
+        // '45650',
+        // '45654',
+        // '45655'
     ];
 
     let notCoverCpsZMG = [
-        '45200',
         '45220',
         '45221',
         '45226',
@@ -282,16 +286,21 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
                 let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
                 let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
+                //cpReceiver === false && cpReceiverExt === true  && cpSender === false && cpSenderExt === true
 
-                console.log(cpSenderExt, cpReceiverExt);
-                if (cpReceiver === true && cpSender === true) {
-                    console.log('codigos postales ZMG');
-                    cpsAvailabilityAutoencargos.current = true;
-                    cpsAvailabilityZEAutoencargos.current = false;
-                } else if (cpReceiverExt === true || cpSenderExt === true) {
+                console.log(cpReceiver, cpReceiverExt, cpSender, cpSenderExt);
+                if (
+                    (cpReceiverExt === true && cpSender === true) ||
+                    (cpReceiver === true && cpSenderExt === true) ||
+                    (cpReceiverExt === true && cpSenderExt === true)
+                ) {
                     console.log('codigos postales ZE ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = true;
+                } else if (cpReceiver === true && cpSender === true) {
+                    console.log('codigos postales ZMG');
+                    cpsAvailabilityAutoencargos.current = true;
+                    cpsAvailabilityZEAutoencargos.current = false;
                 } else {
                     console.log('codigos no postales ZMG');
                     cpsAvailabilityAutoencargos.current = false;
