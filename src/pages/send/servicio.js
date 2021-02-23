@@ -113,11 +113,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         '45643',
         '45645',
         '45647',
-        // '45646',
-        // '45200',
-        // '45650',
-        // '45654',
-        // '45655'
     ];
 
     let notCoverCpsZMG = [
@@ -225,7 +220,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
-                console.log(doc.data().sender_addresses.codigo_postal, 'cp sender');
                 getCPSender.current = doc.data().sender_addresses.codigo_postal;
                 setNeighborhoodSender(doc.data().sender_addresses.neighborhood);
                 setCountrySender(doc.data().sender_addresses.country);
@@ -235,7 +229,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 // Get snapshot to receive Receiver information
                 setNameReceiver(doc.data().receiver_addresses.name);
                 setCPReceiver(doc.data().receiver_addresses.codigo_postal);
-                console.log(doc.data().receiver_addresses.codigo_postal, 'cp receiver');
                 getCPReceiver.current = doc.data().receiver_addresses.codigo_postal;
                 setNeighborhoodReceiver(doc.data().receiver_addresses.neighborhood);
                 setCountryReceiver(doc.data().receiver_addresses.country);
@@ -286,9 +279,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
                 let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
                 let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
-                //cpReceiver === false && cpReceiverExt === true  && cpSender === false && cpSenderExt === true
 
-                console.log(cpReceiver, cpReceiverExt, cpSender, cpSenderExt);
+                // console.log(cpReceiver, cpReceiverExt, cpSender, cpSenderExt);
                 if (
                     (cpReceiverExt === true && cpSender === true) ||
                     (cpReceiver === true && cpSenderExt === true) ||
@@ -485,7 +477,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
             .then(result => {
-                console.log(result);
+                //console.log(result);
                 if (result.length >= 1) {
                     //console.log('numero de provedores disponibles', result.length);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
@@ -549,7 +541,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             ];
                         }
                     });
-                    console.log('delivey', supplierDelivery);
+                    //console.log('delivey', supplierDelivery);
                     setSupplierAvailabilityDelivery(supplierDelivery);
 
                     //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, RedpackExiguiente: true}
@@ -562,7 +554,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             element.shipping_service.id,
                         ];
                     });
-                    console.log('supplierShippingName', supplierShippingName);
+                    // console.log('supplierShippingName', supplierShippingName);
                     setSupplierAvailabilityGeneral(supplierShippingName);
                 }
             })
