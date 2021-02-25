@@ -136,7 +136,7 @@ export default function AllGuides({}) {
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     //console.log(doc.id, doc.data() );
-                    // if ( typeof doc.data().label == 'undefined' ) {
+                    // if ( typeof doc.data().rastreo == 'undefined' ) {
                     // console.log(doc.id, doc.data())
                     // }
                     dataGuias.push({
