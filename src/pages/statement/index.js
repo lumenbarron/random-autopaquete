@@ -87,10 +87,6 @@ const StatementPage = () => {
                         saldo: 0,
                     });
                 });
-                // console.log('data', data)
-
-                // const sortedData = data.sort((a, b) => b.date - a.date );
-                // console.log(sortedData);
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -112,10 +108,6 @@ const StatementPage = () => {
                         saldo: 0,
                     });
                 });
-                // console.log('data', data)
-
-                // const sortedData = data.sort((a, b) => b.date - a.date );
-                // console.log(sortedData);
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -149,13 +141,6 @@ const StatementPage = () => {
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
             });
-
-        // const reloadRecords = () => {
-        //     db.collection('overweights')
-        //         .where('ID', '==', user.uid)
-        //         .onSnapshot(handleOverWeight);
-        // };
-        // reloadRecords();
     }, []);
 
     const makingOperations = data => {
@@ -186,19 +171,6 @@ const StatementPage = () => {
         console.log(data);
         setStatementData(data);
     };
-
-    // function handleOverWeight(snapshot) {
-    //     let overWeightSorted = [];
-    //     const overWeightData = snapshot.docs.map(doc => {
-    //         // console.log(doc.data());
-    //         return {
-    //             id: doc.id,
-    //             ...doc.data(),
-    //         };
-    //     });
-    //     overWeightSorted = overWeightData.sort((a, b) => b.fecha - a.fecha);
-    //     setOverWeightData(overWeightSorted);
-    // }
 
     const data = statementData.map((statement, idx) => {
         return {
