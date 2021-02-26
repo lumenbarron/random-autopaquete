@@ -210,9 +210,18 @@ const SendPage = () => {
                                 console.log(result);
                                 let finalResult = result;
                                 let responseFetch = Object.keys(result);
-                                if (result.pdf_b64.length >= 0 && result.pdf_b64 !== '') {
-                                    // console.log(result.pdf_b64);
-                                    // console.log(result.id_shipping);
+                                console.log(responseFetch);
+                                if (responseFetch.length === 0) {
+                                    setEmptyResult(true);
+                                    db.collection('guia')
+                                        .doc(idGuiaGlobal.current)
+                                        .update({ result: responseFetch, body: data });
+                                } else if (result.pdf_b64.length === 0 || result.pdf_b64 == '') {
+                                    setEmptyResult(true);
+                                    db.collection('guia')
+                                        .doc(idGuiaGlobal.current)
+                                        .update({ result: result, body: data });
+                                } else {
                                     db.collection('guia')
                                         .doc(idGuiaGlobal.current)
                                         .update({
@@ -223,11 +232,6 @@ const SendPage = () => {
                                         });
                                     newBalance(costGuia);
                                     setguiaReady(true);
-                                } else {
-                                    setEmptyResult(true);
-                                    db.collection('guia')
-                                        .doc(idGuiaGlobal.current)
-                                        .update({ result: finalResult, body: data });
                                 }
                             })
                             .catch(error => {
