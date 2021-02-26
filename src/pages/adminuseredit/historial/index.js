@@ -69,7 +69,7 @@ export default function HistoryUser({ user }) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        //console.log(doc.data(), doc.id);
+                        console.log(doc.data(), doc.id);
                         //                         if ( typeof doc.data().label == 'undefined' ) {
                         // console.log(doc.id, doc.data())
                         // }

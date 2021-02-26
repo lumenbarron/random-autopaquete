@@ -40,6 +40,107 @@ const StatementPage = () => {
     //const [overWeightData, setOverWeightData] = useState([]);
 
     useEffect(() => {
+        const data = [];
+
+        //Getting all the shippings
+        db.collection('guia')
+            .where('ID', '==', user.uid)
+            .where('status', '==', 'completed')
+            //.orderBy('creation_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    //console.log('data guias', doc.data().creation_date, 'doc.id', doc.id);
+                    data.push({
+                        id: doc.id,
+                        concept: 'GUIA',
+                        reference: doc.data().rastreo ? doc.data().rastreo[0] : 'error',
+                        monto: parseFloat(doc.data().supplierData.Supplier_cost),
+                        date: doc.data().creation_date.toDate(),
+                    });
+                });
+                console.log('data', data);
+                //setRecordsData(data);
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+
+        db.collection('voucher')
+            .where('ID', '==', user.uid)
+            //.orderBy('create_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log('all vouchers', doc.data(), 'doc.id', doc.id);
+                    data.push({
+                        id: doc.id,
+                        concept: doc.data().concepto ? doc.data().concepto : 's/c',
+                        reference: doc.data().referencia ? doc.data().referencia : 's/r',
+                        monto: parseFloat(doc.data().saldo),
+                        date: new Date(doc.data().create_date),
+                    });
+                });
+                // console.log('data', data)
+
+                // const sortedData = data.sort((a, b) => b.date - a.date );
+                // console.log(sortedData);
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+
+        db.collection('restCredit')
+            .where('ID', '==', user.uid)
+            //.orderBy('create_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    //console.log('all vouchers', doc.data().create_date, 'doc.id', doc.id);
+                    data.push({
+                        id: doc.id,
+                        concept: doc.data().concepto,
+                        reference: doc.data().referencia ? doc.data().referencia : 's/r',
+                        monto: parseFloat(doc.data().saldo),
+                        date: new Date(doc.data().create_date),
+                    });
+                });
+                // console.log('data', data)
+
+                // const sortedData = data.sort((a, b) => b.date - a.date );
+                // console.log(sortedData);
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+
+        db.collection('overweights')
+            .where('ID', '==', user.uid)
+            //.orderBy('fecha', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    //console.log('all vouchers', doc.data().create_date, 'doc.id', doc.id);
+                    data.push({
+                        id: doc.id,
+                        concept: 'SOBREPESO',
+                        reference: doc.data().rastreo,
+                        monto: parseFloat(doc.data().cargo),
+                        date: doc.data().fecha.toDate(),
+                    });
+                });
+                console.log('data', data);
+
+                const sortedData = data.sort((a, b) => {
+                    return new Date(a.date).getTime() - new Date(b.date).getTime();
+                    // b.date - a.date
+                });
+                console.log(sortedData);
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+
         // const reloadRecords = () => {
         //     db.collection('overweights')
         //         .where('ID', '==', user.uid)
