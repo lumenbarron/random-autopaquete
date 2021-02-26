@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import { StyledStatement, StatementContainer } from './style';
 import { useFirebaseApp, useUser } from 'reactfire';
-import ExportReactCSV from '../dowloadData/index';
+import ExportReactStatementCSV from '../dowloadData/statement';
 const containerStyles = { height: 600 };
 const containerTableStyles = { height: 256 };
 
@@ -37,7 +37,9 @@ const StatementPage = () => {
     const db = firebase.firestore();
     const user = useUser();
 
-    //const [overWeightData, setOverWeightData] = useState([]);
+    const [statementData, setStatementData] = useState([]);
+
+    const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
     useEffect(() => {
         const data = [];
@@ -55,8 +57,11 @@ const StatementPage = () => {
                         id: doc.id,
                         concept: 'GUIA',
                         reference: doc.data().rastreo ? doc.data().rastreo[0] : 'error',
-                        monto: parseFloat(doc.data().supplierData.Supplier_cost),
+                        monto: doc.data().rastreo
+                            ? parseFloat(doc.data().supplierData.Supplier_cost)
+                            : 0,
                         date: doc.data().creation_date.toDate(),
+                        saldo: 0,
                     });
                 });
                 console.log('data', data);
@@ -72,13 +77,14 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('all vouchers', doc.data(), 'doc.id', doc.id);
+                    //console.log('all vouchers', doc.data(), 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
-                        concept: doc.data().concepto ? doc.data().concepto : 's/c',
+                        concept: 'CDS',
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
                         monto: parseFloat(doc.data().saldo),
                         date: new Date(doc.data().create_date),
+                        saldo: 0,
                     });
                 });
                 // console.log('data', data)
@@ -99,10 +105,11 @@ const StatementPage = () => {
                     //console.log('all vouchers', doc.data().create_date, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
-                        concept: doc.data().concepto,
+                        concept: 'RC',
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
                         monto: parseFloat(doc.data().saldo),
                         date: new Date(doc.data().create_date),
+                        saldo: 0,
                     });
                 });
                 // console.log('data', data)
@@ -127,15 +134,17 @@ const StatementPage = () => {
                         reference: doc.data().rastreo,
                         monto: parseFloat(doc.data().cargo),
                         date: doc.data().fecha.toDate(),
+                        saldo: 0,
                     });
                 });
-                console.log('data', data);
+                //console.log('data', data);
 
                 const sortedData = data.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
                     // b.date - a.date
                 });
                 console.log(sortedData);
+                makingOperations(sortedData);
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -148,6 +157,35 @@ const StatementPage = () => {
         // };
         // reloadRecords();
     }, []);
+
+    const makingOperations = data => {
+        let newStatement;
+
+        let startStatement = data[0].monto;
+        console.log(startStatement);
+
+        data[0].saldo = startStatement;
+        console.log(data[0]);
+
+        data.map((da, index) => {
+            console.log(da.id, index, 'saldo actual', da.saldo);
+            if (index > 0) {
+                console.log('saldo anterior', data[index - 1].saldo);
+                let prevSaldo = data[index - 1].saldo;
+                if (da.concept === 'GUIA' || da.concept === 'SOBREPESO' || da.concept === 'RC') {
+                    newStatement = prevSaldo - da.monto;
+                    data[index].saldo = newStatement;
+                }
+                if (da.concept === 'CDS') {
+                    newStatement = prevSaldo + da.monto;
+                    data[index].saldo = newStatement;
+                }
+            }
+        });
+
+        console.log(data);
+        setStatementData(data);
+    };
 
     // function handleOverWeight(snapshot) {
     //     let overWeightSorted = [];
@@ -162,50 +200,47 @@ const StatementPage = () => {
     //     setOverWeightData(overWeightSorted);
     // }
 
-    // const data = overWeightData.map((overWeight, idx) => {
-    //     return {
-    //         id: overWeight.id,
-    //         date: overWeight.fecha.toDate().toLocaleDateString()
-    //             ? overWeight.fecha.toDate().toLocaleDateString()
-    //             : 'sin fecha',
-    //         guide: overWeight.rastreo,
-    //         kdeclared: overWeight.kilos_declarados,
-    //         kreal: overWeight.kilos_reales,
-    //         Kcollected: overWeight.kilos_reales - overWeight.kilos_declarados,
-    //         charge: formatMoney(overWeight.cargo),
-    //     };
-    // });
+    const data = statementData.map((statement, idx) => {
+        return {
+            id: statement.id,
+            concept: statement.concept,
+            date: statement.date.toLocaleDateString(),
+            reference: statement.reference,
+            monto: statement.monto.toFixed(2),
+            saldo: statement.saldo.toFixed(2),
+        };
+    });
 
     return (
         <StyledStatement>
             <StatementContainer>
                 <Row className="row-header">
                     <h1>Mis movimientos</h1>
-                    {/* <ExportReactCSV data={recordsData} /> */}
+                    <ExportReactStatementCSV data={statementData} />
                 </Row>
-                {/* <div className="back">
-                <h1>Sobrepeso</h1>
-
-                <div className="rainbow-p-bottom_xx-large">
-                    <div style={containerStyles}>
-                        <StyledTable
-                            pageSize={10}
-                            data={data}
-                            keyField="id"
-                            emptyTitle="Oh no!"
-                            emptyDescription="No hay ningun registro actualmente..."
-                        >
-                            <StyledColumn header="Fecha " field="date" defaultWidth={150} />
-                            <StyledColumn header="Guía" field="guide" defaultWidth={250} />
-                            <StyledColumn header="Kg cobrados" field="kdeclared" />
-                            <StyledColumn header="Kg reales" field="kreal" />
-                            <StyledColumn header="Sobrepeso" field="Kcollected" />
-
-                            <StyledColumn header="Cargos" field="charge" />
-                        </StyledTable>
+                <div className="back">
+                    <div className="rainbow-p-bottom_xx-large">
+                        <div style={containerStyles}>
+                            <StyledTable
+                                // pageSize={10}
+                                data={data}
+                                keyField="id"
+                                emptyTitle="Oh no!"
+                                emptyDescription="No hay ningun registro actualmente..."
+                            >
+                                <StyledColumn
+                                    header="Concepto"
+                                    field="concept"
+                                    defaultWidth={250}
+                                />
+                                <StyledColumn header="Fecha " field="date" defaultWidth={150} />
+                                <StyledColumn header="Reference" field="reference" />
+                                <StyledColumn header="Monto" field="monto" />
+                                <StyledColumn header="Saldo" field="saldo" />
+                            </StyledTable>
+                        </div>
                     </div>
                 </div>
-            </div> */}
             </StatementContainer>
         </StyledStatement>
     );
