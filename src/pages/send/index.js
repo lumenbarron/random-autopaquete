@@ -211,12 +211,12 @@ const SendPage = () => {
                                 let finalResult = result;
                                 let responseFetch = Object.keys(result);
                                 if (result.pdf_b64.length >= 0 && result.pdf_b64 !== '') {
-                                    // console.log(result.pdf_b64);
-                                    // console.log(result.id_shipping);
+                                    //console.log(result.pdf_b64[0]);
+                                    //console.log(result.id_shipping);
                                     db.collection('guia')
                                         .doc(idGuiaGlobal.current)
                                         .update({
-                                            label: result.pdf_b64,
+                                            label: result.pdf_b64[0],
                                             rastreo: result.id_shipping,
                                             body: data,
                                             result: finalResult,
