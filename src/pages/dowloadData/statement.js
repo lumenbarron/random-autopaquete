@@ -6,6 +6,7 @@ export default function ExportReactStatementCSV({ data }) {
     console.log('data csv', data);
     const headers = [
         { label: 'ID', key: 'id' },
+        { label: 'Fecha', key: 'date' },
         { label: 'Concepto', key: 'concept' },
         { label: 'Referencia', key: 'reference' },
         { label: 'Monto', key: 'monto' },
