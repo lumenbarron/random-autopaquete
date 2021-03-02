@@ -456,11 +456,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
-            // xhr.open(
-            //     'POST',
-            //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
-            // );
+            //xhr.open('POST', '/guia/cotizar');
+            xhr.open(
+                'POST',
+                'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
@@ -479,30 +479,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     const fetchGuia = async (data, delivery) => {
-        // console.log('haciendo la peticion al broker');
-
-        // user.getIdToken().then(idToken => {
-        //     const xhr = new XMLHttpRequest();
-        //     xhr.responseType = 'json';
-        //     xhr.contentType = 'application/json';
-        //     //xhr.open('POST', '/guia/cotizar');
-        //     xhr.open('POST', 'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia');
-        //     //xhr.open('POST', 'http://alloworigin.com/get?url=https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia');
-        //     xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-        //     xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
-        //     xhr.onreadystatechange = () => {
-        //         // console.log('la wea weona', xhr.readyState);
-        //         if (xhr.readyState === 4) {
-        //             console.log('la wea weona llego', xhr.response);
-        //             //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
-        //             //let suppliersGeneral = xhr.response;
-        //             console.log(xhr.response)
-        //             supplierExtendedAreaUs = xhr.response;
-        //             supplierAvailabilityGeneralUs = xhr.response;
-        //         }
-        //     };
-        // });
-
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
         myHeaders.append('Content-Type', 'application/json');
@@ -819,9 +795,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaDiaS.finalPrice,
                                 zonaExt: extendedAreaEstafetaDiaS != 0 ? 140 : false,
-                                shippingInfo: !supplierAvailabilityGeneral.estafetaDiaSiguiente
+                                shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
                                     ? false
-                                    : supplierAvailabilityGeneral.estafetaDiaSiguiente,
+                                    : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
                                 insurance: getInsurancePrice('estafetaDiaSiguiente'),
                             });
                         if (entrega === 'estafetaEconomico')
@@ -836,9 +812,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaEco.finalPrice,
                                 zonaExt: extendedAreaEstafetaEco != 0 ? 140 : false,
-                                shippingInfo: !supplierAvailabilityGeneral.estafetaEconomico
+                                shippingInfo: !supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO
                                     ? false
-                                    : supplierAvailabilityGeneral.estafetaEconomico,
+                                    : supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO,
                                 insurance: getInsurancePrice('estafetaEconomico'),
                             });
                         if (entrega === 'fedexDiaSiguiente')
@@ -1107,9 +1083,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargoExtra,
                             guia,
                             zonaExt: extendedAreaEstafetaDiaS != 0 ? 140 : false,
-                            shippingInfo: !supplierAvailabilityGeneral.estafetaDiaSiguiente
+                            shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
                                 ? false
-                                : supplierAvailabilityGeneral.estafetaDiaSiguiente,
+                                : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
                             insurance: getInsurancePrice('estafetaDiaSiguiente'),
                         });
                     if (entrega === 'estafetaEconomico')
@@ -1126,9 +1102,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargoExtra,
                             guia,
                             zonaExt: extendedAreaEstafetaEco != 0 ? 140 : false,
-                            shippingInfo: !supplierAvailabilityGeneral.estafetaEconomico
+                            shippingInfo: !supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO
                                 ? false
-                                : supplierAvailabilityGeneral.estafetaEconomico,
+                                : supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO,
                             insurance: getInsurancePrice('estafetaEconomico'),
                         });
                     if (entrega === 'fedexDiaSiguiente')
