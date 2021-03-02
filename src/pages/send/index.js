@@ -107,7 +107,7 @@ const SendPage = () => {
 
     const saveServiceData = supplierData => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
-        // console.log('supplierData', supplierData);
+        console.log('supplierData', supplierData);
         let costGuia = supplierData.Supplier_cost;
         // console.log('costGuia', costGuia);
         const directionsGuiasCollectionAdd = db
@@ -121,7 +121,33 @@ const SendPage = () => {
             newBalance(costGuia);
             setguiaReady(true);
             setCurrentStepName('descarga');
-        } else {
+        }
+        // else if (
+        //     supplierData.Supplier === 'fedexDiaSiguiente' ||
+        //     supplierData.Supplier === 'fedexEconomico'
+        // ) {
+        //     directionsGuiasCollectionAdd
+        //         .then(function() {
+        //             console.log('peticion a la api fed');
+        //             user.getIdToken().then(idToken => {
+        //                 const xhr = new XMLHttpRequest();
+        //                 xhr.responseType = 'json';
+        //                 xhr.contentType = 'application/json';
+        //                 xhr.open('POST', '/guia/fedex');
+        //                 // xhr.open(
+        //                 //     'POST',
+        //                 //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
+        //                 // );
+        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+        //                 setCurrentStepName('descarga');
+        //             });
+        //         })
+        //         .catch(function(error) {
+        //             console.error('Error adding document: ', error);
+        //         });
+        // }
+        else {
             setCurrentStepName('descarga');
             let myHeaders = new Headers();
             myHeaders.append('Authorization', tokenProd);
@@ -225,7 +251,7 @@ const SendPage = () => {
                                     db.collection('guia')
                                         .doc(idGuiaGlobal.current)
                                         .update({
-                                            label: result.pdf_b64,
+                                            label: result.pdf_b64[0],
                                             rastreo: result.id_shipping,
                                             body: data,
                                             result: finalResult,
