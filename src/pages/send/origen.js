@@ -166,6 +166,17 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     //                 quantity: 1,
     //             },
     //         ],
+    //         shipping_company: 'PAKKE',
+    //         shipping_service: {
+    //             name: 'ESTAFETATERRESTRECONSUMO',
+    //             description: 'ESTAFETAECONOMICO',
+    //             id: 4,
+    //         },
+    //         shipping_secure: false,
+    //         shipping_secure_data: {
+    //             notes: 'cosas',
+    //             amount: 0,
+    //         },
     //     });
     //     let myHeaders = new Headers();
     //     myHeaders.append('Authorization', tokenProd);
@@ -178,8 +189,9 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     //     };
 
     //     async function fetchData () {
-    //         console.log('fetching');
-    //         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/`;
+    //         console.log('generando guia');
+    //         //const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/`;
+    //         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping/`;
     //         await fetch(urlRequest, requestOptions)
     //         .then(response => response.json())
     //         // await Promise.all([
@@ -201,7 +213,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
     //         .then(result => {
     //             console.log(result)
-    //             console.log(result.length);
+    //             // console.log(result.length);
     //         })
     //         .catch(err => console.log('error', err));
     //     };

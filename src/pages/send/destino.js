@@ -289,11 +289,15 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorStreetName(false);
         }
-        if (streetNumber.trim() === '' || !addressRegex.test(streetNumber)) {
+        if (
+            streetNumber.trim() === '' ||
+            streetNumber.length > 10 ||
+            !addressRegex.test(streetNumber)
+        ) {
             swal.fire({
                 title: '!Lo siento!',
                 text:
-                    'El texto tiene que ser sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+                    'El texto  puede ser hasta 10 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
                 icon: 'error',
                 confirmButtonText: 'Ok',
             });
