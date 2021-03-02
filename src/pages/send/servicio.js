@@ -91,6 +91,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     let delivery_company = useRef();
     const allRatesData = useRef([]);
     let supplierExtendedArea = {};
+    let supplierExtendedAreaUs = {};
+    let supplierAvailabilityGeneralUs = [];
     let supplierDelivery = {};
     let supplierShippingName = {};
     let supplerFedex = false;
@@ -437,7 +439,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     });
 
                     // console.log(allRatesData.current.length, 'allRatesData');
-                    fetchGuia(dataShipping.current, delivery);
+                    fetchApiFedex(dataShipping.current, delivery);
+
+                    // fetchGuia(dataShipping.current, delivery);
+
                     // console.log('dataShipping.current', dataShipping.current);
                 } else {
                     console.log('Error getting document:', error);
@@ -445,8 +450,59 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             });
     };
 
+    const fetchApiFedex = (data, delivery) => {
+        console.log('peticion a la API de fedex');
+        user.getIdToken().then(idToken => {
+            const xhr = new XMLHttpRequest();
+            xhr.responseType = 'json';
+            xhr.contentType = 'application/json';
+            //xhr.open('POST', '/guia/cotizar');
+            xhr.open(
+                'POST',
+                'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            );
+            //xhr.open('POST', 'http://alloworigin.com/get?url=https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia');
+            xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+            xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
+            xhr.onreadystatechange = () => {
+                // console.log('la wea weona', xhr.readyState);
+                if (xhr.readyState === 4) {
+                    console.log('la wea weona llego', xhr.response);
+                    //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
+                    //let suppliersGeneral = xhr.response;
+                    console.log(xhr.response);
+                    supplierExtendedAreaUs = xhr.response;
+                    supplierAvailabilityGeneralUs = xhr.response;
+                    fetchGuia(data, delivery);
+                }
+            };
+        });
+    };
+
     const fetchGuia = async (data, delivery) => {
         // console.log('haciendo la peticion al broker');
+
+        // user.getIdToken().then(idToken => {
+        //     const xhr = new XMLHttpRequest();
+        //     xhr.responseType = 'json';
+        //     xhr.contentType = 'application/json';
+        //     //xhr.open('POST', '/guia/cotizar');
+        //     xhr.open('POST', 'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia');
+        //     //xhr.open('POST', 'http://alloworigin.com/get?url=https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia');
+        //     xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+        //     xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
+        //     xhr.onreadystatechange = () => {
+        //         // console.log('la wea weona', xhr.readyState);
+        //         if (xhr.readyState === 4) {
+        //             console.log('la wea weona llego', xhr.response);
+        //             //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
+        //             //let suppliersGeneral = xhr.response;
+        //             console.log(xhr.response)
+        //             supplierExtendedAreaUs = xhr.response;
+        //             supplierAvailabilityGeneralUs = xhr.response;
+        //         }
+        //     };
+        // });
 
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
@@ -476,7 +532,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
             .then(result => {
-                //console.log(result);
+                console.log(result);
                 if (result.length >= 1) {
                     //console.log('numero de provedores disponibles', result.length);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
@@ -529,8 +585,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             };
                         }
                     });
-                    console.log(supplierExtendedArea);
-                    setSupplierAvailability(supplierExtendedArea);
+                    console.log('zona extendida estafeta', supplierExtendedAreaUs);
+                    console.log('zona extendida API', supplierExtendedArea);
+                    setSupplierAvailability({ ...supplierExtendedArea, ...supplierExtendedAreaUs });
 
                     //Se hace un array para ver el tipo de delivery
                     suppliersGeneral.forEach(element => {
@@ -553,8 +610,21 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             element.shipping_service.id,
                         ];
                     });
-                    // console.log('supplierShippingName', supplierShippingName);
-                    setSupplierAvailabilityGeneral(supplierShippingName);
+
+                    let suppliersGeneralUs = {};
+                    console.log('habilitados de nuestro codigo', supplierAvailabilityGeneralUs);
+                    for (let [key, value] of Object.entries(supplierAvailabilityGeneralUs)) {
+                        //console.log(key, value);
+                        if (value !== false) {
+                            console.log('aqui');
+                            suppliersGeneralUs[key] = value;
+                        }
+                    }
+                    console.log(suppliersGeneralUs);
+                    setSupplierAvailabilityGeneral({
+                        ...supplierShippingName,
+                        ...suppliersGeneralUs,
+                    });
                 }
             })
             .catch(error => console.log('error', error));
@@ -563,7 +633,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     useEffect(() => {
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
-        // console.log('todos los provedores activos', supplierAvailability);
+        console.log(
+            'todos los provedores zona extendida',
+            supplierAvailability,
+            'todos los provedores activos',
+            supplierAvailabilityGeneral,
+        );
 
         //Validaciones del peso
         let pricedWeight = Math.ceil(weight);
@@ -651,21 +726,21 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             // console.log('no zona extendida extendedAreaRedpackEco');
         }
-        if (typeof supplierAvailability.ESTAFETATERRESTRECONSUMO !== 'undefined') {
+        if (typeof supplierAvailability.estafetaEconomico !== 'undefined') {
             extendedAreaEstafetaEco =
-                typeof supplierAvailability.ESTAFETATERRESTRECONSUMO.zonaExtendida !== 'undefined'
+                typeof supplierAvailability.estafetaEconomico.zonaExtendida !== 'undefined'
                     ? 140
                     : 0;
         } else {
-            // console.log('no zona extendida extendedAreaEstafetaEco');
+            console.log('no zona extendida extendedAreaEstafetaEco');
         }
-        if (typeof supplierAvailability.ESTAFETADIASIGUIENTE !== 'undefined') {
+        if (typeof supplierAvailability.estafetaDiaSiguiente !== 'undefined') {
             extendedAreaEstafetaDiaS =
-                typeof supplierAvailability.ESTAFETADIASIGUIENTE.zonaExtendida !== 'undefined'
+                typeof supplierAvailability.estafetaDiaSiguiente.zonaExtendida !== 'undefined'
                     ? 140
                     : 0;
         } else {
-            // console.log('no zona extendida extendedAreaEstafetaDiaS');
+            console.log('no zona extendida extendedAreaEstafetaDiaS');
         }
         if (typeof supplierAvailability.AUTOENCARGOS !== 'undefined') {
             extendedAreaAutoencargos =
@@ -744,10 +819,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 delivery: 'NORMAL',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaDiaS.finalPrice,
-                                zonaExt: extendedAreaEstafetaDiaS != 0 ? 150 : false,
-                                shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
+                                zonaExt: extendedAreaEstafetaDiaS != 0 ? 140 : false,
+                                shippingInfo: !supplierAvailabilityGeneral.estafetaDiaSiguiente
                                     ? false
-                                    : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
+                                    : supplierAvailabilityGeneral.estafetaDiaSiguiente,
                                 insurance: getInsurancePrice('estafetaDiaSiguiente'),
                             });
                         if (entrega === 'estafetaEconomico')
@@ -761,10 +836,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 delivery: 'NORMAL',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaEco.finalPrice,
-                                zonaExt: extendedAreaEstafetaEco != 0 ? 150 : false,
-                                shippingInfo: !supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO
+                                zonaExt: extendedAreaEstafetaEco != 0 ? 140 : false,
+                                shippingInfo: !supplierAvailabilityGeneral.estafetaEconomico
                                     ? false
-                                    : supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO,
+                                    : supplierAvailabilityGeneral.estafetaEconomico,
                                 insurance: getInsurancePrice('estafetaEconomico'),
                             });
                         if (entrega === 'fedexDiaSiguiente')
@@ -1032,10 +1107,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargoExtraHeight,
                             cargoExtra,
                             guia,
-                            zonaExt: extendedAreaEstafetaDiaS != 0 ? 150 : false,
-                            shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
+                            zonaExt: extendedAreaEstafetaDiaS != 0 ? 140 : false,
+                            shippingInfo: !supplierAvailabilityGeneral.estafetaDiaSiguiente
                                 ? false
-                                : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
+                                : supplierAvailabilityGeneral.estafetaDiaSiguiente,
                             insurance: getInsurancePrice('estafetaDiaSiguiente'),
                         });
                     if (entrega === 'estafetaEconomico')
@@ -1051,10 +1126,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargoExtraHeight,
                             cargoExtra,
                             guia,
-                            zonaExt: extendedAreaEstafetaEco != 0 ? 150 : false,
-                            shippingInfo: !supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO
+                            zonaExt: extendedAreaEstafetaEco != 0 ? 140 : false,
+                            shippingInfo: !supplierAvailabilityGeneral.estafetaEconomico
                                 ? false
-                                : supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO,
+                                : supplierAvailabilityGeneral.estafetaEconomico,
                             insurance: getInsurancePrice('estafetaEconomico'),
                         });
                     if (entrega === 'fedexDiaSiguiente')
@@ -1343,7 +1418,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             {hasActivatedSuppliers && supplierAvailability && (
                 <>
                     <StyledPaneContainer style={{ justifyContent: 'center' }}>
-                        {supplierAvailability.ESTAFETADIASIGUIENTE &&
+                        {supplierAvailability.estafetaDiaSiguiente &&
                             supplierCostEstafetaDiaS.guia &&
                             supplierCard(
                                 'estafeta',
@@ -1351,7 +1426,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 '3 a 5 días hábiles',
                                 supplierCostEstafetaDiaS,
                             )}
-                        {supplierAvailability.ESTAFETATERRESTRECONSUMO &&
+                        {supplierAvailability.estafetaEconomico &&
                             supplierCostEstafetaEcon.guia &&
                             supplierCard(
                                 'estafeta',
@@ -1414,6 +1489,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         </Link>
                     </Row>
                     {!(
+                        (supplierAvailability.estafetaDiaSiguiente != 'undefined' &&
+                            supplierCostEstafetaDiaS.guia) ||
+                        (supplierAvailability.estafetaEconomico != 'undefined' &&
+                            supplierCostEstafetaEcon.guia) ||
                         (supplierAvailability.NACIONALDIASIGUIENTE != 'undefined' &&
                             supplierCostFedexDiaS.guia) ||
                         (supplierAvailability.NACIONALECONOMICO != 'undefined' &&
