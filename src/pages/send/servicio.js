@@ -140,7 +140,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
-        // console.log('supplier', supplier);
+        console.log('supplier', supplier);
         // console.log('cargos', cargos);
         db.collection('profiles')
             .where('ID', '==', user.uid)
@@ -439,9 +439,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     });
 
                     // console.log(allRatesData.current.length, 'allRatesData');
-                    fetchApiFedex(dataShipping.current, delivery);
-
-                    // fetchGuia(dataShipping.current, delivery);
+                    //fetchApiFedex(dataShipping.current, delivery);
+                    fetchApiFedex();
+                    fetchGuia(dataShipping.current, delivery);
 
                     // console.log('dataShipping.current', dataShipping.current);
                 } else {
@@ -456,11 +456,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            //xhr.open('POST', '/guia/cotizar');
-            xhr.open(
-                'POST',
-                'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
-            );
+            xhr.open('POST', '/guia/cotizar');
+            // xhr.open(
+            //     'POST',
+            //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            // );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
@@ -471,8 +471,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     //let suppliersGeneral = xhr.response;
                     console.log(xhr.response);
                     supplierExtendedAreaUs = xhr.response;
-                    supplierAvailabilityGeneralUs = xhr.response;
-                    fetchGuia(data, delivery);
+                    //supplierAvailabilityGeneralUs = xhr.response;
+                    //fetchGuia(data, delivery);
                 }
             };
         });
@@ -586,20 +586,21 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         ];
                     });
 
-                    let suppliersGeneralUs = {};
-                    console.log('habilitados de nuestro codigo', supplierAvailabilityGeneralUs);
-                    for (let [key, value] of Object.entries(supplierAvailabilityGeneralUs)) {
-                        //console.log(key, value);
-                        if (value !== false) {
-                            console.log('aqui');
-                            suppliersGeneralUs[key] = value;
-                        }
-                    }
-                    console.log(suppliersGeneralUs);
-                    setSupplierAvailabilityGeneral({
-                        ...supplierShippingName,
-                        ...suppliersGeneralUs,
-                    });
+                    // let suppliersGeneralUs = {};
+                    // console.log('habilitados de nuestro codigo', supplierAvailabilityGeneralUs);
+                    // for (let [key, value] of Object.entries(supplierAvailabilityGeneralUs)) {
+                    //     //console.log(key, value);
+                    //     if (value !== false) {
+                    //         console.log('aqui');
+                    //         suppliersGeneralUs[key] = value;
+                    //     }
+                    // }
+                    // console.log(suppliersGeneralUs);
+                    setSupplierAvailabilityGeneral(supplierShippingName);
+                    // setSupplierAvailabilityGeneral({
+                    //     ...supplierShippingName,
+                    //     ...suppliersGeneralUs,
+                    // });
                 }
             })
             .catch(error => console.log('error', error));
@@ -1393,7 +1394,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             {hasActivatedSuppliers && supplierAvailability && (
                 <>
                     <StyledPaneContainer style={{ justifyContent: 'center' }}>
-                        {supplierAvailability.estafetaDiaSiguiente &&
+                        {supplierAvailability.ESTAFETADIASIGUIENTE &&
                             supplierCostEstafetaDiaS.guia &&
                             supplierCard(
                                 'estafeta',
@@ -1401,7 +1402,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 '3 a 5 días hábiles',
                                 supplierCostEstafetaDiaS,
                             )}
-                        {supplierAvailability.estafetaEconomico &&
+                        {supplierAvailability.ESTAFETATERRESTRECONSUMO &&
                             supplierCostEstafetaEcon.guia &&
                             supplierCard(
                                 'estafeta',
@@ -1464,9 +1465,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         </Link>
                     </Row>
                     {!(
-                        (supplierAvailability.estafetaDiaSiguiente != 'undefined' &&
+                        (supplierAvailability.ESTAFETADIASIGUIENTE != 'undefined' &&
                             supplierCostEstafetaDiaS.guia) ||
-                        (supplierAvailability.estafetaEconomico != 'undefined' &&
+                        (supplierAvailability.ESTAFETATERRESTRECONSUMO != 'undefined' &&
                             supplierCostEstafetaEcon.guia) ||
                         (supplierAvailability.NACIONALDIASIGUIENTE != 'undefined' &&
                             supplierCostFedexDiaS.guia) ||
