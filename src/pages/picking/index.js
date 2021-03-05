@@ -784,6 +784,14 @@ const PickingPage = () => {
             })
             .catch(error => {
                 console.log('error', error);
+                console.log('lo sentimos ');
+                swal.fire({
+                    title: '!Lo siento!',
+                    text:
+                        'Podrías revisar el día, la hora o contactar a tu asesor para mayor ayuda',
+                    icon: 'error',
+                    confirmButtonText: 'Ok',
+                });
             });
     };
 
