@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, Button, Column, TableWithBrowserPagination } from 'react-rainbow-components';
+import {
+    Input,
+    Button,
+    Column,
+    TableWithBrowserPagination,
+    Select,
+} from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import formatMoney from 'accounting-js/lib/formatMoney';
@@ -28,6 +34,21 @@ const StyledColumn = styled(Column)`
     color: #1de9b6;
 `;
 
+let allConcepts = [
+    {
+        value: 'concepto',
+        label: 'concepto',
+    },
+    {
+        value: 'GSSL',
+        label: 'Guias Solicitadas Servicio Logistica',
+    },
+    {
+        value: 'RV',
+        label: 'Recargo Varios',
+    },
+];
+
 export default function RestCredito({ user }) {
     const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
     const [monto, setMonto] = useState('');
@@ -47,6 +68,7 @@ export default function RestCredito({ user }) {
     const passBlanca = process.env.REACT_APP_KEY_BG;
     const passJose = process.env.REACT_APP_KEY_GJ;
     const passLucy = process.env.REACT_APP_KEY_LM;
+    const passMarisol = process.env.REACT_APP_KEY_MM;
 
     //console.log(passJulio, passJoce,passCitlaly, passBlanca,passJose, passLucy)
 
@@ -161,6 +183,11 @@ export default function RestCredito({ user }) {
             rightPass.current = true;
             // console.log('autor', autor);
         }
+        if (password === passMarisol) {
+            autor = 'Marisol Martinez';
+            rightPass.current = true;
+            // console.log('autor', autor);
+        }
         if (monto.trim() === '' || isNaN(monto)) {
             swal.fire('¡Oh no!', 'Parece que no hay un monto válido, favor de verificar', 'error');
         } else if (concepto.trim() === '' || !concepto) {
@@ -239,7 +266,8 @@ export default function RestCredito({ user }) {
                     />
                 </div>
                 <div style={{ flex: '1 1' }}>
-                    <Input
+                    <Select
+                        options={allConcepts}
                         id="concepto"
                         label="Concepto"
                         className="rainbow-p-around_medium"

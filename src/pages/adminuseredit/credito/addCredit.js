@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, Button, Column, TableWithBrowserPagination } from 'react-rainbow-components';
+import {
+    Input,
+    Button,
+    Column,
+    TableWithBrowserPagination,
+    Select,
+} from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import formatMoney from 'accounting-js/lib/formatMoney';
@@ -28,6 +34,21 @@ const StyledColumn = styled(Column)`
     color: #1de9b6;
 `;
 
+let allConcepts = [
+    {
+        value: 'concepto',
+        label: 'concepto',
+    },
+    {
+        value: 'CDS',
+        label: 'Carga de saldo',
+    },
+    {
+        value: 'RGNU',
+        label: 'Reembolso por guía no utilizada',
+    },
+];
+
 export default function AddCredito({ user }) {
     const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
     const [monto, setMonto] = useState('');
@@ -46,6 +67,7 @@ export default function AddCredito({ user }) {
     const passBlanca = process.env.REACT_APP_KEY_BG;
     const passJose = process.env.REACT_APP_KEY_GJ;
     const passLucy = process.env.REACT_APP_KEY_LM;
+    const passMarisol = process.env.REACT_APP_KEY_MM;
 
     const db = firebase.firestore();
     const userData = db.collection('profiles').where('ID', '==', user.ID);
@@ -91,7 +113,7 @@ export default function AddCredito({ user }) {
     function handleVouncher(querySnapshot) {
         let voucherData = [];
         querySnapshot.forEach(doc => {
-            console.log(doc.data().ID, doc.id);
+            //console.log(doc.data().ID, doc.id);
             // db.collection('voucher')
             // .doc(doc.id)
             // .update({ID: 'wLueGTJb2phxh9Gl1U5n5yxMSYp2'})
@@ -158,6 +180,11 @@ export default function AddCredito({ user }) {
             rightPass.current = true;
             // console.log('autor', autor);
         }
+        if (password === passMarisol) {
+            autor = 'Marisol Martinez';
+            rightPass.current = true;
+            //console.log('autor', autor);
+        }
         if (monto.trim() === '' || isNaN(monto)) {
             swal.fire('¡Oh no!', 'Parece que no hay un monto válido, favor de verificar', 'error');
         } else if (concepto.trim() === '' || !concepto) {
@@ -199,7 +226,7 @@ export default function AddCredito({ user }) {
 
     const deleteAddress = idDoc => {
         console.log('idDoc', idDoc);
-        db.collection('addCredit')
+        db.collection('voucher')
             .doc(idDoc)
             .delete()
             .then(function() {
@@ -236,7 +263,8 @@ export default function AddCredito({ user }) {
                     />
                 </div>
                 <div style={{ flex: '1 1' }}>
-                    <Input
+                    <Select
+                        options={allConcepts}
                         id="concepto"
                         label="Concepto"
                         className="rainbow-p-around_medium"
