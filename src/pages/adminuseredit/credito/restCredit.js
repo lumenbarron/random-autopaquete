@@ -44,6 +44,10 @@ let allConcepts = [
         label: 'Guias Solicitadas Servicio Logistica',
     },
     {
+        value: 'DSM',
+        label: 'Descuento de Saldo por Morosidad',
+    },
+    {
         value: 'RV',
         label: 'Recargo Varios',
     },
