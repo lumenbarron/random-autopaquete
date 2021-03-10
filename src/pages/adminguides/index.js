@@ -157,10 +157,17 @@ export default function AllGuides({}) {
 
                 guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
                 setHistory(guiasByDate);
+                //localStorage.setItem('data', JSON.stringify(guiasByDate))
                 //console.log(guiasByDate);
                 setDisplayData(true);
                 searchName();
-                allGuidesEver();
+                // if (localStorage.getItem('data')) {
+                //     let dataGuias = JSON.parse(localStorage.getItem('data'));
+                //     console.log(dataGuias);
+                //     setAllGuides(dataGuias);
+                // } else {
+                //     allGuidesEver();
+                // }
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -484,6 +491,7 @@ export default function AllGuides({}) {
                     <Col md="3">
                         <DatePicker
                             // formatStyle="medium"
+                            label="Desde"
                             value={startDate.date}
                             onChange={value => setStartDate({ date: value })}
                         />
@@ -491,6 +499,7 @@ export default function AllGuides({}) {
                     <Col md="3">
                         <DatePicker
                             // formatStyle="small"
+                            label="Hasta"
                             value={endDate.date}
                             onChange={value => setEndDate({ date: value })}
                         />
@@ -501,8 +510,7 @@ export default function AllGuides({}) {
                             className="rainbow-m-around_medium"
                             onClick={() => searchByDate(startDate.date, endDate.date)}
                         >
-                            {' '}
-                            Buscar{' '}
+                            Buscar
                         </Button>
                     </div>
                 </Row>

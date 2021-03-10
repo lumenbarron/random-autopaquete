@@ -3,7 +3,7 @@ import { Column, Badge, TableWithBrowserPagination, Button } from 'react-rainbow
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
 import { StyledPanel, StyleHeader } from './styled';
 import ExportReactCSV from '../../dowloadData/index';
@@ -96,10 +96,23 @@ export default function HistoryUser({ user }) {
         }
     }, []);
 
+    const deleteGuia = idDoc => {
+        console.log('idDoc', idDoc);
+        db.collection('guia')
+            .doc(idDoc)
+            .delete()
+            .then(function() {
+                console.log('Document successfully deleted', idDoc);
+            })
+            .catch(function(error) {
+                console.error('Error removing document: ', error);
+            });
+    };
+
     useEffect(() => {
         setTableData(
             history.map(historyRecord => {
-                //console.log('datos dentro del map', historyRecord.guide);
+                //console.log('datos dentro del map', historyRecord.date);
                 return {
                     id: historyRecord.id,
                     date: historyRecord.package.creation_date,
@@ -118,6 +131,12 @@ export default function HistoryUser({ user }) {
                         historyRecord.supplierData.Supplier === 'autoencargosEconomico'
                             ? 'no disponible'
                             : historyRecord.label,
+                    delete: (
+                        <FontAwesomeIcon
+                            icon={faTrashAlt}
+                            onClick={() => deleteGuia(historyRecord.id)}
+                        />
+                    ),
                 };
             }),
         );
@@ -163,6 +182,7 @@ export default function HistoryUser({ user }) {
                             style={{ width: '10px!important' }}
                             defaultWidth={100}
                         />
+                        {/* <Column header="" field="delete" /> */}
                     </StyledTable>
                 </StyledPanel>
             </div>
