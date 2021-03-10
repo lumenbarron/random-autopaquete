@@ -78,6 +78,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [checkBoxSecure, setCheckBoxSecure] = useState(false);
 
     const creationDate = new Date();
+    const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
     //Se busca los datos de envío (si hay algun envío efectuandose)
     useEffect(() => {
         if (user) {
@@ -113,6 +114,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
 
     function handleDirections(snapshot) {
         const packageData = snapshot.docs.map(doc => {
+            console.log(doc.data());
             return {
                 id: doc.id,
                 ...doc.data(),
@@ -186,6 +188,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     }, [value]);
 
     const registerDirecction = () => {
+        console.log('creationDate', creationDate);
         if (name.trim() === '') {
             setError(true);
             setErrorName(true);
@@ -294,7 +297,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     content_description: contentDescription,
                     quantity: 1,
                     content_value: contentValue,
-                    creation_date: creationDate.toLocaleDateString(),
+                    creation_date: creationDate.toLocaleDateString('es-US', optionsDate),
                 };
 
                 const packageGuiaData = {
@@ -308,11 +311,11 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         content_description: contentDescription,
                         quantity: 1,
                         content_value: contentValue,
-                        creation_date: creationDate.toLocaleDateString(),
+                        creation_date: creationDate.toLocaleDateString('es-US', optionsDate),
                     },
                 };
                 setErrorContentValue(false);
-
+                console.log(packageDataToFirebase, packageGuiaData);
                 onSave(packageDataToFirebase, packageGuiaData, checkBox);
             }
         }
