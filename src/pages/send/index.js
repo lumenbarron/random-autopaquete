@@ -162,7 +162,11 @@ const SendPage = () => {
                         console.log('Document data:', doc.data());
                         let data = JSON.stringify({
                             sender: {
-                                contact_name: doc.data().sender_addresses.name,
+                                contact_name:
+                                    doc.data().supplierData.Supplier === 'estafetaEconomico' ||
+                                    doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
+                                        ? doc.data().sender_addresses.name.substring(0, 30)
+                                        : doc.data().sender_addresses.name,
                                 company_name: doc.data().sender_addresses.name,
                                 street: doc.data().sender_addresses.street_name
                                     ? doc.data().sender_addresses.street_name
