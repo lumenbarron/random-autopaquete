@@ -198,7 +198,7 @@ export default function AllGuides({}) {
                         ...doc.data(),
                     });
                 });
-                //console.log(dataALLGuias);
+                console.log(dataALLGuias);
                 setAllGuides(dataALLGuias);
                 setAvailable(true);
             })

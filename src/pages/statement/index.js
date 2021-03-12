@@ -20,6 +20,37 @@ const StyledColumn = styled(Column)`
 const StyledBadge = styled(Badge)`
     color: #09d3ac;
 `;
+
+const StyledBadgeRed = styled(Badge)`
+    color: #c94141; 003066
+`;
+
+const StyledBadgeOrange = styled(Badge)`
+    color: orange;
+`;
+
+const StatusBadge = ({ value }) => {
+    let valueBadge;
+
+    if (value === 'CDS' || value === 'RGNU') {
+        valueBadge = <StyledBadge label={value} variant="lightest" />;
+    } else if (value === 'SOBREPESO') {
+        valueBadge = <StyledBadgeOrange label={value} variant="lightest" />;
+    } else {
+        valueBadge = <StyledBadgeRed label={value} variant="lightest" />;
+    }
+    return <>{valueBadge}</>;
+    // return (
+    //     <>
+    //         {value === 'CDS' || value === 'RGNU' ? (
+    //             <StyledBadge label={value} variant="lightest" />
+    //         ) : (
+    //             <StyledBadgeRed label={value} variant="lightest" />
+    //         )}
+    //     </>
+    // );
+};
+
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
         > div {
@@ -38,8 +69,29 @@ const StatementPage = () => {
     const user = useUser();
 
     const [statementData, setStatementData] = useState([]);
+    const [creditAmount, setCreditAmount] = useState();
 
     const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
+
+    useEffect(() => {
+        if (user) {
+            const docRef = db.collection('profiles').where('ID', '==', user.uid);
+
+            const cancelSnapshot = docRef.onSnapshot(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    if (doc.data().saldo < 0) {
+                        setCreditAmount(0);
+                    } else {
+                        setCreditAmount(doc.data().saldo);
+                    }
+                });
+            });
+
+            return cancelSnapshot;
+        }
+
+        return null;
+    }, [creditAmount]);
 
     useEffect(() => {
         const data = [];
@@ -77,10 +129,10 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('all vouchers', doc.data(), 'doc.id', doc.id);
+                    console.log('all vouchers', doc.data().concepto, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
-                        concept: 'CDS',
+                        concept: doc.data().concepto,
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
                         monto: parseFloat(doc.data().saldo),
                         date: new Date(doc.data().create_date),
@@ -98,10 +150,10 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('all vouchers', doc.data().create_date, 'doc.id', doc.id);
+                    console.log('restCredit', doc.data().concepto, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
-                        concept: 'RC',
+                        concept: doc.data().concepto,
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
                         monto: parseFloat(doc.data().saldo),
                         date: new Date(doc.data().create_date),
@@ -119,7 +171,7 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('all vouchers', doc.data().create_date, 'doc.id', doc.id);
+                    //console.log('all vouchers', doc.data().fecha, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: 'SOBREPESO',
@@ -129,7 +181,7 @@ const StatementPage = () => {
                         saldo: 0,
                     });
                 });
-                //console.log('data', data);
+                console.log('data', data);
 
                 const sortedData = data.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -147,28 +199,34 @@ const StatementPage = () => {
         let newStatement;
 
         let startStatement = data[0].monto;
-        console.log(startStatement);
+        //console.log(startStatement);
 
         data[0].saldo = startStatement;
-        console.log(data[0]);
+        //console.log(data[0]);
 
         data.map((da, index) => {
-            console.log(da.id, index, 'saldo actual', da.saldo);
+            //console.log(da.id, index, 'saldo actual', da.saldo);
             if (index > 0) {
-                console.log('saldo anterior', data[index - 1].saldo);
+                //console.log('saldo anterior', data[index - 1].saldo);
                 let prevSaldo = data[index - 1].saldo;
-                if (da.concept === 'GUIA' || da.concept === 'SOBREPESO' || da.concept === 'RC') {
+                if (
+                    da.concept === 'GUIA' ||
+                    da.concept === 'SOBREPESO' ||
+                    da.concept === 'DSM' ||
+                    da.concept === 'GSSL' ||
+                    da.concept === 'RV'
+                ) {
                     newStatement = prevSaldo - da.monto;
                     data[index].saldo = newStatement;
                 }
-                if (da.concept === 'CDS') {
+                if (da.concept === 'CDS' || da.concept === 'RGNU') {
                     newStatement = prevSaldo + da.monto;
                     data[index].saldo = newStatement;
                 }
             }
         });
 
-        console.log(data);
+        //console.log(data);
         setStatementData(data);
     };
 
@@ -194,7 +252,7 @@ const StatementPage = () => {
                     <div className="rainbow-p-bottom_xx-large">
                         <div style={containerStyles}>
                             <StyledTable
-                                // pageSize={10}
+                                // pageSize={30}
                                 data={data}
                                 keyField="id"
                                 emptyTitle="Oh no!"
@@ -204,6 +262,7 @@ const StatementPage = () => {
                                     header="Concepto"
                                     field="concept"
                                     defaultWidth={250}
+                                    component={StatusBadge}
                                 />
                                 <StyledColumn header="Fecha " field="date" defaultWidth={150} />
                                 <StyledColumn header="Reference" field="reference" />
@@ -213,6 +272,9 @@ const StatementPage = () => {
                         </div>
                     </div>
                 </div>
+                <Row className="row-header">
+                    <h2>Mi Saldo: {formatMoney(creditAmount, 2)}</h2>
+                </Row>
             </StatementContainer>
         </StyledStatement>
     );

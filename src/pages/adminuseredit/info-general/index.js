@@ -38,6 +38,7 @@ export default function InfoGeneral({ user }) {
     const personaMoral = persona === 'Moral';
 
     const creationDate = new Date();
+    const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
     const statusOptions = [
         { value: 'Aprobado', label: 'Aprobado' },
@@ -125,11 +126,20 @@ export default function InfoGeneral({ user }) {
 
     function handleComments(snapshot) {
         const showComment = snapshot.docs.map(doc => {
+            console.log('comentarios', doc.data(), doc.id);
             return {
                 id: doc.id,
+                // date : doc.data().creation_date,
+                // date2 : new Date(doc.data().creation_date),
                 ...doc.data(),
             };
         });
+        // console.log(showComment, 'showComment');
+        // let sortedComments = showComment.sort( (a,b) => {
+        //     return new Date(a.date).getTime() - new Date(b.date).getTime();
+        // } )
+
+        // console.log(sortedComments, 'sortedComments');
         setShowComment(showComment);
     }
     const editProfile = () => {
@@ -190,7 +200,7 @@ export default function InfoGeneral({ user }) {
             });
         const addComment = {
             comment,
-            creation_date: creationDate.toLocaleDateString(),
+            creation_date: creationDate.toLocaleDateString('es-US', optionsDate),
         };
 
         if (comment.trim() === '') {

@@ -163,7 +163,7 @@ const AdminOverweightPage = () => {
                     rates.entrega === supplier &&
                     !rates.kgExtra
                 ) {
-                    //console.log('entra en su tarifa');
+                    console.log('entra en su tarifa');
                     cargoExtraCero = 0;
                     setMatchPrice(`de ${rates.min} hasta  ${rates.max} con ${rates.entrega}`);
                 } else {
@@ -180,7 +180,7 @@ const AdminOverweightPage = () => {
                         (parseInt(realKg, 10) - maxrate) * parseInt(rateKgExtra, 10) * 1.16;
                 }
             } else {
-                //console.log('no entra en ninguna tarifa');
+                console.log('no entra en ninguna tarifa');
                 cargo =
                     (parseInt(realKg, 10) - parseInt(kgDeclarados, 10)) *
                     parseInt(rateKgExtra, 10) *
@@ -205,7 +205,7 @@ const AdminOverweightPage = () => {
     }
 
     useEffect(() => {
-        //console.log('cargo', cargo);
+        console.log('cargo', cargo);
         //console.log('entrando aqui, 5 use effect');
         const reloadOverWeight = () => {
             db.collection('overweights').onSnapshot(handleOverWeight);
@@ -233,7 +233,7 @@ const AdminOverweightPage = () => {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        //console.log(doc.data());
+                        console.log(doc.data().supplierData.cargos.guia);
                         setGuia(doc.id);
                         setCostGuia(doc.data().supplierData.cargos.guia);
                         setCostTotal(doc.data().supplierData.Supplier_cost);
@@ -332,7 +332,7 @@ const AdminOverweightPage = () => {
     const addOverWeight = () => {
         swal.fire('Agregado', '', 'success');
         // console.log('xlsData', xlsData);
-        //console.log('cargo', cargo);
+        console.log('cargo', cargo, 'saldo', saldo);
         //Datos manualmente
         if (name) {
             //console.log('xlsData', xlsData);
@@ -357,7 +357,7 @@ const AdminOverweightPage = () => {
                 .catch(function(error) {
                     console.error('Error adding document: ', error);
                 });
-
+            console.log(toFixed(parseFloat(saldo) - parseFloat(cargo), 2));
             db.collection('profiles')
                 .doc(profileDocId)
                 .update({

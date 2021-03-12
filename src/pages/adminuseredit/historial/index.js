@@ -117,7 +117,7 @@ export default function HistoryUser({ user }) {
                     id: historyRecord.id,
                     date: historyRecord.package.creation_date,
                     // status: historyRecord.status,
-                    guide: historyRecord.rastreo,
+                    guide: historyRecord.rastreo ? historyRecord.rastreo : 'error',
                     origin: `${historyRecord.sender_addresses.street_name} ,${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
                     Destination: `${historyRecord.receiver_addresses.street_name} , ${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
                     weight: historyRecord.package.weight,
@@ -182,7 +182,7 @@ export default function HistoryUser({ user }) {
                             style={{ width: '10px!important' }}
                             defaultWidth={100}
                         />
-                        {/* <Column header="" field="delete" /> */}
+                        <Column header="" field="delete" />
                     </StyledTable>
                 </StyledPanel>
             </div>
