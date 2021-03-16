@@ -109,6 +109,14 @@ export default function AllGuides({}) {
             label: 'Fedex Dia Siguiente',
         },
         {
+            value: 'estafetaEconomico',
+            label: 'Estafeta Economico',
+        },
+        {
+            value: 'estafetaDiaSiguiente',
+            label: 'Estafeta Dia Siguiente',
+        },
+        {
             value: 'redpackExpress',
             label: 'Redpack Express',
         },
@@ -135,7 +143,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log(doc.id, doc.data());
+                    //console.log(doc.id, doc.data());
                     // if ( typeof doc.data().label == 'undefined' ) {
                     // console.log(doc.id, doc.data())
                     // }
@@ -157,6 +165,7 @@ export default function AllGuides({}) {
 
                 guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
                 setHistory(guiasByDate);
+                allGuidesEver();
                 //localStorage.setItem('data', JSON.stringify(guiasByDate))
                 //console.log(guiasByDate);
                 setDisplayData(true);
