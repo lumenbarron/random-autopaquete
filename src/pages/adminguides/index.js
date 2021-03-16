@@ -157,6 +157,7 @@ export default function AllGuides({}) {
 
                 guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
                 setHistory(guiasByDate);
+                allGuidesEver();
                 //localStorage.setItem('data', JSON.stringify(guiasByDate))
                 //console.log(guiasByDate);
                 setDisplayData(true);

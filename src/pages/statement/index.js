@@ -219,7 +219,7 @@ const StatementPage = () => {
                     newStatement = prevSaldo - da.monto;
                     data[index].saldo = newStatement;
                 }
-                if (da.concept === 'CDS' || da.concept === 'RGNU') {
+                if (da.concept === 'CDS' || da.concept === 'RGNU' || da.concept === 'RSP') {
                     newStatement = prevSaldo + da.monto;
                     data[index].saldo = newStatement;
                 }
