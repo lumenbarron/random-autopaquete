@@ -439,9 +439,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     });
 
                     // console.log(allRatesData.current.length, 'allRatesData');
-                    //fetchApiFedex(dataShipping.current, delivery);
-                    fetchApiFedex();
-                    fetchGuia(dataShipping.current, delivery);
+                    fetchApiFedex(dataShipping.current, delivery);
+                    //fetchApiFedex();
+                    //fetchGuia(dataShipping.current, delivery);
 
                     // console.log('dataShipping.current', dataShipping.current);
                 } else {
@@ -472,7 +472,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     console.log(xhr.response);
                     supplierExtendedAreaUs = xhr.response;
                     //supplierAvailabilityGeneralUs = xhr.response;
-                    //fetchGuia(data, delivery);
+                    fetchGuia(data, delivery);
                 }
             };
         });
@@ -705,7 +705,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (typeof supplierAvailability.estafetaEconomico !== 'undefined') {
             extendedAreaEstafetaEco =
                 typeof supplierAvailability.estafetaEconomico.zonaExtendida !== 'undefined'
-                    ? 140
+                    ? 110
                     : 0;
         } else {
             console.log('no zona extendida extendedAreaEstafetaEco');
@@ -713,7 +713,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (typeof supplierAvailability.estafetaDiaSiguiente !== 'undefined') {
             extendedAreaEstafetaDiaS =
                 typeof supplierAvailability.estafetaDiaSiguiente.zonaExtendida !== 'undefined'
-                    ? 140
+                    ? 110
                     : 0;
         } else {
             console.log('no zona extendida extendedAreaEstafetaDiaS');
@@ -795,7 +795,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 delivery: 'NORMAL',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaDiaS.finalPrice,
-                                zonaExt: extendedAreaEstafetaDiaS != 0 ? 140 : false,
+                                zonaExt: extendedAreaEstafetaDiaS != 0 ? 110 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
                                     ? false
                                     : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
@@ -812,7 +812,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 delivery: 'NORMAL',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaEco.finalPrice,
-                                zonaExt: extendedAreaEstafetaEco != 0 ? 140 : false,
+                                zonaExt: extendedAreaEstafetaEco != 0 ? 110 : false,
                                 shippingInfo: !supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO
                                     ? false
                                     : supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO,
@@ -1083,7 +1083,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargoExtraHeight,
                             cargoExtra,
                             guia,
-                            zonaExt: extendedAreaEstafetaDiaS != 0 ? 140 : false,
+                            zonaExt: extendedAreaEstafetaDiaS != 0 ? 110 : false,
                             shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
                                 ? false
                                 : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
@@ -1102,7 +1102,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargoExtraHeight,
                             cargoExtra,
                             guia,
-                            zonaExt: extendedAreaEstafetaEco != 0 ? 140 : false,
+                            zonaExt: extendedAreaEstafetaEco != 0 ? 110 : false,
                             shippingInfo: !supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO
                                 ? false
                                 : supplierAvailabilityGeneral.ESTAFETATERRESTRECONSUMO,

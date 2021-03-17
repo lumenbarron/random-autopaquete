@@ -181,7 +181,11 @@ const SendPage = () => {
                                 phone: doc.data().sender_addresses.phone,
                             },
                             receiver: {
-                                contact_name: doc.data().receiver_addresses.name,
+                                contact_name:
+                                    doc.data().supplierData.Supplier === 'estafetaEconomico' ||
+                                    doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
+                                        ? doc.data().receiver_addresses.name.substring(0, 30)
+                                        : doc.data().receiver_addresses.name,
                                 company_name: doc.data().receiver_addresses.name,
                                 street: doc.data().receiver_addresses.street_name,
                                 zip_code: doc.data().receiver_addresses.codigo_postal,
@@ -197,7 +201,7 @@ const SendPage = () => {
                             },
                             packages: [
                                 {
-                                    name: doc.data().package.name,
+                                    name: doc.data().package.name.substring(0, 25),
                                     height: doc.data().package.height,
                                     width: doc.data().package.width,
                                     depth: doc.data().package.depth,
