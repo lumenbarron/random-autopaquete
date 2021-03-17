@@ -145,6 +145,7 @@ export default function AllGuides({}) {
                 querySnapshot.forEach(function(doc) {
                     //console.log(doc.id, doc.data());
                     // if ( typeof doc.data().label == 'undefined' ) {
+
                     // console.log(doc.id, doc.data())
                     // }
                     dataGuias.push({
@@ -207,7 +208,7 @@ export default function AllGuides({}) {
                         ...doc.data(),
                     });
                 });
-                //console.log(dataALLGuias);
+                console.log(dataALLGuias);
                 setAllGuides(dataALLGuias);
                 setAvailable(true);
             })

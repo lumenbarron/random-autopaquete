@@ -12,6 +12,7 @@ const AccountPage = () => {
     const db = firebase.firestore();
 
     const [creditAmount, setCreditAmount] = useState();
+    const [name, setName] = useState();
     const [creditAmountError, setCreditAmountError] = useState(false);
 
     useEffect(() => {
@@ -20,7 +21,8 @@ const AccountPage = () => {
 
             const cancelSnapshot = docRef.onSnapshot(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log(doc.id);
+                    console.log(doc.id, doc.data());
+                    setName(doc.data().name);
                     if (doc.data().saldo < 0) {
                         setCreditAmount(0);
                     } else {
@@ -48,7 +50,8 @@ const AccountPage = () => {
         <StyledAccount>
             <div className="back">
                 <div>
-                    <h1>Créditos</h1>
+                    {/* <h1>Créditos</h1> */}
+                    <h1 className="name">¡Hola {name}!</h1>
                     <h2>Saldo Actual</h2>
                     <h2>{formatMoney(creditAmount, 2)}</h2>
                     {creditAmountError && (

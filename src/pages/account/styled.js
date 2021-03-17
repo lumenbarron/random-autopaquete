@@ -23,7 +23,9 @@ export const StyledAccount = styled.div`
         padding-left: 100px;
         padding-top: 50px;
     }
-
+    .name {
+        text-transform: capitalize;
+    }
     h2 {
         color: #6b6b6b !important;
         font-weight: 600;
