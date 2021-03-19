@@ -182,7 +182,7 @@ export default function HistoryUser({ user }) {
                             style={{ width: '10px!important' }}
                             defaultWidth={100}
                         />
-                        <Column header="" field="delete" />
+                        {/* <Column header="" field="delete" /> */}
                     </StyledTable>
                 </StyledPanel>
             </div>
