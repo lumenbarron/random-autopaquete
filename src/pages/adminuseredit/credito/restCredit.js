@@ -319,7 +319,7 @@ export default function RestCredito({ user }) {
                     <StyledColumn header="Concepto" field="concepto" />
                     <StyledColumn header="Referencia" field="referencia" />
                     <StyledColumn header="Realizado por" field="autor" />
-                    <StyledColumn header="" field="delete" />
+                    {/* <StyledColumn header="" field="delete" /> */}
                 </StyledTable>
             </StyledPanel>
         </>
