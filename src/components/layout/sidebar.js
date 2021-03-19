@@ -530,13 +530,13 @@ export function AccountSidebar() {
                         label="Sobrepeso"
                     />
                 </Link>
-                {/* <Link to="/mi-cuenta/movimientos">
+                <Link to="/mi-cuenta/movimientos">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-statement.svg" alt="" />}
                         name="Movimientos"
                         label="Movimientos"
                     />
-                </Link> */}
+                </Link>
                 <Link to="/mi-cuenta/empaques">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-package.png" alt="" />}
@@ -673,13 +673,13 @@ export function AdminSidebar() {
                         label="Guías"
                     />
                 </Link>
-                <Link to="/admin/sobrepesos">
+                {/* <Link to="/admin/sobrepesos">
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-overweight.png" alt="" />}
                         name="Sobrepeso"
                         label="Sobrepeso"
                     />
-                </Link>
+                </Link> */}
                 <Link to="/" style={{ display: 'block' }} onClick={logout}>
                     <StyledSidebarItem
                         icon={<img src="/assets/icon-exit.png" alt="icon-exit.png" />}
