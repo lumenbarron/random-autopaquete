@@ -28,6 +28,7 @@ const PackagingRadioOption = ({ packages }) => {
         weight,
         width,
         name,
+        realWeight,
     } = packages;
 
     return (
@@ -38,7 +39,7 @@ const PackagingRadioOption = ({ packages }) => {
             <p>
                 Dimensiones: {height}x{width}x{depth} cm
             </p>
-            <p>Peso: {weight} kgs</p>
+            <p>Peso: {realWeight ? realWeight : weight} kgs</p>
         </>
     );
 };
@@ -114,7 +115,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
 
     function handleDirections(snapshot) {
         const packageData = snapshot.docs.map(doc => {
-            console.log(doc.data());
+            console.log(doc.data(), doc.id);
             return {
                 id: doc.id,
                 ...doc.data(),
@@ -173,7 +174,9 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         setHeight(doc.data().height);
                         setWidth(doc.data().width);
                         setDepth(doc.data().depth);
-                        setWeight(doc.data().weight);
+                        setWeight(
+                            doc.data().realWeight ? doc.data().realWeight : doc.data().weight,
+                        );
                         setContentDescription(doc.data().content_description);
                         setCheckBox(false);
                     } else {
@@ -269,7 +272,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             console.log('heavyWeight', heavyWeight);
             if (volumetricWeight > weight) {
                 pricedWeight = volumetricWeight;
-                console.log(pricedWeight, 'precio real');
+                console.log(pricedWeight, 'peso real');
             }
 
             if (volumetricWeight > 70) {
@@ -293,6 +296,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     height,
                     width,
                     depth,
+                    realWeight: Math.ceil(weight),
                     weight: pricedWeight,
                     content_description: contentDescription,
                     quantity: 1,
@@ -307,6 +311,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         height,
                         width,
                         depth,
+                        realWeight: Math.ceil(weight),
                         weight: pricedWeight,
                         content_description: contentDescription,
                         quantity: 1,

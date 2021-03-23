@@ -56,7 +56,7 @@ const StatementAdmin = ({ user }) => {
                         saldo: 0,
                     });
                 });
-                console.log('data', data);
+                //console.log('data', data);
                 //setRecordsData(data);
             })
             .catch(function(error) {
@@ -69,7 +69,7 @@ const StatementAdmin = ({ user }) => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('all vouchers', doc.data().concepto, 'doc.id', doc.id);
+                    //console.log('all vouchers', doc.data().concepto, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: doc.data().concepto,
@@ -90,7 +90,7 @@ const StatementAdmin = ({ user }) => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('restCredit', doc.data().concepto, 'doc.id', doc.id);
+                    //console.log('restCredit', doc.data().concepto, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: doc.data().concepto,

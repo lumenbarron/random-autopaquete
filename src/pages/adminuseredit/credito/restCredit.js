@@ -139,7 +139,7 @@ export default function RestCredito({ user }) {
     const inforTransacciones = voucherData.map((voucher, idx) => {
         return {
             id: voucher.id,
-            date: voucher.create_date,
+            date: new Date(voucher.create_date).toLocaleDateString(),
             monto: formatMoney(voucher.saldo, 2),
             concepto: voucher.concepto,
             autor: voucher.autor,

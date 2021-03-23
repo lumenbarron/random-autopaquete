@@ -50,6 +50,8 @@ let allConcepts = [
 ];
 
 export default function AddCredito({ user }) {
+    // let creationDate = new Date().toLocaleDateString();
+    // console.log(creationDate, 'date', typeof creationDate)
     const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
     const [monto, setMonto] = useState('');
     const [concepto, setConcepto] = useState('');
@@ -118,7 +120,7 @@ export default function AddCredito({ user }) {
     function handleVouncher(querySnapshot) {
         let voucherData = [];
         querySnapshot.forEach(doc => {
-            //console.log(doc.data().ID, doc.id);
+            //console.log( new Date(doc.data().create_date).toLocaleDateString());
             // db.collection('voucher')
             // .doc(doc.id)
             // .update({ID: 'wLueGTJb2phxh9Gl1U5n5yxMSYp2'})

@@ -161,7 +161,7 @@ export default function HistoryUser({ user }) {
                             component={StatusBadge}
                             defaultWidth={140}
                         /> */}
-                        <Column header="Guía" field="guide" defaultWidth={135} />
+                        <Column header="Guía" field="guide" defaultWidth={160} />
                         <Column header="Origen" field="origin" />
                         <Column header="Destino" field="Destination" />
                         <Column header="PF" field="weight" defaultWidth={65} />
@@ -176,7 +176,7 @@ export default function HistoryUser({ user }) {
                             style={{ width: '10px!important' }}
                             defaultWidth={100}
                         />
-                        <Column header="" field="delete" />
+                        {/* <Column header="" field="delete" /> */}
                     </StyledTable>
                 </StyledPanel>
             </div>
