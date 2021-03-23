@@ -73,13 +73,13 @@ export default function RestCredito({ user }) {
     const passJose = process.env.REACT_APP_KEY_GJ;
     const passLucy = process.env.REACT_APP_KEY_LM;
     const passMarisol = process.env.REACT_APP_KEY_MM;
-
+    let montoTotal = useRef('');
     //console.log(passJulio, passJoce,passCitlaly, passBlanca,passJose, passLucy)
 
     const db = firebase.firestore();
     const userData = db.collection('profiles').where('ID', '==', user.ID);
 
-    const montoTotal = toFixed(parseFloat(saldoActual) - parseFloat(monto), 2);
+    // const montoTotal = toFixed(parseFloat(saldoActual) - parseFloat(monto), 2);
     //console.log('montoTotal', montoTotal, 'monto', monto, 'saldoActual', saldoActual);
     userData.get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
@@ -88,8 +88,12 @@ export default function RestCredito({ user }) {
         });
     });
 
-    const updateSaldo = docRef => {
+    const updateSaldo = (docRef, montoTotal) => {
         //console.log(docRef);
+        console.log(montoTotal, 'montoTotal');
+        if (!montoTotal) {
+            return null;
+        }
         if (user) {
             //console.log('montoTotal', montoTotal);
             const profilesCollectionAdd = db
@@ -140,7 +144,9 @@ export default function RestCredito({ user }) {
             concepto: voucher.concepto,
             autor: voucher.autor,
             referencia: voucher.referencia ? voucher.referencia : 'sin ref',
-            delete: <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteAddress(voucher.id)} />,
+            delete: (
+                <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteRestCredit(voucher.id)} />
+            ),
         };
     });
 
@@ -221,7 +227,9 @@ export default function RestCredito({ user }) {
                     setPassword('');
                     setReferencia('');
                     rightPass.current = false;
-                    updateSaldo(docRef);
+                    montoTotal.current = toFixed(parseFloat(saldoActual) - parseFloat(monto), 2);
+                    console.log(montoTotal.current);
+                    updateSaldo(docRef, montoTotal.current);
                 })
                 .catch(function(error) {
                     console.error('Error writing document: ', error);
@@ -231,17 +239,37 @@ export default function RestCredito({ user }) {
         }
     };
 
-    const deleteAddress = idDoc => {
+    const deleteRestCredit = idDoc => {
         console.log('idDoc', idDoc);
+
         db.collection('restCredit')
             .doc(idDoc)
-            .delete()
-            .then(function() {
-                console.log('Document successfully deleted', idDoc);
-            })
-            .catch(function(error) {
-                console.error('Error removing document: ', error);
+            .get()
+            .then(doc => {
+                let saldo = doc.data().saldo;
+                console.log(doc.data(), saldoActual);
+                montoTotal.current = toFixed(parseFloat(saldoActual) + parseFloat(saldo), 2);
+                console.log(montoTotal.current);
+                if (!saldoActual) {
+                    return null;
+                } else {
+                    updateSaldo(docRef, montoTotal.current);
+                    deleteRestData(idDoc);
+                }
             });
+
+        const deleteRestData = idDoc => {
+            db.collection('restCredit')
+                .doc(idDoc)
+                .delete()
+                .then(function() {
+                    console.log('Document successfully deleted', idDoc);
+                    swal.fire('Eliminado', '', 'success');
+                })
+                .catch(function(error) {
+                    console.error('Error removing document: ', error);
+                });
+        };
     };
 
     return (
@@ -319,7 +347,7 @@ export default function RestCredito({ user }) {
                     <StyledColumn header="Concepto" field="concepto" />
                     <StyledColumn header="Referencia" field="referencia" />
                     <StyledColumn header="Realizado por" field="autor" />
-                    {/* <StyledColumn header="" field="delete" /> */}
+                    <StyledColumn header="" field="delete" />
                 </StyledTable>
             </StyledPanel>
         </>

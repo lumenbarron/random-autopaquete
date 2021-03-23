@@ -59,42 +59,36 @@ export default function HistoryUser({ user }) {
     const db = firebase.firestore();
     const [history, setHistory] = useState([]);
     const [tableData, setTableData] = useState();
+
     useEffect(() => {
-        if (user) {
-            let dataGuias = [];
-            db.collection('guia')
-                .where('ID', '==', user.ID)
-                .where('status', '==', 'completed')
-                .orderBy('creation_date', 'desc')
-                .get()
-                .then(function(querySnapshot) {
-                    querySnapshot.forEach(function(doc) {
-                        console.log(doc.data(), doc.id);
-                        //                         if ( typeof doc.data().label == 'undefined' ) {
-                        // console.log(doc.id, doc.data())
-                        // }
-                        // db.collection('sender_addresses')
-                        // .doc(doc.id)
-                        // .update({ID : 'XMIlDAVlEnPZ55iTbuhXQrTUrFs1'})
-                        dataGuias.push({
-                            id: doc.id,
-                            volumetricWeight: Math.ceil(
-                                (doc.data().package.height *
-                                    doc.data().package.width *
-                                    doc.data().package.depth) /
-                                    5000,
-                            ),
-                            ...doc.data(),
-                        });
-                    });
-                    setHistory(dataGuias);
-                    //console.log('guias', dataGuias);
-                })
-                .catch(function(error) {
-                    console.log('Error getting documents: ', error);
-                });
-        }
+        const reloadHistory = () => {
+            if (user) {
+                db.collection('guia')
+                    .where('ID', '==', user.ID)
+                    .where('status', '==', 'completed')
+                    .orderBy('creation_date', 'desc')
+                    .onSnapshot(handleHistory);
+            }
+        };
+        reloadHistory();
     }, []);
+
+    function handleHistory(querySnapshot) {
+        let dataGuias = [];
+        querySnapshot.forEach(doc => {
+            dataGuias.push({
+                id: doc.id,
+                volumetricWeight: Math.ceil(
+                    (doc.data().package.height *
+                        doc.data().package.width *
+                        doc.data().package.depth) /
+                        5000,
+                ),
+                ...doc.data(),
+            });
+        });
+        setHistory(dataGuias);
+    }
 
     const deleteGuia = idDoc => {
         console.log('idDoc', idDoc);
@@ -167,7 +161,7 @@ export default function HistoryUser({ user }) {
                             component={StatusBadge}
                             defaultWidth={140}
                         /> */}
-                        <Column header="Guía" field="guide" defaultWidth={85} />
+                        <Column header="Guía" field="guide" defaultWidth={135} />
                         <Column header="Origen" field="origin" />
                         <Column header="Destino" field="Destination" />
                         <Column header="PF" field="weight" defaultWidth={65} />
@@ -182,7 +176,7 @@ export default function HistoryUser({ user }) {
                             style={{ width: '10px!important' }}
                             defaultWidth={100}
                         />
-                        {/* <Column header="" field="delete" /> */}
+                        <Column header="" field="delete" />
                     </StyledTable>
                 </StyledPanel>
             </div>
