@@ -59,3 +59,33 @@ export const StatementContainer = styled.div`
             }
     }
 `;
+
+export const StyleHeader = styled.div`
+    background: gainsboro;
+    margin: -2rem;
+    padding: 1rem;
+    padding-left: 3rem;
+    margin-bottom: 0;
+
+    .row-header {
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        flex-direction: row;
+        align-items: center;
+    }
+    h2 {
+        font-size: 1rem !important;
+        font-weight: bold;
+        margin-bottom: 0 !important;
+    }
+    button {
+        margin: 0;
+        font-size: 0.8rem !important;
+        margin-right: 2rem;
+        background-color: #ab0000;
+        a {
+            color: white;
+        }
+    }
+`;

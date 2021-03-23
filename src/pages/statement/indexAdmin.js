@@ -1,63 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Column, Badge, TableWithBrowserPagination } from 'react-rainbow-components';
-import { Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
-import formatMoney from 'accounting-js/lib/formatMoney';
-import { StyledStatement, StatementContainer } from './style';
-import { useFirebaseApp, useUser } from 'reactfire';
+import { StyleHeader } from './style';
+import { Row } from 'react-bootstrap';
+import { useFirebaseApp } from 'reactfire';
 import ExportReactStatementCSV from '../dowloadData/statement';
-const containerStyles = { height: 600 };
-const containerTableStyles = { height: 256 };
 
-// const StyledTable = styled(Table)`
-//     color: #1de9b6;
-// `;
-
-const StyledColumn = styled(Column)`
-    color: #1de9b6;
-`;
-
-const StyledBadge = styled(Badge)`
-    color: #09d3ac;
-`;
-
-const StyledBadgeRed = styled(Badge)`
-    color: #c94141; 003066
-`;
-
-const StyledBadgeOrange = styled(Badge)`
-    color: orange;
-`;
-
-const StatusBadge = ({ value }) => {
-    let valueBadge;
-
-    if (value === 'Carga de saldo' || value === 'Reembolso por guía') {
-        valueBadge = <StyledBadge label={value} variant="lightest" />;
-    } else if (value === 'Sobrepeso') {
-        valueBadge = <StyledBadgeOrange label={value} variant="lightest" />;
-    } else {
-        valueBadge = <StyledBadgeRed label={value} variant="lightest" />;
-    }
-    return <>{valueBadge}</>;
-};
-
-const StyledTable = styled(TableWithBrowserPagination)`
-    td[data-label='Guía'] {
-        > div {
-            line-height: 1.2rem;
-            > span {
-                white-space: break-spaces;
-                font-size: 12px;
-            }
-        }
-    }
-`;
-
-const StatementPage = () => {
+const StatementAdmin = ({ user }) => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
-    const user = useUser();
 
     const [statementData, setStatementData] = useState([]);
     const [creditAmount, setCreditAmount] = useState();
@@ -66,7 +15,7 @@ const StatementPage = () => {
 
     useEffect(() => {
         if (user) {
-            const docRef = db.collection('profiles').where('ID', '==', user.uid);
+            const docRef = db.collection('profiles').where('ID', '==', user.ID);
 
             const cancelSnapshot = docRef.onSnapshot(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
@@ -89,7 +38,7 @@ const StatementPage = () => {
 
         //Getting all the shippings
         db.collection('guia')
-            .where('ID', '==', user.uid)
+            .where('ID', '==', user.ID)
             .where('status', '==', 'completed')
             //.orderBy('creation_date', 'desc')
             .get()
@@ -115,7 +64,7 @@ const StatementPage = () => {
             });
 
         db.collection('voucher')
-            .where('ID', '==', user.uid)
+            .where('ID', '==', user.ID)
             //.orderBy('create_date', 'desc')
             .get()
             .then(function(querySnapshot) {
@@ -136,7 +85,7 @@ const StatementPage = () => {
             });
 
         db.collection('restCredit')
-            .where('ID', '==', user.uid)
+            .where('ID', '==', user.ID)
             //.orderBy('create_date', 'desc')
             .get()
             .then(function(querySnapshot) {
@@ -157,7 +106,7 @@ const StatementPage = () => {
             });
 
         db.collection('overweights')
-            .where('ID', '==', user.uid)
+            .where('ID', '==', user.ID)
             //.orderBy('fecha', 'desc')
             .get()
             .then(function(querySnapshot) {
@@ -217,7 +166,7 @@ const StatementPage = () => {
             }
         });
 
-        //console.log(data);
+        console.log(data);
         setStatementData(data);
     };
 
@@ -250,42 +199,13 @@ const StatementPage = () => {
     });
 
     return (
-        <StyledStatement>
-            <StatementContainer>
-                <Row className="row-header">
-                    <h1>Mis movimientos</h1>
-                    <ExportReactStatementCSV data={statementData} />
-                </Row>
-                <div className="back">
-                    <div className="rainbow-p-bottom_xx-large">
-                        <div style={containerStyles}>
-                            <StyledTable
-                                // pageSize={30}
-                                data={data}
-                                keyField="id"
-                                emptyTitle="Oh no!"
-                                emptyDescription="No hay ningun registro actualmente..."
-                            >
-                                <StyledColumn
-                                    header="Concepto"
-                                    field="concept"
-                                    defaultWidth={250}
-                                    component={StatusBadge}
-                                />
-                                <StyledColumn header="Fecha " field="date" defaultWidth={150} />
-                                <StyledColumn header="Reference" field="reference" />
-                                <StyledColumn header="Monto" field="monto" />
-                                <StyledColumn header="Saldo" field="saldo" />
-                            </StyledTable>
-                        </div>
-                    </div>
-                </div>
-                <Row className="row-header">
-                    <h2>Mi Saldo: {formatMoney(creditAmount, 2)}</h2>
-                </Row>
-            </StatementContainer>
-        </StyledStatement>
+        <StyleHeader>
+            <Row className="row-header">
+                <h2> Estado de cuenta</h2>
+                <ExportReactStatementCSV data={data} />
+            </Row>
+        </StyleHeader>
     );
 };
 
-export default StatementPage;
+export default StatementAdmin;
