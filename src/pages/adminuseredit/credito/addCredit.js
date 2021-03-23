@@ -50,6 +50,8 @@ let allConcepts = [
 ];
 
 export default function AddCredito({ user }) {
+    // let creationDate = new Date().toLocaleDateString();
+    // console.log(creationDate, 'date', typeof creationDate)
     const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
     const [monto, setMonto] = useState('');
     const [concepto, setConcepto] = useState('');
@@ -69,10 +71,11 @@ export default function AddCredito({ user }) {
     const passLucy = process.env.REACT_APP_KEY_LM;
     const passMarisol = process.env.REACT_APP_KEY_MM;
 
+    let montoTotal = useRef('');
     const db = firebase.firestore();
     const userData = db.collection('profiles').where('ID', '==', user.ID);
 
-    const montoTotal = toFixed(parseFloat(saldoActual) + parseFloat(monto), 2);
+    // const montoTotal = toFixed(parseFloat(saldoActual) + parseFloat(monto), 2);
     //console.log('montoTotal', montoTotal, 'monto', monto, 'saldoActual', saldoActual);
     userData.get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
@@ -81,8 +84,12 @@ export default function AddCredito({ user }) {
         });
     });
 
-    const updateSaldo = docRef => {
-        //console.log(docRef);
+    const updateSaldo = (docRef, montoTotal) => {
+        // console.log(docRef, montoTotal);
+        console.log(montoTotal, 'montoTotal');
+        if (!montoTotal) {
+            return null;
+        }
         if (user) {
             //console.log('montoTotal', montoTotal);
             const profilesCollectionAdd = db
@@ -113,7 +120,7 @@ export default function AddCredito({ user }) {
     function handleVouncher(querySnapshot) {
         let voucherData = [];
         querySnapshot.forEach(doc => {
-            //console.log(doc.data().ID, doc.id);
+            //console.log( new Date(doc.data().create_date).toLocaleDateString());
             // db.collection('voucher')
             // .doc(doc.id)
             // .update({ID: 'wLueGTJb2phxh9Gl1U5n5yxMSYp2'})
@@ -133,7 +140,7 @@ export default function AddCredito({ user }) {
             concepto: voucher.concepto ? voucher.concepto : 'sin concepto',
             autor: voucher.autor ? voucher.autor : 'desconocido',
             referencia: voucher.referencia ? voucher.referencia : 'sin ref',
-            delete: <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteAddress(voucher.id)} />,
+            delete: <FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteVoucher(voucher.id)} />,
         };
     });
 
@@ -194,9 +201,8 @@ export default function AddCredito({ user }) {
         } else if (password.trim() === '' || !password) {
             swal.fire('¡Oh no!', 'Parece que no hay ninguna contraseña', 'error');
         } else if (monto && concepto && rightPass.current) {
-            swal.fire('Agregado', '', 'success');
             //console.log('monto', monto, 'concepto', concepto, 'password', password);
-            const restCreditData = {
+            const addCreditData = {
                 ID: user.ID,
                 create_date: date,
                 saldo: monto,
@@ -206,15 +212,18 @@ export default function AddCredito({ user }) {
             };
 
             db.collection('voucher')
-                .add(restCreditData)
+                .add(addCreditData)
                 .then(function() {
                     console.log('agregando credito exitosamente');
+                    swal.fire('Agregado', '', 'success');
                     setMonto('');
                     setConcepto('');
                     setPassword('');
                     setReferencia('');
                     rightPass.current = false;
-                    updateSaldo(docRef);
+                    montoTotal.current = toFixed(parseFloat(saldoActual) + parseFloat(monto), 2);
+                    console.log(montoTotal.current);
+                    updateSaldo(docRef, montoTotal.current);
                 })
                 .catch(function(error) {
                     console.error('Error writing document: ', error);
@@ -224,17 +233,37 @@ export default function AddCredito({ user }) {
         }
     };
 
-    const deleteAddress = idDoc => {
+    const deleteVoucher = idDoc => {
         console.log('idDoc', idDoc);
+
         db.collection('voucher')
             .doc(idDoc)
-            .delete()
-            .then(function() {
-                console.log('Document successfully deleted', idDoc);
-            })
-            .catch(function(error) {
-                console.error('Error removing document: ', error);
+            .get()
+            .then(doc => {
+                let saldo = doc.data().saldo;
+                console.log(doc.data(), saldoActual);
+                montoTotal.current = toFixed(parseFloat(saldoActual) - parseFloat(saldo), 2);
+                console.log(montoTotal.current);
+                if (!saldoActual) {
+                    return null;
+                } else {
+                    updateSaldo(docRef, montoTotal.current);
+                    deleteVouchertData(idDoc);
+                }
             });
+
+        const deleteVouchertData = idDoc => {
+            db.collection('voucher')
+                .doc(idDoc)
+                .delete()
+                .then(function() {
+                    console.log('Document successfully deleted', idDoc);
+                    swal.fire('Eliminado', '', 'success');
+                })
+                .catch(function(error) {
+                    console.error('Error removing document: ', error);
+                });
+        };
     };
 
     return (
@@ -312,7 +341,7 @@ export default function AddCredito({ user }) {
                     <StyledColumn header="Concepto" field="concepto" />
                     <StyledColumn header="Referencia" field="referencia" />
                     <StyledColumn header="Realizado por" field="autor" />
-                    {/* <StyledColumn header="" field="delete" /> */}
+                    <StyledColumn header="" field="delete" />
                 </StyledTable>
             </StyledPanel>
         </>

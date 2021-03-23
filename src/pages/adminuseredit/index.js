@@ -5,6 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { StyledUserEdit, StyledPanel } from './styled';
 import formatMoney from 'accounting-js/lib/formatMoney.js';
 import InfoGeneral from './info-general';
+import StatementAdmin from '../statement/indexAdmin';
 import HistoryUser from './historial/index';
 import OverweightUser from './historial/overweight';
 import Credito from './credito/index';
@@ -53,6 +54,10 @@ const AdminUserEditPage = () => {
 
                 <StyledPanel>
                     <InfoGeneral user={user} />
+                </StyledPanel>
+
+                <StyledPanel style={{ paddingBottom: 0 }}>
+                    <StatementAdmin user={user} />
                 </StyledPanel>
 
                 <StyledPanel>

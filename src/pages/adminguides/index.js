@@ -435,7 +435,7 @@ export default function AllGuides({}) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.data());
+                        console.log(doc.id);
                         dataGuia.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(
@@ -463,7 +463,7 @@ export default function AllGuides({}) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.data());
+                        console.log(doc.id);
                         dataGuia.push({
                             id: doc.id,
                             volumetricWeight: Math.ceil(

@@ -79,6 +79,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
+    const [realWeight, setRealWeight] = useState('');
     const [finalWeight, setFinalWeight] = useState('');
     const getFinalWeight = useRef('');
     const [quantity, setQuantity] = useState('');
@@ -221,7 +222,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         db.collection('guia')
             .doc(idGuiaGlobal)
             .onSnapshot(function getGuia(doc) {
-                // console.log("Document data 1:", doc.data())
+                console.log('Document data 1:', doc.data());
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
@@ -247,6 +248,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     setWidth(doc.data().package.width);
                     setDepth(doc.data().package.depth);
                     setWeight(doc.data().package.weight);
+                    setRealWeight(doc.data().package.realWeight);
                     setQuantity(doc.data().package.quantity);
                     setContentValue(doc.data().package.content_value);
                 }
@@ -456,11 +458,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
             xhr.contentType = 'application/json';
-            xhr.open('POST', '/guia/cotizar');
-            // xhr.open(
-            //     'POST',
-            //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
-            // );
+            //xhr.open('POST', '/guia/cotizar');
+            xhr.open(
+                'POST',
+                'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/cotizarGuia',
+            );
             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal }));
             xhr.onreadystatechange = () => {
@@ -1038,9 +1040,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     let cargoExtraHeight;
                     const { guia } = tarifa;
                     const kilosExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
+                    console.log('peso', weight, 'peso real', realWeight);
                     if (
-                        (weight > 30 && entrega === 'fedexDiaSiguiente') ||
-                        (weight > 30 && entrega === 'fedexEconomico')
+                        (realWeight > 30 && entrega === 'fedexDiaSiguiente') ||
+                        (realWeight > 30 && entrega === 'fedexEconomico')
                     ) {
                         cargoExtra = 110;
                     } else {
@@ -1360,6 +1363,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         <b>{namePackage}</b>
                     </span>
                     <p>Cantidad: {quantity} pzas.</p>
+                    <p>Peso Físico: {realWeight} kgs</p>
                     <p>
                         Dimensiones: {height}x{width}x{depth} cm
                     </p>
