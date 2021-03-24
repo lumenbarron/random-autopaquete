@@ -156,6 +156,27 @@ const StatementPage = () => {
                 console.log('Error getting documents: ', error);
             });
 
+        db.collection('statement')
+            .where('ID', '==', user.uid)
+            //.orderBy('create_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log('statement', doc.data().concepto, 'doc.id', doc.id);
+                    data.push({
+                        id: doc.id,
+                        concept: doc.data().concepto,
+                        reference: doc.data().referencia ? doc.data().referencia : 's/r',
+                        monto: 0,
+                        date: new Date(doc.data().create_date),
+                        saldo: parseFloat(doc.data().saldo),
+                    });
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+
         db.collection('overweights')
             .where('ID', '==', user.uid)
             //.orderBy('fecha', 'desc')
@@ -214,6 +235,9 @@ const StatementPage = () => {
                     newStatement = prevSaldo + da.monto;
                     data[index].saldo = newStatement;
                 }
+                if (da.concept === 'CM') {
+                    data[index].saldo = da.saldo;
+                }
             }
         });
 
@@ -235,6 +259,8 @@ const StatementPage = () => {
             concepto = 'Reembolso por guía';
         } else if (statement.concept === 'RSP') {
             concepto = 'Reembolso por sobrepeso';
+        } else if (statement.concept === 'CM') {
+            concepto = 'Corte Movimientos';
         } else {
             concepto = statement.concept;
         }
