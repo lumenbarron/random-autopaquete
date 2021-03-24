@@ -105,6 +105,27 @@ const StatementAdmin = ({ user }) => {
                 console.log('Error getting documents: ', error);
             });
 
+        db.collection('statement')
+            .where('ID', '==', user.ID)
+            //.orderBy('create_date', 'desc')
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log('statement', doc.data().concepto, 'doc.id', doc.id);
+                    data.push({
+                        id: doc.id,
+                        concept: doc.data().concepto,
+                        reference: doc.data().referencia ? doc.data().referencia : 's/r',
+                        monto: 0,
+                        date: new Date(doc.data().create_date),
+                        saldo: parseFloat(doc.data().saldo),
+                    });
+                });
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+            });
+
         db.collection('overweights')
             .where('ID', '==', user.ID)
             //.orderBy('fecha', 'desc')
@@ -121,13 +142,13 @@ const StatementAdmin = ({ user }) => {
                         saldo: 0,
                     });
                 });
-                console.log('data', data);
+                //console.log('data', data);
 
                 const sortedData = data.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
                     // b.date - a.date
                 });
-                console.log(sortedData);
+                //console.log(sortedData);
                 makingOperations(sortedData);
             })
             .catch(function(error) {
@@ -142,7 +163,7 @@ const StatementAdmin = ({ user }) => {
         //console.log(startStatement);
 
         data[0].saldo = startStatement;
-        //console.log(data[0]);
+        //console.log(data);
 
         data.map((da, index) => {
             //console.log(da.id, index, 'saldo actual', da.saldo);
@@ -163,10 +184,13 @@ const StatementAdmin = ({ user }) => {
                     newStatement = prevSaldo + da.monto;
                     data[index].saldo = newStatement;
                 }
+                if (da.concept === 'CM') {
+                    data[index].saldo = da.saldo;
+                }
             }
         });
 
-        console.log(data);
+        //console.log(data);
         setStatementData(data);
     };
 
@@ -184,6 +208,8 @@ const StatementAdmin = ({ user }) => {
             concepto = 'Reembolso por guía';
         } else if (statement.concept === 'RSP') {
             concepto = 'Reembolso por sobrepeso';
+        } else if (statement.concept === 'CM') {
+            concepto = 'Corte Movimientos';
         } else {
             concepto = statement.concept;
         }
