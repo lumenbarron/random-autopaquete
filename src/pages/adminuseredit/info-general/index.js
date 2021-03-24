@@ -233,6 +233,7 @@ export default function InfoGeneral({ user }) {
                                 style={{ width: '100%' }}
                                 value={name}
                                 onChange={ev => setName(ev.target.value)}
+                                readOnly
                             />
                             <Input
                                 id="apellido"
@@ -241,6 +242,7 @@ export default function InfoGeneral({ user }) {
                                 style={{ width: '100%' }}
                                 value={lastname}
                                 onChange={ev => setLastName(ev.target.value)}
+                                readOnly
                             />
                             <Input
                                 id="domicilio"

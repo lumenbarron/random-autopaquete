@@ -220,20 +220,24 @@ export default function AllGuides({}) {
     const searchName = () => {
         let dataUsers = [];
         let dataSingleUser = [];
-        db.collection('guia')
-            .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
+        db.collection('profiles')
+            // .where('status', '==', 'completed')
+            // .orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.data().name)
-                    dataUsers.push(doc.data().name);
+                    console.log(doc.data().name, doc.data().lastname);
+                    dataUsers.push({
+                        fullname: doc.data().name + ' ' + doc.data().lastname,
+                        name: doc.data().name,
+                    });
                 });
-                //console.log(dataUsers);
+                console.log(dataUsers);
                 dataSingleUser = dataUsers
                     .filter((item, index) => dataUsers.indexOf(item) === index)
-                    .sort();
-                //onsole.log(dataSingleUser);
+                    //.sort();
+                    .sort((a, b) => a.fullname.localeCompare(b.fullname));
+                console.log(dataSingleUser);
                 setUsersName(dataSingleUser);
             });
     };
@@ -271,9 +275,10 @@ export default function AllGuides({}) {
 
     useEffect(() => {
         let mapUsers = usersName.map(historyRecord => {
+            console.log(historyRecord);
             return {
-                value: historyRecord,
-                label: historyRecord,
+                value: historyRecord.name,
+                label: historyRecord.fullname,
             };
         });
         setTableUsers([{ value: 'usuario', label: 'usuario' }, ...mapUsers]);
