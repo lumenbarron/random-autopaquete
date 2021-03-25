@@ -1430,14 +1430,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 '3 a 5 días hábiles',
                                 supplierCostFedexEcon,
                             )}
-                        {/* {supplierAvailability.EXPRESS &&
+                        {supplierAvailability.EXPRESS &&
                             supplierCostRedpackEx.guia &&
                             supplierCard(
                                 'redpack',
                                 'Express',
                                 '1 a 3 días hábiles',
                                 supplierCostRedpackEx,
-                            )} */}
+                            )}
                         {supplierAvailability.ECOEXPRESS &&
                             supplierCostRedpackEco.guia &&
                             supplierCard(

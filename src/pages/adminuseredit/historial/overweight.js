@@ -105,6 +105,18 @@ export default function OverweightUser({ user }) {
         let dataOverweights = [];
         querySnapshot.forEach(function(doc) {
             //console.log(doc.id, doc.data().cargo);
+            if (doc.data().cargo === 0) {
+                console.log(doc.id);
+                db.collection('overweights')
+                    .doc(doc.id)
+                    .delete()
+                    .then(function() {
+                        console.log('Document successfully deleted', doc.id);
+                    })
+                    .catch(function(error) {
+                        console.error('Error removing document: ', error);
+                    });
+            }
             dataOverweights.push({
                 id: doc.id,
                 ...doc.data(),
@@ -290,7 +302,7 @@ export default function OverweightUser({ user }) {
             .get()
             .then(doc => {
                 costo = doc.data().cargo;
-                // console.log(costo,  doc.data(), saldo)
+                console.log(costo, doc.data(), saldo);
                 if (!saldo) {
                     return null;
                 } else {

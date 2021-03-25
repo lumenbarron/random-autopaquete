@@ -116,7 +116,7 @@ const StatementAdmin = ({ user }) => {
                         id: doc.id,
                         concept: doc.data().concepto,
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
-                        monto: 0,
+                        monto: parseFloat(doc.data().saldo),
                         date: new Date(doc.data().create_date),
                         saldo: parseFloat(doc.data().saldo),
                     });
