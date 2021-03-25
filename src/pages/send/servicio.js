@@ -141,7 +141,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
-        console.log('supplier', supplier);
+        //console.log('supplier', supplier);
         // console.log('cargos', cargos);
         db.collection('profiles')
             .where('ID', '==', user.uid)
@@ -222,7 +222,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         db.collection('guia')
             .doc(idGuiaGlobal)
             .onSnapshot(function getGuia(doc) {
-                console.log('Document data 1:', doc.data());
+                //console.log('Document data 1:', doc.data());
                 // Get snapshot sender information
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
@@ -293,15 +293,15 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     (cpReceiver === true && cpSenderExt === true) ||
                     (cpReceiverExt === true && cpSenderExt === true)
                 ) {
-                    console.log('codigos postales ZE ZMG');
+                    //console.log('codigos postales ZE ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = false;
                 } else if (cpReceiver === true && cpSender === true) {
-                    console.log('codigos postales ZMG');
+                    //console.log('codigos postales ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = false;
                 } else {
-                    console.log('codigos no postales ZMG');
+                    //console.log('codigos no postales ZMG');
                     cpsAvailabilityAutoencargos.current = false;
                 }
             })
@@ -453,7 +453,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     const fetchApiFedex = (data, delivery) => {
-        console.log('peticion a la API de fedex');
+        console.log('peticion a la API estafeta');
         user.getIdToken().then(idToken => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
@@ -468,7 +468,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             xhr.onreadystatechange = () => {
                 // console.log('la wea weona', xhr.readyState);
                 if (xhr.readyState === 4) {
-                    console.log('la wea weona llego', xhr.response);
+                    //console.log('la wea weona llego', xhr.response);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
                     //let suppliersGeneral = xhr.response;
                     console.log(xhr.response);
@@ -504,7 +504,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         // return [result1.concat(result2 ,result3)]
         // })
         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
-        console.log('url', urlRequest);
+        //console.log('url', urlRequest);
 
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
@@ -537,7 +537,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         cpsAvailabilityAutoencargos.current === true &&
                         cpsAvailabilityZEAutoencargos.current === true
                     ) {
-                        console.log('aqui si hay autoencargos con zona extendida');
+                        //console.log('aqui si hay autoencargos con zona extendida');
                         let autoencargos = {
                             shipping_company: 'AUTOENCARGOS',
                             shipping_cost: 90.0,
@@ -562,8 +562,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             };
                         }
                     });
-                    console.log('zona extendida estafeta', supplierExtendedAreaUs);
-                    console.log('zona extendida API', supplierExtendedArea);
+                    // console.log('zona extendida estafeta', supplierExtendedAreaUs);
+                    // console.log('zona extendida API', supplierExtendedArea);
                     setSupplierAvailability({ ...supplierExtendedArea, ...supplierExtendedAreaUs });
 
                     //Se hace un array para ver el tipo de delivery
@@ -611,12 +611,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     useEffect(() => {
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
-        console.log(
-            'todos los provedores zona extendida',
-            supplierAvailability,
-            'todos los provedores activos',
-            supplierAvailabilityGeneral,
-        );
+        // console.log(
+        //     'todos los provedores zona extendida',
+        //     supplierAvailability,
+        //     'todos los provedores activos',
+        //     supplierAvailabilityGeneral,
+        // );
 
         //Validaciones del peso
         let pricedWeight = Math.ceil(weight);
@@ -710,7 +710,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ? 110
                     : 0;
         } else {
-            console.log('no zona extendida extendedAreaEstafetaEco');
+            //console.log('no zona extendida extendedAreaEstafetaEco');
         }
         if (typeof supplierAvailability.estafetaDiaSiguiente !== 'undefined') {
             extendedAreaEstafetaDiaS =
@@ -718,7 +718,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ? 110
                     : 0;
         } else {
-            console.log('no zona extendida extendedAreaEstafetaDiaS');
+            //console.log('no zona extendida extendedAreaEstafetaDiaS');
         }
         if (typeof supplierAvailability.AUTOENCARGOS !== 'undefined') {
             extendedAreaAutoencargos =
@@ -1040,7 +1040,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     let cargoExtraHeight;
                     const { guia } = tarifa;
                     const kilosExtra = tarifa.diferencia * kgsExtraTarifas[entrega];
-                    console.log('peso', weight, 'peso real', realWeight);
+                    //console.log('peso', weight, 'peso real', realWeight);
                     if (
                         (realWeight > 30 && entrega === 'fedexDiaSiguiente') ||
                         (realWeight > 30 && entrega === 'fedexEconomico')

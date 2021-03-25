@@ -120,7 +120,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
     const [checkBox, setCheckBox] = useState(true);
 
     const creationDate = new Date();
-    console.log('Destino', idGuiaGlobal);
+    //console.log('Destino', idGuiaGlobal);
 
     //Se busca los datos de envío (si hay algun envío efectuandose)
     useEffect(() => {

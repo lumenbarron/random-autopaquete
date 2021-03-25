@@ -107,7 +107,7 @@ const SendPage = () => {
 
     const saveServiceData = supplierData => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
-        console.log('supplierData', supplierData);
+        //console.log('supplierData', supplierData);
         let costGuia = supplierData.Supplier_cost;
         // console.log('costGuia', costGuia);
         const directionsGuiasCollectionAdd = db
@@ -159,7 +159,7 @@ const SendPage = () => {
                 .get()
                 .then(function(doc) {
                     if (doc.exists) {
-                        console.log('Document data:', doc.data());
+                        //console.log('Document data:', doc.data());
                         let data = JSON.stringify({
                             sender: {
                                 contact_name:
@@ -228,7 +228,7 @@ const SendPage = () => {
                                     doc.data().supplierData.cargos.insurance,
                             },
                         });
-                        console.log('data 2', data);
+                        //console.log('data 2', data);
                         let requestOptions = {
                             method: 'POST',
                             headers: myHeaders,
@@ -244,7 +244,7 @@ const SendPage = () => {
                                 console.log(result);
                                 let finalResult = result;
                                 let responseFetch = Object.keys(result);
-                                console.log(responseFetch);
+                                //console.log(responseFetch);
                                 if (responseFetch.length === 0) {
                                     setEmptyResult(true);
                                     db.collection('guia')

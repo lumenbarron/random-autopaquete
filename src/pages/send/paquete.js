@@ -115,7 +115,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
 
     function handleDirections(snapshot) {
         const packageData = snapshot.docs.map(doc => {
-            console.log(doc.data(), doc.id);
+            //console.log(doc.data(), doc.id);
             return {
                 id: doc.id,
                 ...doc.data(),
@@ -191,7 +191,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     }, [value]);
 
     const registerDirecction = () => {
-        console.log('creationDate', creationDate);
+        //console.log('creationDate', creationDate);
         if (name.trim() === '') {
             setError(true);
             setErrorName(true);
@@ -248,7 +248,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 setContentValue(0);
             }
             if (contentValue > 100000) {
-                console.log('El monto máximo para asegurar un contenido es de $100,000');
+                //console.log('El monto máximo para asegurar un contenido es de $100,000');
                 setErrorContentValue(true);
                 setErrorContentValueEmpty(false);
                 return;
@@ -265,14 +265,14 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             }
             setErrorNameDuplicate(false);
             let pricedWeight = Math.ceil(weight);
-            console.log(pricedWeight, 'peso fisico');
+            //console.log(pricedWeight, 'peso fisico');
             const volumetricWeight = Math.ceil((height * width * depth) / 5000);
-            console.log(volumetricWeight, 'peso volumetrico');
+            //console.log(volumetricWeight, 'peso volumetrico');
             const heavyWeight = Math.ceil(parseInt(height, 10) + 2 * width + 2 * depth);
-            console.log('heavyWeight', heavyWeight);
+            //console.log('heavyWeight', heavyWeight);
             if (volumetricWeight > weight) {
                 pricedWeight = volumetricWeight;
-                console.log(pricedWeight, 'peso real');
+                //console.log(pricedWeight, 'peso real');
             }
 
             if (volumetricWeight > 70) {
@@ -320,7 +320,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     },
                 };
                 setErrorContentValue(false);
-                console.log(packageDataToFirebase, packageGuiaData);
+                //console.log(packageDataToFirebase, packageGuiaData);
                 onSave(packageDataToFirebase, packageGuiaData, checkBox);
             }
         }
