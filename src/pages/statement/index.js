@@ -107,7 +107,7 @@ const StatementPage = () => {
                         saldo: 0,
                     });
                 });
-                console.log('data', data);
+                //console.log('data', data);
                 //setRecordsData(data);
             })
             .catch(function(error) {
@@ -120,7 +120,7 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('all vouchers', doc.data().concepto, 'doc.id', doc.id);
+                    //console.log('all vouchers', doc.data().concepto, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: doc.data().concepto,
@@ -141,7 +141,7 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('restCredit', doc.data().concepto, 'doc.id', doc.id);
+                    //console.log('restCredit', doc.data().concepto, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: doc.data().concepto,
@@ -162,12 +162,12 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('statement', doc.data().concepto, 'doc.id', doc.id);
+                    //console.log('statement', doc.data().concepto, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: doc.data().concepto,
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
-                        monto: 0,
+                        monto: parseFloat(doc.data().saldo),
                         date: new Date(doc.data().create_date),
                         saldo: parseFloat(doc.data().saldo),
                     });
@@ -193,13 +193,13 @@ const StatementPage = () => {
                         saldo: 0,
                     });
                 });
-                console.log('data', data);
+                //console.log('data', data);
 
                 const sortedData = data.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
                     // b.date - a.date
                 });
-                console.log(sortedData);
+                //console.log(sortedData);
                 makingOperations(sortedData);
             })
             .catch(function(error) {

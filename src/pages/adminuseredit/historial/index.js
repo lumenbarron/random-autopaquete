@@ -76,6 +76,19 @@ export default function HistoryUser({ user }) {
     function handleHistory(querySnapshot) {
         let dataGuias = [];
         querySnapshot.forEach(doc => {
+            //console.log(doc.data().status)
+            if (doc.data().status != 'completed') {
+                console.log(doc.id);
+                db.collection('guia')
+                    .doc(doc.id)
+                    .delete()
+                    .then(function() {
+                        console.log('Document successfully deleted', doc.id);
+                    })
+                    .catch(function(error) {
+                        console.error('Error removing document: ', error);
+                    });
+            }
             dataGuias.push({
                 id: doc.id,
                 volumetricWeight: Math.ceil(
@@ -106,11 +119,11 @@ export default function HistoryUser({ user }) {
     useEffect(() => {
         setTableData(
             history.map(historyRecord => {
-                //console.log('datos dentro del map', historyRecord.date);
+                //console.log('datos dentro del map', historyRecord.package.creation_date);
                 return {
                     id: historyRecord.id,
                     date: historyRecord.package.creation_date,
-                    // status: historyRecord.status,
+                    status: historyRecord.status,
                     guide: historyRecord.rastreo ? historyRecord.rastreo : 'error',
                     origin: `${historyRecord.sender_addresses.street_name} ,${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
                     Destination: `${historyRecord.receiver_addresses.street_name} , ${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
