@@ -44,11 +44,21 @@ const StatementAdmin = ({ user }) => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('data guias', doc.data().creation_date, 'doc.id', doc.id);
+                    console.log('data guias', doc.data(), 'doc.id', doc.id);
+                    let referenciaGuia;
+                    if (
+                        doc.data().supplierData.Supplier === 'autoencargosEconomico' &&
+                        typeof doc.data().rastreo === 'string'
+                    ) {
+                        referenciaGuia = doc.data().rastreo;
+                        //console.log(referenciaGuia)
+                    } else {
+                        referenciaGuia = doc.data().rastreo[0];
+                    }
                     data.push({
                         id: doc.id,
                         concept: 'Guia',
-                        reference: doc.data().rastreo ? doc.data().rastreo[0] : 'error',
+                        reference: doc.data().rastreo ? referenciaGuia : 'error',
                         monto: doc.data().rastreo
                             ? parseFloat(doc.data().supplierData.Supplier_cost)
                             : 0,
@@ -132,7 +142,7 @@ const StatementAdmin = ({ user }) => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('all vouchers', doc.data().fecha, 'doc.id', doc.id);
+                    //console.log('overweights', doc.data(), 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: 'Sobrepeso',
@@ -142,7 +152,7 @@ const StatementAdmin = ({ user }) => {
                         saldo: 0,
                     });
                 });
-                //console.log('data', data);
+                console.log('data', data);
 
                 const sortedData = data.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
