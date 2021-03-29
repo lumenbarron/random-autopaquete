@@ -236,34 +236,35 @@ export default function AddCredito({ user }) {
     const deleteVoucher = idDoc => {
         console.log('idDoc', idDoc);
 
+        // db.collection('voucher')
+        //     .doc(idDoc)
+        //     .get()
+        //     .then(doc => {
+        //         let saldo = doc.data().saldo;
+        //         console.log(doc.data(), saldoActual);
+        //         montoTotal.current = toFixed(parseFloat(saldoActual) - parseFloat(saldo), 2);
+        //         console.log(montoTotal.current);
+        //         if (!saldoActual) {
+        //             return null;
+        //         } else {
+        //             updateSaldo(docRef, montoTotal.current);
+        //             deleteVouchertData(idDoc);
+        //         }
+        //     });
+
+        // const deleteVouchertData = idDoc => {
         db.collection('voucher')
             .doc(idDoc)
-            .get()
-            .then(doc => {
-                let saldo = doc.data().saldo;
-                console.log(doc.data(), saldoActual);
-                montoTotal.current = toFixed(parseFloat(saldoActual) - parseFloat(saldo), 2);
-                console.log(montoTotal.current);
-                if (!saldoActual) {
-                    return null;
-                } else {
-                    updateSaldo(docRef, montoTotal.current);
-                    deleteVouchertData(idDoc);
-                }
+            .delete()
+            .then(function() {
+                console.log('Document successfully deleted', idDoc);
+                swal.fire('Eliminado', '', 'success');
+            })
+            .catch(function(error) {
+                console.error('Error removing document: ', error);
             });
-
-        const deleteVouchertData = idDoc => {
-            db.collection('voucher')
-                .doc(idDoc)
-                .delete()
-                .then(function() {
-                    console.log('Document successfully deleted', idDoc);
-                    swal.fire('Eliminado', '', 'success');
-                })
-                .catch(function(error) {
-                    console.error('Error removing document: ', error);
-                });
-        };
+        // };
+        // deleteVouchertData(idDoc);
     };
 
     return (

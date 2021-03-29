@@ -156,7 +156,7 @@ const AdminUsersPage = () => {
                             emptyTitle="Oh no!"
                             emptyDescription="No hay ningun registro actualmente..."
                         >
-                            <StyledColumn header="Nombre " field="fullname" />
+                            <StyledColumn header="Nombre " field="fullname" defaultWidth={360} />
                             <StyledColumn header="Status" field="status" component={StatusBadge} />
                             <StyledColumn header="Crédito disponible" field="saldo" />
                             <StyledColumn header="Correo" field="email" />
