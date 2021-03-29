@@ -186,8 +186,12 @@ const SendPage = () => {
                                     doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
                                         ? doc.data().receiver_addresses.name.substring(0, 30)
                                         : doc.data().receiver_addresses.name,
-                                company_name: doc.data().receiver_addresses.name,
-                                street: doc.data().receiver_addresses.street_name,
+                                company_name: doc.data().receiver_addresses.street_name,
+                                street:
+                                    doc.data().supplierData.Supplier === 'estafetaEconomico' ||
+                                    doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
+                                        ? doc.data().receiver_addresses.street_name.substring(0, 20)
+                                        : doc.data().receiver_addresses.street_name,
                                 zip_code: doc.data().receiver_addresses.codigo_postal,
                                 neighborhood: doc.data().receiver_addresses.neighborhood,
                                 city: doc.data().receiver_addresses.country,

@@ -76,19 +76,19 @@ export default function HistoryUser({ user }) {
     function handleHistory(querySnapshot) {
         let dataGuias = [];
         querySnapshot.forEach(doc => {
-            //console.log(doc.data().status)
-            if (doc.data().status != 'completed') {
-                console.log(doc.id);
-                db.collection('guia')
-                    .doc(doc.id)
-                    .delete()
-                    .then(function() {
-                        console.log('Document successfully deleted', doc.id);
-                    })
-                    .catch(function(error) {
-                        console.error('Error removing document: ', error);
-                    });
-            }
+            //console.log(doc.data().rastreo)
+            // if (doc.data().status != 'completed') {
+            //     console.log(doc.id);
+            //     db.collection('guia')
+            //         .doc(doc.id)
+            //         .delete()
+            //         .then(function() {
+            //             console.log('Document successfully deleted', doc.id);
+            //         })
+            //         .catch(function(error) {
+            //             console.error('Error removing document: ', error);
+            //         });
+            // }
             dataGuias.push({
                 id: doc.id,
                 volumetricWeight: Math.ceil(
@@ -97,6 +97,10 @@ export default function HistoryUser({ user }) {
                         doc.data().package.depth) /
                         5000,
                 ),
+                date: doc
+                    .data()
+                    .creation_date.toDate()
+                    .toLocaleDateString(),
                 ...doc.data(),
             });
         });
@@ -122,7 +126,7 @@ export default function HistoryUser({ user }) {
                 //console.log('datos dentro del map', historyRecord.package.creation_date);
                 return {
                     id: historyRecord.id,
-                    date: historyRecord.package.creation_date,
+                    date: historyRecord.date,
                     status: historyRecord.status,
                     guide: historyRecord.rastreo ? historyRecord.rastreo : 'error',
                     origin: `${historyRecord.sender_addresses.street_name} ,${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
