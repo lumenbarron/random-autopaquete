@@ -122,7 +122,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     const [userName, setUserName] = useState('');
     const [status, setStatus] = useState();
     const [registerSAT, setRegisterSAT] = useState('');
-    const tokenProd = process.env.REACT_APP_REDPACK_PROD;
+    const sepomex = process.env.REACT_APP_SEPOMEX;
     let idGuia;
     let pickedDirection;
 
@@ -261,34 +261,38 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     if (CP.length === 5) {
-    //         fetch(`https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified`)
-    //             .then(response => {
-    //                 if (!response.ok) {
-    //                     console.log('CP no validado');
-    //                     setTimeout(() => {
-    //                         swal.fire({
-    //                             title: '!Lo siento!',
-    //                             text: 'Código Postal no válido, favor de verificar.',
-    //                             icon: 'error',
-    //                             confirmButtonText: 'Ok',
-    //                         });
-    //                         setCP('');
-    //                     }, 1000);
-    //                 }
-    //                 return response.json();
-    //             })
-    //             .then(data => {
-    //                 if (data.response) {
-    //                     const { municipio, estado } = data.response;
-    //                     setCountry(municipio);
-    //                     const stateKey = Object.keys(states).find(key => states[key] === estado);
-    //                     setState({ label: states[stateKey], value: stateKey });
-    //                 }
-    //             });
-    //     }
-    // }, [CP]);
+    useEffect(() => {
+        console.log('entrando aqui');
+        if (CP.length === 5) {
+            fetch(
+                `https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified&token=${sepomex}`,
+            )
+                .then(response => {
+                    if (!response.ok) {
+                        console.log('CP no validado');
+                        setTimeout(() => {
+                            swal.fire({
+                                title: '!Lo siento!',
+                                text: 'Código Postal no válido, favor de verificar.',
+                                icon: 'error',
+                                confirmButtonText: 'Ok',
+                            });
+                            setCP('');
+                        }, 1000);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    if (data.response) {
+                        const { municipio, estado } = data.response;
+                        setCountry(municipio);
+                        const stateKey = Object.keys(states).find(key => states[key] === estado);
+                        setState({ label: states[stateKey], value: stateKey });
+                    }
+                });
+        }
+    }, [CP]);
 
     function handleDirections(snapshot) {
         const directionData = snapshot.docs.map(doc => {
