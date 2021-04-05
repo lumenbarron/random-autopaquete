@@ -101,6 +101,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     let supplierEstafeta = false;
     const tokenSand = process.env.REACT_APP_REDPACK_SAND;
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
+    const sepomex = process.env.REACT_APP_SEPOMEX;
 
     let OtherCpsZMG = [
         '44009',
@@ -260,16 +261,16 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         // console.log('corroborando codigo para autoencargos, segundo use effect');
         Promise.all([
             fetch(
-                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara',
+                `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara&token=${sepomex}`,
             ),
             fetch(
-                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Zapopan',
+                `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Zapopan&token=${sepomex}`,
             ),
             fetch(
-                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Tonalá',
+                `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Tonalá&token=${sepomex}`,
             ),
             fetch(
-                'https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=San Pedro Tlaquepaque',
+                `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=San Pedro Tlaquepaque&token=${sepomex}`,
             ),
         ])
             .then(([res1, res2, res3, res4]) =>
