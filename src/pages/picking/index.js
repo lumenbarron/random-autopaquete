@@ -272,42 +272,42 @@ const PickingPage = () => {
     // };
 
     //verificacion de CP
-    useEffect(() => {
-        if (CP.length === 5) {
-            fetch(`https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified`)
-                .then(response => {
-                    if (!response.ok) {
-                        console.log('CP no validado');
-                        setTimeout(() => {
-                            swal.fire({
-                                title: '!Lo siento!',
-                                text: 'Código Postal no válido, favor de verificar.',
-                                icon: 'error',
-                                confirmButtonText: 'Ok',
-                            });
-                            setCP('');
-                        }, 1000);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.response) {
-                        console.log(data.response);
-                        // console.log(typeCity.current, 'ciudad guardada');
-                        // setCountry(data.response.municipio);
-                        if (data.response.municipio !== typeCity.current) {
-                            swal.fire({
-                                title: '!Lo siento!',
-                                text: 'El código postal, no es de esa ciudad, favor de verificar.',
-                                icon: 'error',
-                                confirmButtonText: 'Ok',
-                            });
-                            setCP('');
-                        }
-                    }
-                });
-        }
-    }, [CP]);
+    // useEffect(() => {
+    //     if (CP.length === 5) {
+    //         fetch(`https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified`)
+    //             .then(response => {
+    //                 if (!response.ok) {
+    //                     console.log('CP no validado');
+    //                     setTimeout(() => {
+    //                         swal.fire({
+    //                             title: '!Lo siento!',
+    //                             text: 'Código Postal no válido, favor de verificar.',
+    //                             icon: 'error',
+    //                             confirmButtonText: 'Ok',
+    //                         });
+    //                         setCP('');
+    //                     }, 1000);
+    //                 }
+    //                 return response.json();
+    //             })
+    //             .then(data => {
+    //                 if (data.response) {
+    //                     console.log(data.response);
+    //                     // console.log(typeCity.current, 'ciudad guardada');
+    //                     // setCountry(data.response.municipio);
+    //                     if (data.response.municipio !== typeCity.current) {
+    //                         swal.fire({
+    //                             title: '!Lo siento!',
+    //                             text: 'El código postal, no es de esa ciudad, favor de verificar.',
+    //                             icon: 'error',
+    //                             confirmButtonText: 'Ok',
+    //                         });
+    //                         setCP('');
+    //                     }
+    //                 }
+    //             });
+    //     }
+    // }, [CP]);
 
     //Se obtienen las direcciones guardadas
     // useEffect(() => {
