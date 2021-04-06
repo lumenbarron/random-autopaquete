@@ -712,6 +712,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
+                        readOnly
                         id="ciudad"
                         label="Ciudad"
                         name="ciudad"

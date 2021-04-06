@@ -294,9 +294,9 @@ const PickingPage = () => {
                     return response.json();
                 })
                 .then(data => {
-                    if (data.response) {
-                        console.log(data.response);
-                        // console.log(typeCity.current, 'ciudad guardada');
+                    console.log(data.response);
+                    if (data.response.municipio) {
+                        //console.log(typeCity.current, 'ciudad guardada');
                         // setCountry(data.response.municipio);
                         if (data.response.municipio !== typeCity.current) {
                             swal.fire({
