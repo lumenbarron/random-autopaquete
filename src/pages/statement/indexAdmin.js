@@ -44,21 +44,21 @@ const StatementAdmin = ({ user }) => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log('data guias', doc.data(), 'doc.id', doc.id);
-                    let referenciaGuia;
-                    if (
-                        doc.data().supplierData.Supplier === 'autoencargosEconomico' &&
-                        typeof doc.data().rastreo === 'string'
-                    ) {
-                        referenciaGuia = doc.data().rastreo;
-                        //console.log(referenciaGuia)
-                    } else {
-                        referenciaGuia = doc.data().rastreo[0];
-                    }
+                    //console.log('data guias', doc.data(), 'doc.id', doc.id);
+                    // let referenciaGuia;
+                    // if (
+                    //     doc.data().supplierData.Supplier === 'autoencargosEconomico' &&
+                    //     typeof doc.data().rastreo === 'string'
+                    // ) {
+                    //     referenciaGuia = doc.data().rastreo;
+                    //     //console.log(referenciaGuia)
+                    // } else {
+                    //     referenciaGuia = doc.data().rastreo[0];
+                    // }
                     data.push({
                         id: doc.id,
                         concept: 'Guia',
-                        reference: doc.data().rastreo ? referenciaGuia : 'error',
+                        reference: doc.data().rastreo ? doc.data().rastreo[0] : 'error',
                         monto: doc.data().rastreo
                             ? parseFloat(doc.data().supplierData.Supplier_cost)
                             : 0,
