@@ -262,7 +262,6 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
     }, []);
 
     useEffect(() => {
-        console.log('entrando aqui');
         if (CP.length === 5) {
             fetch(
                 `https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified&token=${sepomex}`,
@@ -283,7 +282,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                     return response.json();
                 })
                 .then(data => {
-                    console.log(data);
+                    //console.log(data);
                     if (data.response) {
                         const { municipio, estado } = data.response;
                         setCountry(municipio);

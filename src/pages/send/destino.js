@@ -216,7 +216,7 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
                     return response.json();
                 })
                 .then(data => {
-                    console.log(data);
+                    //console.log(data);
                     if (data.response) {
                         const { municipio, estado } = data.response;
                         setCountry(municipio);

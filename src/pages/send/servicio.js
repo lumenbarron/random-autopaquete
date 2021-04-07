@@ -215,7 +215,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         let guiaAutoencargos = Math.floor(Math.random() * 1000000).toString();
         db.collection('guia')
             .doc(idGuiaGlobal)
-            .update({ rastreo: guiaAutoencargos });
+            .update({ rastreo: [guiaAutoencargos] });
     };
 
     useEffect(() => {

@@ -193,6 +193,16 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    // if (
+                    //     doc.data().supplierData.Supplier === 'autoencargosEconomico'
+                    //     && typeof doc.data().rastreo === 'string'
+                    // ) {
+
+                    //     console.log(doc.data().rastreo, doc.id)
+                    //     db.collection('guia')
+                    //     .doc(doc.id)
+                    //     .update({rastreo : [doc.data().rastreo]})
+                    // }
                     dataALLGuias.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -226,7 +236,7 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    console.log(doc.data().name, doc.data().lastname);
+                    //console.log(doc.data().name, doc.data().lastname);
                     dataUsers.push({
                         fullname: doc.data().name + ' ' + doc.data().lastname,
                         name: doc.data().name,
@@ -275,7 +285,7 @@ export default function AllGuides({}) {
 
     useEffect(() => {
         let mapUsers = usersName.map(historyRecord => {
-            console.log(historyRecord);
+            //console.log(historyRecord);
             return {
                 value: historyRecord.name,
                 label: historyRecord.fullname,
