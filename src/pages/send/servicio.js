@@ -138,7 +138,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         '45627',
     ];
 
-    let extendedAreaAE = ['45646', '45200', '45650', '45654', '45655'];
+    let extendedAreaAE = ['45646', '45200', '45650', '45654', '45655', '45656'];
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
@@ -288,21 +288,21 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
                 let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
 
-                // console.log(cpSenderExt, cpReceiverExt);
+                console.log(cpReceiverExt, cpSenderExt, cpReceiver, cpSender);
                 if (
                     (cpReceiverExt === true && cpSender === true) ||
                     (cpReceiver === true && cpSenderExt === true) ||
                     (cpReceiverExt === true && cpSenderExt === true)
                 ) {
-                    //console.log('codigos postales ZE ZMG');
+                    console.log('codigos postales ZE ZMG');
                     cpsAvailabilityAutoencargos.current = true;
-                    cpsAvailabilityZEAutoencargos.current = false;
+                    cpsAvailabilityZEAutoencargos.current = true;
                 } else if (cpReceiver === true && cpSender === true) {
-                    //console.log('codigos postales ZMG');
+                    console.log('codigos postales ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = false;
                 } else {
-                    //console.log('codigos no postales ZMG');
+                    console.log('codigos no postales ZMG');
                     cpsAvailabilityAutoencargos.current = false;
                 }
             })
@@ -520,7 +520,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         cpsAvailabilityAutoencargos.current === true &&
                         cpsAvailabilityZEAutoencargos.current === false
                     ) {
-                        //console.log('aqui si hay autoencargos');
+                        console.log('aqui si hay autoencargos');
                         let autoencargos = {
                             shipping_company: 'AUTOENCARGOS',
                             shipping_cost: 90.0,
@@ -538,7 +538,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         cpsAvailabilityAutoencargos.current === true &&
                         cpsAvailabilityZEAutoencargos.current === true
                     ) {
-                        //console.log('aqui si hay autoencargos con zona extendida');
+                        console.log('aqui si hay autoencargos con zona extendida');
                         let autoencargos = {
                             shipping_company: 'AUTOENCARGOS',
                             shipping_cost: 90.0,
