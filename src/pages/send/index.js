@@ -168,9 +168,11 @@ const SendPage = () => {
                                         ? doc.data().sender_addresses.name.substring(0, 30)
                                         : doc.data().sender_addresses.name,
                                 company_name: doc.data().sender_addresses.name,
-                                street: doc.data().sender_addresses.street_name
-                                    ? doc.data().sender_addresses.street_name
-                                    : '',
+                                street:
+                                    doc.data().supplierData.Supplier === 'estafetaEconomico' ||
+                                    doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
+                                        ? doc.data().sender_addresses.street_name.substring(0, 20)
+                                        : doc.data().sender_addresses.street_name,
                                 zip_code: doc.data().sender_addresses.codigo_postal,
                                 neighborhood: doc.data().sender_addresses.neighborhood,
                                 city: doc.data().sender_addresses.country,
