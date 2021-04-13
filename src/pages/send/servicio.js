@@ -492,30 +492,40 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             redirect: 'follow',
         };
 
-        // await Promise.all([
-        //     fetch('https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack', requestOptions ),
-        //     fetch('https://autopaquete.simplestcode.com/api/do-shipping-quote/pakke', requestOptions),
-        //     fetch('https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex', requestOptions),
-        // ])
-        // .then(async ([res1, res2, res3]) => {
-        //     const result1 = await res1.json();
-        //     const result2 = await res2.json();
-        //     const result3 = await res3.json();
-        //    console.log(result1,result2 ,result3);
-        // return [result1.concat(result2 ,result3)]
-        // })
+        await Promise.all([
+            fetch(
+                'https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack',
+                requestOptions,
+            ),
+            fetch(
+                'https://autopaquete.simplestcode.com/api/do-shipping-quote/pakke',
+                requestOptions,
+            ),
+            fetch(
+                'https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex',
+                requestOptions,
+            ),
+        ])
+            .then(async ([res1, res2, res3]) => {
+                const result1 = await res1.json();
+                const result2 = await res2.json();
+                const result3 = await res3.json();
+                console.log(result1, result2, result3);
+                let allResults = result1.concat(result2, result3);
+                //return [result1.concat(result2 ,result3)]
+                //})
 
-        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex`;
-        //console.log('url', urlRequest);
+                //const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex`;
+                //console.log('url', urlRequest);
 
-        fetch(urlRequest, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                console.log(result);
-                if (result.length >= 1) {
+                //fetch(urlRequest, requestOptions)
+                // .then(response => response.json())
+                // .then(result => {
+                console.log(allResults);
+                if (allResults.length >= 1) {
                     //console.log('numero de provedores disponibles', result.length);
                     //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
-                    let suppliersGeneral = result;
+                    let suppliersGeneral = allResults;
                     //console.log('suppliersGeneral', suppliersGeneral);
                     if (
                         cpsAvailabilityAutoencargos.current === true &&
