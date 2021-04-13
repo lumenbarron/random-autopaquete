@@ -442,9 +442,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     });
 
                     // console.log(allRatesData.current.length, 'allRatesData');
-                    fetchApiFedex(dataShipping.current, delivery);
+                    //fetchApiFedex(dataShipping.current, delivery);
                     //fetchApiFedex();
-                    //fetchGuia(dataShipping.current, delivery);
+                    fetchGuia(dataShipping.current, delivery);
 
                     // console.log('dataShipping.current', dataShipping.current);
                 } else {
@@ -504,7 +504,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         //    console.log(result1,result2 ,result3);
         // return [result1.concat(result2 ,result3)]
         // })
-        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
+
+        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex`;
         //console.log('url', urlRequest);
 
         fetch(urlRequest, requestOptions)
