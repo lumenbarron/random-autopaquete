@@ -442,9 +442,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     });
 
                     // console.log(allRatesData.current.length, 'allRatesData');
-                    //fetchApiFedex(dataShipping.current, delivery);
+                    fetchApiFedex(dataShipping.current, delivery);
                     //fetchApiFedex();
-                    fetchGuia(dataShipping.current, delivery);
+                    //fetchGuia(dataShipping.current, delivery);
 
                     // console.log('dataShipping.current', dataShipping.current);
                 } else {
@@ -493,10 +493,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         };
 
         await Promise.all([
-            fetch(
-                'https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack',
-                requestOptions,
-            ),
+            // fetch(
+            //     'https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack',
+            //     requestOptions,
+            // ),
             fetch(
                 'https://autopaquete.simplestcode.com/api/do-shipping-quote/pakke',
                 requestOptions,
@@ -509,9 +509,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .then(async ([res1, res2, res3]) => {
                 const result1 = await res1.json();
                 const result2 = await res2.json();
-                const result3 = await res3.json();
-                console.log(result1, result2, result3);
-                let allResults = result1.concat(result2, result3);
+                //const result3 = await res3.json();
+                console.log(result1, result2);
+                let allResults = result1.concat(result2);
                 //return [result1.concat(result2 ,result3)]
                 //})
 
