@@ -210,6 +210,10 @@ exports.create = functions.https.onRequest(async (req, res) => {
     const senderAddress = guia.sender_addresses;
     const receiverAddress = guia.receiver_addresses;
     const packaging = guia.package;
+    const fullStreetSender =
+        guia.sender_addresses.street_name + guia.sender_addresses.street_number;
+    const fullStreetReceiver =
+        guia.receiver_addresses.street_name + guia.receiver_addresses.street_number;
 
     const quantity = parseInt(packaging.quantity, 10);
 
@@ -311,8 +315,8 @@ exports.create = functions.https.onRequest(async (req, res) => {
                         PhoneNumber: senderAddress.phone,
                     },
                     Address: {
-                        StreetLines: [senderAddress.neighborhood, senderAddress.street_number],
-                        StreetLines: [senderAddress.street_name, fullStreetSender],
+                        StreetLines: [senderAddress.neighborhood],
+                        StreetLines: [senderAddress.neighborhood, fullStreetSender],
                         City: senderAddress.country,
                         StateOrProvinceCode: senderAddress.state,
                         PostalCode: senderAddress.codigo_postal,
@@ -325,8 +329,8 @@ exports.create = functions.https.onRequest(async (req, res) => {
                         PhoneNumber: receiverAddress.phone,
                     },
                     Address: {
-                        StreetLines: [receiverAddress.neighborhood, receiverAddress.street_number],
-                        StreetLines: [receiverAddress.street_name, fullStreetReceiver],
+                        StreetLines: [receiverAddress.neighborhood],
+                        StreetLines: [receiverAddress.neighborhood, fullStreetReceiver],
                         City: receiverAddress.country,
                         StateOrProvinceCode: receiverAddress.state,
                         PostalCode: receiverAddress.codigo_postal,
