@@ -140,7 +140,7 @@ const SendPage = () => {
                         xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                         xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
                         //console.log('llego')
-                        newBalance(costGuia);
+                        //newBalance(costGuia);
                         setguiaReady(true);
                         setCurrentStepName('descarga');
                     });
@@ -172,7 +172,7 @@ const SendPage = () => {
                                 street:
                                     doc.data().supplierData.Supplier === 'estafetaEconomico' ||
                                     doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
-                                        ? doc.data().sender_addresses.street_name.substring(0, 20)
+                                        ? doc.data().sender_addresses.street_name.substring(0, 19)
                                         : doc.data().sender_addresses.street_name,
                                 zip_code: doc.data().sender_addresses.codigo_postal,
                                 neighborhood: doc.data().sender_addresses.neighborhood,
@@ -189,11 +189,11 @@ const SendPage = () => {
                                     doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
                                         ? doc.data().receiver_addresses.name.substring(0, 30)
                                         : doc.data().receiver_addresses.name,
-                                company_name: doc.data().receiver_addresses.street_name,
+                                company_name: doc.data().receiver_addresses.name,
                                 street:
                                     doc.data().supplierData.Supplier === 'estafetaEconomico' ||
                                     doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
-                                        ? doc.data().receiver_addresses.street_name.substring(0, 20)
+                                        ? doc.data().receiver_addresses.street_name.substring(0, 19)
                                         : doc.data().receiver_addresses.street_name,
                                 zip_code: doc.data().receiver_addresses.codigo_postal,
                                 neighborhood: doc.data().receiver_addresses.neighborhood,
