@@ -77,18 +77,18 @@ export default function HistoryUser({ user }) {
         let dataGuias = [];
         querySnapshot.forEach(doc => {
             //console.log(doc.data().rastreo)
-            if (doc.data().status != 'completed') {
-                console.log(doc.id);
-                db.collection('guia')
-                    .doc(doc.id)
-                    .delete()
-                    .then(function() {
-                        console.log('Document successfully deleted', doc.id);
-                    })
-                    .catch(function(error) {
-                        console.error('Error removing document: ', error);
-                    });
-            }
+            // if (doc.data().status != 'completed') {
+            //     console.log(doc.id);
+            //     db.collection('guia')
+            //         .doc(doc.id)
+            //         .delete()
+            //         .then(function() {
+            //             console.log('Document successfully deleted', doc.id);
+            //         })
+            //         .catch(function(error) {
+            //             console.error('Error removing document: ', error);
+            //         });
+            // }
             dataGuias.push({
                 id: doc.id,
                 volumetricWeight: Math.ceil(
