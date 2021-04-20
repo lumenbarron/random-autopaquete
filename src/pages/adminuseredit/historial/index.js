@@ -65,7 +65,7 @@ export default function HistoryUser({ user }) {
             if (user) {
                 db.collection('guia')
                     .where('ID', '==', user.ID)
-                    //.where('status', '==', 'completed')
+                    .where('status', '==', 'completed')
                     .orderBy('creation_date', 'desc')
                     .onSnapshot(handleHistory);
             }
