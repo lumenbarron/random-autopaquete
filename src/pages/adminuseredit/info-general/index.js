@@ -126,7 +126,7 @@ export default function InfoGeneral({ user }) {
 
     function handleComments(snapshot) {
         const showComment = snapshot.docs.map(doc => {
-            console.log('comentarios', doc.data(), doc.id);
+            //console.log('comentarios', doc.data(), doc.id);
             return {
                 id: doc.id,
                 // date : doc.data().creation_date,

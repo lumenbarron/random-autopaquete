@@ -610,7 +610,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         directionsGuiasCollectionAdd
             .then(function(docRef) {
                 idGuia = docRef.id;
-                console.log('Se crea y se guarda el id de la guía', idGuia);
+                //console.log('Se crea y se guarda el id de la guía', idGuia);
                 onSave({ idGuia });
             })
             .catch(function(error) {

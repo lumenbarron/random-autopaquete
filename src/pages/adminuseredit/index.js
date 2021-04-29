@@ -34,7 +34,7 @@ const AdminUserEditPage = () => {
 
     function handleProfile(snapshot) {
         const data = snapshot.docs.map(doc => {
-            //console.log(doc.data());
+            //console.log(doc.data(), doc.id);
             let profile = {
                 id: doc.id,
                 status: doc.data().status ? doc.data().status : 'En Revisión',

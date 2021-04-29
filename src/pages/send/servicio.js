@@ -138,7 +138,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         '45627',
     ];
 
-    let extendedAreaAE = ['45646', '45200', '45650', '45654', '45655', '45656'];
+    let extendedAreaAE = ['45646', '45200', '45650', '45654', '45655', '45656', '45680'];
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
@@ -288,21 +288,21 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
                 let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
 
-                console.log(cpReceiverExt, cpSenderExt, cpReceiver, cpSender);
+                //console.log(cpReceiverExt, cpSenderExt, cpReceiver, cpSender);
                 if (
                     (cpReceiverExt === true && cpSender === true) ||
                     (cpReceiver === true && cpSenderExt === true) ||
                     (cpReceiverExt === true && cpSenderExt === true)
                 ) {
-                    console.log('codigos postales ZE ZMG');
+                    //console.log('codigos postales ZE ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = true;
                 } else if (cpReceiver === true && cpSender === true) {
-                    console.log('codigos postales ZMG');
+                    //console.log('codigos postales ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = false;
                 } else {
-                    console.log('codigos no postales ZMG');
+                    //console.log('codigos no postales ZMG');
                     cpsAvailabilityAutoencargos.current = false;
                 }
             })
@@ -454,7 +454,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     const fetchApiFedex = (data, delivery) => {
-        console.log('peticion a la API estafeta');
+        //console.log('peticion a la API estafeta');
         user.getIdToken().then(idToken => {
             const xhr = new XMLHttpRequest();
             xhr.responseType = 'json';
@@ -514,7 +514,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         //         let result = result1.concat(result2, result3);
 
         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/`;
-        console.log('url', urlRequest);
+        //console.log('url', urlRequest);
 
         fetch(urlRequest, requestOptions)
             .then(response => response.json())

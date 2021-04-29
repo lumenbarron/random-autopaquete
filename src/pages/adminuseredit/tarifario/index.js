@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Input, Button, Accordion, AccordionSection } from 'react-rainbow-components';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import styled from 'styled-components';
+import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrashAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useFirebaseApp } from 'reactfire';
+import { StyleHeader } from '../historial/styled';
 import Modal from 'react-modal';
+import ExportRatesCSV from '../../dowloadData/ratesUser';
 
 const StyledSubmit = styled.button.attrs(props => {
     return props.theme.rainbow.palette;
@@ -515,6 +518,20 @@ export default function Tarifario({ user }) {
             };
         });
         //console.log('tarifasMap', tarifasMap);
+
+        const sortArray = (a, b) => {
+            if (a.entrega < b.entrega) {
+                return -1;
+            }
+            if (a.entrega > b.entrega) {
+                return 1;
+            }
+            return 0;
+        };
+
+        tarifasMap.sort(sortArray);
+        //console.log('tarifasMap', tarifasMap);
+
         setTarifas(tarifasMap);
     }
 
@@ -577,7 +594,13 @@ export default function Tarifario({ user }) {
 
     return (
         <>
-            <h2>Tarifario del cliente</h2>
+            <StyleHeader>
+                <Row className="row-header">
+                    <h2>Tarifario del cliente</h2>
+                    <ExportRatesCSV data={tarifas} />
+                </Row>
+            </StyleHeader>
+            {/* <h2>Tarifario del cliente</h2> */}
             <h3 style={{ marginTop: '1rem' }}>Estafeta</h3>
             <Accordion id="accordion-estafeta" multiple>
                 <TarifarioPorServicio

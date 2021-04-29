@@ -152,7 +152,7 @@ const StatementAdmin = ({ user }) => {
                         saldo: 0,
                     });
                 });
-                console.log('data', data);
+                //console.log('data', data);
 
                 const sortedData = data.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
