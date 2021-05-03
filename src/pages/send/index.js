@@ -121,36 +121,34 @@ const SendPage = () => {
             newBalance(costGuia);
             setguiaReady(true);
             setCurrentStepName('descarga');
-        }
-        //  else if (
-        //     supplierData.Supplier === 'fedexDiaSiguiente' ||
-        //     supplierData.Supplier === 'fedexEconomico'
-        // ) {
-        //     directionsGuiasCollectionAdd
-        //         .then(function() {
-        //             console.log('peticion a la api fed');
-        //             user.getIdToken().then(idToken => {
-        //                 const xhr = new XMLHttpRequest();
-        //                 xhr.responseType = 'json';
-        //                 xhr.contentType = 'application/json';
-        //                 xhr.open('POST', '/guia/fedex');
-        //                 // xhr.open(
-        //                 //     'POST',
-        //                 //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
-        //                 // );
-        //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-        //                 xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-        //                 //console.log('llego')
-        //                 //newBalance(costGuia);
-        //                 setguiaReady(true);
-        //                 setCurrentStepName('descarga');
-        //             });
-        //         })
-        //         .catch(function(error) {
-        //             console.error('Error adding document: ', error);
-        //         });
-        // }
-        else {
+        } else if (
+            supplierData.Supplier === 'fedexDiaSiguiente' ||
+            supplierData.Supplier === 'fedexEconomico'
+        ) {
+            directionsGuiasCollectionAdd
+                .then(function() {
+                    console.log('peticion a la api fed');
+                    user.getIdToken().then(idToken => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.responseType = 'json';
+                        xhr.contentType = 'application/json';
+                        xhr.open('POST', '/guia/fedex');
+                        // xhr.open(
+                        //     'POST',
+                        //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
+                        // );
+                        xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+                        xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+                        //console.log('llego')
+                        //newBalance(costGuia);
+                        setguiaReady(true);
+                        setCurrentStepName('descarga');
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error adding document: ', error);
+                });
+        } else {
             setCurrentStepName('descarga');
             let myHeaders = new Headers();
             myHeaders.append('Authorization', tokenProd);

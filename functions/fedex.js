@@ -14,9 +14,9 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
     const receiverAddress = guia.receiver_addresses;
     const packaging = guia.package;
     const fullStreetSender =
-        guia.sender_addresses.street_name + guia.sender_addresses.street_number;
+        guia.sender_addresses.street_name + ' ' + guia.sender_addresses.street_number;
     const fullStreetReceiver =
-        guia.receiver_addresses.street_name + guia.receiver_addresses.street_number;
+        guia.receiver_addresses.street_name + ' ' + guia.receiver_addresses.street_number;
 
     const quantity = parseInt(packaging.quantity, 10);
 
@@ -211,9 +211,9 @@ exports.create = functions.https.onRequest(async (req, res) => {
     const receiverAddress = guia.receiver_addresses;
     const packaging = guia.package;
     const fullStreetSender =
-        guia.sender_addresses.street_name + guia.sender_addresses.street_number;
+        guia.sender_addresses.street_name + ' ' + guia.sender_addresses.street_number;
     const fullStreetReceiver =
-        guia.receiver_addresses.street_name + guia.receiver_addresses.street_number;
+        guia.receiver_addresses.street_name + ' ' + guia.receiver_addresses.street_number;
 
     const quantity = parseInt(packaging.quantity, 10);
 
@@ -315,7 +315,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                         PhoneNumber: senderAddress.phone,
                     },
                     Address: {
-                        StreetLines: [senderAddress.neighborhood],
+                        StreetLines: [senderAddress.neighborhood, fullStreetSender],
                         StreetLines: [senderAddress.neighborhood, fullStreetSender],
                         City: senderAddress.country,
                         StateOrProvinceCode: senderAddress.state,
@@ -329,7 +329,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
                         PhoneNumber: receiverAddress.phone,
                     },
                     Address: {
-                        StreetLines: [receiverAddress.neighborhood],
+                        StreetLines: [receiverAddress.neighborhood, fullStreetReceiver],
                         StreetLines: [receiverAddress.neighborhood, fullStreetReceiver],
                         City: receiverAddress.country,
                         StateOrProvinceCode: receiverAddress.state,
