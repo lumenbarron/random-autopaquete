@@ -55,14 +55,22 @@ export const StyledMain = styled.div`
         }
     }
     .chip-aprobado {
-        border-color: #277cea;
+        background-color: #fff;
     }
 
     .chip-revision {
         border-color: #b1aba9;
+        background-color: #fff;
     }
 
     .chip-falta-info {
         border-color: #fcb654;
+        background-color: #fff;
+    }
+
+    .chip-credit {
+        border-color: transparent;
+        background-color: #00183d;
+        color: white;
     }
 `;

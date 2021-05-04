@@ -17,6 +17,7 @@ import Modal from 'react-modal';
 //import moduleName from 'module';
 import { useRegularSecurity } from '../../hooks/useRegularSecurity';
 import { useSecurity } from '../../hooks/useSecurity';
+import formatMoney from 'accounting-js/lib/formatMoney';
 import swal from 'sweetalert2';
 
 Modal.setAppElement('#root');
@@ -91,12 +92,12 @@ const SideBarContainer = styled.div.attrs(props => {
 })`
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    background-color: #fff;
+    // height: 100vh;
+    background-color: ##850000;
     z-index: 99999;
-    padding-bottom: 14px;
-    padding-top: 14px;
-    background: ${props => props.background.main};
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+    background: #850000;
     background-image: url(${props => props.backImg});
     background-size: cover;
     background-position-x: -2em;
@@ -104,8 +105,8 @@ const SideBarContainer = styled.div.attrs(props => {
     background-repeat: no-repeat;
     width: 20%;
     border-bottom-left-radius: 0.875rem;
-    max-width: 350px;
-    min-width: 150px;
+    max-width: 300px;
+    min-width: 300px;
     flex: 1 1;
 
     @media (max-width: 768px) {
@@ -124,34 +125,66 @@ const SideBarContainer = styled.div.attrs(props => {
 const SidebarHeader = styled.div.attrs(props => {
     return props.theme.rainbow.palette;
 })`
-    margin: 0 auto;
+    margin: 0;
     text-align: center;
+    background: #850000;
 `;
 
 const StyledSidebar = styled(Sidebar)`
-    border: 1px solid #f2f2f2;
-    margin: 10px;
-    background: #fff;
+    background: #850000;
 `;
 
-const StyledSidebarItem = styled(SidebarItem)`
+const StyledSidebarItem = styled.div`
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    padding: 1rem 2rem;
     &:hover {
-        background: #f2f2f2;
+        background: #ab0000;
     }
-    & > button {
-        justify-content: flex-start;
-        flex-direction: row;
-        padding: 10px;
-        span {
-            font-size: 1em;
-        }
-        img {
-            width: 1rem;
-        }
+    p {
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 29px;
+        padding-left: 2rem;
+    }
+    img {
+        width: auto;
     }
 `;
+
+// const StyledSidebarItem = styled(SidebarItem)`
+//     margin: 0;
+//     padding: 0;
+
+//     & > button {
+//         justify-content: flex-start;
+//         flex-direction: row;
+//         padding: 10px;
+//         &:hover {
+//             background: #AB0000;
+//             color: #00183D;
+//         }
+//         span {
+//             color: #00183D;
+//             font-family: 'Montserrat',sans-serif;
+//             font-weight: 600;
+//             font-size: 18px;
+//             line-height: 29px;
+//             padding-left: 2rem;
+//             &:hover {
+//                 color: #00183D;
+//             }
+//         }
+//         img {
+//             width: 80%;
+//         }
+//     }
+// `;
 
 const Logo = styled.img.attrs(props => {
     return props.theme.rainbow.palette;
@@ -162,6 +195,7 @@ const Logo = styled.img.attrs(props => {
 const StyledAvatar = styled(Avatar)`
     width: 4rem;
     height: 4rem;
+    background: #00183d;
 `;
 
 // const Status = styled('h6')`
@@ -259,6 +293,7 @@ export function AccountSidebar() {
         'rainbow-p-top_small rainbow-p-bottom_medium',
     );
     const [status, setStatus] = useState(null);
+    const [credit, setCredit] = useState(null);
 
     const storageRef = firebase.storage();
     const db = firebase.firestore();
@@ -387,8 +422,15 @@ export function AccountSidebar() {
                     history.push('/');
                 }
                 querySnapshot.forEach(function(doc) {
+                    console.log(doc.data());
                     setAvatarURL(doc.data().avatar);
                     setAvatarName(doc.data().name);
+                    if (doc.data().saldo < 0) {
+                        setCredit('Saldo : ' + ' ' + formatMoney(0, 2));
+                    } else {
+                        setCredit('Saldo : ' + ' ' + formatMoney(doc.data().saldo, 2));
+                    }
+
                     if (doc.data().status) {
                         setStatus(doc.data().status);
                         if (
@@ -413,7 +455,7 @@ export function AccountSidebar() {
         <SideBarContainer className={containerClassName}>
             <SidebarResponsiveBars icon={faBars} onClick={toggleSidebar} />
             <SidebarHeader>
-                <Logo src="/assets/logo.png" />
+                <Logo src="/assets/autopaquete-logo-blanco.png" />
                 <div
                     style={{
                         position: 'relative',
@@ -437,7 +479,7 @@ export function AccountSidebar() {
                 {aprobado && (
                     <Chip
                         className="rainbow-m-around_medium chip-aprobado"
-                        variant="outline-brand"
+                        // variant="outline-brand"
                         label={
                             <IconAprobado variant="outline-brand">
                                 <FontAwesomeIcon
@@ -453,7 +495,7 @@ export function AccountSidebar() {
                 {revision && (
                     <Chip
                         className="rainbow-m-around_medium chip-revision"
-                        variant="outline-brand"
+                        // variant="outline-brand"
                         label={
                             <IconRevision variant="outline-brand">
                                 <FontAwesomeIcon
@@ -474,7 +516,7 @@ export function AccountSidebar() {
                     >
                         <Chip
                             className="rainbow-m-around_medium chip-falta-info"
-                            variant="outline-brand"
+                            // variant="outline-brand"
                             label={
                                 <IconFaltaInfo variant="outline-brand">
                                     <FontAwesomeIcon
@@ -487,83 +529,80 @@ export function AccountSidebar() {
                         />
                     </div>
                 )}
-
-                {/* <Status>{}</Status> */}
-                <h5>Créditos</h5>
-                <Link to="/mi-cuenta">
-                    <AddCreditButton>Inicio</AddCreditButton>
-                </Link>
+                <Chip className="rainbow-m-around_medium chip-credit" label={credit} />
             </SidebarHeader>
             <StyledSidebar>
                 <Link to="/mi-cuenta/enviar">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-send.png" alt="" />}
-                        name="Enviar"
-                        label="Enviar"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/enviar.svg" alt="enviar"></img>
+                        <p>Enviar</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/mi-cuenta/recolecciones">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-recoleccion.svg" alt="" />}
-                        name="Recolecciones"
-                        label="Recolecciones"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/recolectar.svg" alt="recolecciones"></img>
+                        <p>Recolectar</p>
+                    </StyledSidebarItem>
+                </Link>
+                <Link to="/mi-cuenta/recolecciones">
+                    <StyledSidebarItem>
+                        <img src="/assets/cotizacion.svg" alt="cotizacion"></img>
+                        <p>Cotización</p>
+                    </StyledSidebarItem>
+                </Link>
+                <Link to="/mi-cuenta/recolecciones">
+                    <StyledSidebarItem>
+                        <img src="/assets/ordenes.svg" alt="ordenes"></img>
+                        <p>Ordenes</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/mi-cuenta/historial">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-records.png" alt="" />}
-                        name="Historial"
-                        label="Historial"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/historial.svg" alt="historial"></img>
+                        <p>Historial</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/mi-cuenta/direcciones">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/directions.png" alt="" />}
-                        name="Direcciones"
-                        label="Direcciones"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/direcciones.svg" alt="direcciones"></img>
+                        <p>Direcciones</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/mi-cuenta/sobrepeso">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-overweight.png" alt="" />}
-                        name="Sobrepeso"
-                        label="Sobrepeso"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/sobrepesos.svg" alt="sobrepesos"></img>
+                        <p>Sobrepesos</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/mi-cuenta/movimientos">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-statement.svg" alt="" />}
-                        name="Movimientos"
-                        label="Movimientos"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/movimientos.svg" alt="movimientos"></img>
+                        <p>Movimientos</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/mi-cuenta/empaques">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-package.png" alt="" />}
-                        name="Empaques"
-                        label="Empaques"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/empaques.svg" alt="empaques"></img>
+                        <p>Empaques</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/mi-cuenta/recargos">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-money.svg" alt="" />}
-                        name="Recargos"
-                        label="Recargos"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/recargos.svg" alt="recargos"></img>
+                        <p>Recargos</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/mi-cuenta/contacto">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-contact.png" alt="" />}
-                        name="Contacto"
-                        label="Contacto"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/contacto.svg" alt="contacto"></img>
+                        <p>Contacto</p>
+                    </StyledSidebarItem>
                 </Link>
                 <Link to="/" style={{ display: 'block' }} onClick={logout}>
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-exit.png" alt="icon-exit.png" />}
-                        name="Cerrar sesión"
-                        label="Cerrar sesión"
-                    />
+                    <StyledSidebarItem>
+                        <img src="/assets/salir.svg" alt="salir"></img>
+                        <p>Salir</p>
+                    </StyledSidebarItem>
                 </Link>
             </StyledSidebar>
             <Modal
