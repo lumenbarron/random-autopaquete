@@ -9,7 +9,7 @@ import swal from 'sweetalert2';
 
 const cpRegex = RegExp(/^[0-9]{5}$/);
 const phoneRegex = RegExp(/^[0-9]{10}$/);
-const addressRegex = RegExp(/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/);
+// const addressRegex = RegExp(/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/);
 
 const states = {
     AG: 'Aguascalientes',
@@ -257,7 +257,11 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
     const registerDirecction = () => {
         let fullStreet = streetName.concat(' ', streetNumber);
 
-        if (name.trim() === '' || !addressRegex.test(name) || name.length > 35) {
+        if (
+            name.trim() === ''
+            // || !addressRegex.test(name)
+            //  || name.length > 35
+        ) {
             swal.fire({
                 title: '!Lo siento!',
                 text:
@@ -278,7 +282,10 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorCP(false);
         }
-        if (streetName.trim() === '' || !addressRegex.test(streetName)) {
+        if (
+            streetName.trim() === ''
+            // || !addressRegex.test(streetName)
+        ) {
             swal.fire({
                 title: '!Lo siento!',
                 text:
@@ -294,8 +301,8 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
         }
         if (
             streetNumber.trim() === '' ||
-            streetNumber.length > 10 ||
-            !addressRegex.test(streetNumber)
+            streetNumber.length > 10
+            // !addressRegex.test(streetNumber)
         ) {
             swal.fire({
                 title: '!Lo siento!',
@@ -310,24 +317,24 @@ export const DestinoComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorStreetNumber(false);
         }
-        if (fullStreet.length > 35) {
-            swal.fire({
-                title: '!Lo siento!',
-                text:
-                    'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
-                icon: 'error',
-                confirmButtonText: 'Ok',
-            });
-            setErrorStreetName(true);
-            setError(true);
-            return;
-        } else {
-            setErrorStreetName(false);
-        }
+        // if (fullStreet.length > 35) {
+        //     swal.fire({
+        //         title: '!Lo siento!',
+        //         text:
+        //             'El texto puede ser hasta 35 letras y números, sin acentos, carácteres especiales (. , & / ñ) o espacio al final; favor de verificar.',
+        //         icon: 'error',
+        //         confirmButtonText: 'Ok',
+        //     });
+        //     setErrorStreetName(true);
+        //     setError(true);
+        //     return;
+        // } else {
+        //     setErrorStreetName(false);
+        // }
         if (
-            neighborhood.trim() === '' ||
-            !addressRegex.test(neighborhood) ||
-            neighborhood.length > 35
+            neighborhood.trim() === ''
+            // !addressRegex.test(neighborhood) ||
+            // neighborhood.length > 35
         ) {
             swal.fire({
                 title: '!Lo siento!',

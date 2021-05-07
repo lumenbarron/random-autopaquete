@@ -544,18 +544,18 @@ export function AccountSidebar() {
                         <p>Recolectar</p>
                     </StyledSidebarItem>
                 </Link>
-                <Link to="/mi-cuenta/recolecciones">
+                <Link to="/mi-cuenta/cotizar">
                     <StyledSidebarItem>
                         <img src="/assets/cotizacion.svg" alt="cotizacion"></img>
-                        <p>Cotización</p>
+                        <p>Cotizar</p>
                     </StyledSidebarItem>
                 </Link>
-                <Link to="/mi-cuenta/recolecciones">
+                {/* <Link to="/mi-cuenta/recolecciones">
                     <StyledSidebarItem>
                         <img src="/assets/ordenes.svg" alt="ordenes"></img>
                         <p>Ordenes</p>
                     </StyledSidebarItem>
-                </Link>
+                </Link> */}
                 <Link to="/mi-cuenta/historial">
                     <StyledSidebarItem>
                         <img src="/assets/historial.svg" alt="historial"></img>
