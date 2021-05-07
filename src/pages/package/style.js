@@ -2,6 +2,8 @@ import styled from 'styled-components';
 
 export const StyledPackage = styled.div`
     flex: 1 1;
+    height: 100vh;
+    overflow: scroll;
 
     .back {
         background-color: #f7f7f7;

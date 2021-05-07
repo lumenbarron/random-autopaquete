@@ -25,6 +25,7 @@ import SignUpPage from './pages/signup';
 import Layout from './components/layout';
 import PickingPage from './pages/picking';
 import StatementPage from './pages/statement';
+import CotizacionPage from './pages/cotizacion';
 import { StyledMain } from './components/layout/styled';
 import { AccountSidebar, AdminSidebar } from './components/layout/sidebar';
 
@@ -52,6 +53,7 @@ const AppRoutes = () => {
                         <Route path="/mi-cuenta/sobrepeso" component={OverweightPage} />
                         <Route path="/mi-cuenta/empaques" component={PackagePage} />
                         <Route path="/mi-cuenta/recargos" component={ChargePage} />
+                        <Route path="/mi-cuenta/cotizar" component={CotizacionPage} />
                         <Route path="/mi-cuenta/direcciones" component={DirectionPage} />
                         <Route path="/mi-cuenta/recolecciones" component={PickingPage} />
                         <Route path="/mi-cuenta/movimientos" component={StatementPage} />
