@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useFirebaseApp } from 'reactfire';
 import styled from 'styled-components';
 import { PdfAutoencargos } from './pdfAutoencargos';
@@ -64,6 +64,7 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                     <a href="/mi-cuenta/enviar" onClick={onReplay}>
                         Repetir último envío
                     </a>
+                    <Link to="/mi-cuenta">Volver al Inicio</Link>
                 </DownloadContainer>
             )}
             {pdfAuto && (
@@ -78,6 +79,7 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                     <a href="/mi-cuenta/enviar" onClick={onReplay}>
                         Repetir último envío
                     </a>
+                    <Link to="/mi-cuenta">Volver al Inicio</Link>
                 </DownloadContainerPDF>
             )}
             {error && (
@@ -86,11 +88,13 @@ export const DescargaComponent = ({ idGuiaGlobal, onReplay }) => {
                         Hubo un problema al generar tu guía, verifica que las direcciones y datos
                         del paquete sean válidos e intenta de nuevo.
                     </h2>
+                    <Link to="/mi-cuenta">Volver al Inicio</Link>
                 </DownloadContainer>
             )}
             {loading && (
                 <DownloadContainer>
                     <h2>Generando guía, espera un minuto... </h2>
+                    <Link to="/mi-cuenta">Volver al Inicio</Link>
                 </DownloadContainer>
             )}
         </>

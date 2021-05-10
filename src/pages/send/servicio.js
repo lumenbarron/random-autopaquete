@@ -7,8 +7,13 @@ import { useUser, useFirebaseApp } from 'reactfire';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import toFixed from 'accounting-js/lib/toFixed';
 import axios from 'axios';
-
-import { StyledPaneContainer, StyledDirectiosDetails, StyledDetails, StyledError } from './styled';
+import {
+    StyledPaneContainer,
+    StyledDirectiosDetails,
+    StyledDetails,
+    StyledError,
+    DownloadContainer,
+} from './styled';
 import { Row } from 'react-bootstrap';
 
 const PriceContainer = styled.div`
@@ -1465,19 +1470,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 supplierCostAutoencargosEcon,
                             )}
                     </StyledPaneContainer>
-                    <Row className="justify-content-md-center mt-4">
-                        <Link
-                            className="link-package"
-                            to="/mi-cuenta/recargos"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <p>
-                                ¿ Tienes duda de algun cargo extra ?
-                                <b>Consulta nuestra sección de recargos adicionales</b>
-                            </p>
-                        </Link>
-                    </Row>
+                    <DownloadContainer>
+                        <Row className="justify-content-md-center mt-4">
+                            <Link
+                                className="link-package"
+                                to="/mi-cuenta/recargos"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <p>
+                                    ¿ Tienes duda de algun cargo extra ?
+                                    <b>Consulta nuestra sección de recargos adicionales</b>
+                                </p>
+                            </Link>
+                            <Link to="/mi-cuenta">Volver al Inicio</Link>
+                        </Row>
+                    </DownloadContainer>
                     {!(
                         (supplierAvailability.ESTAFETADIASIGUIENTE != 'undefined' &&
                             supplierCostEstafetaDiaS.guia) ||

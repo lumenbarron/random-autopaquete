@@ -73,4 +73,10 @@ export const StyledMain = styled.div`
         background-color: #00183d;
         color: white;
     }
+
+    .chip-inicio {
+        // border-color: transparent;
+        background-color: #fff;
+        // color: white;
+    }
 `;
