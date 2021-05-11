@@ -12,6 +12,8 @@ import {
     faCheck,
     faClipboardList,
     faExclamationCircle,
+    faUsers,
+    faFileAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import Modal from 'react-modal';
 //import moduleName from 'module';
@@ -93,7 +95,7 @@ const SideBarContainer = styled.div.attrs(props => {
     display: flex;
     flex-direction: column;
     // height: 100vh;
-    background-color: ##850000;
+    background-color: #850000;
     z-index: 99999;
     padding-bottom: 0 !important;
     padding-top: 0 !important;
@@ -122,6 +124,49 @@ const SideBarContainer = styled.div.attrs(props => {
     }
 `;
 
+const SideBarAdminContainer = styled.div.attrs(props => {
+    return props.theme.rainbow.palette;
+})`
+    display: flex;
+    flex-direction: column;
+    // height: 100vh;
+    background-color: #00183d;
+    z-index: 99999;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+    background: #00183d;
+    background-image: url(${props => props.backImg});
+    background-size: cover;
+    background-position-x: -2em;
+    background-position-y: 0em;
+    background-repeat: no-repeat;
+    width: 20%;
+    border-bottom-left-radius: 0.875rem;
+    max-width: 300px;
+    min-width: 300px;
+    flex: 1 1;
+
+    @media (max-width: 768px) {
+        margin-left: -350px;
+
+        &.hide {
+            animation: ${slideOutAnimation} 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+        }
+
+        &.show {
+            animation: ${slideInAnimation} 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+        }
+    }
+`;
+
+const SidebarAdminHeader = styled.div.attrs(props => {
+    return props.theme.rainbow.palette;
+})`
+    margin: 0;
+    text-align: center;
+    background: #00183d;
+`;
+
 const SidebarHeader = styled.div.attrs(props => {
     return props.theme.rainbow.palette;
 })`
@@ -132,6 +177,10 @@ const SidebarHeader = styled.div.attrs(props => {
 
 const StyledSidebar = styled(Sidebar)`
     background: #850000;
+`;
+
+const StyledSidebarAdmin = styled(Sidebar)`
+    background: #00183d;
 `;
 
 const StyledSidebarItem = styled.div`
@@ -157,34 +206,28 @@ const StyledSidebarItem = styled.div`
     }
 `;
 
-// const StyledSidebarItem = styled(SidebarItem)`
-//     margin: 0;
-//     padding: 0;
-
-//     & > button {
-//         justify-content: flex-start;
-//         flex-direction: row;
-//         padding: 10px;
-//         &:hover {
-//             background: #AB0000;
-//             color: #00183D;
-//         }
-//         span {
-//             color: #00183D;
-//             font-family: 'Montserrat',sans-serif;
-//             font-weight: 600;
-//             font-size: 18px;
-//             line-height: 29px;
-//             padding-left: 2rem;
-//             &:hover {
-//                 color: #00183D;
-//             }
-//         }
-//         img {
-//             width: 80%;
-//         }
-//     }
-// `;
+const StyledSidebarAdminItem = styled.div`
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    padding: 1rem 2rem;
+    &:hover {
+        background: #00183d;
+    }
+    p {
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 29px;
+        padding-left: 2rem;
+    }
+    img {
+        width: auto;
+    }
+`;
 
 const Logo = styled.img.attrs(props => {
     return props.theme.rainbow.palette;
@@ -220,6 +263,13 @@ const CameraIcon = styled(FontAwesomeIcon)`
     width: 24px !important;
     height: 24px;
     border-radius: 50%;
+`;
+
+const AdminIcons = styled(FontAwesomeIcon)`
+    color: white
+    // padding: 5px;
+    width: 24px !important;
+    height: 24px;
 `;
 
 /** TODO: MODIFICAR ESTE ICONO POR UNA FOTO */
@@ -455,7 +505,9 @@ export function AccountSidebar() {
         <SideBarContainer className={containerClassName}>
             <SidebarResponsiveBars icon={faBars} onClick={toggleSidebar} />
             <SidebarHeader>
-                <Logo src="/assets/autopaquete-logo-blanco.png" />
+                <Link to="/mi-cuenta">
+                    <Logo src="/assets/autopaquete-logo-blanco.png" />
+                </Link>
                 <div
                     style={{
                         position: 'relative',
@@ -529,6 +581,10 @@ export function AccountSidebar() {
                         />
                     </div>
                 )}
+
+                {/* <Link to="/mi-cuenta">
+                    <Chip className="rainbow-m-around_medium chip-inicio" variant="outline-brand" label = "Inicio"></Chip>
+                </Link> */}
                 <Chip className="rainbow-m-around_medium chip-credit" label={credit} />
             </SidebarHeader>
             <StyledSidebar>
@@ -688,45 +744,42 @@ export function AdminSidebar() {
     useSecurity();
 
     return (
-        <SideBarContainer
+        <SideBarAdminContainer
             className="rainbow-p-top_small rainbow-p-bottom_medium"
             //backImg="/assets/redbox-2.png"
-            style={{ backgroundColor: 'crimson', position: 'sticky', top: '0' }}
+            style={{ position: 'sticky', top: '0' }}
         >
-            <SidebarHeader>
+            <SidebarAdminHeader>
                 <Logo src="/logo-admin.png" />
-                <h5 style={{ color: '#fff' }}>Administrador</h5>
-            </SidebarHeader>
-            <StyledSidebar>
+                <h3 style={{ color: '#fff' }}>Administrador</h3>
+            </SidebarAdminHeader>
+            <StyledSidebarAdmin>
                 <Link to="/admin/usuarios">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/admin-users.png" alt="" />}
-                        name="Usuarios"
-                        label="Usuarios"
-                    />
+                    <StyledSidebarAdminItem>
+                        <AdminIcons icon={faUsers} />
+                        <p>Usuarios</p>
+                    </StyledSidebarAdminItem>
                 </Link>
                 <Link to="/admin/guias">
-                    <StyledSidebarItem
-                        icon={<img src="/assets/admin-users.png" alt="" />}
-                        name="Guías"
-                        label="Guías"
-                    />
+                    <StyledSidebarAdminItem>
+                        <AdminIcons icon={faFileAlt} />
+                        <p>Guías</p>
+                    </StyledSidebarAdminItem>
                 </Link>
                 {/* <Link to="/admin/sobrepesos">
-                    <StyledSidebarItem
+                    <StyledSidebarAdminItem
                         icon={<img src="/assets/icon-overweight.png" alt="" />}
                         name="Sobrepeso"
                         label="Sobrepeso"
                     />
                 </Link> */}
                 <Link to="/" style={{ display: 'block' }} onClick={logout}>
-                    <StyledSidebarItem
-                        icon={<img src="/assets/icon-exit.png" alt="icon-exit.png" />}
-                        name="Cerrar sesión"
-                        label="Cerrar sesión"
-                    />
+                    <StyledSidebarAdminItem>
+                        <img src="/assets/salir.svg" alt="salir"></img>
+                        <p>Salir</p>
+                    </StyledSidebarAdminItem>
                 </Link>
-            </StyledSidebar>
-        </SideBarContainer>
+            </StyledSidebarAdmin>
+        </SideBarAdminContainer>
     );
 }
