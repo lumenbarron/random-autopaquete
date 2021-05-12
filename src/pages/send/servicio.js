@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes, { element } from 'prop-types';
 import { Card, Button, Spinner } from 'react-rainbow-components';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useUser, useFirebaseApp } from 'reactfire';
 import formatMoney from 'accounting-js/lib/formatMoney';
@@ -57,6 +57,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const user = useUser();
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
+    const history = useHistory();
 
     // Sender states
     const [nameSender, setNameSender] = useState();
@@ -215,6 +216,97 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     });
             });
     };
+
+    const saveService = (supplier, type, { id, precio, ...cargos }) => {
+        const precioNeto = precio * 1.16;
+        let supplierData;
+
+        db.collection('profiles')
+            .where('ID', '==', user.uid)
+            .get()
+            .then(profile => {
+                profile.docs[0].ref
+                    .collection('rate')
+                    .doc(id)
+                    .get()
+                    .then(doc => {
+                        setError(false);
+                        const tarifa = doc.data();
+                        // console.log(tarifa);
+                        supplierData = {
+                            ID: user.uid,
+                            Supplier: `${supplier}${type}`,
+                            Supplier_cost: toFixed(precioNeto, 2),
+                            tarifa,
+                            cargos,
+                            FinalWeight: getFinalWeight.current,
+                        };
+                        console.log(supplierData);
+
+                        db.collection('guia')
+                            .doc(idGuiaGlobal)
+                            .update({ status: 'completed', supplierData })
+                            .then(() => {
+                                console.log('Document written with ID: ');
+                                console.log(idGuiaGlobal, 'idGuiaGlobal');
+                                getData();
+                            });
+                    });
+            });
+    };
+
+    const getData = () => {
+        db.collection('guia')
+            .doc(idGuiaGlobal)
+            .get()
+            .then(doc => {
+                console.log(doc.data());
+                const {
+                    ID,
+                    receiver_addresses: rAddress,
+                    sender_addresses: sAddress,
+                    // package : package
+                    supplierData,
+                    razon_social,
+                    name,
+                    creation_date,
+                } = doc.data();
+
+                db.collection('ordenes')
+                    .add({
+                        ID,
+                        receiver_addresses: rAddress,
+                        sender_addresses: sAddress,
+                        supplierData,
+                        razon_social,
+                        name,
+                        creation_date,
+                        package: doc.data().package,
+                        status: 'completed',
+                    })
+                    .then(docRef => {
+                        console.log('Document written with ID: ', docRef.id);
+                        history.push('/mi-cuenta/ordenes');
+                        // deleteUnusableGuia()
+                    })
+                    .catch(error => {
+                        console.error('Error adding document: ', error);
+                    });
+            });
+    };
+
+    // const deleteUnusableGuia = () => {
+    //     console.log(idGuiaGlobal, 'idGuiaGlobal');
+    //     db.collection('guia')
+    //     .doc(idGuiaGlobal)
+    //     .delete()
+    //     .then(function() {
+    //         console.log('borrando guia inutilizable', idGuiaGlobal);
+    //     })
+    //     .catch(function(error) {
+    //         console.error('Error removing document: ', error);
+    //     });
+    // }
 
     const addRastreoAuto = idGuiaGlobal => {
         let guiaAutoencargos = Math.floor(Math.random() * 1000000).toString();
@@ -519,7 +611,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         //         let result = result1.concat(result2, result3);
 
         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/`;
-        //console.log('url', urlRequest);
+        console.log('url', urlRequest);
 
         fetch(urlRequest, requestOptions)
             .then(response => response.json())
@@ -1266,7 +1358,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 Entrega Estimada
             </h6>
             <p>{entrega}</p>
-            {costos.delivery !== 'NORMAL' ||
+            {costos.delivery !== 'Normal' ||
                 (costos.delivery !== 'NORMAL' && (
                     <>
                         <h6
@@ -1340,7 +1432,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     </PriceContainer>
                     <h3> {formatMoney(costos.precio * 1.16)} </h3>
                     <Button
-                        label="Elegir"
+                        label="Guardar"
+                        /* variant="brand" */
+                        className="save-button mb-3"
+                        onClick={() => saveService(proveedor, tipoEnvio, costos)}
+                    />
+                    <Button
+                        label="Crear"
                         variant="brand"
                         onClick={() => registerService(proveedor, tipoEnvio, costos)}
                     />

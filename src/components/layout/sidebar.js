@@ -606,12 +606,12 @@ export function AccountSidebar() {
                         <p>Cotizar</p>
                     </StyledSidebarItem>
                 </Link>
-                {/* <Link to="/mi-cuenta/recolecciones">
+                <Link to="/mi-cuenta/ordenes">
                     <StyledSidebarItem>
                         <img src="/assets/ordenes.svg" alt="ordenes"></img>
                         <p>Ordenes</p>
                     </StyledSidebarItem>
-                </Link> */}
+                </Link>
                 <Link to="/mi-cuenta/historial">
                     <StyledSidebarItem>
                         <img src="/assets/historial.svg" alt="historial"></img>
@@ -767,11 +767,10 @@ export function AdminSidebar() {
                     </StyledSidebarAdminItem>
                 </Link>
                 {/* <Link to="/admin/sobrepesos">
-                    <StyledSidebarAdminItem
-                        icon={<img src="/assets/icon-overweight.png" alt="" />}
-                        name="Sobrepeso"
-                        label="Sobrepeso"
-                    />
+                <StyledSidebarAdminItem>
+                        <AdminIcons icon={faFileAlt} />
+                        <p>Sobrepeso</p>
+                    </StyledSidebarAdminItem>
                 </Link> */}
                 <Link to="/" style={{ display: 'block' }} onClick={logout}>
                     <StyledSidebarAdminItem>

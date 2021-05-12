@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Column, Badge, TableWithBrowserPagination, Input } from 'react-rainbow-components';
+import { Column, Badge, TableWithBrowserPagination, Input, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,8 +10,10 @@ import { useHistory } from 'react-router-dom';
 import { StyledRecord, RecordContainer } from './styled';
 import ExportReactCSV from '../dowloadData/index';
 
-const StyledBadge = styled(Badge)`
-    color: #09d3ac;
+const StyledBadge = styled(Button)`
+    border-color: transparent;
+    background-color: #00652e;
+    color: white;
 `;
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
@@ -24,48 +26,17 @@ const StyledTable = styled(TableWithBrowserPagination)`
         }
     }
 `;
-const StatusBadge = ({ value }) => <StyledBadge label={value} variant="lightest" />;
+const StatusBadge = () => <StyledBadge label="Crear" />;
 StatusBadge.propTypes = {
-    value: PropTypes.string.isRequired,
-};
-
-const DownloadLabel = ({ value }) => {
-    const [label, setLabel] = useState(true);
-    useEffect(() => {
-        //console.log('value', value);
-        if (value === 'no disponible') {
-            setLabel(false);
-        } else {
-            setLabel(true);
-        }
-    }, []);
-    return (
-        <>
-            {label ? (
-                <a
-                    download="guia"
-                    href={`data:application/pdf;base64,${value}`}
-                    title="Descargar etiqueta"
-                    variant="neutral"
-                    className="rainbow-m-around_medium"
-                >
-                    <FontAwesomeIcon icon={faDownload} className="rainbow-medium" />
-                </a>
-            ) : (
-                <p className="rainbow-m-around_medium">N/D</p>
-            )}
-        </>
-    );
-};
-
-DownloadLabel.propTypes = {
     value: PropTypes.string.isRequired,
 };
 
 const containerStyles = { height: 312 };
 const containerTableStyles = { height: 356 };
 
-const RecordPage = () => {
+const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
+
+const OrdenesPage = () => {
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
     const user = useUser();
@@ -77,17 +48,13 @@ const RecordPage = () => {
 
     useEffect(() => {
         const data = [];
-        db.collection('guia')
+        db.collection('ordenes')
             .where('ID', '==', user.uid)
             .where('status', '==', 'completed')
             .orderBy('creation_date', 'desc')
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    if (doc.data().rastreo === undefined) {
-                        console.log('data guias', doc.data(), 'doc.id', doc.id);
-                    }
-                    //console.log('data guias', doc.data(), 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -96,7 +63,10 @@ const RecordPage = () => {
                                 doc.data().package.depth) /
                                 5000,
                         ),
-                        sentDate: doc.data().creation_date.toDate(),
+                        sentDate: doc
+                            .data()
+                            .creation_date.toDate()
+                            .toLocaleDateString('es-US', optionsDate),
                         ...doc.data(),
                     });
                 });
@@ -121,47 +91,51 @@ const RecordPage = () => {
                     // console.log('datos dentro del map', historyRecord);
                     return {
                         id: historyRecord.id,
-                        date: historyRecord.package.creation_date,
-                        guide: historyRecord.rastreo ? historyRecord.rastreo : 'sin guia',
-                        origin: `${historyRecord.sender_addresses.name}, ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
-                        Destination: `${historyRecord.receiver_addresses.name}, ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
+                        /* name: historyRecord.name, */
+                        date: historyRecord.sentDate,
+                        nameOrigin: historyRecord.sender_addresses.name,
+                        origin: `${historyRecord.sender_addresses.street_name}, ${historyRecord.sender_addresses.street_number} , ${historyRecord.sender_addresses.neighborhood} , ${historyRecord.sender_addresses.country} , ${historyRecord.sender_addresses.codigo_postal}`,
+                        nameDestination: historyRecord.receiver_addresses.name,
+                        destination: `${historyRecord.receiver_addresses.street_name}, ${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
+                        measurement: `${historyRecord.package.height} x ${historyRecord.package.width} x ${historyRecord.package.depth}`,
                         weight: historyRecord.package.weight,
-                        volumetricWeight: historyRecord.volumetricWeight,
                         service: historyRecord.supplierData.Supplier,
-                        // status: 'Finalizado',
-                        cost:
-                            typeof historyRecord.rastreo != 'undefined'
-                                ? historyRecord.supplierData.Supplier_cost
-                                : '0.00',
-                        label:
-                            historyRecord.supplierData.Supplier === 'autoencargosEconomico'
-                                ? 'no disponible'
-                                : historyRecord.label,
+                        cost: historyRecord.supplierData.Supplier_cost,
+                        crear: (
+                            <StyledBadge
+                                label="Crear"
+                                // variant="success"
+                                // className="create-button"
+                                onClick={() => createShipping()}
+                            />
+                        ),
                     };
                 }),
         );
     }, [recordsData]);
 
-    const search = e => {
-        let keyword = e.target.value;
-        console.log('keyword', keyword);
-        setFilter(keyword);
+    const createShipping = () => {
+        console.log('creando guia');
     };
 
-    const pushSend = () => {
-        history.push('/mi-cuenta/enviar');
-    };
+    // const search = e => {
+    //     let keyword = e.target.value;
+    //     console.log('keyword', keyword);
+    //     setFilter(keyword);
+    // };
+
+    // const pushSend = () => {
+    //     history.push('/mi-cuenta/enviar');
+    // };
 
     return (
         <StyledRecord>
+            <Row className="row-header">
+                <h1 id="main-title">Ordenes</h1>
+                <ExportReactCSV data={recordsData} />
+            </Row>
             <RecordContainer>
-                {/* <div>
-                    <div> */}
-                <Row className="row-header">
-                    <h1 id="main-title">Mis envíos</h1>
-                    <ExportReactCSV data={recordsData} />
-                </Row>
-                <div>
+                {/*                 <div>
                     <Input
                         value={filter}
                         className="rainbow-p-around_medium"
@@ -169,7 +143,7 @@ const RecordPage = () => {
                         icon={<FontAwesomeIcon icon={faSearch} className="rainbow-color_gray-3" />}
                         onChange={e => search(e)}
                     />
-                </div>
+                </div> */}
 
                 <div className="rainbow-p-bottom_xx-large">
                     <div style={containerStyles}>
@@ -183,38 +157,34 @@ const RecordPage = () => {
                             className="direction-table"
                         >
                             <Column header="Fecha " field="date" defaultWidth={105} />
-                            <Column header="Guía" field="guide" defaultWidth={85} />
+                            <Column header="Nombre Origen" field="nameOrigin" />
                             <Column header="Origen" field="origin" />
-                            <Column header="Destino" field="Destination" />
-                            <Column header="PF" field="weight" defaultWidth={65} />
-                            <Column header="PV" field="volumetricWeight" defaultWidth={65} />
-                            <Column header="Servicio" field="service" defaultWidth={135} />
-                            {/* <Column
-                                        header="Status"
-                                        field="status"
-                                        component={StatusBadge}
-                                    /> */}
-                            <Column header="Costo" field="cost" defaultWidth={75} />
+                            <Column header="Nombre Destino" field="nameDestination" />
+                            <Column header="Destino" field="destination" />
+                            <Column header="Medidas" field="measurement" defaultWidth={100} />
+                            <Column header="Peso" field="weight" defaultWidth={65} />
+                            <Column header="Paquetería" field="service" />
+                            <Column header="Costo" field="cost" defaultWidth={135} />
                             <Column
-                                header="Etiqueta"
-                                component={DownloadLabel}
-                                field="label"
-                                style={{ width: '10px!important' }}
-                                defaultWidth={100}
+                                header=""
+                                field="crear"
+                                // component={StatusBadge}
+                                defaultWidth={90}
                             />
+                            {/* <Column header="" field="crear" defaultWidth={90}  /> */}
                         </StyledTable>
                     </div>
                 </div>
                 {/* </div>
                 </div> */}
-                <div>
+                {/*                 <div>
                     <button className="btn-new" onClick={pushSend}>
                         Enviar uno nuevo
                     </button>
-                </div>
+                </div> */}
             </RecordContainer>
         </StyledRecord>
     );
 };
 
-export default RecordPage;
+export default OrdenesPage;

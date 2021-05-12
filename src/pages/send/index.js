@@ -8,6 +8,7 @@ import { DestinoComponent } from './destino';
 import { PaqueteComponent } from './paquete';
 import { ServicioComponent } from './servicio';
 import { DescargaComponent } from './descarga';
+//import { PaqueteriaComponent } from './paqueteria';
 import { StyledSendPage, DownloadContainerPDF } from './styled';
 
 const SendPage = () => {
@@ -62,7 +63,7 @@ const SendPage = () => {
 
         directionsGuiasCollectionAdd
             .then(function() {
-                //console.log('Se cumplio! Document written with ID (guia): ', idGuiaGlobal.current);
+                console.log('Se cumplio! Document written with ID (guia): ', idGuiaGlobal.current);
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
@@ -94,10 +95,10 @@ const SendPage = () => {
 
         directionsGuiasCollectionAdd
             .then(function() {
-                // console.log(
-                //     'Se cumplio 2! Document written with ID (guia): ',
-                //     idGuiaGlobal.current,
-                // );
+                console.log(
+                    'Se cumplio 2! Document written with ID (guia): ',
+                    idGuiaGlobal.current,
+                );
             })
             .catch(function(error) {
                 console.error('Error adding document: ', error);
@@ -374,6 +375,7 @@ const SendPage = () => {
                     <ProgressStep name="origen" label="Origen" />
                     <ProgressStep name="destino" label="Destino" />
                     <ProgressStep name="paquete" label="Paquete" />
+                    {/* <ProgressStep name="paqueteria" label="Paquetería" /> */}
                     <ProgressStep name="servicio" label="Servicio" />
                     <ProgressStep name="descarga" label="Descarga" />
                 </ProgressIndicator>
@@ -408,6 +410,13 @@ const SendPage = () => {
                         idGuiaGlobal={idGuiaGlobal.current}
                     />
                 )}
+
+                {/*                 {currentStepName === 'paqueteria' && (
+                    <PaqueteriaComponent
+                        onSave={saveServiceData}
+                        idGuiaGlobal={idGuiaGlobal.current}
+                    />
+                )} */}
                 {currentStepName === 'servicio' && (
                     <ServicioComponent
                         onSave={saveServiceData}
@@ -426,7 +435,7 @@ const SendPage = () => {
                     <DownloadContainerPDF>
                         <h1>
                             Lo sentimos, ha ocurrido un error, podrías generar la guía de nuevo. (No
-                            te preocupes, tu saldo no se ha descontado){' '}
+                            te preocupes, tu saldo no se ha descontado)
                         </h1>
                     </DownloadContainerPDF>
                 )}

@@ -50,6 +50,12 @@ export const StyledPaneContainer = styled.div`
     flex-direction: row;
     flex-wrap: wrap;
 
+    .save-button {
+        border-color: transparent;
+        background-color: #00183d;
+        color: white;
+    }
+
     .content-value {
         justify-content: left !important;
     }

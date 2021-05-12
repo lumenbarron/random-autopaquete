@@ -26,6 +26,7 @@ import Layout from './components/layout';
 import PickingPage from './pages/picking';
 import StatementPage from './pages/statement';
 import CotizacionPage from './pages/cotizacion';
+import OrdenesPage from './pages/ordenes';
 import { StyledMain } from './components/layout/styled';
 import { AccountSidebar, AdminSidebar } from './components/layout/sidebar';
 
@@ -56,6 +57,7 @@ const AppRoutes = () => {
                         <Route path="/mi-cuenta/cotizar" component={CotizacionPage} />
                         <Route path="/mi-cuenta/direcciones" component={DirectionPage} />
                         <Route path="/mi-cuenta/recolecciones" component={PickingPage} />
+                        <Route path="/mi-cuenta/ordenes" component={OrdenesPage} />
                         <Route path="/mi-cuenta/movimientos" component={StatementPage} />
                         <Route path="/mi-cuenta/contacto" component={ContactPage} />
                         <Route path="/mi-cuenta/enviar/:idGuia/:step" component={SendPage} />
