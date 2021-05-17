@@ -65,7 +65,7 @@ export default function HistoryUser({ user }) {
             if (user) {
                 db.collection('guia')
                     .where('ID', '==', user.ID)
-                    .where('status', '==', 'completed')
+                    // .where('status', '==', 'completed')
                     .orderBy('creation_date', 'desc')
                     .onSnapshot(handleHistory);
             }
@@ -76,9 +76,9 @@ export default function HistoryUser({ user }) {
     function handleHistory(querySnapshot) {
         let dataGuias = [];
         querySnapshot.forEach(doc => {
-            //console.log(doc.data().rastreo)
-            // if (doc.data().status != 'completed') {
-            //     console.log(doc.id);
+            console.log(doc.data().status);
+            //  if (doc.data().status != 'completed' || doc.data().status !== 'orden' ) {
+            //      console.log(doc.id);
             //     db.collection('guia')
             //         .doc(doc.id)
             //         .delete()
@@ -88,7 +88,7 @@ export default function HistoryUser({ user }) {
             //         .catch(function(error) {
             //             console.error('Error removing document: ', error);
             //         });
-            // }
+            //}
             dataGuias.push({
                 id: doc.id,
                 volumetricWeight: Math.ceil(
@@ -133,15 +133,15 @@ export default function HistoryUser({ user }) {
                     Destination: `${historyRecord.receiver_addresses.street_name} , ${historyRecord.receiver_addresses.street_number} , ${historyRecord.receiver_addresses.neighborhood} , ${historyRecord.receiver_addresses.country} , ${historyRecord.receiver_addresses.codigo_postal}`,
                     weight: historyRecord.package.weight,
                     volumetricWeight: historyRecord.volumetricWeight,
-                    service: historyRecord.supplierData.Supplier,
+                    // service: historyRecord.supplierData.Supplier,
                     cost:
                         typeof historyRecord.rastreo != 'undefined'
                             ? historyRecord.supplierData.Supplier_cost
                             : '0.00',
-                    label:
-                        historyRecord.supplierData.Supplier === 'autoencargosEconomico'
-                            ? 'no disponible'
-                            : historyRecord.label,
+                    // label:
+                    //     historyRecord.supplierData.Supplier === 'autoencargosEconomico'
+                    //         ? 'no disponible'
+                    //         : historyRecord.label,
                     delete: (
                         <FontAwesomeIcon
                             icon={faTrashAlt}
@@ -193,7 +193,7 @@ export default function HistoryUser({ user }) {
                             style={{ width: '10px!important' }}
                             defaultWidth={100}
                         />
-                        {/* <Column header="" field="delete" /> */}
+                        <Column header="" field="delete" />
                     </StyledTable>
                 </StyledPanel>
             </div>

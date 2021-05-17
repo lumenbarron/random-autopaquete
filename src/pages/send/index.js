@@ -154,7 +154,7 @@ const SendPage = () => {
             let myHeaders = new Headers();
             myHeaders.append('Authorization', tokenProd);
             myHeaders.append('Content-Type', 'application/json');
-            // console.log('obteniendo los valores de firestore');
+
             //Asignando los valores desde el doc guia del firestore
             db.collection('guia')
                 .doc(idGuiaGlobal.current)

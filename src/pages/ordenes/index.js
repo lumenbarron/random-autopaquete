@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Column, Badge, TableWithBrowserPagination, Input, Button } from 'react-rainbow-components';
 import styled from 'styled-components';
@@ -41,41 +41,45 @@ const OrdenesPage = () => {
     const db = firebase.firestore();
     const user = useUser();
     const history = useHistory();
+    const tokenProd = process.env.REACT_APP_REDPACK_PROD;
 
     const [filter, setFilter] = useState('');
     const [tableData, setTableData] = useState();
     const [recordsData, setRecordsData] = useState([]);
+    const idGuiaGlobal = useRef(null);
 
     useEffect(() => {
-        const data = [];
-        db.collection('ordenes')
-            .where('ID', '==', user.uid)
-            .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    data.push({
-                        id: doc.id,
-                        volumetricWeight: Math.ceil(
-                            (doc.data().package.height *
-                                doc.data().package.width *
-                                doc.data().package.depth) /
-                                5000,
-                        ),
-                        sentDate: doc
-                            .data()
-                            .creation_date.toDate()
-                            .toLocaleDateString('es-US', optionsDate),
-                        ...doc.data(),
-                    });
-                });
-                setRecordsData(data);
-            })
-            .catch(function(error) {
-                console.log('Error getting documents: ', error);
-            });
+        console.log(user.uid);
+        const reloadOrdenes = () => {
+            db.collection('guia')
+                .where('ID', '==', user.uid)
+                .where('status', '==', 'orden')
+                .orderBy('creation_date', 'desc')
+                .onSnapshot(handleOrdenes);
+        };
+        reloadOrdenes();
     }, []);
+
+    const handleOrdenes = querySnapshot => {
+        const data = [];
+        querySnapshot.forEach(function(doc) {
+            data.push({
+                id: doc.id,
+                volumetricWeight: Math.ceil(
+                    (doc.data().package.height *
+                        doc.data().package.width *
+                        doc.data().package.depth) /
+                        5000,
+                ),
+                sentDate: doc
+                    .data()
+                    .creation_date.toDate()
+                    .toLocaleDateString('es-US', optionsDate),
+                ...doc.data(),
+            });
+        });
+        setRecordsData(data);
+    };
 
     useEffect(() => {
         setTableData(
@@ -88,7 +92,7 @@ const OrdenesPage = () => {
                     }
                 })
                 .map(historyRecord => {
-                    // console.log('datos dentro del map', historyRecord);
+                    console.log('datos dentro del map', historyRecord);
                     return {
                         id: historyRecord.id,
                         /* name: historyRecord.name, */
@@ -106,7 +110,7 @@ const OrdenesPage = () => {
                                 label="Crear"
                                 // variant="success"
                                 // className="create-button"
-                                onClick={() => createShipping()}
+                                onClick={() => createShipping(historyRecord.id)}
                             />
                         ),
                     };
@@ -114,8 +118,139 @@ const OrdenesPage = () => {
         );
     }, [recordsData]);
 
-    const createShipping = () => {
-        console.log('creando guia');
+    const createShipping = idDoc => {
+        idGuiaGlobal.current = idDoc;
+        console.log('id', idGuiaGlobal.current);
+        let myHeaders = new Headers();
+        myHeaders.append('Authorization', tokenProd);
+        myHeaders.append('Content-Type', 'application/json');
+        db.collection('guia')
+            .doc(idDoc)
+            .get()
+            .then(function(doc) {
+                if (doc.exists) {
+                    console.log('Document data:', doc.data());
+                    let data = JSON.stringify({
+                        sender: {
+                            contact_name:
+                                doc.data().supplierData.Supplier === 'estafetaEconomico' ||
+                                doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
+                                    ? doc.data().sender_addresses.name.substring(0, 30)
+                                    : doc.data().sender_addresses.name,
+                            company_name: doc.data().sender_addresses.name,
+                            street:
+                                doc.data().supplierData.Supplier === 'estafetaEconomico' ||
+                                doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
+                                    ? doc.data().sender_addresses.street_name.substring(0, 19)
+                                    : doc.data().sender_addresses.street_name,
+                            zip_code: doc.data().sender_addresses.codigo_postal,
+                            neighborhood: doc.data().sender_addresses.neighborhood,
+                            city: doc.data().sender_addresses.country,
+                            country: 'MX',
+                            state: doc.data().sender_addresses.state,
+                            street_number: doc.data().sender_addresses.street_number,
+                            place_reference: doc.data().sender_addresses.place_reference,
+                            phone: doc.data().sender_addresses.phone,
+                        },
+                        receiver: {
+                            contact_name:
+                                doc.data().supplierData.Supplier === 'estafetaEconomico' ||
+                                doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
+                                    ? doc.data().receiver_addresses.name.substring(0, 30)
+                                    : doc.data().receiver_addresses.name,
+                            company_name: doc.data().receiver_addresses.name,
+                            street:
+                                doc.data().supplierData.Supplier === 'estafetaEconomico' ||
+                                doc.data().supplierData.Supplier === 'estafetaDiaSiguiente'
+                                    ? doc.data().receiver_addresses.street_name.substring(0, 19)
+                                    : doc.data().receiver_addresses.street_name,
+                            zip_code: doc.data().receiver_addresses.codigo_postal,
+                            neighborhood: doc.data().receiver_addresses.neighborhood,
+                            city: doc.data().receiver_addresses.country,
+                            country: 'MX',
+                            state: doc.data().receiver_addresses.state,
+                            street_number: doc.data().receiver_addresses.street_number
+                                ? doc.data().receiver_addresses.street_number
+                                : '',
+                            place_reference: doc.data().receiver_addresses.place_reference,
+                            phone: doc.data().receiver_addresses.phone,
+                        },
+                        packages: [
+                            {
+                                name: doc.data().package.name.substring(0, 25),
+                                height: doc.data().package.height,
+                                width: doc.data().package.width,
+                                depth: doc.data().package.depth,
+                                weight: doc.data().package.weight,
+                                content_description: doc.data().package.content_description,
+                                quantity: doc.data().package.quantity,
+                            },
+                        ],
+                        shipping_company: doc.data().supplierData.cargos.shippingInfo[0],
+                        shipping_service: {
+                            name: doc.data().supplierData.cargos.shippingInfo[1],
+                            description: doc.data().supplierData.cargos.shippingInfo[2],
+                            id: doc.data().supplierData.cargos.shippingInfo[3],
+                        },
+                        shipping_secure:
+                            //false,
+                            doc.data().supplierData.cargos.insurance === 0 ? false : true,
+                        shipping_secure_data: {
+                            notes:
+                                // '-',
+                                doc.data().package.content_description,
+                            amount:
+                                // 0,
+                                doc.data().supplierData.cargos.insurance,
+                        },
+                    });
+                    //console.log('data 2', data);
+                    let requestOptions = {
+                        method: 'POST',
+                        headers: myHeaders,
+                        body: data,
+                        redirect: 'follow',
+                    };
+                    fetch('https://autopaquete.simplestcode.com/api/do-shipping/', requestOptions)
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log(result);
+                            let finalResult = result;
+                            let responseFetch = Object.keys(result);
+                            console.log(responseFetch);
+                            if (responseFetch.length === 0) {
+                                // setEmptyResult(true);
+                                db.collection('guia')
+                                    .doc(idGuiaGlobal.current)
+                                    .update({ result: responseFetch, body: data });
+                            } else if (result.pdf_b64.length === 0 || result.pdf_b64 == '') {
+                                // setEmptyResult(true);
+                                db.collection('guia')
+                                    .doc(idGuiaGlobal.current)
+                                    .update({ result: result, body: data });
+                            } else {
+                                db.collection('guia')
+                                    .doc(idGuiaGlobal.current)
+                                    .update({
+                                        label: result.pdf_b64[0],
+                                        rastreo: result.id_shipping,
+                                        body: data,
+                                        result: finalResult,
+                                        status: 'completed',
+                                    });
+                                // newBalance(costGuia);
+                                // setguiaReady(true);
+                            }
+                        })
+                        .catch(error => {
+                            console.log('error', error);
+                            // setEmptyResult(true);
+                        });
+                }
+            })
+            .catch(function(error) {
+                console.error('Error getting document:', error);
+            });
     };
 
     // const search = e => {

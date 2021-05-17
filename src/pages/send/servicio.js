@@ -245,11 +245,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
                         db.collection('guia')
                             .doc(idGuiaGlobal)
-                            .update({ status: 'completed', supplierData })
+                            .update({ status: 'orden', supplierData })
                             .then(() => {
                                 console.log('Document written with ID: ');
                                 console.log(idGuiaGlobal, 'idGuiaGlobal');
-                                getData();
+                                history.push('/mi-cuenta/ordenes');
+                                // getData();
                             });
                     });
             });
@@ -681,7 +682,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             ];
                         }
                     });
-                    //console.log('delivey', supplierDelivery);
+                    console.log('delivey', supplierDelivery);
                     setSupplierAvailabilityDelivery(supplierDelivery);
 
                     //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, RedpackExiguiente: true}
@@ -901,7 +902,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     getInsurancePrice('estafetaDiaSiguiente') +
                                     extendedAreaEstafetaDiaS +
                                     cargoExtraHeight,
-                                delivery: 'NORMAL',
+                                delivery: '',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaDiaS.finalPrice,
                                 zonaExt: extendedAreaEstafetaDiaS != 0 ? 110 : false,
@@ -918,7 +919,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     getInsurancePrice('estafetaEconomico') +
                                     extendedAreaEstafetaEco +
                                     cargoExtraHeight,
-                                delivery: 'NORMAL',
+                                delivery: '',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaEco.finalPrice,
                                 zonaExt: extendedAreaEstafetaEco != 0 ? 110 : false,
@@ -935,7 +936,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     getInsurancePrice('fedexDiaSiguiente') +
                                     extendedAreaFedexDiaS +
                                     cargoExtraHeight,
-                                delivery: 'NORMAL',
+                                delivery: '',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceFedexDiaS.finalPrice,
                                 zonaExt: extendedAreaFedexDiaS != 0 ? 150 : false,
@@ -952,7 +953,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     getInsurancePrice('fedexEconomico') +
                                     extendedAreaFedexEco +
                                     cargoExtraHeight,
-                                delivery: 'NORMAL',
+                                delivery: '',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceFedexEco.finalPrice,
                                 zonaExt: extendedAreaFedexEco != 0 ? 150 : false,
@@ -969,7 +970,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     getInsurancePrice('redpackExpress') +
                                     extendedAreaRedpackExp +
                                     cargoExtraHeight,
-                                delivery: supplierAvailabilityDelivery.EXPRESS,
+                                delivery:
+                                    !supplierAvailabilityDelivery.EXPRESS != 'NORMAL'
+                                        ? supplierAvailabilityDelivery.EXPRESS
+                                        : '',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceRedExp.finalPrice,
                                 zonaExt: extendedAreaRedpackExp != 0 ? 130 : false,
@@ -986,7 +990,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     getInsurancePrice('redpackEcoExpress') +
                                     extendedAreaRedpackEco +
                                     cargoExtraHeight,
-                                delivery: supplierAvailabilityDelivery.ECOEXPRESS,
+                                delivery:
+                                    supplierAvailabilityDelivery.ECOEXPRESS != 'NORMAL'
+                                        ? supplierAvailabilityDelivery.ECOEXPRESS
+                                        : '',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceRedEco.finalPrice,
                                 zonaExt: extendedAreaRedpackEco != 0 ? 130 : false,
@@ -1003,7 +1010,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     getInsurancePrice('autoencargos') +
                                     extendedAreaAutoencargos +
                                     cargoExtraHeight,
-                                delivery: 'NORMAL',
+                                delivery: '',
                                 cargoExtraHeight: 0,
                                 guia: getFinalPriceAuto.finalPrice,
                                 zonaExt: extendedAreaAutoencargos != 0 ? 40 : false,
@@ -1188,7 +1195,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 extendedAreaEstafetaDiaS +
                                 cargoExtraHeight,
 
-                            delivery: 'NORMAL',
+                            delivery: '',
                             kilosExtra,
                             cargoExtraHeight,
                             cargoExtra,
@@ -1207,7 +1214,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 getInsurancePrice('estafetaEconomico') +
                                 extendedAreaEstafetaEco +
                                 cargoExtraHeight,
-                            delivery: 'NORMAL',
+                            delivery: '',
                             kilosExtra,
                             cargoExtraHeight,
                             cargoExtra,
@@ -1226,7 +1233,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 getInsurancePrice('fedexDiaSiguiente') +
                                 extendedAreaFedexDiaS +
                                 cargoExtraHeight,
-                            delivery: 'NORMAL',
+                            delivery: '',
                             kilosExtra,
                             cargoExtraHeight,
                             cargoExtra,
@@ -1245,7 +1252,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 getInsurancePrice('fedexEconomico') +
                                 extendedAreaFedexEco +
                                 cargoExtraHeight,
-                            delivery: 'NORMAL',
+                            delivery: '',
                             kilosExtra,
                             cargoExtraHeight,
                             cargoExtra,
@@ -1264,7 +1271,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 getInsurancePrice('redpackExpress') +
                                 extendedAreaRedpackExp +
                                 cargoExtraHeight,
-                            delivery: supplierAvailabilityDelivery.EXPRESS,
+                            delivery:
+                                supplierAvailabilityDelivery.EXPRESS != 'NORMAL'
+                                    ? supplierAvailabilityDelivery.EXPRESS
+                                    : '',
                             kilosExtra,
                             cargoExtraHeight: cargoExtraHeight,
                             cargoExtra,
@@ -1283,7 +1293,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 getInsurancePrice('redpackEcoExpress') +
                                 extendedAreaRedpackEco +
                                 cargoExtraHeight,
-                            delivery: supplierAvailabilityDelivery.ECOEXPRESS,
+                            delivery:
+                                supplierAvailabilityDelivery.ECOEXPRESS != 'NORMAL'
+                                    ? supplierAvailabilityDelivery.ECOEXPRESS
+                                    : '',
                             kilosExtra,
                             cargoExtraHeight: cargoExtraHeight,
                             cargoExtra,
@@ -1302,7 +1315,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 getInsurancePrice('autoencargos') +
                                 extendedAreaAutoencargos +
                                 cargoExtraHeight,
-                            delivery: 'NORMAL',
+                            delivery: '',
                             kilosExtra,
                             cargoExtraHeight: 0,
                             cargoExtra,
@@ -1358,22 +1371,22 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 Entrega Estimada
             </h6>
             <p>{entrega}</p>
-            {costos.delivery !== 'Normal' ||
-                (costos.delivery !== 'NORMAL' && (
-                    <>
-                        <h6
-                            style={{
-                                color: 'red',
-                                fontWeight: 'bold',
-                                marginTop: '1rem',
-                                marginBottom: '0.5rem',
-                            }}
-                        >
-                            Tipo de Entrega
-                        </h6>
-                        <p style={{ color: 'red' }}>{costos.delivery}</p>
-                    </>
-                ))}
+            {/* {console.log(costos)} */}
+            {costos.delivery !== '' && (
+                <>
+                    <h6
+                        style={{
+                            color: 'red',
+                            fontWeight: 'bold',
+                            marginTop: '1rem',
+                            marginBottom: '0.5rem',
+                        }}
+                    >
+                        Tipo de Entrega
+                    </h6>
+                    <p style={{ color: 'red' }}>{costos.delivery}</p>
+                </>
+            )}
             <h6
                 style={{
                     color: 'gray',
