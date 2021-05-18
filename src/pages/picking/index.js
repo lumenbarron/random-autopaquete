@@ -369,14 +369,22 @@ const PickingPage = () => {
 
     function handleDirections(snapshot) {
         let allPickups = [];
+        let sortedData;
         snapshot.docs.forEach(doc => {
+            //console.log(doc.data().pickup_date, new Date(doc.data().pickup_date.replace(/-/g, '\/')))
             allPickups.push({
                 id: doc.id,
+                date: new Date(doc.data().pickup_date.replace(/-/g, '/')),
                 ...doc.data(),
             });
+            sortedData = allPickups.sort((a, b) => {
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+                // b.date - a.date
+            });
+            //console.log(sortedData)
         });
-        setPickups(allPickups);
-        setDirectionData(allPickups);
+        setPickups(sortedData);
+        setDirectionData(sortedData);
     }
 
     // useEffect(() => {
@@ -405,7 +413,7 @@ const PickingPage = () => {
         })
         .map(directions => {
             // console.log(directions);
-            const { id, pickup_date, pickup_id, shipping_company, name } = directions;
+            const { id, pickup_date, pickup_id, shipping_company, name, neighborhood } = directions;
             return (
                 <TimelineMarker
                     key={id}
@@ -413,7 +421,7 @@ const PickingPage = () => {
                     label={`Orden: ${pickup_id} , ${shipping_company}`}
                     icon={<FontAwesomeIcon icon={faCheckCircle} />}
                     datetime={pickup_date}
-                    description={name}
+                    description={`${name} , ${neighborhood}`}
                 />
             );
         });
@@ -1081,7 +1089,7 @@ const PickingPage = () => {
                 <StyledLeftPane>
                     <h4 className="mb-4">Mis recolecciones</h4>
                     <div className="timeline">
-                        <ActivityTimeline>{options}</ActivityTimeline>
+                        <ActivityTimeline style={{ height: '100vh' }}>{options}</ActivityTimeline>
                     </div>
                 </StyledLeftPane>
             </StyledPaneContainer>
