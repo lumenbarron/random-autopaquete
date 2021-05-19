@@ -2,45 +2,20 @@ import styled from 'styled-components';
 
 export const StyledRecord = styled.div`
     flex: 1 1;
+    padding: 3rem;
     background-color: #f7f7f7;
-`;
-
-export const RecordContainer = styled.div`
-    background-color: white;
-    margin:5rem;
-    padding:2rem;
-    border-radius: 3rem;
-
-    color: crimson;
-
-    -webkit-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
 
     h1 {
-        font-weight: 700;
         color: #ab0000;
+        font-weight: 700 !important;
+        padding-top: 30px;
     }
 
-    tr {
-        font-weight: 500;
-    }
-
-    th{
-        text-align: center !important;
-    }
-
-    .btn-new {
-    background-color: #AB0000;
-    color: #fff;
-    border-radius: 25px;
-    padding: 8px 16px;
-    }
-
-    .btn-new:hover {
-    background-color: #C94141;
-    color: white;
-    padding: 8px 16px;
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
     }
 
     .row-header {
@@ -60,6 +35,44 @@ export const RecordContainer = styled.div`
             }
 
     }
+`;
+
+export const RecordContainer = styled.div`
+    background-color: white;
+    padding: 2rem;
+    border-radius: 3rem;
+
+    color: crimson;
+
+    -webkit-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
+
+    h1 {
+        font-weight: 700;
+        color: #ab0000;
+    }
+
+    tr {
+        font-weight: 500;
+    }
+
+    th {
+        text-align: center !important;
+    }
+
+    .btn-new {
+        background-color: #ab0000;
+        color: #fff;
+        border-radius: 25px;
+        padding: 8px 16px;
+    }
+
+    .btn-new:hover {
+        background-color: #c94141;
+        color: white;
+        padding: 8px 16px;
+    }
 
     #main-title {
         color: #ab0000;
@@ -67,7 +80,7 @@ export const RecordContainer = styled.div`
 
     .create-button {
         border-color: transparent;
-        background-color: #00652E;
+        background-color: #00652e;
         color: white;
     }
 `;

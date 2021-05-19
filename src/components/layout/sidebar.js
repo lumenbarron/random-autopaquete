@@ -336,6 +336,7 @@ export function AccountSidebar() {
     const [avatar, setAvatar] = useState();
     const [avatarURL, setAvatarURL] = useState('');
     const [avatarName, setAvatarName] = useState('');
+    const [userSaldo, setUserSaldo] = useState('');
 
     const [modalIsOpen, setIsOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(null);
@@ -475,10 +476,11 @@ export function AccountSidebar() {
                     console.log(doc.data());
                     setAvatarURL(doc.data().avatar);
                     setAvatarName(doc.data().name);
+                    setUserSaldo(doc.data().saldo);
                     if (doc.data().saldo < 0) {
                         setCredit('Saldo : ' + ' ' + formatMoney(0, 2));
                     } else {
-                        setCredit('Saldo : ' + ' ' + formatMoney(doc.data().saldo, 2));
+                        setCredit('Saldo : ' + ' ' + formatMoney(userSaldo));
                     }
 
                     if (doc.data().status) {
@@ -497,7 +499,7 @@ export function AccountSidebar() {
                 });
             });
         }
-    }, [user]);
+    }, [user, userSaldo]);
 
     useRegularSecurity();
 
