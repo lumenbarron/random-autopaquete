@@ -216,24 +216,33 @@ const PickingPage = () => {
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
                         console.log(doc.data());
-                        typeCity.current = doc.data().sender_addresses.country;
-                        typeSupplier.current = doc.data().supplierData.cargos.shippingInfo[0];
-                        setAvailable(true);
-                        setName(doc.data().sender_addresses.name);
-                        setCP(doc.data().sender_addresses.codigo_postal);
-                        setNeighborhood(doc.data().sender_addresses.neighborhood);
-                        setStreetName(doc.data().sender_addresses.street_name);
-                        setStreetNumber(doc.data().sender_addresses.street_number);
-                        setPlaceRef(doc.data().sender_addresses.place_reference);
-                        setPhone(doc.data().sender_addresses.phone);
-                        setState({
-                            value: doc.data().sender_addresses.state,
-                            label: states[doc.data().sender_addresses.state],
-                        });
-                        setCountry(doc.data().sender_addresses.country);
-                        setSelectSupplier(doc.data().supplierData.cargos.shippingInfo[0]);
-                        // getDirections(doc.data().sender_addresses.country);
-                        setCheckBox(false);
+                        //si el id es diferente de estafeta se llenan los datos del formulario
+                        if (doc.data().supplierData.Supplier === 'estafetaEconomico') {
+                            swal.fire(
+                                '¡Oh no!',
+                                'Estafeta no cuenta con servicio de recoleccion',
+                                'error',
+                            );
+                        } else {
+                            typeCity.current = doc.data().sender_addresses.country;
+                            typeSupplier.current = doc.data().supplierData.cargos.shippingInfo[0];
+                            setAvailable(true);
+                            setName(doc.data().sender_addresses.name);
+                            setCP(doc.data().sender_addresses.codigo_postal);
+                            setNeighborhood(doc.data().sender_addresses.neighborhood);
+                            setStreetName(doc.data().sender_addresses.street_name);
+                            setStreetNumber(doc.data().sender_addresses.street_number);
+                            setPlaceRef(doc.data().sender_addresses.place_reference);
+                            setPhone(doc.data().sender_addresses.phone);
+                            setState({
+                                value: doc.data().sender_addresses.state,
+                                label: states[doc.data().sender_addresses.state],
+                            });
+                            setCountry(doc.data().sender_addresses.country);
+                            setSelectSupplier(doc.data().supplierData.cargos.shippingInfo[0]);
+                            // getDirections(doc.data().sender_addresses.country);
+                            setCheckBox(false);
+                        }
                     });
                 })
                 .catch(function(error) {
