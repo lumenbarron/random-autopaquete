@@ -76,9 +76,9 @@ export default function HistoryUser({ user }) {
     function handleHistory(querySnapshot) {
         let dataGuias = [];
         querySnapshot.forEach(doc => {
-            //console.log(doc.data().rastreo)
-            // if (doc.data().status != 'completed') {
-            //     console.log(doc.id);
+            console.log(doc.data().creation_date, doc.id);
+            //  if (doc.data().status != 'completed' || doc.data().status !== 'orden' ) {
+            //      console.log(doc.id);
             //     db.collection('guia')
             //         .doc(doc.id)
             //         .delete()
@@ -88,7 +88,7 @@ export default function HistoryUser({ user }) {
             //         .catch(function(error) {
             //             console.error('Error removing document: ', error);
             //         });
-            // }
+            //}
             dataGuias.push({
                 id: doc.id,
                 volumetricWeight: Math.ceil(
@@ -138,10 +138,10 @@ export default function HistoryUser({ user }) {
                         typeof historyRecord.rastreo != 'undefined'
                             ? historyRecord.supplierData.Supplier_cost
                             : '0.00',
-                    label:
-                        historyRecord.supplierData.Supplier === 'autoencargosEconomico'
-                            ? 'no disponible'
-                            : historyRecord.label,
+                    // label:
+                    //     historyRecord.supplierData.Supplier === 'autoencargosEconomico'
+                    //         ? 'no disponible'
+                    //         : historyRecord.label,
                     delete: (
                         <FontAwesomeIcon
                             icon={faTrashAlt}

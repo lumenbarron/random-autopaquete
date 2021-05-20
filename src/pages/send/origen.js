@@ -10,7 +10,7 @@ import { element, func } from 'prop-types';
 
 const cpRegex = RegExp(/^[0-9]{5}$/);
 const phoneRegex = RegExp(/^[0-9]{10}$/);
-// const addressRegex = RegExp(/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/);
+const addressRegex = RegExp(/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/);
 
 const states = {
     AG: 'Aguascalientes',
@@ -395,7 +395,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         let fullStreet = streetName.concat(' ', streetNumber);
         // console.log('fullStreet', fullStreet, fullStreet.length)
         //Se validan todos los inputs uno por uno
-        if (name.trim() === '') {
+        if (name.trim() === '' || !addressRegex.test(name) || name.length > 35) {
             swal.fire({
                 title: '!Lo siento!',
                 text:
@@ -416,7 +416,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             setErrorCP(false);
         }
-        if (streetName.trim() === '') {
+        if (streetName.trim() === '' || !addressRegex.test(streetName)) {
             swal.fire({
                 title: '!Lo siento!',
                 text:
@@ -432,8 +432,8 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         }
         if (
             streetNumber.trim() === '' ||
-            streetNumber.length > 10
-            // !addressRegex.test(streetNumber)
+            streetNumber.length > 10 ||
+            !addressRegex.test(streetNumber)
         ) {
             swal.fire({
                 title: '!Lo siento!',
@@ -464,7 +464,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         }
         if (
             neighborhood.trim() === '' ||
-            // !addressRegex.test(neighborhood) ||
+            !addressRegex.test(neighborhood) ||
             neighborhood.length > 35
         ) {
             swal.fire({

@@ -158,7 +158,7 @@ const RecordPage = () => {
                 {/* <div>
                     <div> */}
                 <Row className="row-header">
-                    <h1>Mis envíos</h1>
+                    <h1 id="main-title">Mis envíos</h1>
                     <ExportReactCSV data={recordsData} />
                 </Row>
                 <div>

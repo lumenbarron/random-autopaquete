@@ -19,6 +19,7 @@ export const RecordContainer = styled.div`
 
     h1 {
         font-weight: 700;
+        color: #ab0000;
     }
 
     tr {
@@ -57,5 +58,16 @@ export const RecordContainer = styled.div`
             a {
                 color: white;
             }
+
+    }
+
+    #main-title {
+        color: #ab0000;
+    }
+
+    .create-button {
+        border-color: transparent;
+        background-color: #00652E;
+        color: white;
     }
 `;
