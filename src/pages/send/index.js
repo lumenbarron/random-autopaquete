@@ -133,11 +133,11 @@ const SendPage = () => {
                         const xhr = new XMLHttpRequest();
                         xhr.responseType = 'json';
                         xhr.contentType = 'application/json';
-                        // xhr.open('POST', '/guia/fedex');
-                        xhr.open(
-                            'POST',
-                            'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
-                        );
+                        xhr.open('POST', '/guia/fedex');
+                        // xhr.open(
+                        //     'POST',
+                        //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
+                        // );
                         xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                         xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
                         //console.log('llego')
