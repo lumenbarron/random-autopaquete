@@ -591,10 +591,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         };
 
         await Promise.all([
-            // fetch(
-            //     'https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack',
-            //     requestOptions,
-            // ),
+            fetch(
+                'https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack',
+                requestOptions,
+            ),
             fetch(
                 'https://autopaquete.simplestcode.com/api/do-shipping-quote/pakke',
                 requestOptions,
@@ -607,7 +607,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .then(async ([res1, res2, res3]) => {
                 const result1 = await res1.json();
                 const result2 = await res2.json();
-                // const result3 = await res3.json();
+                const result3 = await res3.json();
                 console.log(result1, result2);
                 let result = result1.concat(result2);
 
