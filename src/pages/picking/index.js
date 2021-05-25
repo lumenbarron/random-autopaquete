@@ -313,7 +313,7 @@ const PickingPage = () => {
         let allPickups = [];
         let sortedData;
         snapshot.docs.forEach(doc => {
-            // console.log(doc.data())
+            console.log(doc.data());
             allPickups.push({
                 id: doc.id,
                 date: new Date(doc.data().pickup_date.replace(/-/g, '/')),
@@ -323,9 +323,9 @@ const PickingPage = () => {
                 return new Date(b.date).getTime() - new Date(a.date).getTime();
                 // b.date - a.date
             });
-            // console.log(sortedData, sortedData.length)
+            console.log(sortedData, sortedData.length);
 
-            if (sortedData >= 1) {
+            if (sortedData.length >= 1) {
                 setPickups(sortedData);
                 setDirectionData(sortedData);
             }
