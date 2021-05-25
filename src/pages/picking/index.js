@@ -159,7 +159,7 @@ const PickingPage = () => {
     const [tableData, setTableData] = useState();
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
     const sepomex = process.env.REACT_APP_SEPOMEX;
-    let pickedDirection;
+    let options;
     //Tracking
     //     useEffect(() => {
     //     let myHeaders = new Headers();
@@ -314,7 +314,7 @@ const PickingPage = () => {
         let allPickups = [];
         let sortedData = [];
         snapshot.docs.forEach(doc => {
-            //console.log(doc.data().pickup_date, new Date(doc.data().pickup_date.replace(/-/g, '\/')))
+            console.log(doc.data());
             allPickups.push({
                 id: doc.id,
                 date: new Date(doc.data().pickup_date.replace(/-/g, '/')),
