@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
+import { Input, CheckboxToggle, Button, CheckboxGroup } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons';
 import * as firebase from 'firebase';
@@ -16,6 +16,12 @@ import swal from 'sweetalert2';
 
 const numberRegex = RegExp(/^[0-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
+
+const optionsSuppliers = [
+    { value: 'redpack', label: 'Redpack', disabled: false },
+    { value: 'fedex', label: 'Fedex', disabled: false },
+    { value: 'pakke', label: 'Estafeta', disabled: false },
+];
 
 const PackagingRadioOption = ({ packages }) => {
     const {
@@ -71,6 +77,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
+    const [defaultSupplier, setDefaultSupplier] = useState(['fedex']);
 
     const [contentDescription, setContentDescription] = useState('');
     const [contentValue, setContentValue] = useState('');
@@ -191,7 +198,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     }, [value]);
 
     const registerDirecction = () => {
-        //console.log('creationDate', creationDate);
+        console.log('defaultSupplier', defaultSupplier);
         if (name.trim() === '') {
             setError(true);
             setErrorName(true);
@@ -311,6 +318,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         height,
                         width,
                         depth,
+                        defaultSupplier,
                         realWeight: Math.ceil(weight),
                         weight: pricedWeight,
                         content_description: contentDescription,
@@ -466,7 +474,15 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         onChange={e => setCheckBox(e.target.checked)}
                     />
                 </div>
-
+                <div className="rainbow-p-vertical_large rainbow-p-left_xx-large">
+                    <CheckboxGroup
+                        id="checkbox-group-1"
+                        label="Checkbox Group Label"
+                        options={optionsSuppliers}
+                        value={defaultSupplier}
+                        onChange={() => setDefaultSupplier(value)}
+                    />
+                </div>
                 {errorNameDuplicate && (
                     <div className="pl-4">
                         <span className="alert-error">El nombre ya se encuentra registrado</span>

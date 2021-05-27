@@ -91,6 +91,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
     const [error, setError] = useState(false);
+    const [defaultSupplier, setDefaultSupplier] = useState();
 
     const [profileDoc, setProfileDoc] = useState(false);
 
@@ -350,6 +351,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     setRealWeight(doc.data().package.realWeight);
                     setQuantity(doc.data().package.quantity);
                     setContentValue(doc.data().package.content_value);
+                    setDefaultSupplier(doc.data().package.defaultSupplier);
                 }
             });
     }, []);
@@ -426,42 +428,50 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         setHasActivatedSuppliers(querySnapshot.size > 0);
 
                         //Se verifica que si las tarifas tienen el proveedor asignado
-                        allRatesData.current.forEach(supplier => {
-                            if (
-                                supplier.entrega === 'fedexDiaSiguiente' ||
-                                supplier.entrega === 'fedexEconomico'
-                            ) {
-                                // console.log('si hay fedex');
-                                supplerFedex = true;
-                            } else if (
-                                supplier.entrega === 'redpackExpress' ||
-                                supplier.entrega === 'redpackEcoExpress'
-                            ) {
-                                // console.log('si hay redpack');
-                                supplierRedpack = true;
-                            } else if (
-                                supplier.entrega === 'estafetaDiaSiguiente' ||
-                                supplier.entrega === 'estafetaEconomico'
-                            ) {
-                                supplierEstafeta = true;
-                            }
-                        });
+                        // allRatesData.current.forEach(supplier => {
+                        //     if (
+                        //         supplier.entrega === 'fedexDiaSiguiente' ||
+                        //         supplier.entrega === 'fedexEconomico'
+                        //     ) {
+                        //         // console.log('si hay fedex');
+                        //         supplerFedex = true;
+                        //     } else if (
+                        //         supplier.entrega === 'redpackExpress' ||
+                        //         supplier.entrega === 'redpackEcoExpress'
+                        //     ) {
+                        //         // console.log('si hay redpack');
+                        //         supplierRedpack = true;
+                        //     } else if (
+                        //         supplier.entrega === 'estafetaDiaSiguiente' ||
+                        //         supplier.entrega === 'estafetaEconomico'
+                        //     ) {
+                        //         supplierEstafeta = true;
+                        //     }
+                        // });
 
-                        if (!supplerFedex && !supplierEstafeta && supplierRedpack) {
-                            delivery_company.current = 'redpack';
-                        } else if (!supplerFedex && supplierEstafeta && !supplierRedpack) {
-                            delivery_company.current = 'estafeta';
-                        } else if (supplerFedex && !supplierEstafeta && !supplierRedpack) {
-                            delivery_company.current = 'fedex';
-                        } else {
-                            delivery_company.current = '';
-                        }
-                        getDataGuia(delivery_company.current);
+                        // if (!supplerFedex && !supplierEstafeta && supplierRedpack) {
+                        //     delivery_company.current = 'redpack';
+                        // } else if (!supplerFedex && supplierEstafeta && !supplierRedpack) {
+                        //     delivery_company.current = 'estafeta';
+                        // } else if (supplerFedex && !supplierEstafeta && !supplierRedpack) {
+                        //     delivery_company.current = 'fedex';
+                        // } else {
+                        //     delivery_company.current = '';
+                        // }
+                        // getDataGuia(delivery_company.current);
                     });
                 });
         };
         getRates();
     }, [user]);
+
+    useEffect(() => {
+        //Se extraen los provedores de la colecccion rate del perfil del usuario
+        if (defaultSupplier) {
+            console.log('defaultSupplier', defaultSupplier);
+            getDataGuia(defaultSupplier);
+        }
+    }, [defaultSupplier]);
 
     const getDataGuia = async delivery => {
         await db
@@ -589,7 +599,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             body: data,
             redirect: 'follow',
         };
-
+        console.log(delivery);
         // await Promise.all([
         //     fetch(
         //         'https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack',
