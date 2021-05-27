@@ -98,7 +98,7 @@ const AdminUsersPage = () => {
 
     function handleProfiles(snapshot) {
         const data = snapshot.docs.map(doc => {
-            //console.log(doc.data().ID, doc.data().name);
+            console.log(doc.id, doc.data().razon_social);
             let profile = {
                 id: doc.id,
                 fullname: doc.data().name + ' ' + doc.data().lastname,

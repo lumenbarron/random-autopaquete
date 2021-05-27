@@ -159,7 +159,7 @@ const PickingPage = () => {
     const [tableData, setTableData] = useState();
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
     const sepomex = process.env.REACT_APP_SEPOMEX;
-    let options;
+    // let options;
     //Tracking
     //     useEffect(() => {
     //     let myHeaders = new Headers();
