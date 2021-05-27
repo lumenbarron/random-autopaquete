@@ -138,16 +138,16 @@ export default function HistoryUser({ user }) {
                         typeof historyRecord.rastreo != 'undefined'
                             ? historyRecord.supplierData.Supplier_cost
                             : '0.00',
-                    // label:
-                    //     historyRecord.supplierData.Supplier === 'autoencargosEconomico'
-                    //         ? 'no disponible'
-                    //         : historyRecord.label,
-                    delete: (
-                        <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            onClick={() => deleteGuia(historyRecord.id)}
-                        />
-                    ),
+                    label:
+                        historyRecord.supplierData.Supplier === 'autoencargosEconomico'
+                            ? 'no disponible'
+                            : historyRecord.label,
+                    // delete: (
+                    //     <FontAwesomeIcon
+                    //         icon={faTrashAlt}
+                    //         onClick={() => deleteGuia(historyRecord.id)}
+                    //     />
+                    // ),
                 };
             }),
         );
