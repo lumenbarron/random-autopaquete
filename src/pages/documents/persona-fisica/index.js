@@ -5,7 +5,7 @@ import { useFirebaseApp, useUser } from 'reactfire';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled';
 import * as firebase from 'firebase';
 import 'firebase/storage';
-
+import swal from 'sweetalert2';
 const phoneRegex = RegExp(/^[0-9]{10}$/);
 const rfcRegex = RegExp(
     /^([A-ZÑ\x26]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1]))((-)?([A-Z\d]{3}))?$/,
@@ -14,6 +14,7 @@ const ineRegex = RegExp(/^[0-9]{13}$/);
 
 const TabPersonaFisica = () => {
     const [userName, setUserName] = useState('');
+    const [idUser, setIdUser] = useState('');
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
@@ -26,6 +27,7 @@ const TabPersonaFisica = () => {
     const [fileDomicilio, setFileAddress] = useState('');
 
     const [error, setError] = useState(false);
+    const [errorIdUser, setErrorIdUser] = useState(false);
     const [errorName, setErrorName] = useState(false);
     const [errorAddress, setErrorAddress] = useState(false);
     const [errorPhone, setErrorPhone] = useState(false);
@@ -54,6 +56,7 @@ const TabPersonaFisica = () => {
     let urlDomicilio = '';
     let urlIne = '';
     let urlFiscal = '';
+    let idExists = '';
 
     useEffect(() => {
         db.collection('profiles')
@@ -181,9 +184,31 @@ const TabPersonaFisica = () => {
             });
     };
 
+    const idCheck = () => {
+        console.log('checando id');
+        db.collection('profiles')
+            .where('idClient', '==', idUser)
+            .get()
+            .then(function(querySnapshot) {
+                console.log('id Existe');
+                idExists = true;
+            })
+            .catch(function(error) {
+                console.log('id no Existe');
+                idExists = false;
+            });
+    };
+
     const register = e => {
         console.log('registrando');
         e.preventDefault();
+        if (idUser === undefined || idUser.trim() === '') {
+            setErrorIdUser(true);
+            setError(true);
+            return;
+        } else {
+            setErrorIdUser(false);
+        }
         if (name === undefined || name.trim() === '') {
             setErrorName(true);
             setError(true);
@@ -247,49 +272,57 @@ const TabPersonaFisica = () => {
         } else {
             setErrorFileDomicilio(false);
         }
+        // function check id client "incrementa": modify variable idExist (TRUE O FALSE)
+        idCheck();
+        console.log(idExists);
 
-        setError(false);
-        setCorrectRegister(true);
-        let fileName = '';
-        let filePath = '';
-        filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
-        filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
-        filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
-        if (fileDomicilio) {
-            fileName = fileDomicilio[0].name;
-            filePath = `documentation/${user.uid}/${fileName}`;
-            firebase
-                .storage()
-                .ref(filePath)
-                .put(fileDomicilio[0])
-                .then(snapshot => {
-                    uploadedFiles += 1;
-                    saveURL();
-                });
-        }
-        if (fileIne) {
-            fileName = fileIne[0].name;
-            filePath = `documentation/${user.uid}/${fileName}`;
-            firebase
-                .storage()
-                .ref(filePath)
-                .put(fileIne[0])
-                .then(snapshot => {
-                    uploadedFiles += 1;
-                    saveURL();
-                });
-        }
-        if (fileFiscal) {
-            fileName = fileFiscal[0].name;
-            filePath = `documentation/${user.uid}/${fileName}`;
-            firebase
-                .storage()
-                .ref(filePath)
-                .put(fileFiscal[0])
-                .then(snapshot => {
-                    uploadedFiles += 1;
-                    saveURL();
-                });
+        if (idExists === true) {
+            console.log('advertencia el id existe');
+            swal.fire('¡Oh no!', 'El id ya está registrado en la plataforma', 'error');
+        } else {
+            setError(false);
+            setCorrectRegister(true);
+            let fileName = '';
+            let filePath = '';
+            filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
+            filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
+            filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
+            if (fileDomicilio) {
+                fileName = fileDomicilio[0].name;
+                filePath = `documentation/${user.uid}/${fileName}`;
+                firebase
+                    .storage()
+                    .ref(filePath)
+                    .put(fileDomicilio[0])
+                    .then(snapshot => {
+                        uploadedFiles += 1;
+                        saveURL();
+                    });
+            }
+            if (fileIne) {
+                fileName = fileIne[0].name;
+                filePath = `documentation/${user.uid}/${fileName}`;
+                firebase
+                    .storage()
+                    .ref(filePath)
+                    .put(fileIne[0])
+                    .then(snapshot => {
+                        uploadedFiles += 1;
+                        saveURL();
+                    });
+            }
+            if (fileFiscal) {
+                fileName = fileFiscal[0].name;
+                filePath = `documentation/${user.uid}/${fileName}`;
+                firebase
+                    .storage()
+                    .ref(filePath)
+                    .put(fileFiscal[0])
+                    .then(snapshot => {
+                        uploadedFiles += 1;
+                        saveURL();
+                    });
+            }
         }
     };
     return (
@@ -302,10 +335,21 @@ const TabPersonaFisica = () => {
                 <div style={{ flex: '1 1' }}>
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
                         <Input
+                            id="idCliente"
+                            label="Id Cliente"
+                            name="idCliente"
+                            value={idUser}
+                            className={`rainbow-p-around_medium ${
+                                errorIdUser ? 'empty-space' : ''
+                            }`}
+                            style={{ width: '90%' }}
+                            onChange={ev => setIdUser(ev.target.value)}
+                        />
+                        <Input
                             id="nombreCompleto"
                             label="Nombre Completo"
                             name="nombreCompleto"
-                            // value={name}
+                            //value={name}
                             className={`rainbow-p-around_medium ${errorName ? 'empty-space' : ''}`}
                             style={{ width: '90%' }}
                             onChange={ev => setName(ev.target.value)}
