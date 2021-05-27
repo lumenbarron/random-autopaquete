@@ -119,7 +119,9 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [checkBox, setCheckBox] = useState(true);
 
+    const [userId, setUserId] = useState('');
     const [userName, setUserName] = useState('');
+    const [userLastName, setUserLastName] = useState('');
     const [status, setStatus] = useState();
     const [registerSAT, setRegisterSAT] = useState('');
     const sepomex = process.env.REACT_APP_SEPOMEX;
@@ -375,6 +377,8 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                     querySnapshot.forEach(function(doc) {
                         // console.log('primer data', doc.data(), doc.id);
                         setUserName(doc.data().name);
+                        setUserLastName(doc.data().lastname);
+                        setUserId(doc.data().idClient);
                         setStatus(doc.data().status);
                         if (doc.data().persona === 'Física') {
                             setRegisterSAT(doc.data().nombre_fiscal);
@@ -563,6 +567,8 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         const directionsGuiasCollectionAdd = db.collection('guia').add({
             ID: user.uid,
             name: userName,
+            lastname: userLastName,
+            idClient: userId,
             razon_social: registerSAT,
             creation_date: creationDate,
             status: 'incomplete',
@@ -610,7 +616,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         directionsGuiasCollectionAdd
             .then(function(docRef) {
                 idGuia = docRef.id;
-                //console.log('Se crea y se guarda el id de la guía', idGuia);
+                console.log('Se crea y se guarda el id de la guía', idGuia);
                 onSave({ idGuia });
             })
             .catch(function(error) {

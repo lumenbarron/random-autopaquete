@@ -8,6 +8,7 @@ import * as firebase from 'firebase';
 export default function InfoGeneral({ user }) {
     const [lastname, setLastName] = useState('');
     const [name, setName] = useState('');
+    const [idClient, setIdClient] = useState('');
     const [status, setStatus] = useState('');
     const [saldo, setSaldo] = useState('');
     const [email, setEmail] = useState('');
@@ -74,6 +75,7 @@ export default function InfoGeneral({ user }) {
     useEffect(() => {
         setName(user.name);
         setLastName(user.lastname);
+        setIdClient(user.idClient);
         setStatus(user.status ? user.status : 'En Revisión');
         setSaldo(user.saldo ? user.saldo : '0');
         setPhone(user.telefono);
@@ -232,7 +234,7 @@ export default function InfoGeneral({ user }) {
                                 className="rainbow-p-around_medium"
                                 style={{ width: '100%' }}
                                 value={name}
-                                onChange={ev => setName(ev.target.value)}
+                                // onChange={ev => setName(ev.target.value)}
                                 readOnly
                             />
                             <Input
@@ -241,7 +243,16 @@ export default function InfoGeneral({ user }) {
                                 className="rainbow-p-around_medium"
                                 style={{ width: '100%' }}
                                 value={lastname}
-                                onChange={ev => setLastName(ev.target.value)}
+                                // onChange={ev => setLastName(ev.target.value)}
+                                readOnly
+                            />
+                            <Input
+                                id="idCliente"
+                                label="Id Cliente"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={idClient}
+                                // onChange={ev => setLastName(ev.target.value)}
                                 readOnly
                             />
                             <Input
@@ -305,7 +316,8 @@ export default function InfoGeneral({ user }) {
                                 className="rainbow-p-around_medium"
                                 style={{ width: '100%' }}
                                 value={name}
-                                onChange={ev => setName(ev.target.value)}
+                                // onChange={ev => setName(ev.target.value)}
+                                readOnly
                             />
                             <Input
                                 id="apellido"
@@ -313,7 +325,17 @@ export default function InfoGeneral({ user }) {
                                 className="rainbow-p-around_medium"
                                 style={{ width: '100%' }}
                                 value={lastname}
-                                onChange={ev => setLastName(ev.target.value)}
+                                // onChange={ev => setLastName(ev.target.value)}
+                                readOnly
+                            />
+                            <Input
+                                id="idCliente"
+                                label="Id Cliente"
+                                className="rainbow-p-around_medium"
+                                style={{ width: '100%' }}
+                                value={idClient}
+                                // onChange={ev => setLastName(ev.target.value)}
+                                readOnly
                             />
                             <Input
                                 id="domicilio"
