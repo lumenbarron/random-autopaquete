@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, CheckboxToggle, Button, CheckboxGroup } from 'react-rainbow-components';
+import { Input, CheckboxToggle, Button, CheckboxGroup, Select } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons';
 import * as firebase from 'firebase';
@@ -18,9 +18,10 @@ const numberRegex = RegExp(/^[0-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
 
 const optionsSuppliers = [
-    { value: 'redpack', label: 'Redpack', disabled: false },
-    { value: 'fedex', label: 'Fedex', disabled: false },
-    { value: 'pakke', label: 'Estafeta', disabled: false },
+    { value: 'fedex', label: 'Fedex' },
+    { value: 'pakke', label: 'Estafeta' },
+    { value: 'redpack', label: 'Redpack' },
+    { value: '', label: 'Todas las paqueterias' },
 ];
 
 const PackagingRadioOption = ({ packages }) => {
@@ -77,7 +78,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
-    const [defaultSupplier, setDefaultSupplier] = useState(['fedex']);
+    const [defaultSupplier, setDefaultSupplier] = useState('fedex');
 
     const [contentDescription, setContentDescription] = useState('');
     const [contentValue, setContentValue] = useState('');
@@ -334,6 +335,11 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
         }
     };
 
+    const selectCheck = defaultSupplier => {
+        setDefaultSupplier(defaultSupplier);
+        console.log(defaultSupplier, 'holi');
+    };
+
     return (
         <StyledPaneContainer>
             <StyledLeftPane>
@@ -475,12 +481,21 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                     />
                 </div>
                 <div className="rainbow-p-vertical_large rainbow-p-left_xx-large">
-                    <CheckboxGroup
+                    {/* <CheckboxGroup
                         id="checkbox-group-1"
                         label="Checkbox Group Label"
                         options={optionsSuppliers}
                         value={defaultSupplier}
-                        onChange={() => setDefaultSupplier(value)}
+                        onChange={(value) => setDefaultSupplier(value)}
+                    /> */}
+                    <Select
+                        label="Paquetería"
+                        required
+                        // error="este campo es obligatorio"
+                        options={optionsSuppliers}
+                        value={defaultSupplier}
+                        //className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                        onChange={ev => setDefaultSupplier(ev.target.value)}
                     />
                 </div>
                 {errorNameDuplicate && (

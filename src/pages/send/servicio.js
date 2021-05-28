@@ -467,7 +467,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         //Se extraen los provedores de la colecccion rate del perfil del usuario
-        if (defaultSupplier) {
+        if (defaultSupplier || defaultSupplier === '') {
             console.log('defaultSupplier', defaultSupplier);
             getDataGuia(defaultSupplier);
         }
@@ -590,6 +590,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     const fetchGuia = async (data, delivery) => {
+        let urlsList = [];
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
         myHeaders.append('Content-Type', 'application/json');
@@ -600,6 +601,19 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             redirect: 'follow',
         };
         console.log(delivery);
+
+        // if (delivery.includes('fedex')) {
+        //     urlsList.push('https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex')
+        // } if (delivery.includes('redpack')) {
+        //     urlsList.push('https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack')
+        // } if (delivery.includes('pakke')) {
+        //     urlsList.push('https://autopaquete.simplestcode.com/api/do-shipping-quote/pakke')
+        // }
+        // console.log('urlsList', urlsList);
+
+        // await Promise.all(urlsList.map( url => fetch(url, requestOptions)))
+        //.then(async (response) => await Promise.all(response.map( res => res.json())))
+
         // await Promise.all([
         //     fetch(
         //         'https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack',
@@ -614,14 +628,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         //         requestOptions,
         //     ),
         // ])
-        //     .then(async ([res1, res2, res3]) => {
-        //         const result1 = await res1.json();
-        //         const result2 = await res2.json();
-        //         const result3 = await res3.json();
-        //         console.log(result1, result2, result3);
-        //         let result = result1.concat(result2, result3);
+        // .then(async ([res1]) => {
+        //     const result = await res1.json();
+        //     // const result2 = await res2.json();
+        //     // const result3 = await res3.json();
+        //     console.log(result1);
+        //     let result = result1.concat(result1);
 
-        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/`;
+        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${delivery}`;
         console.log('url', urlRequest);
 
         fetch(urlRequest, requestOptions)
