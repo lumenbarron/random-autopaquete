@@ -5,8 +5,10 @@ import { Button } from 'react-rainbow-components';
 export default function ExportReactCSV({ data }) {
     // console.log('data csv', data);
     const headers = [
-        { label: 'ID', key: 'id' },
+        { label: 'ID Firebase', key: 'id' },
+        { label: 'ID Cliente', key: 'idClient' },
         { label: 'Nombre', key: 'name' },
+        { label: 'Razon Social', key: 'razon_social' },
         { label: 'Fecha', key: 'package.creation_date' },
         { label: 'Guia', key: 'rastreo' },
         { label: 'Nombre Origen', key: 'sender_addresses.name' },

@@ -21,6 +21,7 @@ const optionsSuppliers = [
     { value: 'fedex', label: 'Fedex' },
     { value: 'pakke', label: 'Estafeta' },
     { value: 'redpack', label: 'Redpack' },
+    { value: 'autoencargos', label: 'AutoEncargos' },
     { value: '', label: 'Todas las paqueterias' },
 ];
 
@@ -78,7 +79,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
-    const [defaultSupplier, setDefaultSupplier] = useState('fedex');
+    const [defaultSupplier, setDefaultSupplier] = useState('redpack');
 
     const [contentDescription, setContentDescription] = useState('');
     const [contentValue, setContentValue] = useState('');
@@ -111,6 +112,23 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             }
         }
     }, [idGuiaGlobal]);
+
+    useEffect(() => {
+        if (user) {
+            db.collection('profiles')
+                .where('ID', '==', user.uid)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        // console.log('primer data', doc.data(), doc.id);
+                        setDefaultSupplier(doc.data().defaultSupplier);
+                    });
+                })
+                .catch(function(error) {
+                    console.log('Error getting documents: ', error);
+                });
+        }
+    }, []);
 
     useEffect(() => {
         const reloadDirectios = () => {
