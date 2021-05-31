@@ -160,6 +160,7 @@ const PickingPage = () => {
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
     const sepomex = process.env.REACT_APP_SEPOMEX;
     //let options;
+
     //Tracking
     //     useEffect(() => {
     //     let myHeaders = new Headers();
