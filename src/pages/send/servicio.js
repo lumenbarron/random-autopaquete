@@ -471,32 +471,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         };
         console.log(supplier);
 
-
         if (supplier === 'autoencargos') {
             supplier = 'fedex';
         }
-
-        // await Promise.all([
-        //      fetch(
-        //          'https://autopaquete.simplestcode.com/api/do-shipping-quote/redpack',
-        //          requestOptions,
-        //      ),
-        //     fetch(
-        //         'https://autopaquete.simplestcode.com/api/do-shipping-quote/pakke',
-        //         requestOptions,
-        //     ),
-        //     fetch(
-        //         'https://autopaquete.simplestcode.com/api/do-shipping-quote/fedex',
-        //         requestOptions,
-        //     ),
-        // ])
-        //     .then(async ([res1, res2, res3]) => {
-        //         const result1 = await res1.json();
-        //         const result2 = await res2.json();
-        //         const result3 = await res3.json();
-        //         console.log(result1, result2);
-        //         let result = result1.concat(result2);
-
 
         const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${supplier}`;
         console.log('url', urlRequest);
