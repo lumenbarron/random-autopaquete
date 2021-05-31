@@ -79,7 +79,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
-    const [defaultSupplier, setDefaultSupplier] = useState('redpack');
+    const [defaultSupplier, setDefaultSupplier] = useState('fedex');
 
     const [contentDescription, setContentDescription] = useState('');
     const [contentValue, setContentValue] = useState('');
