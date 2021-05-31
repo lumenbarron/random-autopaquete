@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Input, FileSelector, DatePicker } from 'react-rainbow-components';
-import { useFirebaseApp, useUser } from 'reactfire';
+import { checkIdField, useFirebaseApp, useUser } from 'reactfire';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled';
 import * as firebase from 'firebase';
 import 'firebase/storage';
@@ -56,7 +56,6 @@ const TabPersonaFisica = () => {
     let urlDomicilio = '';
     let urlIne = '';
     let urlFiscal = '';
-    let idExists = '';
 
     useEffect(() => {
         db.collection('profiles')
@@ -64,6 +63,7 @@ const TabPersonaFisica = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
+                    setIdUser(doc.data().idClient);
                     setUserName(doc.data().name);
                     setName(doc.data().nombre_fiscal);
                     setAddress(doc.data().direccion);
@@ -90,6 +90,7 @@ const TabPersonaFisica = () => {
 
                     if (uploadedFiles === filesToUpload) {
                         const userData = {
+                            idClient: idUser,
                             nombre_fiscal: name,
                             direccion: address,
                             telefono: phone,
@@ -184,21 +185,6 @@ const TabPersonaFisica = () => {
             });
     };
 
-    const idCheck = () => {
-        console.log('checando id');
-        db.collection('profiles')
-            .where('idClient', '==', idUser)
-            .get()
-            .then(function(querySnapshot) {
-                console.log('id Existe');
-                idExists = true;
-            })
-            .catch(function(error) {
-                console.log('id no Existe');
-                idExists = false;
-            });
-    };
-
     const register = e => {
         console.log('registrando');
         e.preventDefault();
@@ -272,58 +258,69 @@ const TabPersonaFisica = () => {
         } else {
             setErrorFileDomicilio(false);
         }
-        // function check id client "incrementa": modify variable idExist (TRUE O FALSE)
-        idCheck();
-        console.log(idExists);
-
-        if (idExists === true) {
-            console.log('advertencia el id existe');
-            swal.fire('¡Oh no!', 'El id ya está registrado en la plataforma', 'error');
-        } else {
-            setError(false);
-            setCorrectRegister(true);
-            let fileName = '';
-            let filePath = '';
-            filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
-            filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
-            filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
-            if (fileDomicilio) {
-                fileName = fileDomicilio[0].name;
-                filePath = `documentation/${user.uid}/${fileName}`;
-                firebase
-                    .storage()
-                    .ref(filePath)
-                    .put(fileDomicilio[0])
-                    .then(snapshot => {
-                        uploadedFiles += 1;
-                        saveURL();
-                    });
-            }
-            if (fileIne) {
-                fileName = fileIne[0].name;
-                filePath = `documentation/${user.uid}/${fileName}`;
-                firebase
-                    .storage()
-                    .ref(filePath)
-                    .put(fileIne[0])
-                    .then(snapshot => {
-                        uploadedFiles += 1;
-                        saveURL();
-                    });
-            }
-            if (fileFiscal) {
-                fileName = fileFiscal[0].name;
-                filePath = `documentation/${user.uid}/${fileName}`;
-                firebase
-                    .storage()
-                    .ref(filePath)
-                    .put(fileFiscal[0])
-                    .then(snapshot => {
-                        uploadedFiles += 1;
-                        saveURL();
-                    });
-            }
-        }
+        //if idClient exist no save data
+        db.collection('profiles')
+            .where('idClient', '==', idUser.trim())
+            .get()
+            .then(function(querySnapshot) {
+                if (!querySnapshot.empty) {
+                    console.log('Usuario Existe:' + idUser.trim() + ' Bloquenado registro');
+                    swal.fire('¡Oh no!', 'El id ya está registrado en la plataforma', 'error');
+                } else {
+                    console.log('Usuario No Existe:' + idUser.trim() + ' Creando registro');
+                    setError(false);
+                    setCorrectRegister(true);
+                    let fileName = '';
+                    let filePath = '';
+                    filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
+                    filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
+                    filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
+                    if (fileDomicilio) {
+                        fileName = fileDomicilio[0].name;
+                        filePath = `documentation/${user.uid}/${fileName}`;
+                        firebase
+                            .storage()
+                            .ref(filePath)
+                            .put(fileDomicilio[0])
+                            .then(snapshot => {
+                                uploadedFiles += 1;
+                                saveURL();
+                            });
+                    }
+                    if (fileIne) {
+                        fileName = fileIne[0].name;
+                        filePath = `documentation/${user.uid}/${fileName}`;
+                        firebase
+                            .storage()
+                            .ref(filePath)
+                            .put(fileIne[0])
+                            .then(snapshot => {
+                                uploadedFiles += 1;
+                                saveURL();
+                            });
+                    }
+                    if (fileFiscal) {
+                        fileName = fileFiscal[0].name;
+                        filePath = `documentation/${user.uid}/${fileName}`;
+                        firebase
+                            .storage()
+                            .ref(filePath)
+                            .put(fileFiscal[0])
+                            .then(snapshot => {
+                                uploadedFiles += 1;
+                                saveURL();
+                            });
+                    }
+                }
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+                swal.fire(
+                    '¡Oh no!',
+                    'Error al conectar con la base de datos, intenta mas tarde',
+                    'error',
+                );
+            });
     };
     return (
         <StyledTabContent
