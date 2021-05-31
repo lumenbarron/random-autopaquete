@@ -91,6 +91,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [quantity, setQuantity] = useState('');
     const [contentValue, setContentValue] = useState('');
     const [error, setError] = useState(false);
+    const [defaultSupplier, setDefaultSupplier] = useState();
 
     const [profileDoc, setProfileDoc] = useState(false);
 
@@ -148,15 +149,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const registerService = (supplier, type, { id, precio, ...cargos }) => {
         const precioNeto = precio * 1.16;
-        //console.log('supplier', supplier);
-        // console.log('cargos', cargos);
         db.collection('profiles')
             .where('ID', '==', user.uid)
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    // console.log(doc.id, ' => ', doc.data());
-                    // console.log(idGuiaGlobal, 'idGuiaGlobal');
                     if (parseFloat(precioNeto) > parseFloat(doc.data().saldo)) {
                         setError(true);
                     } else {
@@ -166,19 +163,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         if (newBalance < 0) {
                             return false;
                         }
-                        // console.log('precioNeto', precioNeto);
-                        // console.log('updating data');
                         addSupplier(supplier, type, { id, precioNeto, ...cargos });
-
-                        // console.log('newBalance', newBalance);
-                        // console.log('restando el saldo');
-                        // db.collection('profiles')
-                        //     .doc(doc.id)
-                        //     .update({ saldo: newBalance })
-                        //     .then(() => {
-                        //         console.log('get it');
-                        //         addSupplier(supplier, type, { id, precioNeto, ...cargos });
-                        //     });
                     }
                     if (supplier === 'autoencargos') {
                         addRastreoAuto(idGuiaGlobal);
@@ -232,7 +217,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     .then(doc => {
                         setError(false);
                         const tarifa = doc.data();
-                        // console.log(tarifa);
                         supplierData = {
                             ID: user.uid,
                             Supplier: `${supplier}${type}`,
@@ -250,64 +234,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 console.log('Document written with ID: ');
                                 console.log(idGuiaGlobal, 'idGuiaGlobal');
                                 history.push('/mi-cuenta/ordenes');
-                                // getData();
                             });
                     });
             });
     };
-
-    const getData = () => {
-        db.collection('guia')
-            .doc(idGuiaGlobal)
-            .get()
-            .then(doc => {
-                console.log(doc.data());
-                const {
-                    ID,
-                    receiver_addresses: rAddress,
-                    sender_addresses: sAddress,
-                    // package : package
-                    supplierData,
-                    razon_social,
-                    name,
-                    creation_date,
-                } = doc.data();
-
-                db.collection('ordenes')
-                    .add({
-                        ID,
-                        receiver_addresses: rAddress,
-                        sender_addresses: sAddress,
-                        supplierData,
-                        razon_social,
-                        name,
-                        creation_date,
-                        package: doc.data().package,
-                        status: 'completed',
-                    })
-                    .then(docRef => {
-                        console.log('Document written with ID: ', docRef.id);
-                        history.push('/mi-cuenta/ordenes');
-                        // deleteUnusableGuia()
-                    })
-                    .catch(error => {
-                        console.error('Error adding document: ', error);
-                    });
-            });
-    };
-
-    // const deleteUnusableGuia = () => {
-    //     console.log(idGuiaGlobal, 'idGuiaGlobal');
-    //     db.collection('guia')
-    //     .doc(idGuiaGlobal)
-    //     .delete()
-    //     .then(function() {
-    //         console.log('borrando guia inutilizable', idGuiaGlobal);
-    //     })
-    //     .catch(function(error) {
-    //         console.error('Error removing document: ', error);
-    //     });
-    // }
 
     const addRastreoAuto = idGuiaGlobal => {
         let guiaAutoencargos = Math.floor(Math.random() * 1000000).toString();
@@ -350,6 +280,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     setRealWeight(doc.data().package.realWeight);
                     setQuantity(doc.data().package.quantity);
                     setContentValue(doc.data().package.content_value);
+                    setDefaultSupplier(doc.data().package.defaultSupplier);
                 }
             });
     }, []);
@@ -392,15 +323,15 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     (cpReceiver === true && cpSenderExt === true) ||
                     (cpReceiverExt === true && cpSenderExt === true)
                 ) {
-                    //console.log('codigos postales ZE ZMG');
+                    console.log('codigos postales ZE ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = true;
                 } else if (cpReceiver === true && cpSender === true) {
-                    //console.log('codigos postales ZMG');
+                    console.log('codigos postales ZMG');
                     cpsAvailabilityAutoencargos.current = true;
                     cpsAvailabilityZEAutoencargos.current = false;
                 } else {
-                    //console.log('codigos no postales ZMG');
+                    console.log('codigos no postales ZMG');
                     cpsAvailabilityAutoencargos.current = false;
                 }
             })
@@ -418,52 +349,24 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     setProfileDoc(profile.docs[0]);
                     profile.docs[0].ref.collection('rate').onSnapshot(querySnapshot => {
                         querySnapshot.forEach(doc => {
-                            //console.log(doc.id, " => ", doc.data());
                             //allRates asigna todos las tairfas que tiene el usario
                             allRatesData.current.push(doc.data());
                         });
-                        //setHasActivatedSuppliers asigna a hasActivatedSuppliers el numero de doc de rate para que se muestren los provedores
                         setHasActivatedSuppliers(querySnapshot.size > 0);
-
-                        //Se verifica que si las tarifas tienen el proveedor asignado
-                        allRatesData.current.forEach(supplier => {
-                            if (
-                                supplier.entrega === 'fedexDiaSiguiente' ||
-                                supplier.entrega === 'fedexEconomico'
-                            ) {
-                                // console.log('si hay fedex');
-                                supplerFedex = true;
-                            } else if (
-                                supplier.entrega === 'redpackExpress' ||
-                                supplier.entrega === 'redpackEcoExpress'
-                            ) {
-                                // console.log('si hay redpack');
-                                supplierRedpack = true;
-                            } else if (
-                                supplier.entrega === 'estafetaDiaSiguiente' ||
-                                supplier.entrega === 'estafetaEconomico'
-                            ) {
-                                supplierEstafeta = true;
-                            }
-                        });
-
-                        if (!supplerFedex && !supplierEstafeta && supplierRedpack) {
-                            delivery_company.current = 'redpack';
-                        } else if (!supplerFedex && supplierEstafeta && !supplierRedpack) {
-                            delivery_company.current = 'estafeta';
-                        } else if (supplerFedex && !supplierEstafeta && !supplierRedpack) {
-                            delivery_company.current = 'fedex';
-                        } else {
-                            delivery_company.current = '';
-                        }
-                        getDataGuia(delivery_company.current);
                     });
                 });
         };
         getRates();
     }, [user]);
 
-    const getDataGuia = async delivery => {
+    useEffect(() => {
+        if (defaultSupplier || defaultSupplier === '') {
+            console.log('defaultSupplier', defaultSupplier);
+            getDataGuia(defaultSupplier);
+        }
+    }, [defaultSupplier]);
+
+    const getDataGuia = async supplier => {
         await db
             .collection('guia')
             .doc(idGuiaGlobal)
@@ -512,21 +415,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     doc.data().package.depth != '' ? doc.data().package.depth : 1,
                                 weight:
                                     doc.data().package.weight != '' ? doc.data().package.weight : 1,
-                                // weight:
-                                //     doc.data().package.weight >
-                                //     Math.ceil(
-                                //         (doc.data().package.height *
-                                //             doc.data().package.width *
-                                //             doc.data().package.depth) /
-                                //             5000,
-                                //     )
-                                //         ? doc.data().package.weight
-                                //         : Math.ceil(
-                                //               (doc.data().package.height *
-                                //                   doc.data().package.width *
-                                //                   doc.data().package.depth) /
-                                //                   5000,
-                                //           ),
                                 content_description:
                                     doc.data().package.content_description != ''
                                         ? doc.data().package.content_description
@@ -538,20 +426,14 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             },
                         ],
                     });
-
-                    // console.log(allRatesData.current.length, 'allRatesData');
-                    fetchApiFedex(dataShipping.current, delivery);
-                    //fetchApiFedex();
-                    //fetchGuia(dataShipping.current, delivery);
-
-                    // console.log('dataShipping.current', dataShipping.current);
+                    fetchApiFedex(dataShipping.current, supplier);
                 } else {
                     console.log('Error getting document:', error);
                 }
             });
     };
 
-    const fetchApiFedex = (data, delivery) => {
+    const fetchApiFedex = (data, supplier) => {
         //console.log('peticion a la API estafeta');
         user.getIdToken().then(idToken => {
             const xhr = new XMLHttpRequest();
@@ -567,19 +449,17 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             xhr.onreadystatechange = () => {
                 // console.log('la wea weona', xhr.readyState);
                 if (xhr.readyState === 4) {
-                    //console.log('la wea weona llego', xhr.response);
-                    //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
-                    //let suppliersGeneral = xhr.response;
                     console.log(xhr.response);
                     supplierExtendedAreaUs = xhr.response;
                     //supplierAvailabilityGeneralUs = xhr.response;
-                    fetchGuia(data, delivery);
+                    fetchGuia(data, supplier);
                 }
             };
         });
     };
 
-    const fetchGuia = async (data, delivery) => {
+    const fetchGuia = async (data, supplier) => {
+        let suppliersGeneral;
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
         myHeaders.append('Content-Type', 'application/json');
@@ -589,6 +469,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             body: data,
             redirect: 'follow',
         };
+        console.log(supplier);
+
+
+        if (supplier === 'autoencargos') {
+            supplier = 'fedex';
+        }
 
         // await Promise.all([
         //      fetch(
@@ -611,7 +497,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         //         console.log(result1, result2);
         //         let result = result1.concat(result2);
 
-        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/`;
+
+        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${supplier}`;
         console.log('url', urlRequest);
 
         fetch(urlRequest, requestOptions)
@@ -619,10 +506,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .then(result => {
                 console.log(result);
                 if (result.length >= 1) {
-                    //console.log('numero de provedores disponibles', result.length);
-                    //Asigna a supplierAvailability el objeto de respuesta de la funcion cotizar guia
-                    let suppliersGeneral = result;
-                    //console.log('suppliersGeneral', suppliersGeneral);
+                    suppliersGeneral = result;
                     if (
                         cpsAvailabilityAutoencargos.current === true &&
                         cpsAvailabilityZEAutoencargos.current === false
@@ -670,8 +554,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             };
                         }
                     });
-                    // console.log('zona extendida estafeta', supplierExtendedAreaUs);
-                    // console.log('zona extendida API', supplierExtendedArea);
                     setSupplierAvailability({ ...supplierExtendedArea, ...supplierExtendedAreaUs });
 
                     //Se hace un array para ver el tipo de delivery
@@ -685,8 +567,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     console.log('delivey', supplierDelivery);
                     setSupplierAvailabilityDelivery(supplierDelivery);
 
-                    //{fedexEconomico: true, fedexDiaSiguiente: true, estafetaEconomico: true, RedpackExiguiente: true}
-                    //Se hace un nuevo array con la informacion de cada paqueteria con la respuesta de la API
                     suppliersGeneral.forEach(element => {
                         supplierShippingName[element.shipping_service.name] = [
                             element.shipping_company,
@@ -695,22 +575,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             element.shipping_service.id,
                         ];
                     });
-
-                    // let suppliersGeneralUs = {};
-                    // console.log('habilitados de nuestro codigo', supplierAvailabilityGeneralUs);
-                    // for (let [key, value] of Object.entries(supplierAvailabilityGeneralUs)) {
-                    //     //console.log(key, value);
-                    //     if (value !== false) {
-                    //         console.log('aqui');
-                    //         suppliersGeneralUs[key] = value;
-                    //     }
-                    // }
-                    // console.log(suppliersGeneralUs);
                     setSupplierAvailabilityGeneral(supplierShippingName);
-                    // setSupplierAvailabilityGeneral({
-                    //     ...supplierShippingName,
-                    //     ...suppliersGeneralUs,
-                    // });
                 }
             })
             .catch(error => console.log('error', error));
@@ -719,12 +584,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     useEffect(() => {
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
-        // console.log(
-        //     'todos los provedores zona extendida',
-        //     supplierAvailability,
-        //     'todos los provedores activos',
-        //     supplierAvailabilityGeneral,
-        // );
 
         //Validaciones del peso
         let pricedWeight = Math.ceil(weight);
@@ -755,24 +614,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             } else if (company !== 'autoencargos' && baseValue > 0) {
                 return Math.max(baseValue, 20) + extraValue;
             }
-            //else
-            // if (
-            //     (company === 'fedexDiaSiguiente' && baseValue > 0) ||
-            //     (company === 'fedexEconomico' && baseValue > 0)
-            // ) {
-            //     return Math.max(baseValue, 20) + extraValue;
-            // }
-            //else
-            // if (
-            //     (company === 'redpackExpress' && baseValue > 0) ||
-            //     (company === 'redpackEcoExpress' && baseValue > 0)
-            // ) {
-            //     return Math.max(baseValue, 20) + extraValue;
-            // }
             return 0;
-            // else {
-            //     return 0;
-            // }
         };
 
         //Validaciones de zona extendida

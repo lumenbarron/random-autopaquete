@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, CheckboxToggle, Button } from 'react-rainbow-components';
+import { Input, CheckboxToggle, Button, CheckboxGroup, Select } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons';
 import * as firebase from 'firebase';
@@ -16,6 +16,14 @@ import swal from 'sweetalert2';
 
 const numberRegex = RegExp(/^[0-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
+
+const optionsSuppliers = [
+    { value: 'fedex', label: 'Fedex' },
+    { value: 'pakke', label: 'Estafeta' },
+    { value: 'redpack', label: 'Redpack' },
+    { value: 'autoencargos', label: 'AutoEncargos' },
+    { value: '', label: 'Todas las paqueterias' },
+];
 
 const PackagingRadioOption = ({ packages }) => {
     const {
@@ -71,6 +79,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
+    const [defaultSupplier, setDefaultSupplier] = useState('fedex');
 
     const [contentDescription, setContentDescription] = useState('');
     const [contentValue, setContentValue] = useState('');
@@ -103,6 +112,23 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
             }
         }
     }, [idGuiaGlobal]);
+
+    useEffect(() => {
+        if (user) {
+            db.collection('profiles')
+                .where('ID', '==', user.uid)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        // console.log('primer data', doc.data(), doc.id);
+                        setDefaultSupplier(doc.data().defaultSupplier);
+                    });
+                })
+                .catch(function(error) {
+                    console.log('Error getting documents: ', error);
+                });
+        }
+    }, []);
 
     useEffect(() => {
         const reloadDirectios = () => {
@@ -191,7 +217,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     }, [value]);
 
     const registerDirecction = () => {
-        //console.log('creationDate', creationDate);
+        console.log('defaultSupplier', defaultSupplier);
         if (name.trim() === '') {
             setError(true);
             setErrorName(true);
@@ -311,6 +337,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         height,
                         width,
                         depth,
+                        defaultSupplier,
                         realWeight: Math.ceil(weight),
                         weight: pricedWeight,
                         content_description: contentDescription,
@@ -324,6 +351,11 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                 onSave(packageDataToFirebase, packageGuiaData, checkBox);
             }
         }
+    };
+
+    const selectCheck = defaultSupplier => {
+        setDefaultSupplier(defaultSupplier);
+        console.log(defaultSupplier, 'holi');
     };
 
     return (
@@ -466,7 +498,24 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
                         onChange={e => setCheckBox(e.target.checked)}
                     />
                 </div>
-
+                <div className="rainbow-p-vertical_large rainbow-p-left_xx-large">
+                    {/* <CheckboxGroup
+                        id="checkbox-group-1"
+                        label="Checkbox Group Label"
+                        options={optionsSuppliers}
+                        value={defaultSupplier}
+                        onChange={(value) => setDefaultSupplier(value)}
+                    /> */}
+                    <Select
+                        label="Paquetería"
+                        required
+                        // error="este campo es obligatorio"
+                        options={optionsSuppliers}
+                        value={defaultSupplier}
+                        //className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
+                        onChange={ev => setDefaultSupplier(ev.target.value)}
+                    />
+                </div>
                 {errorNameDuplicate && (
                     <div className="pl-4">
                         <span className="alert-error">El nombre ya se encuentra registrado</span>
