@@ -584,10 +584,14 @@ export function AccountSidebar() {
                     </div>
                 )}
 
-                {/* <Link to="/mi-cuenta">
-                    <Chip className="rainbow-m-around_medium chip-inicio" variant="outline-brand" label = "Inicio"></Chip>
-                </Link> */}
-                <Chip className="rainbow-m-around_medium chip-credit" label={credit} />
+                <Link to="/mi-cuenta">
+                    <Chip
+                        className="rainbow-m-around_medium chip-credit"
+                        variant="outline-brand"
+                        label="Inicio"
+                    ></Chip>
+                </Link>
+                {/* <Chip className="rainbow-m-around_medium chip-credit" label={credit} /> */}
             </SidebarHeader>
             <StyledSidebar>
                 <Link to="/mi-cuenta/enviar">

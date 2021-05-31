@@ -130,6 +130,7 @@ const PickingPage = () => {
     const neighborhoodSel = useRef();
     const errorRepeat = useRef(false);
     const errorRepeatGuide = useRef(false);
+    const options = useRef();
 
     const [filter, setFilter] = useState('');
     const [name, setName] = useState('');
@@ -158,7 +159,8 @@ const PickingPage = () => {
     const [tableData, setTableData] = useState();
     const tokenProd = process.env.REACT_APP_REDPACK_PROD;
     const sepomex = process.env.REACT_APP_SEPOMEX;
-    let pickedDirection;
+    //let options;
+
     //Tracking
     //     useEffect(() => {
     //     let myHeaders = new Headers();
@@ -256,31 +258,6 @@ const PickingPage = () => {
         }
     };
 
-    //Obteniendo las direcciones de pickup
-    // const getDirections = city => {
-    //     let dataAddress = [];
-    //     let dataAddressFilter = [];
-    //     if (user) {
-    //         const reloadDirectios = () => {
-    //             db.collection('pickup_addresses')
-    //                 .where('ID', '==', user.uid)
-    //                 .onSnapshot(function(querySnapshot) {
-    //                     querySnapshot.forEach(doc => {
-    //                         dataAddress.push({
-    //                             id: doc.id,
-    //                             city: doc.data().city,
-    //                             ...doc.data(),
-    //                         });
-    //                     });
-    //                     //Filtrando Direcciones
-    //                     dataAddressFilter = dataAddress.filter(item => item.city.includes(city));
-    //                     // setDirectionData(dataAddressFilter);
-    //                 });
-    //         };
-    //         reloadDirectios();
-    //     }
-    // };
-
     //verificacion de CP
     useEffect(() => {
         if (CP.length === 5) {
@@ -321,48 +298,6 @@ const PickingPage = () => {
         }
     }, [CP]);
 
-    //Se obtienen las direcciones guardadas
-    // useEffect(() => {
-    //     console.log('use effect');
-    //     if (value) {
-    //         const docRef = db.collection('pickup_addresses').doc(value);
-    //         //Obteniendo la direccion seleccionada
-    //         let getOptions = {
-    //             source: 'cache',
-    //         };
-    //         docRef
-    //             .get(getOptions)
-    //             .then(function(doc) {
-    //                 // Document was found in the cache. If no cached document exists,
-    //                 // an error will be returned to the 'catch' block below.
-    //                 pickedDirection = doc.data();
-    //                 //console.log('Cached document data:', pickedDirection);
-    //             })
-    //             .catch(function(error) {
-    //                 console.log('Error getting cached document:', error);
-    //             });
-    //         docRef
-    //             .get()
-    //             .then(function(doc) {
-    //                 if (doc.exists) {
-    //                     setName(doc.data().name);
-    //                     setCP(doc.data().codigo_postal);
-    //                     setNeighborhood(doc.data().neighborhood);
-    //                     setStreetName(doc.data().street_name);
-    //                     setStreetNumber(doc.data().street_number);
-    //                     setPlaceRef(doc.data().place_reference);
-    //                     setPhone(doc.data().phone);
-    //                     setCheckBox(false);
-    //                 } else {
-    //                     console.log('No such document!');
-    //                 }
-    //             })
-    //             .catch(function(error) {
-    //                 console.log('Error getting document:', error);
-    //             });
-    //     }
-    // }, [value]);
-
     //Obteniendo las recolecciones
     useEffect(() => {
         if (user) {
@@ -378,9 +313,9 @@ const PickingPage = () => {
 
     function handleDirections(snapshot) {
         let allPickups = [];
-        let sortedData;
+        let sortedData = [];
         snapshot.docs.forEach(doc => {
-            //console.log(doc.data().pickup_date, new Date(doc.data().pickup_date.replace(/-/g, '\/')))
+            console.log(doc.data());
             allPickups.push({
                 id: doc.id,
                 date: new Date(doc.data().pickup_date.replace(/-/g, '/')),
@@ -390,50 +325,42 @@ const PickingPage = () => {
                 return new Date(b.date).getTime() - new Date(a.date).getTime();
                 // b.date - a.date
             });
-            //console.log(sortedData)
+            // console.log(sortedData)
         });
+
         setPickups(sortedData);
         setDirectionData(sortedData);
     }
 
-    // useEffect(() => {
-    //     setTableData(
-    //         pickups.map(pick => {
-    //             return {
-    //                 id: pick.id,
-    //                 date: pick.pickup_date.slice(0, 10),
-    //                 order: pick.pickup_id,
-    //                 origen: pick.name,
-    //                 guide: pick.guide,
-    //                 supplier: pick.shipping_company,
-    //             };
-    //         }),
-    //         console.log(pickups),
-    //     );
-    // }, [pickups]);
-
-    const options = directionData
-        .filter(directions => {
-            if (filter === null) {
-                return directions;
-            } else if (directions.name.includes(filter)) {
-                return directions;
-            }
-        })
-        .map(directions => {
-            // console.log(directions);
-            const { id, pickup_date, pickup_id, shipping_company, name, neighborhood } = directions;
-            return (
-                <TimelineMarker
-                    key={id}
-                    name={name}
-                    label={`Orden: ${pickup_id} , ${shipping_company}`}
-                    icon={<FontAwesomeIcon icon={faCheckCircle} />}
-                    datetime={pickup_date}
-                    description={`${name} , ${neighborhood}`}
-                />
+    useEffect(() => {
+        // console.log(pickups)
+        if (pickups.length !== 0) {
+            setTableData(
+                pickups.map(directions => {
+                    // console.log(directions);
+                    const {
+                        id,
+                        pickup_date,
+                        pickup_id,
+                        shipping_company,
+                        name,
+                        neighborhood,
+                    } = directions;
+                    return (
+                        <TimelineMarker
+                            key={id}
+                            name={name}
+                            label={`Orden: ${pickup_id} , ${shipping_company}`}
+                            icon={<FontAwesomeIcon icon={faCheckCircle} />}
+                            datetime={pickup_date}
+                            description={`${name} , ${neighborhood}`}
+                        />
+                    );
+                }),
+                // console.log(pickups),
             );
-        });
+        }
+    }, [pickups]);
 
     const addPicking = () => {
         //console.log('all pickups', pickups, 'cp', CP, 'guia', idGuide.current);
@@ -1098,7 +1025,7 @@ const PickingPage = () => {
                 <StyledLeftPane>
                     <h4 className="mb-4">Mis recolecciones</h4>
                     <div className="timeline">
-                        <ActivityTimeline style={{ height: '100vh' }}>{options}</ActivityTimeline>
+                        <ActivityTimeline style={{ height: '100vh' }}>{tableData}</ActivityTimeline>
                     </div>
                 </StyledLeftPane>
             </StyledPaneContainer>
