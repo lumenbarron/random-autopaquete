@@ -3,7 +3,7 @@ import { Input, FileSelector } from 'react-rainbow-components';
 import { useFirebaseApp, useUser } from 'reactfire';
 import { useHistory } from 'react-router-dom';
 import { StyledTabContent, StyledForm, StyledSubmit } from '../styled.js';
-
+import swal from 'sweetalert2';
 const phoneRegex = RegExp(/^[0-9]{10}$/);
 const rfcRegex = RegExp(
     /^([A-ZÑ\x26]{3,4}([0-9]{2})(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1]))((-)?([A-Z\d]{3}))?$/,
@@ -18,6 +18,7 @@ const TabPersonaMoral = () => {
     const storage = firebase.storage();
 
     const [userName, setUserName] = useState('');
+    const [idUser, setIdUser] = useState('');
     const [razonSocial, setRazonSocial] = useState('');
     const [legalName, setLegalName] = useState('');
     const [address, setAdrress] = useState('');
@@ -30,6 +31,7 @@ const TabPersonaMoral = () => {
     const [fileDomicilio, setFileAddress] = useState('');
 
     const [error, setError] = useState(false);
+    const [errorIdUser, setErrorIdUser] = useState(false);
     const [errorRazonSocial, setErrorRazonSocial] = useState(false);
     const [errorLegalName, setErrorLegalName] = useState(false);
     const [errorAddress, setErrorAddress] = useState(false);
@@ -81,6 +83,7 @@ const TabPersonaMoral = () => {
 
                     if (uploadedFiles === filesToUpload) {
                         const userData = {
+                            idClient: idUser,
                             razon_social: razonSocial,
                             nombreRepresentanteLegal: legalName,
                             direccion: address,
@@ -254,68 +257,87 @@ const TabPersonaMoral = () => {
         } else {
             setErrorFileIne(false);
         }
+        //if idClient exist no save data
+        db.collection('profiles')
+            .where('idClient', '==', idUser.trim())
+            .get()
+            .then(function(querySnapshot) {
+                if (!querySnapshot.empty) {
+                    console.log('Usuario Existe:' + idUser.trim() + ' Bloquenado registro');
+                    swal.fire('¡Oh no!', 'El id ya está registrado en la plataforma', 'error');
+                } else {
+                    console.log('Usuario No Existe:' + idUser.trim() + ' Creando registro');
+                    setError(false);
 
-        setError(false);
+                    let fileName = '';
+                    let filePath = '';
 
-        let fileName = '';
-        let filePath = '';
+                    filesToUpload = fileActaConstitutiva ? filesToUpload + 1 : filesToUpload;
+                    filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
+                    filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
+                    filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
 
-        filesToUpload = fileActaConstitutiva ? filesToUpload + 1 : filesToUpload;
-        filesToUpload = fileIne ? filesToUpload + 1 : filesToUpload;
-        filesToUpload = fileFiscal ? filesToUpload + 1 : filesToUpload;
-        filesToUpload = fileDomicilio ? filesToUpload + 1 : filesToUpload;
+                    if (fileActaConstitutiva) {
+                        fileName = fileActaConstitutiva[0].name;
+                        filePath = `documentation/${user.uid}/${fileName}`;
+                        firebase
+                            .storage()
+                            .ref(filePath)
+                            .put(fileActaConstitutiva[0])
+                            .then(snapshot => {
+                                uploadedFiles += 1;
+                                saveURL();
+                            });
+                    }
 
-        if (fileActaConstitutiva) {
-            fileName = fileActaConstitutiva[0].name;
-            filePath = `documentation/${user.uid}/${fileName}`;
-            firebase
-                .storage()
-                .ref(filePath)
-                .put(fileActaConstitutiva[0])
-                .then(snapshot => {
-                    uploadedFiles += 1;
-                    saveURL();
-                });
-        }
+                    if (fileFiscal) {
+                        fileName = fileFiscal[0].name;
+                        filePath = `documentation/${user.uid}/${fileName}`;
+                        firebase
+                            .storage()
+                            .ref(filePath)
+                            .put(fileFiscal[0])
+                            .then(snapshot => {
+                                uploadedFiles += 1;
+                                saveURL();
+                            });
+                    }
 
-        if (fileFiscal) {
-            fileName = fileFiscal[0].name;
-            filePath = `documentation/${user.uid}/${fileName}`;
-            firebase
-                .storage()
-                .ref(filePath)
-                .put(fileFiscal[0])
-                .then(snapshot => {
-                    uploadedFiles += 1;
-                    saveURL();
-                });
-        }
+                    if (fileDomicilio) {
+                        fileName = fileDomicilio[0].name;
+                        filePath = `documentation/${user.uid}/${fileName}`;
+                        firebase
+                            .storage()
+                            .ref(filePath)
+                            .put(fileDomicilio[0])
+                            .then(snapshot => {
+                                uploadedFiles += 1;
+                                saveURL();
+                            });
+                    }
 
-        if (fileDomicilio) {
-            fileName = fileDomicilio[0].name;
-            filePath = `documentation/${user.uid}/${fileName}`;
-            firebase
-                .storage()
-                .ref(filePath)
-                .put(fileDomicilio[0])
-                .then(snapshot => {
-                    uploadedFiles += 1;
-                    saveURL();
-                });
-        }
-
-        if (fileIne) {
-            fileName = fileIne[0].name;
-            filePath = `documentation/${user.uid}/${fileName}`;
-            firebase
-                .storage()
-                .ref(filePath)
-                .put(fileIne[0])
-                .then(snapshot => {
-                    uploadedFiles += 1;
-                    saveURL();
-                });
-        }
+                    if (fileIne) {
+                        fileName = fileIne[0].name;
+                        filePath = `documentation/${user.uid}/${fileName}`;
+                        firebase
+                            .storage()
+                            .ref(filePath)
+                            .put(fileIne[0])
+                            .then(snapshot => {
+                                uploadedFiles += 1;
+                                saveURL();
+                            });
+                    }
+                }
+            })
+            .catch(function(error) {
+                console.log('Error getting documents: ', error);
+                swal.fire(
+                    '¡Oh no!',
+                    'Error al conectar con la base de datos, intenta mas tarde',
+                    'error',
+                );
+            });
     };
 
     return (
@@ -327,6 +349,17 @@ const TabPersonaMoral = () => {
             <StyledForm>
                 <div style={{ flex: '1 1' }}>
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
+                        <Input
+                            id="idCliente"
+                            label="Id Cliente"
+                            name="idCliente"
+                            value={idUser}
+                            className={`rainbow-p-around_medium ${
+                                errorIdUser ? 'empty-space' : ''
+                            }`}
+                            style={{ width: '90%' }}
+                            onChange={ev => setIdUser(ev.target.value)}
+                        />
                         <Input
                             id="razonSocial"
                             label="Razón Social"
