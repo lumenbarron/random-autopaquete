@@ -265,9 +265,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
 
     useEffect(() => {
         if (CP.length === 5) {
-            fetch(
-                `https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified&token=${sepomex}`,
-            )
+            fetch(`https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified&token=${''}`)
                 .then(response => {
                     if (!response.ok) {
                         console.log('CP no validado');
