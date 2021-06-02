@@ -267,13 +267,6 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
         if (CP.length === 5) {
             fetch(
                 `https://api-sepomex.hckdrk.mx/query/info_cp/${CP}?type=simplified&token=${sepomex}`,
-                {
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'GET',
-                        'Access-Control-Allow-Headers': 'Access-Control-Allow-Headers',
-                    },
-                },
             )
                 .then(response => {
                     if (!response.ok) {
@@ -724,7 +717,7 @@ export const OrigenComponent = ({ onSave, idGuiaGlobal }) => {
                 </div>
                 <div className="rainbow-align-content_center rainbow-flex_wrap">
                     <Input
-                        //readOnly
+                        readOnly
                         id="ciudad"
                         label="Ciudad"
                         name="ciudad"

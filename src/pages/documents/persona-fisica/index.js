@@ -90,6 +90,7 @@ const TabPersonaFisica = () => {
 
                     if (uploadedFiles === filesToUpload) {
                         const userData = {
+                            defaultSupplier: 'fedex',
                             idClient: idUser,
                             nombre_fiscal: name,
                             direccion: address,
