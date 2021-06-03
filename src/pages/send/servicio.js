@@ -7,6 +7,7 @@ import { useUser, useFirebaseApp } from 'reactfire';
 import formatMoney from 'accounting-js/lib/formatMoney';
 import toFixed from 'accounting-js/lib/toFixed';
 import axios from 'axios';
+import { cpZMG } from './autoencargosCP';
 import {
     StyledPaneContainer,
     StyledDirectiosDetails,
@@ -246,6 +247,40 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .update({ rastreo: [guiaAutoencargos] });
     };
 
+    //Si el código postal coincide con los códigos postales de Autoencargos se agrega al supplierAvailability
+    const autoencargos = () => {
+        let result = [cpZMG.guadalajara, cpZMG.zapopan, cpZMG.tonala, cpZMG.tlaquepaque];
+        let resultZMG = result.map(element => element).flat();
+        let allZMG = [...resultZMG, ...OtherCpsZMG];
+        console.log(allZMG);
+        let allCpsZMG = allZMG.filter(item => {
+            return !notCoverCpsZMG.includes(item);
+        });
+
+        let cpSender = allCpsZMG.includes(getCPSender.current);
+        let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
+        let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
+        let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
+        console.log(getCPReceiver.current, CPReceiver, nameSender);
+        console.log(cpReceiverExt, cpSenderExt, cpReceiver, cpSender);
+        if (
+            (cpReceiverExt === true && cpSender === true) ||
+            (cpReceiver === true && cpSenderExt === true) ||
+            (cpReceiverExt === true && cpSenderExt === true)
+        ) {
+            console.log('codigos postales ZE ZMG');
+            cpsAvailabilityAutoencargos.current = true;
+            cpsAvailabilityZEAutoencargos.current = true;
+        } else if (cpReceiver === true && cpSender === true) {
+            console.log('codigos postales ZMG');
+            cpsAvailabilityAutoencargos.current = true;
+            cpsAvailabilityZEAutoencargos.current = false;
+        } else {
+            console.log('codigos no postales ZMG');
+            cpsAvailabilityAutoencargos.current = false;
+        }
+    };
+
     useEffect(() => {
         //Asignando los valores desde el doc guia del firestore
         db.collection('guia')
@@ -253,6 +288,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .onSnapshot(function getGuia(doc) {
                 //console.log('Document data 1:', doc.data());
                 // Get snapshot sender information
+                console.log(doc.data());
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
                 getCPSender.current = doc.data().sender_addresses.codigo_postal;
@@ -270,6 +306,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 setStreetNameReceiver(doc.data().receiver_addresses.street_name);
                 setStreetNumberReceiver(doc.data().receiver_addresses.street_number);
                 setPhoneReceiver(doc.data().receiver_addresses.phone);
+                console.log(getCPSender.current, getCPReceiver.current);
                 // Get snapshot to receive package information
                 if (doc.data().package) {
                     setNamePackage(doc.data().package.name);
@@ -282,61 +319,64 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     setContentValue(doc.data().package.content_value);
                     setDefaultSupplier(doc.data().package.defaultSupplier);
                 }
+                //comparar cp para avilitar paqueteria autoencargos
+                autoencargos();
             });
     }, []);
 
-    useEffect(() => {
-        //Si el código postal coincide con los códigos postales de Autoencargos se agrega al supplierAvailability
-        // console.log('corroborando codigo para autoencargos, segundo use effect');
-        Promise.all([
-            fetch(
-                `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara&token=${sepomex}`,
-            ),
-            fetch(
-                `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Zapopan&token=${sepomex}`,
-            ),
-            fetch(
-                `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Tonalá&token=${sepomex}`,
-            ),
-            fetch(
-                `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=San Pedro Tlaquepaque&token=${sepomex}`,
-            ),
-        ])
-            .then(([res1, res2, res3, res4]) =>
-                Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]),
-            )
-            .then(result => {
-                let resultZMG = result.map(element => element.response.cp).flat();
-                let allZMG = [...resultZMG, ...OtherCpsZMG];
-                let allCpsZMG = allZMG.filter(item => {
-                    return !notCoverCpsZMG.includes(item);
-                });
-                // console.log( getCPReceiver.current ,CPReceiver)
-                let cpSender = allCpsZMG.includes(getCPSender.current);
-                let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
-                let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
-                let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
+    // useEffect(() => {
+    //     console.log('corroborando codigo para autoencargos, segundo use effect');
+    //     Promise.all([
+    //         fetch(
+    //             `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara&token=${sepomex}`,
+    //         ),
+    //         fetch(
+    //             `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Zapopan&token=${sepomex}`,
+    //         ),
+    //         fetch(
+    //             `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Tonalá&token=${sepomex}`,
+    //         ),
+    //         fetch(
+    //             `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=San Pedro Tlaquepaque&token=${sepomex}`,
+    //         ),
+    //     ])
+    //         .then(([res1, res2, res3, res4]) =>
+    //             Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]),
+    //         )
+    //         .then(result => {
+    //             let result = [cpZMG.guadalajara, cpZMG.zapopan, cpZMG.tonala, cpZMG.tlaquepaque ]
+    //             let resultZMG = result.map(element => element).flat();
+    //             let allZMG = [...resultZMG, ...OtherCpsZMG];
+    //             console.log(allZMG)
+    //             let allCpsZMG = allZMG.filter(item => {
+    //                 return !notCoverCpsZMG.includes(item);
+    //             });
 
-                //console.log(cpReceiverExt, cpSenderExt, cpReceiver, cpSender);
-                if (
-                    (cpReceiverExt === true && cpSender === true) ||
-                    (cpReceiver === true && cpSenderExt === true) ||
-                    (cpReceiverExt === true && cpSenderExt === true)
-                ) {
-                    console.log('codigos postales ZE ZMG');
-                    cpsAvailabilityAutoencargos.current = true;
-                    cpsAvailabilityZEAutoencargos.current = true;
-                } else if (cpReceiver === true && cpSender === true) {
-                    console.log('codigos postales ZMG');
-                    cpsAvailabilityAutoencargos.current = true;
-                    cpsAvailabilityZEAutoencargos.current = false;
-                } else {
-                    console.log('codigos no postales ZMG');
-                    cpsAvailabilityAutoencargos.current = false;
-                }
-            })
-            .catch(err => console.log('error', err));
-    }, []);
+    //             let cpSender = allCpsZMG.includes(getCPSender.current);
+    //             let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
+    //             let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
+    //             let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
+    //             console.log( getCPReceiver.current ,CPReceiver, nameSender)
+    //             console.log(cpReceiverExt, cpSenderExt, cpReceiver, cpSender);
+    //             if (
+    //                 (cpReceiverExt === true && cpSender === true) ||
+    //                 (cpReceiver === true && cpSenderExt === true) ||
+    //                 (cpReceiverExt === true && cpSenderExt === true)
+    //             ) {
+    //                 console.log('codigos postales ZE ZMG');
+    //                 cpsAvailabilityAutoencargos.current = true;
+    //                 cpsAvailabilityZEAutoencargos.current = true;
+    //             } else if (cpReceiver === true && cpSender === true) {
+    //                 console.log('codigos postales ZMG');
+    //                 cpsAvailabilityAutoencargos.current = true;
+    //                 cpsAvailabilityZEAutoencargos.current = false;
+    //             } else {
+    //                 console.log('codigos no postales ZMG');
+    //                 cpsAvailabilityAutoencargos.current = false;
+    //             }
+    //         })
+    //         .catch(err => console.log('error', err));
+    // }, []);
 
     useEffect(() => {
         //Se extraen los provedores de la colecccion rate del perfil del usuario
