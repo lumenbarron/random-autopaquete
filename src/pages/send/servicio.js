@@ -43,6 +43,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const [supplierAvailabilityGeneral, setSupplierAvailabilityGeneral] = useState(false);
     const [supplierAvailabilityDelivery, setSupplierAvailabilityDelivery] = useState(false);
     const [supplierExtraWeight, setSupplierExtraWeight] = useState(true);
+    const [noSupplier, setNoSupplier] = useState(false);
 
     const [supplierCostFedexDiaS, setSupplierCostFedexDiaS] = useState(false);
     const [supplierCostFedexEcon, setSupplierCostFedexEcon] = useState(false);
@@ -593,6 +594,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         ];
                     });
                     setSupplierAvailabilityGeneral(supplierShippingName);
+                } else if (result.length === 0) {
+                    console.log('no hay paqueterias');
+                    setNoSupplier(true);
+                    console.log(noSupplier);
                 }
             })
             .catch(error => console.log('error', error));
@@ -1372,12 +1377,18 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     administrador
                 </h1>
             )}
-            {hasActivatedSuppliers && !supplierAvailability && (
+            {hasActivatedSuppliers && !supplierAvailability && noSupplier === false && (
                 <div className="rainbow-p-vertical_xx-large">
                     <h1>Obteniendo precios...</h1>
                     <div className="rainbow-position_relative rainbow-m-vertical_xx-large rainbow-p-vertical_xx-large">
                         <Spinner size="large" variant="brand" />
                     </div>
+                </div>
+            )}
+            {hasActivatedSuppliers && !supplierAvailability && noSupplier === true && (
+                <div className="alert-error">
+                    <h2>¡Oh no! el codigo postal de origen y/o destino no tiene cobertura,</h2>
+                    <h2>favor de contactar a tu asesor.</h2>
                 </div>
             )}
             {hasActivatedSuppliers && supplierAvailability && (
@@ -1457,19 +1468,19 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         </Row>
                     </DownloadContainer>
                     {!(
-                        (supplierAvailability.ESTAFETADIASIGUIENTE != 'undefined' &&
+                        (supplierAvailability.ESTAFETADIASIGUIENTE !== 'undefined' &&
                             supplierCostEstafetaDiaS.guia) ||
-                        (supplierAvailability.ESTAFETATERRESTRECONSUMO != 'undefined' &&
+                        (supplierAvailability.ESTAFETATERRESTRECONSUMO !== 'undefined' &&
                             supplierCostEstafetaEcon.guia) ||
-                        (supplierAvailability.NACIONALDIASIGUIENTE != 'undefined' &&
+                        (supplierAvailability.NACIONALDIASIGUIENTE !== 'undefined' &&
                             supplierCostFedexDiaS.guia) ||
-                        (supplierAvailability.NACIONALECONOMICO != 'undefined' &&
+                        (supplierAvailability.NACIONALECONOMICO !== 'undefined' &&
                             supplierCostFedexEcon.guia) ||
-                        (supplierAvailability.EXPRESS != 'undefined' &&
+                        (supplierAvailability.EXPRESS !== 'undefined' &&
                             supplierCostRedpackEx.guia) ||
-                        (supplierAvailability.ECOEXPRESS != 'undefined' &&
+                        (supplierAvailability.ECOEXPRESS !== 'undefined' &&
                             supplierCostRedpackEco.guia) ||
-                        (supplierAvailability.AUTOENCARGOS != 'undefined' &&
+                        (supplierAvailability.AUTOENCARGOS !== 'undefined' &&
                             supplierCostAutoencargosEcon.guia)
                     ) && <h1> ¡Oh no! Ha ocurrido un error, favor de contactar a tu asesor.</h1>}
                 </>
