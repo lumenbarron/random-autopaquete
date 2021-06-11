@@ -194,7 +194,7 @@ export default function AddCredito({ user }) {
             //console.log('autor', autor);
         }
         if (password === passMayra) {
-            autor = 'Mayra';
+            autor = 'Mayra Leonides';
             rightPass.current = true;
             //console.log('autor', autor);
         }
