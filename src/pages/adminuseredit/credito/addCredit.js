@@ -70,6 +70,7 @@ export default function AddCredito({ user }) {
     const passJose = process.env.REACT_APP_KEY_GJ;
     const passLucy = process.env.REACT_APP_KEY_LM;
     const passMarisol = process.env.REACT_APP_KEY_MM;
+    const passMayra = process.env.REACT_APP_KEY_ML;
 
     let montoTotal = useRef('');
     const db = firebase.firestore();
@@ -189,6 +190,11 @@ export default function AddCredito({ user }) {
         }
         if (password === passMarisol) {
             autor = 'Marisol Martinez';
+            rightPass.current = true;
+            //console.log('autor', autor);
+        }
+        if (password === passMayra) {
+            autor = 'Mayra';
             rightPass.current = true;
             //console.log('autor', autor);
         }
