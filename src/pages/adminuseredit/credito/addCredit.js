@@ -207,7 +207,7 @@ export default function AddCredito({ user }) {
         } else if (password.trim() === '' || !password) {
             swal.fire('¡Oh no!', 'Parece que no hay ninguna contraseña', 'error');
         } else if (monto && concepto && rightPass.current) {
-            //console.log('monto', monto, 'concepto', concepto, 'password', password);
+            console.log('monto', monto, 'concepto', concepto, 'password', password);
             const addCreditData = {
                 ID: user.ID,
                 create_date: date,
