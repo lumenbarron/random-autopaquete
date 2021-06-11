@@ -31,6 +31,9 @@
                 "source": "**",
                 "destination": "/index.html"
             }
-        ]
+        ],
+        "functions": {
+            "predeploy": ["yarn build --no-verify"]
+        }
     }
 }
