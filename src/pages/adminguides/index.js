@@ -161,9 +161,10 @@ export default function AllGuides({}) {
 
                 guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
                 setHistory(guiasByDate);
-                allGuidesEver();
-                setDisplayData(true);
-                searchName();
+                console.log('inabilitando funciones');
+                //allGuidesEver();
+                //setDisplayData(true);
+                //searchName();
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -179,16 +180,6 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    // if (
-                    //     doc.data().supplierData.Supplier === 'autoencargosEconomico'
-                    //     && typeof doc.data().rastreo === 'string'
-                    // ) {
-
-                    //     console.log(doc.data().rastreo, doc.id)
-                    //     db.collection('guia')
-                    //     .doc(doc.id)
-                    //     .update({rastreo : [doc.data().rastreo]})
-                    // }
                     dataALLGuias.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -389,36 +380,89 @@ export default function AllGuides({}) {
     //             console.log('Error getting documents: ', error);
     //         });
     // };
+    const listBetweenDays = (startDate, endDate) => {
+        var moment = require('moment');
+        let desde = moment(startDate);
+        let hasta = moment(endDate);
+
+        console.log(startDate, endDate);
+        let dates = [];
+        let limit = false;
+
+        while (desde.format('DD/MM/YY') !== hasta.format('DD/MM/YY')) {
+            dates.push(desde.format('DD/MM/YY'));
+            desde.add(1, 'days');
+        }
+
+        dates.push(hasta.format('DD/MM/YY'));
+
+        return dates;
+    };
 
     const searchByDate = (startDate, endDate) => {
-        console.log(startDate, endDate, allGuides);
-        let newdates = [];
-        let infoDates = [];
+        setDisplayData(false);
+        console.log(startDate, endDate);
+        let dates = listBetweenDays(startDate, endDate);
+        console.log(dates);
+        let ByPeriod = [];
 
-        const getDaysArray = (start, end) => {
-            console.log(start);
-            console.log(end);
-            for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
-                arr.push(new Date(dt));
-            }
-            arr.push(new Date(end));
-            return arr;
-        };
-        let daylist = getDaysArray(new Date(startDate), new Date(endDate));
-        console.log('daylist', daylist);
-        daylist.forEach(dat => {
-            newdates.push(dat.toLocaleDateString('es-US', optionsDate).slice(0, 10));
-        });
-        //console.log(newdates)
-        allGuides.forEach(e => {
-            // console.log(e.date)
-            if (newdates.includes(e.sentDate)) {
-                infoDates.push(e);
-            }
-        });
-        setHistory(infoDates);
+        for (let i = 0; i < dates.length(); i++) {
+            db.collection('guia')
+                .where('status', '==', 'completed')
+                .where('package.creation_date', '==', dates[i])
+                .orderBy('creation_date', 'desc')
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        ByPeriod.push({
+                            id: doc.id,
+                            volumetricWeight: Math.ceil(
+                                (doc.data().package.height *
+                                    doc.data().package.width *
+                                    doc.data().package.depth) /
+                                    5000,
+                            ),
+                            ...doc.data(),
+                        });
+                    });
+                })
+                .catch(function(error) {
+                    console.log('Error getting documents: ', error);
+                });
+        }
+
+        console.log(ByPeriod);
+        setHistory(ByPeriod);
         setDisplayData(true);
-        console.log(infoDates);
+
+        // console.log(startDate, endDate, allGuides);
+        // let newdates = [];
+        // let infoDates = [];
+
+        // const getDaysArray = (start, end) => {
+        //     console.log(start);
+        //     console.log(end);
+        //     for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
+        //         arr.push(new Date(dt));
+        //     }
+        //     arr.push(new Date(end));
+        //     return arr;
+        // };
+        // let daylist = getDaysArray(new Date(startDate), new Date(endDate));
+        // console.log('daylist', daylist);
+        // daylist.forEach(dat => {
+        //     newdates.push(dat.toLocaleDateString('es-US', optionsDate).slice(0, 10));
+        // });
+        // //console.log(newdates)
+        // allGuides.forEach(e => {
+        //     // console.log(e.date)
+        //     if (newdates.includes(e.sentDate)) {
+        //         infoDates.push(e);
+        //     }
+        // });
+        // setHistory(infoDates);
+        // setDisplayData(true);
+        // console.log(infoDates);
     };
 
     const getIdGuia = trackingNumber => {
@@ -529,6 +573,7 @@ export default function AllGuides({}) {
                 <Row className="content-header">
                     <Col>
                         <Input
+                            disabled={true}
                             id="guia"
                             placeholder="Numero de guia"
                             className="rainbow-p-around_medium"
@@ -542,6 +587,7 @@ export default function AllGuides({}) {
                     </Col>
                     <Col>
                         <Select
+                            disabled={true}
                             options={tableUsers}
                             id="example-select-1"
                             style={{ width: '100%', padding: 0 }}
@@ -552,6 +598,7 @@ export default function AllGuides({}) {
                     </Col>
                     <Col>
                         <Select
+                            disabled={true}
                             options={allSuppliers}
                             id="example-select-2"
                             style={{ width: '100%', padding: 0 }}
