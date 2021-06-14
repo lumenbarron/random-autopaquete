@@ -143,11 +143,6 @@ export default function AllGuides({}) {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log(doc.id, doc.data());
-                    // if ( typeof doc.data().label == 'undefined' ) {
-
-                    // console.log(doc.id, doc.data())
-                    // }
                     dataGuias.push({
                         id: doc.id,
                         volumetricWeight: Math.ceil(
@@ -167,17 +162,8 @@ export default function AllGuides({}) {
                 guiasByDate = dataGuias.filter(item => item.sentDate.includes(convertDate));
                 setHistory(guiasByDate);
                 allGuidesEver();
-                //localStorage.setItem('data', JSON.stringify(guiasByDate))
-                //console.log(guiasByDate);
                 setDisplayData(true);
                 searchName();
-                // if (localStorage.getItem('data')) {
-                //     let dataGuias = JSON.parse(localStorage.getItem('data'));
-                //     console.log(dataGuias);
-                //     setAllGuides(dataGuias);
-                // } else {
-                //     allGuidesEver();
-                // }
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
