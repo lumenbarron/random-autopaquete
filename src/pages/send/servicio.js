@@ -325,60 +325,6 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             });
     }, []);
 
-    // useEffect(() => {
-    //     console.log('corroborando codigo para autoencargos, segundo use effect');
-    //     Promise.all([
-    //         fetch(
-    //             `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Guadalajara&token=${sepomex}`,
-    //         ),
-    //         fetch(
-    //             `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Zapopan&token=${sepomex}`,
-    //         ),
-    //         fetch(
-    //             `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=Tonalá&token=${sepomex}`,
-    //         ),
-    //         fetch(
-    //             `https://api-sepomex.hckdrk.mx/query/search_cp_advanced/Jalisco?municipio=San Pedro Tlaquepaque&token=${sepomex}`,
-    //         ),
-    //     ])
-    //         .then(([res1, res2, res3, res4]) =>
-    //             Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]),
-    //         )
-    //         .then(result => {
-    //             let result = [cpZMG.guadalajara, cpZMG.zapopan, cpZMG.tonala, cpZMG.tlaquepaque ]
-    //             let resultZMG = result.map(element => element).flat();
-    //             let allZMG = [...resultZMG, ...OtherCpsZMG];
-    //             console.log(allZMG)
-    //             let allCpsZMG = allZMG.filter(item => {
-    //                 return !notCoverCpsZMG.includes(item);
-    //             });
-
-    //             let cpSender = allCpsZMG.includes(getCPSender.current);
-    //             let cpReceiver = allCpsZMG.includes(getCPReceiver.current);
-    //             let cpSenderExt = extendedAreaAE.includes(getCPSender.current);
-    //             let cpReceiverExt = extendedAreaAE.includes(getCPReceiver.current);
-    //             console.log( getCPReceiver.current ,CPReceiver, nameSender)
-    //             console.log(cpReceiverExt, cpSenderExt, cpReceiver, cpSender);
-    //             if (
-    //                 (cpReceiverExt === true && cpSender === true) ||
-    //                 (cpReceiver === true && cpSenderExt === true) ||
-    //                 (cpReceiverExt === true && cpSenderExt === true)
-    //             ) {
-    //                 console.log('codigos postales ZE ZMG');
-    //                 cpsAvailabilityAutoencargos.current = true;
-    //                 cpsAvailabilityZEAutoencargos.current = true;
-    //             } else if (cpReceiver === true && cpSender === true) {
-    //                 console.log('codigos postales ZMG');
-    //                 cpsAvailabilityAutoencargos.current = true;
-    //                 cpsAvailabilityZEAutoencargos.current = false;
-    //             } else {
-    //                 console.log('codigos no postales ZMG');
-    //                 cpsAvailabilityAutoencargos.current = false;
-    //             }
-    //         })
-    //         .catch(err => console.log('error', err));
-    // }, []);
-
     useEffect(() => {
         //Se extraen los provedores de la colecccion rate del perfil del usuario
         const getRates = async () => {
