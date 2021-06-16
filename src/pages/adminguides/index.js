@@ -17,6 +17,7 @@ import { useFirebaseApp } from 'reactfire';
 import { StyledAusers } from '../adminusers/styled';
 import ExportReactCSV from '../dowloadData/index';
 import swal from 'sweetalert2';
+import { connectScrollTo } from 'react-instantsearch-dom';
 
 const StyledTable = styled(TableWithBrowserPagination)`
     td[data-label='Guía'] {
@@ -90,6 +91,7 @@ export default function AllGuides({}) {
     const [endDate, setEndDate] = useState({ date: new Date() });
     const [displayData, setDisplayData] = useState(false);
     const [available, setAvailable] = useState(false);
+    const [dateListItem, setDateListItem] = useState();
     const nameSelected = useRef('usuario');
     const supplierSelected = useRef('servicio');
     const dateFrom = useRef('');
@@ -256,8 +258,8 @@ export default function AllGuides({}) {
                             : historyRecord.label,
                 };
             }),
-            // console.log(history),
         );
+        setDisplayData(true);
     }, [history]);
 
     useEffect(() => {
@@ -338,63 +340,20 @@ export default function AllGuides({}) {
             });
     };
 
-    // const searchByDate = date => {
-    //     let dataGuiasByDate = [];
-    //     let guiasByDate = [];
-    //     const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
-    //     let convertDate = new Date(date).toLocaleDateString('es-US', options);
-    //     setSelectDate({ date: date });
-    //     db.collection('guia')
-    //         .where('status', '==', 'completed')
-    //         .orderBy('creation_date', 'desc')
-    //         .get()
-    //         .then(function(querySnapshot) {
-    //             querySnapshot.forEach(function(doc) {
-    //                 dataGuiasByDate.push({
-    //                     id: doc.id,
-    //                     volumetricWeight: Math.ceil(
-    //                         (doc.data().package.height *
-    //                             doc.data().package.width *
-    //                             doc.data().package.depth) /
-    //                             5000,
-    //                     ),
-    //                     sentDate: doc
-    //                         .data()
-    //                         .creation_date.toDate()
-    //                         .toLocaleDateString('es-US', options),
-    //                     ...doc.data(),
-    //                 });
-    //                 // console.log('todas las guias', dataGuiasByDate);
-    //             });
-    //             guiasByDate = dataGuiasByDate.filter(item => item.sentDate.includes(convertDate));
-    //             console.log('todas las guias', guiasByDate);
-    //             setHistory(guiasByDate);
-    //             setDisplayData(true);
-    //             dateSelected.current = date;
-    //             if (nameSelected.current != 'usuario' || supplierSelected.current != 'servicio') {
-    //                 setSelectName('');
-    //                 setSelectSupplier('');
-    //             }
-    //         })
-    //         .catch(function(error) {
-    //             console.log('Error getting documents: ', error);
-    //         });
-    // };
     const listBetweenDays = (startDate, endDate) => {
         var moment = require('moment');
         let desde = moment(startDate);
         let hasta = moment(endDate);
+        let dates = [];
 
         console.log(startDate, endDate);
-        let dates = [];
-        let limit = false;
 
         while (desde.format('DD/MM/YY') !== hasta.format('DD/MM/YY')) {
             dates.push(desde.format('DD/MM/YY'));
             desde.add(1, 'days');
         }
-
         dates.push(hasta.format('DD/MM/YY'));
+        dates = dates.reverse();
 
         return dates;
     };
@@ -402,14 +361,14 @@ export default function AllGuides({}) {
     const searchByDate = (startDate, endDate) => {
         setDisplayData(false);
         console.log(startDate, endDate);
+        // crear lista del periodo de dias
         let dates = listBetweenDays(startDate, endDate);
-        console.log(dates);
         let ByPeriod = [];
-
-        for (let i = 0; i < dates.length(); i++) {
+        //realizar consulta por cada dia de la lista
+        dates.forEach(function(date, index, dates) {
             db.collection('guia')
                 .where('status', '==', 'completed')
-                .where('package.creation_date', '==', dates[i])
+                .where('package.creation_date', '==', '' + date + '')
                 .orderBy('creation_date', 'desc')
                 .get()
                 .then(function(querySnapshot) {
@@ -425,44 +384,18 @@ export default function AllGuides({}) {
                             ...doc.data(),
                         });
                     });
+                    console.log(date);
+                    setDateListItem('' + date + '');
+                    // si es la ultima guia, de la ultima fecha, mostrar historial en pantalla
+                    if (Object.is(dates.length - 1, index)) {
+                        setHistory(ByPeriod);
+                    }
                 })
                 .catch(function(error) {
                     console.log('Error getting documents: ', error);
                 });
-        }
-
-        console.log(ByPeriod);
-        setHistory(ByPeriod);
-        setDisplayData(true);
-
-        // console.log(startDate, endDate, allGuides);
-        // let newdates = [];
-        // let infoDates = [];
-
-        // const getDaysArray = (start, end) => {
-        //     console.log(start);
-        //     console.log(end);
-        //     for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
-        //         arr.push(new Date(dt));
-        //     }
-        //     arr.push(new Date(end));
-        //     return arr;
-        // };
-        // let daylist = getDaysArray(new Date(startDate), new Date(endDate));
-        // console.log('daylist', daylist);
-        // daylist.forEach(dat => {
-        //     newdates.push(dat.toLocaleDateString('es-US', optionsDate).slice(0, 10));
-        // });
-        // //console.log(newdates)
-        // allGuides.forEach(e => {
-        //     // console.log(e.date)
-        //     if (newdates.includes(e.sentDate)) {
-        //         infoDates.push(e);
-        //     }
-        // });
-        // setHistory(infoDates);
-        // setDisplayData(true);
-        // console.log(infoDates);
+        });
+        setDateListItem('');
     };
 
     const getIdGuia = trackingNumber => {
@@ -662,8 +595,13 @@ export default function AllGuides({}) {
                             />
                         </StyledTable>
                     ) : (
-                        <div className="rainbow-position_relative rainbow-m-vertical_xx-large rainbow-p-vertical_xx-large">
-                            <Spinner size="large" />
+                        <div className="rainbow-p-vertical_xx-large">
+                            <h1>
+                                Obteniendo Guias <span>{dateListItem}</span>
+                            </h1>
+                            <div className="rainbow-position_relative rainbow-m-vertical_xx-large rainbow-p-vertical_xx-large">
+                                <Spinner size="large" variant="brand" />
+                            </div>
                         </div>
                     )}
                 </div>
