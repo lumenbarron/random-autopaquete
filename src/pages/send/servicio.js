@@ -129,6 +129,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         '45643',
         '45645',
         '45647',
+        '45653',
     ];
 
     let notCoverCpsZMG = [
