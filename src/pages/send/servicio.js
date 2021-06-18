@@ -250,7 +250,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     //Si el código postal coincide con los códigos postales de Autoencargos se agrega al supplierAvailability
-    const autoencargos = () => {
+    const checkAutoEncargos = () => {
         let result = [cpZMG.guadalajara, cpZMG.zapopan, cpZMG.tonala, cpZMG.tlaquepaque];
         let resultZMG = result.map(element => element).flat();
         let allZMG = [...resultZMG, ...OtherCpsZMG];
@@ -322,7 +322,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     setDefaultSupplier(doc.data().package.defaultSupplier);
                 }
                 //comparar cp para avilitar paqueteria autoencargos
-                autoencargos();
+                checkAutoEncargos();
             });
     }, []);
 
@@ -446,8 +446,80 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         });
     };
 
+    const listaDisponibles = suppliersGeneral => {
+        //Se hace un nuevo array con la respuesta de la API para ver si hay zona extendida
+        suppliersGeneral.forEach(element => {
+            supplierExtendedArea[element.shipping_service.name] = true;
+            if (element.extended_area === true) {
+                supplierExtendedArea[element.shipping_service.name] = {
+                    zonaExtendida: element.extended_area,
+                };
+            }
+        });
+        setSupplierAvailability({ ...supplierExtendedArea, ...supplierExtendedAreaUs });
+
+        //Se hace un array para ver el tipo de delivery
+        suppliersGeneral.forEach(element => {
+            if (element.delivery_type !== undefined) {
+                supplierDelivery[element.shipping_service.name] = [element.delivery_type];
+            }
+        });
+        console.log('delivey', supplierDelivery);
+        setSupplierAvailabilityDelivery(supplierDelivery);
+
+        suppliersGeneral.forEach(element => {
+            supplierShippingName[element.shipping_service.name] = [
+                element.shipping_company,
+                element.shipping_service.name,
+                element.shipping_service.description,
+                element.shipping_service.id,
+            ];
+        });
+        setSupplierAvailabilityGeneral(supplierShippingName);
+    };
+    const listaAutoencargos = () => {
+        let autoencargos;
+        if (
+            cpsAvailabilityAutoencargos.current === true &&
+            cpsAvailabilityZEAutoencargos.current === false
+        ) {
+            console.log('aqui si hay autoencargos');
+            autoencargos = {
+                shipping_company: 'AUTOENCARGOS',
+                shipping_cost: 90.0,
+                shipping_service: {
+                    name: 'AUTOENCARGOS',
+                    description: 'ESTANDAR',
+                    id: 5,
+                },
+                extended_area: false,
+                extended_area_estimate_cost: {},
+            };
+        }
+        if (
+            cpsAvailabilityAutoencargos.current === true &&
+            cpsAvailabilityZEAutoencargos.current === true
+        ) {
+            console.log('aqui si hay autoencargos con zona extendida');
+            autoencargos = {
+                shipping_company: 'AUTOENCARGOS',
+                shipping_cost: 90.0,
+                shipping_service: {
+                    name: 'AUTOENCARGOS',
+                    description: 'ESTANDAR',
+                    id: 5,
+                },
+                extended_area: true,
+                extended_area_estimate_cost: {},
+            };
+        }
+
+        return autoencargos;
+    };
+
     const fetchGuia = async (data, supplier) => {
-        let suppliersGeneral;
+        let suppliersGeneral = [];
+        let autoencargos;
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
         myHeaders.append('Content-Type', 'application/json');
@@ -459,95 +531,44 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         };
         console.log(supplier);
 
+        //si se selecciono autoencargos
         if (supplier === 'autoencargos') {
-            supplier = 'fedex';
+            //sacamos lista autoencargos
+            autoencargos = listaAutoencargos();
+            //si no hay datos se muestra en pantalla la falta de cobertura
+            if (suppliersGeneral.length >= 1 || autoencargos !== undefined) {
+                suppliersGeneral.push(autoencargos);
+                listaDisponibles(suppliersGeneral);
+            } else if (suppliersGeneral.length === 0) {
+                console.log('no hay paqueterias');
+                setNoSupplier(true);
+                console.log(noSupplier);
+            }
+        } else {
+            const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${supplier}`;
+            console.log('url', urlRequest);
+
+            fetch(urlRequest, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result);
+                    if (result.length >= 1) {
+                        suppliersGeneral = result;
+                        if (supplier === '') {
+                            autoencargos = listaAutoencargos();
+                            if (autoencargos.length >= 1 || autoencargos !== undefined) {
+                                suppliersGeneral.push(autoencargos);
+                            }
+                        }
+                        listaDisponibles(suppliersGeneral);
+                    } else if (result.length === 0) {
+                        console.log('no hay paqueterias');
+                        setNoSupplier(true);
+                        console.log(noSupplier);
+                    }
+                })
+                .catch(error => console.log('error', error));
         }
-
-        const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${supplier}`;
-        console.log('url', urlRequest);
-
-        fetch(urlRequest, requestOptions)
-            .then(response => response.json())
-            .then(result => {
-                console.log(result);
-                if (result.length >= 1) {
-                    suppliersGeneral = result;
-                    if (
-                        cpsAvailabilityAutoencargos.current === true &&
-                        cpsAvailabilityZEAutoencargos.current === false
-                    ) {
-                        console.log('aqui si hay autoencargos');
-                        let autoencargos = {
-                            shipping_company: 'AUTOENCARGOS',
-                            shipping_cost: 90.0,
-                            shipping_service: {
-                                name: 'AUTOENCARGOS',
-                                description: 'ESTANDAR',
-                                id: 5,
-                            },
-                            extended_area: false,
-                            extended_area_estimate_cost: {},
-                        };
-                        suppliersGeneral.push(autoencargos);
-                    }
-                    if (
-                        cpsAvailabilityAutoencargos.current === true &&
-                        cpsAvailabilityZEAutoencargos.current === true
-                    ) {
-                        console.log('aqui si hay autoencargos con zona extendida');
-                        let autoencargos = {
-                            shipping_company: 'AUTOENCARGOS',
-                            shipping_cost: 90.0,
-                            shipping_service: {
-                                name: 'AUTOENCARGOS',
-                                description: 'ESTANDAR',
-                                id: 5,
-                            },
-                            extended_area: true,
-                            extended_area_estimate_cost: {},
-                        };
-                        suppliersGeneral.push(autoencargos);
-                    } else {
-                        //console.log('aqui no hay autoencargos');
-                    }
-                    //Se hace un nuevo array con la respuesta de la API para ver si hay zona extendida
-                    suppliersGeneral.forEach(element => {
-                        supplierExtendedArea[element.shipping_service.name] = true;
-                        if (element.extended_area === true) {
-                            supplierExtendedArea[element.shipping_service.name] = {
-                                zonaExtendida: element.extended_area,
-                            };
-                        }
-                    });
-                    setSupplierAvailability({ ...supplierExtendedArea, ...supplierExtendedAreaUs });
-
-                    //Se hace un array para ver el tipo de delivery
-                    suppliersGeneral.forEach(element => {
-                        if (element.delivery_type !== undefined) {
-                            supplierDelivery[element.shipping_service.name] = [
-                                element.delivery_type,
-                            ];
-                        }
-                    });
-                    console.log('delivey', supplierDelivery);
-                    setSupplierAvailabilityDelivery(supplierDelivery);
-
-                    suppliersGeneral.forEach(element => {
-                        supplierShippingName[element.shipping_service.name] = [
-                            element.shipping_company,
-                            element.shipping_service.name,
-                            element.shipping_service.description,
-                            element.shipping_service.id,
-                        ];
-                    });
-                    setSupplierAvailabilityGeneral(supplierShippingName);
-                } else if (result.length === 0) {
-                    console.log('no hay paqueterias');
-                    setNoSupplier(true);
-                    console.log(noSupplier);
-                }
-            })
-            .catch(error => console.log('error', error));
     };
 
     useEffect(() => {
