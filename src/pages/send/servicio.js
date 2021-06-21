@@ -552,14 +552,24 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 .then(response => response.json())
                 .then(result => {
                     console.log(result);
+                    //si el response contiene el campo 'data' se borra
+                    if (result.includes('data')) {
+                        result.pop();
+                        console.log(result);
+                    }
+
                     if (result.length >= 1) {
                         suppliersGeneral = result;
+
                         if (supplier === '') {
                             autoencargos = listaAutoencargos();
-                            if (autoencargos.length >= 1 || autoencargos !== undefined) {
+
+                            if (autoencargos !== undefined) {
+                                console.log('entro autoencargos');
                                 suppliersGeneral.push(autoencargos);
                             }
                         }
+
                         listaDisponibles(suppliersGeneral);
                     } else if (result.length === 0) {
                         console.log('no hay paqueterias');
