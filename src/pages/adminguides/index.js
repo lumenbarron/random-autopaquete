@@ -506,7 +506,7 @@ export default function AllGuides({}) {
                 <Row className="content-header">
                     <Col>
                         <Input
-                            disabled={true}
+                            disabled={false}
                             id="guia"
                             placeholder="Numero de guia"
                             className="rainbow-p-around_medium"
