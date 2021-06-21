@@ -92,6 +92,10 @@ export default function AllGuides({}) {
     const [displayData, setDisplayData] = useState(false);
     const [available, setAvailable] = useState(false);
     const [dateListItem, setDateListItem] = useState();
+    const [searchPeriod, setSearchPeriod] = useState(false);
+    const [searchTracking, setSearchTracking] = useState(true);
+    const [searchUser, setSearchUser] = useState(true);
+    const [searchService, setSearchService] = useState(true);
     const nameSelected = useRef('usuario');
     const supplierSelected = useRef('servicio');
     const dateFrom = useRef('');
@@ -131,6 +135,24 @@ export default function AllGuides({}) {
             label: 'Autoencargos',
         },
     ];
+    const typeSearch = [
+        {
+            value: 'periodo',
+            label: 'Periodo',
+        },
+        {
+            value: 'guia',
+            label: 'Guia',
+        },
+        {
+            value: 'usuario',
+            label: 'Usuario',
+        },
+        {
+            value: 'servicio',
+            label: 'Servicio',
+        },
+    ];
     const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
     //Get the first 100 guides, show only for today
@@ -166,7 +188,7 @@ export default function AllGuides({}) {
                 console.log('inabilitando funciones');
                 //allGuidesEver();
                 //setDisplayData(true);
-                //searchName();
+                searchName();
             })
             .catch(function(error) {
                 console.log('Error getting documents: ', error);
@@ -467,6 +489,36 @@ export default function AllGuides({}) {
         }
     };
 
+    const changeSearch = search => {
+        console.log(search);
+        switch (search) {
+            case 'periodo':
+                setSearchPeriod(false);
+                setSearchTracking(true);
+                setSearchUser(true);
+                setSearchService(true);
+                break;
+            case 'guia':
+                setSearchPeriod(true);
+                setSearchTracking(false);
+                setSearchUser(true);
+                setSearchService(true);
+                break;
+            case 'usuario':
+                setSearchPeriod(true);
+                setSearchTracking(true);
+                setSearchUser(false);
+                setSearchService(true);
+                break;
+            case 'servicio':
+                setSearchPeriod(true);
+                setSearchTracking(true);
+                setSearchUser(true);
+                setSearchService(false);
+                break;
+        }
+    };
+
     return (
         <StyledAusers>
             <div className="back">
@@ -474,11 +526,23 @@ export default function AllGuides({}) {
                     <h1 id="header-margin">Historial de envíos</h1>
                     <ExportReactCSV data={history} />
                 </Row>
+                <Row>
+                    <Col>
+                        <h2 style={{ marginBottom: 10 }}>Filtrar por :</h2>
+                    </Col>
+                </Row>
                 <Row className="content-header">
-                    <h2 style={{ marginBottom: 0 }}>Filtrar por :</h2>
+                    <Col md="3">
+                        <Select
+                            label="Tipo de Busqueda"
+                            options={typeSearch}
+                            onChange={search => changeSearch(search.target.value)}
+                        />
+                    </Col>
                     <Col md="3">
                         <DatePicker
                             // formatStyle="medium"
+                            disabled={searchPeriod}
                             label="Desde"
                             value={startDate.date}
                             onChange={value => setStartDate({ date: value })}
@@ -487,6 +551,7 @@ export default function AllGuides({}) {
                     <Col md="3">
                         <DatePicker
                             // formatStyle="small"
+                            disabled={searchPeriod}
                             label="Hasta"
                             value={endDate.date}
                             onChange={value => setEndDate({ date: value })}
@@ -494,7 +559,7 @@ export default function AllGuides({}) {
                     </Col>
                     <div className="rainbow-align-content_center rainbow-flex_wrap">
                         <Button
-                            disabled={false}
+                            disabled={searchPeriod}
                             //disabled={available ? false : true}
                             className="rainbow-m-around_medium"
                             onClick={() => searchByDate(startDate.date, endDate.date)}
@@ -506,7 +571,7 @@ export default function AllGuides({}) {
                 <Row className="content-header">
                     <Col>
                         <Input
-                            disabled={false}
+                            disabled={searchTracking}
                             id="guia"
                             placeholder="Numero de guia"
                             className="rainbow-p-around_medium"
@@ -520,7 +585,7 @@ export default function AllGuides({}) {
                     </Col>
                     <Col>
                         <Select
-                            disabled={true}
+                            disabled={searchUser}
                             options={tableUsers}
                             id="example-select-1"
                             style={{ width: '100%', padding: 0 }}
@@ -531,7 +596,7 @@ export default function AllGuides({}) {
                     </Col>
                     <Col>
                         <Select
-                            disabled={true}
+                            disabled={searchService}
                             options={allSuppliers}
                             id="example-select-2"
                             style={{ width: '100%', padding: 0 }}
