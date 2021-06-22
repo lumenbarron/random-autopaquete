@@ -457,6 +457,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             }
         });
         setSupplierAvailability({ ...supplierExtendedArea, ...supplierExtendedAreaUs });
+        console.log('Zona Extendida', supplierAvailability);
 
         //Se hace un array para ver el tipo de delivery
         suppliersGeneral.forEach(element => {
@@ -475,6 +476,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 element.shipping_service.id,
             ];
         });
+        console.log('supplierShippingName', supplierShippingName);
         setSupplierAvailabilityGeneral(supplierShippingName);
     };
     const listaAutoencargos = () => {
@@ -531,6 +533,11 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             redirect: 'follow',
         };
         console.log(supplier);
+        if (supplier.includes('/')) {
+            subSupplier = supplier.split('/')[1];
+            supplier = supplier.split('/')[0];
+            console.log(supplier, subSupplier);
+        }
 
         //si se selecciono autoencargos
         if (supplier === 'autoencargos') {
@@ -558,10 +565,19 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         result.pop();
                         console.log(result);
                     }
-
+                    //si hay resultados
                     if (result.length >= 1) {
                         suppliersGeneral = result;
 
+                        //si selecciona dhl, separarlo de la lista
+                        if (subSupplier === 'dhl') {
+                            suppliersGeneral = suppliersGeneral.filter(
+                                element => element.shipping_service.name === 'DHL-DOMÉSTICOEXPRESS',
+                            );
+                            console.log('DHL:', suppliersGeneral);
+                        }
+
+                        //si selecciona todas las paqueterias se cotiza autoencargos
                         if (supplier === '') {
                             autoencargos = listaAutoencargos();
 
@@ -583,8 +599,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     };
 
     useEffect(() => {
+        console.log('Entro a definicion de precios y activacion de estados');
         if (weight === '') return;
         if (!supplierAvailability || !profileDoc) return;
+        console.log('Paso los filtros:', weight, supplierAvailability, profileDoc);
 
         //Validaciones del peso
         let pricedWeight = Math.ceil(weight);
@@ -593,15 +611,15 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         const volumetricWeight = Math.ceil((height * width * depth) / 5000);
 
         if (volumetricWeight > weight) {
-            // console.log('el peso volumetrico es mayor que el peso declarado');
+            console.log('el peso volumetrico es mayor que el peso declarado');
             pricedWeight = volumetricWeight;
-            // console.log('pricedWeight', pricedWeight);
+            console.log('pricedWeight', pricedWeight);
             setFinalWeight(pricedWeight);
             getFinalWeight.current = pricedWeight;
         } else {
             setFinalWeight(pricedWeight);
             getFinalWeight.current = pricedWeight;
-            // console.log('pricedWeight', pricedWeight);
+            console.log('pricedWeight', pricedWeight);
         }
 
         //Validaciones de valor asegurado
@@ -626,6 +644,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         let extendedAreaRedpackExp = 0;
         let extendedAreaRedpackEco = 0;
         let extendedAreaAutoencargos = 0;
+        let extendedAreaDhlExpress = 0;
 
         if (typeof supplierAvailability.NACIONALDIASIGUIENTE !== 'undefined') {
             extendedAreaFedexDiaS =
@@ -1021,14 +1040,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     }
 
                     const precio = tarifa.guia + kilosExtra + cargoExtra;
-                    // console.log(
-                    //     'precio final',
-                    //     precio,
-                    //     tarifa.guia,
-                    //     kilosExtra,
-                    //     cargoExtra,
-                    //     cargoExtraHeight,
-                    // );
+
                     if (entrega === 'estafetaDiaSiguiente')
                         setSupplierCostEstafetaDiaS({
                             id: tarifa.id,

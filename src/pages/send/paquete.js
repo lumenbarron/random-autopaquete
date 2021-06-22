@@ -19,6 +19,7 @@ const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
 
 const optionsSuppliers = [
     { value: 'fedex', label: 'Fedex' },
+    { value: 'infinito/dhl', label: 'DHL' },
     { value: 'pakke', label: 'Estafeta' },
     { value: 'redpack', label: 'Redpack' },
     { value: 'autoencargos', label: 'AutoEncargos' },
