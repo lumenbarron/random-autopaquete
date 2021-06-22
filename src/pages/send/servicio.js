@@ -520,6 +520,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
     const fetchGuia = async (data, supplier) => {
         let suppliersGeneral = [];
         let autoencargos;
+        let subSupplier = '';
         let myHeaders = new Headers();
         myHeaders.append('Authorization', tokenProd);
         myHeaders.append('Content-Type', 'application/json');
