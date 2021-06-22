@@ -756,7 +756,10 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         if (entrega === 'autoencargos') {
                             getFinalPriceAuto.finalPrice = parseInt(precio, 10);
                         }
-
+                        if (entrega === 'dhlExpress') {
+                            getFinalPriceDhlExp.finalPrice = parseInt(precio, 10);
+                        }
+                        //se verifica el exceso de altura
                         let cargoExtraHeight;
                         if (parseInt(height, 10) > 100 && entrega === 'redpackEcoExpress') {
                             cargoExtraHeight = 210;
@@ -764,10 +767,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargoExtraHeight = 280;
                         } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
                             cargoExtraHeight = 110;
+                        } else if (parseInt(height, 10) > 120 && entrega === 'dhlExpress') {
+                            cargoExtraHeight = 300;
                         } else {
                             cargoExtraHeight = 0;
                         }
-
+                        //---------LECTURA DEL CODIGO DEL 23/06/2021-------//
                         if (entrega === 'estafetaDiaSiguiente')
                             setSupplierCostEstafetaDiaS({
                                 id: doc.id,
