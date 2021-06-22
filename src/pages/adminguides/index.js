@@ -144,14 +144,6 @@ export default function AllGuides({}) {
             value: 'guia',
             label: 'Guia',
         },
-        {
-            value: 'usuario',
-            label: 'Usuario',
-        },
-        {
-            value: 'servicio',
-            label: 'Servicio',
-        },
     ];
     const optionsDate = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
@@ -296,72 +288,6 @@ export default function AllGuides({}) {
         setDisplayData(true);
     }, [usersName]);
 
-    const searchByName = name => {
-        let dataGuiasEachUser = [];
-        db.collection('guia')
-            .where('name', '==', name)
-            .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    console.log('guias del cliente ' + name + ':', doc.id);
-                    dataGuiasEachUser.push({
-                        id: doc.id,
-                        volumetricWeight: Math.ceil(
-                            (doc.data().package.height *
-                                doc.data().package.width *
-                                doc.data().package.depth) /
-                                5000,
-                        ),
-                        ...doc.data(),
-                    });
-                });
-                setHistory(dataGuiasEachUser);
-                setDisplayData(true);
-                nameSelected.current = name;
-                setSelectName(name);
-                if (supplierSelected.current != 'servicio' || dateSelected.current != new Date()) {
-                    setSelectSupplier('');
-                    setSelectDate({ date: new Date() });
-                }
-                // console.log('dataGuiasEachUser', dataGuiasEachUser);
-            });
-    };
-
-    const searchBySupplier = supplier => {
-        let dataGuiasBySupplier = [];
-        db.collection('guia')
-            .where('supplierData.Supplier', '==', supplier)
-            .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    //console.log(doc.id, doc.data() );
-                    // console.log('guias del cliente ' + supplier + ':', doc.data());
-                    dataGuiasBySupplier.push({
-                        id: doc.id,
-                        volumetricWeight: Math.ceil(
-                            (doc.data().package.height *
-                                doc.data().package.width *
-                                doc.data().package.depth) /
-                                5000,
-                        ),
-                        ...doc.data(),
-                    });
-                });
-                setHistory(dataGuiasBySupplier);
-                setDisplayData(true);
-                supplierSelected.current = supplier;
-                setSelectSupplier(supplier);
-                if (nameSelected.current != 'usuario' || dateSelected.current != new Date()) {
-                    setSelectName('');
-                    setSelectDate({ date: new Date() });
-                }
-            });
-    };
-
     const listBetweenDays = (startDate, endDate) => {
         var moment = require('moment');
         let desde = moment(startDate);
@@ -495,26 +421,11 @@ export default function AllGuides({}) {
             case 'periodo':
                 setSearchPeriod(false);
                 setSearchTracking(true);
-                setSearchUser(true);
-                setSearchService(true);
+                document.getElementById('input-2').value = '';
                 break;
             case 'guia':
                 setSearchPeriod(true);
                 setSearchTracking(false);
-                setSearchUser(true);
-                setSearchService(true);
-                break;
-            case 'usuario':
-                setSearchPeriod(true);
-                setSearchTracking(true);
-                setSearchUser(false);
-                setSearchService(true);
-                break;
-            case 'servicio':
-                setSearchPeriod(true);
-                setSearchTracking(true);
-                setSearchUser(true);
-                setSearchService(false);
                 break;
         }
     };
@@ -524,26 +435,37 @@ export default function AllGuides({}) {
             <div className="back">
                 <Row className="content-header row-header">
                     <h1 id="header-margin">Historial de envíos</h1>
-                    <ExportReactCSV data={history} />
+                    <div>
+                        <ExportReactCSV data={history} />
+                    </div>
                 </Row>
                 <Row>
-                    <Col>
+                    <Col md="2">
                         <h2 style={{ marginBottom: 10 }}>Filtrar por :</h2>
                     </Col>
+                    <Select
+                        options={typeSearch}
+                        onChange={search => changeSearch(search.target.value)}
+                    />
                 </Row>
                 <Row className="content-header">
                     <Col md="3">
-                        <Select
-                            label="Tipo de Busqueda"
-                            options={typeSearch}
-                            onChange={search => changeSearch(search.target.value)}
+                        <Input
+                            disabled={searchTracking}
+                            id="guia"
+                            placeholder="Numero de guia"
+                            className="rainbow-p-around_medium"
+                            style={{ flex: '1 1' }}
+                            onChange={ev => getIdGuia(ev.target.value)}
+                            icon={
+                                <FontAwesomeIcon icon={faSearch} className="rainbow-color_gray-3" />
+                            }
                         />
                     </Col>
                     <Col md="3">
                         <DatePicker
                             // formatStyle="medium"
                             disabled={searchPeriod}
-                            label="Desde"
                             value={startDate.date}
                             onChange={value => setStartDate({ date: value })}
                         />
@@ -552,7 +474,6 @@ export default function AllGuides({}) {
                         <DatePicker
                             // formatStyle="small"
                             disabled={searchPeriod}
-                            label="Hasta"
                             value={endDate.date}
                             onChange={value => setEndDate({ date: value })}
                         />
@@ -567,51 +488,6 @@ export default function AllGuides({}) {
                             Buscar
                         </Button>
                     </div>
-                </Row>
-                <Row className="content-header">
-                    <Col>
-                        <Input
-                            disabled={searchTracking}
-                            id="guia"
-                            placeholder="Numero de guia"
-                            className="rainbow-p-around_medium"
-                            style={{ flex: '1 1' }}
-                            onChange={ev => getIdGuia(ev.target.value)}
-                            icon={
-                                <FontAwesomeIcon icon={faSearch} className="rainbow-color_gray-3" />
-                            }
-                        />
-                        {/* <Button variant="destructive" className="rainbow-m-around_medium" onClick={ev => getIdGuia(ev.target.value)}>Buscar</Button> */}
-                    </Col>
-                    <Col>
-                        <Select
-                            disabled={searchUser}
-                            options={tableUsers}
-                            id="example-select-1"
-                            style={{ width: '100%', padding: 0 }}
-                            value={selectName}
-                            onChange={ev => searchByName(ev.target.value)}
-                            className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
-                        />
-                    </Col>
-                    <Col>
-                        <Select
-                            disabled={searchService}
-                            options={allSuppliers}
-                            id="example-select-2"
-                            style={{ width: '100%', padding: 0 }}
-                            value={selectSupplier}
-                            onChange={ev => searchBySupplier(ev.target.value)}
-                            className="rainbow-m-vertical_x-large rainbow-p-horizontal_medium rainbow-m_auto"
-                        />
-                    </Col>
-                    {/* <Col>
-                        <DatePicker
-                            formatStyle="large"
-                            value={selectDate.date}
-                            onChange={value => searchByDate(value)}
-                        />
-                    </Col> */}
                 </Row>
                 <div className="rainbow-p-bottom_xx-large">
                     {displayData ? (
