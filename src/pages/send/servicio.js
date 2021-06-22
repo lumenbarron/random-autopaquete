@@ -652,7 +652,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ? 150
                     : 0;
         } else {
-            // console.log('no zona extendida extendedAreaFedexDiaS');
+            console.log('no zona extendida extendedAreaFedexDiaS');
         }
         if (typeof supplierAvailability.NACIONALECONOMICO !== 'undefined') {
             extendedAreaFedexEco =
@@ -660,19 +660,19 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ? 150
                     : 0;
         } else {
-            // console.log('no zona extendida extendedAreaFedexEco');
+            console.log('no zona extendida extendedAreaFedexEco');
         }
         if (typeof supplierAvailability.EXPRESS !== 'undefined') {
             extendedAreaRedpackExp =
                 typeof supplierAvailability.EXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
         } else {
-            // console.log('no zona extendida extendedAreaRedpackExp');
+            console.log('no zona extendida extendedAreaRedpackExp');
         }
         if (typeof supplierAvailability.ECOEXPRESS !== 'undefined') {
             extendedAreaRedpackEco =
                 typeof supplierAvailability.ECOEXPRESS.zonaExtendida !== 'undefined' ? 130 : 0;
         } else {
-            // console.log('no zona extendida extendedAreaRedpackEco');
+            console.log('no zona extendida extendedAreaRedpackEco');
         }
         if (typeof supplierAvailability.estafetaEconomico !== 'undefined') {
             extendedAreaEstafetaEco =
@@ -680,7 +680,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ? 110
                     : 0;
         } else {
-            //console.log('no zona extendida extendedAreaEstafetaEco');
+            console.log('no zona extendida extendedAreaEstafetaEco');
         }
         if (typeof supplierAvailability.estafetaDiaSiguiente !== 'undefined') {
             extendedAreaEstafetaDiaS =
@@ -688,23 +688,35 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     ? 110
                     : 0;
         } else {
-            //console.log('no zona extendida extendedAreaEstafetaDiaS');
+            console.log('no zona extendida extendedAreaEstafetaDiaS');
         }
         if (typeof supplierAvailability.AUTOENCARGOS !== 'undefined') {
             extendedAreaAutoencargos =
                 typeof supplierAvailability.AUTOENCARGOS.zonaExtendida !== 'undefined' ? 40 : 0;
         } else {
-            // console.log('no zona extendida extendedAreaRedpackEco');
+            console.log('no zona extendida extendedAreaRedpackEco');
         }
+        if (typeof supplierAvailability['DHL-DOMÉSTICOEXPRESS'] !== 'undefined') {
+            extendedAreaDhlExpress =
+                typeof supplierAvailability['DHL-DOMÉSTICOEXPRESS'].zonaExtendida !== 'undefined'
+                    ? 150
+                    : 0;
+        } else {
+            console.log('no zona extendida extendedAreaDhlExpress');
+        }
+
+        console.log('Verificando y estableciendo precios zona extendida');
 
         let getFinalPriceEstafetaDiaS = { finalPrice: 0, supplier: 'estafetaDiaSiguiente' };
         let getFinalPriceEstafetaEco = { finalPrice: 0, supplier: 'estafetaEconomico' };
         let getFinalPriceFedexDiaS = { finalPrice: 0, supplier: 'fedexDiaSiguiente' };
+        let getFinalPriceRedEco = { finalPrice: 0, supplier: 'redpackEcoExpress' };
         let getFinalPriceFedexEco = { finalPrice: 0, supplier: 'fedexEconomico' };
         let getFinalPriceRedExp = { finalPrice: 0, supplier: 'redpackExpress' };
-        let getFinalPriceRedEco = { finalPrice: 0, supplier: 'redpackEcoExpress' };
+        let getFinalPriceDhlExp = { finalPrice: 0, supplier: 'dhlExpress' };
         let getFinalPriceAuto = { finalPrice: 0, supplier: 'autoencargos' };
 
+        //se buscan precios establecidos en el perfil del usuario
         profileDoc.ref
             .collection('rate')
             .orderBy('max', 'desc')
