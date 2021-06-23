@@ -56,6 +56,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
 
     const [supplierCostAutoencargosEcon, setSupplierCostAutoencargosEcon] = useState(false);
 
+    const [supplierCostDhlEx, setSupplierCostDhlEx] = useState(false);
+
     const user = useUser();
     const firebase = useFirebaseApp();
     const db = firebase.firestore();
@@ -622,7 +624,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             console.log('pricedWeight', pricedWeight);
         }
 
-        //Validaciones de valor asegurado
+        //Validaciones de valor asegurado (seguro del paquete)
         const getInsurancePrice = company => {
             if (contentValue === '') return 0;
             const baseValue = parseInt(contentValue, 10) * 0.02;
@@ -768,11 +770,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
                             cargoExtraHeight = 110;
                         } else if (parseInt(height, 10) > 120 && entrega === 'dhlExpress') {
-                            cargoExtraHeight = 300;
+                            cargoExtraHeight = 210;
                         } else {
                             cargoExtraHeight = 0;
                         }
                         //---------LECTURA DEL CODIGO DEL 23/06/2021-------//
+                        //Guardando datos que se van a mostrar en su respectivo estado
                         if (entrega === 'estafetaDiaSiguiente')
                             setSupplierCostEstafetaDiaS({
                                 id: doc.id,
@@ -897,6 +900,26 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     ? false
                                     : supplierAvailabilityGeneral.AUTOENCARGOS,
                                 insurance: getInsurancePrice('autoencargos'),
+                            });
+                        if (entrega === 'dhlExpress')
+                            setSupplierCostDhlEx({
+                                id: doc.id,
+                                precio:
+                                    getFinalPriceDhlExp.finalPrice +
+                                    getInsurancePrice('dhlExpress') +
+                                    extendedAreaDhlExpress +
+                                    cargoExtraHeight,
+                                delivery:
+                                    supplierAvailabilityDelivery.ECOEXPRESS != 'NORMAL'
+                                        ? supplierAvailabilityDelivery.ECOEXPRESS
+                                        : '',
+                                cargoExtraHeight: cargoExtraHeight,
+                                guia: getFinalPriceDhlExp.finalPrice,
+                                zonaExt: extendedAreaDhlExpress != 0 ? 150 : false,
+                                shippingInfo: !supplierAvailabilityGeneral.ECOEXPRESS
+                                    ? false
+                                    : supplierAvailabilityGeneral.ECOEXPRESS,
+                                insurance: getInsurancePrice('dhlExpress'),
                             });
                         return;
                     }
