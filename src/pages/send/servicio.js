@@ -910,19 +910,20 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                     extendedAreaDhlExpress +
                                     cargoExtraHeight,
                                 delivery:
-                                    supplierAvailabilityDelivery.ECOEXPRESS != 'NORMAL'
-                                        ? supplierAvailabilityDelivery.ECOEXPRESS
+                                    supplierAvailabilityDelivery['DHL-DOMÉSTICOEXPRESS'] != 'NORMAL'
+                                        ? supplierAvailabilityDelivery['DHL-DOMÉSTICOEXPRESS']
                                         : '',
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceDhlExp.finalPrice,
                                 zonaExt: extendedAreaDhlExpress != 0 ? 150 : false,
-                                shippingInfo: !supplierAvailabilityGeneral.ECOEXPRESS
+                                shippingInfo: !supplierAvailabilityGeneral['DHL-DOMÉSTICOEXPRESS']
                                     ? false
-                                    : supplierAvailabilityGeneral.ECOEXPRESS,
+                                    : supplierAvailabilityGeneral['DHL-DOMÉSTICOEXPRESS'],
                                 insurance: getInsurancePrice('dhlExpress'),
                             });
                         return;
                     }
+                    //verificando kilos extras
                     if (parseInt(pricedWeight, 10) > parseInt(max, 10) && !kgExtra) {
                         // console.log('entrando a kilos extra');
                         // console.log('precioTotal', precioTotal, 'entrega', entrega);
@@ -1018,6 +1019,18 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 }
                             }
 
+                            if (getFinalPriceDhlExp.supplier === entrega) {
+                                // console.log('es el mismo proveedor auto');
+                                if (getFinalPriceDhlExp.finalPrice > precioTotal) {
+                                    // console.log('la tarifa directa es mas alta auto');
+                                    precioTotal = getFinalPriceDhlExp.finalPrice;
+                                    diferencia = 0;
+                                } else {
+                                    precioTotal = precioTotal;
+                                    diferencia = diferencia;
+                                }
+                            }
+
                             // console.log(
                             //     'precioTotal de entrega',
                             //     precioTotal,
@@ -1049,6 +1062,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         return;
                     }
                 });
+                //definiendo cargos extras(peso, peso real, altura)
                 Object.keys(segundaMejorTarifa).forEach(entrega => {
                     // console.log('entrando a los objects keys');
                     const tarifa = segundaMejorTarifa[entrega];
@@ -1066,6 +1080,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         cargoExtra = 0;
                     }
 
+                    if (realWeight > 30 && entrega === 'dhlExpress') {
+                        cargoExtra = 110;
+                    } else {
+                        cargoExtra = 0;
+                    }
+
                     if (
                         (parseInt(height, 10) > 100 && entrega === 'redpackEcoExpress') ||
                         (parseInt(height, 10) > 100 && entrega === 'redpackExpress')
@@ -1075,10 +1095,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         cargoExtraHeight = 280;
                     } else if (parseInt(height, 10) > 120 && entrega === 'fedexEconomico') {
                         cargoExtraHeight = 110;
+                    } else if (parseInt(height, 10) > 120 && entrega === 'dhlExpress') {
+                        cargoExtraHeight = 280;
                     } else {
                         cargoExtraHeight = 0;
                     }
-
+                    // precio final y guardar para mostrar a usuario
                     const precio = tarifa.guia + kilosExtra + cargoExtra;
 
                     if (entrega === 'estafetaDiaSiguiente')
@@ -1221,6 +1243,28 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 : supplierAvailabilityGeneral.AUTOENCARGOS,
                             insurance: getInsurancePrice('autoencargos'),
                         });
+                    if (entrega === 'dhlExpress')
+                        setSupplierCostDhlEx({
+                            id: tarifa.id,
+                            precio:
+                                precio +
+                                getInsurancePrice('dhlExpress') +
+                                extendedAreaDhlExpress +
+                                cargoExtraHeight,
+                            delivery:
+                                supplierAvailabilityDelivery['DHL-DOMÉSTICOEXPRESS'] != 'NORMAL'
+                                    ? supplierAvailabilityDelivery['DHL-DOMÉSTICOEXPRESS']
+                                    : '',
+                            kilosExtra,
+                            cargoExtraHeight: cargoExtraHeight,
+                            cargoExtra,
+                            guia,
+                            zonaExt: extendedAreaDhlExpress != 0 ? 150 : false,
+                            shippingInfo: !supplierAvailabilityGeneral['DHL-DOMÉSTICOEXPRESS']
+                                ? false
+                                : supplierAvailabilityGeneral['DHL-DOMÉSTICOEXPRESS'],
+                            insurance: getInsurancePrice('dhlExpress'),
+                        });
                 });
             });
     }, [
@@ -1239,6 +1283,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             )}
             {proveedor === 'fedex' && tipoEnvio === 'Economico' && (
                 <img src="/assets/fedex-eco.png" style={{ maxWidth: 180 }} alt="Fedex" />
+            )}
+            {proveedor === 'dhl' && tipoEnvio === 'Express' && (
+                <img src="/assets/autoencar.png" style={{ maxWidth: 180 }} alt="Autoencargos" />
             )}
             {proveedor === 'redpack' && tipoEnvio === 'Express' && (
                 <img src="/assets/redpack-express.png" style={{ maxWidth: 180 }} alt="Redpack" />
@@ -1441,6 +1488,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 '3 a 5 días hábiles',
                                 supplierCostEstafetaEcon,
                             )}
+                        {supplierAvailability['DHL-DOMÉSTICOEXPRESS'] &&
+                            supplierCostDhlEx.guia &&
+                            supplierCard('dhl', 'Express', '1 dia habil', supplierCostDhlEx)}
                         {supplierAvailability.NACIONALDIASIGUIENTE &&
                             supplierCostFedexDiaS.guia &&
                             supplierCard(
@@ -1512,7 +1562,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         (supplierAvailability.ECOEXPRESS !== 'undefined' &&
                             supplierCostRedpackEco.guia) ||
                         (supplierAvailability.AUTOENCARGOS !== 'undefined' &&
-                            supplierCostAutoencargosEcon.guia)
+                            supplierCostAutoencargosEcon.guia) ||
+                        (supplierAvailability['DHL-DOMÉSTICOEXPRESS'] !== 'undefined' &&
+                            supplierCostDhlEx.guia)
                     ) && <h1> ¡Oh no! Ha ocurrido un error, favor de contactar a tu asesor.</h1>}
                 </>
             )}
