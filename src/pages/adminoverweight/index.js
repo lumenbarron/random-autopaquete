@@ -124,21 +124,7 @@ const AdminOverweightPage = () => {
         let cargoExtra;
         let cargo;
         let maxrate;
-
-        // console.log(
-        //     'realKg',
-        //     realKg,
-        //     'kgDeclarados',
-        //     kgDeclarados,
-        //     'rateKgExtra',
-        //     rateKgExtra,
-        //     'CostGuia',
-        //     costGuia,
-        //     'CostTotal',
-        //     costTotal,
-        //     'supplier',
-        //     supplier,
-        // );
+        console.log('entra kilos');
         if (parseInt(realKg, 10) < parseInt(kgDeclarados, 10)) {
             console.log('cargo 0');
             cargoExtraCero = 0;
