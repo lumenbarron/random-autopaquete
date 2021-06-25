@@ -145,18 +145,24 @@ export default function OverweightUser({ user }) {
 
     //Get the id data´s guia
     const getGuia = e => {
+        setDate('');
+        setKgdeclarados('');
+        setMatchPrice(`Guia no registrada`);
         console.log('obteniendo guia');
         e.preventDefault();
         setTrackNumber(e.target.value);
         guiaRef.current = e.target.value;
         let overWeightGuide = [];
+        if (e.target.value === '') {
+            setMatchPrice('');
+        }
         history.forEach(item => {
             // console.log( item.rastreo)
             overWeightGuide.push(item.rastreo);
         });
         // console.log('overWeightGuide', overWeightGuide);
         if (overWeightGuide.includes(guiaRef.current)) {
-            swal.fire('¡Oh no!', 'Parece que esta guía ya tiene sobrepeso', 'error');
+            setMatchPrice(` Esta Guia ya tiene sobrepeso`);
             guiaRef.current = '';
         } else {
             // console.log(guiaRef.current)
@@ -166,7 +172,7 @@ export default function OverweightUser({ user }) {
                 .where('rastreo', 'array-contains', guiaRef.current)
                 .get()
                 .then(function(querySnapshot) {
-                    querySnapshot.forEach(function(doc) {
+                    querySnapshot.forEach(function(doc, index, docs) {
                         setGuiaId(doc.id);
                         setCostGuia(doc.data().supplierData.cargos.guia);
                         setUserId(doc.data().ID);
@@ -193,6 +199,9 @@ export default function OverweightUser({ user }) {
                                   ),
                         );
                         setSupplier(doc.data().supplierData.tarifa.entrega);
+
+                        setMatchPrice('');
+
                         // setErrorGuia(true);
                     });
                 })
@@ -211,9 +220,13 @@ export default function OverweightUser({ user }) {
         let realKg = e.target.value;
         let totalKg;
         setRealKg(e.target.value);
+        if (realKg.trim() === '') {
+            setMatchPrice('');
+        }
         //mientras que los kilos reales sean menores que los de la plataforma el cargo es 0
         if (parseInt(realKg, 10) <= parseInt(kgDeclarados, 10) && parseInt(realKg, 10) >= 0) {
             console.log('cargo 0');
+            setMatchPrice(` Peso cubierto con ${supplier}`);
             setCargo(cargoExtra);
         } //si no se hace el calculo
         else if (parseInt(realKg, 10) > parseInt(kgDeclarados, 10)) {
@@ -237,92 +250,29 @@ export default function OverweightUser({ user }) {
 
             try {
                 totalKg = realKg - overweightCostBase.max;
-                if (totalKg === 0) {
+                if (totalKg <= 0) {
                     console.log('cargo 0, Kilos a cobrar:', totalKg);
-                    setMatchPrice(
-                        `Peso cubierto de ${overweightCostBase.min} hasta  ${overweightCostBase.max} con ${overweightCostBase.entrega}`,
-                    );
+                    setMatchPrice(` Peso cubierto con ${supplier}`);
                     setCargo(cargoExtra);
                 } else {
                     try {
                         console.log('Kilos a cobrar:', totalKg);
                         cargoExtra = totalKg * costoKiloExtra * 1.16;
                         console.log('Cargo extra:', cargoExtra);
+                        setMatchPrice(` Kilos a cobrar: ${totalKg}`);
                         setCargo(cargoExtra);
                     } catch (err) {
                         console.log('No se encontro Costo de kilo extra');
-                        swal.fire(
-                            '¡Oh no!',
-                            'No se encontro costo de kilo extra de ' + supplier,
-                            'error',
-                        );
+                        setMatchPrice(` Precio kilo Extra ${supplier} no registrado`);
                         console.log(err.message);
                         setCargo(cargoExtra);
                     }
                 }
             } catch (err) {
                 console.log('no se encontro convenio');
-                swal.fire('¡Oh no!', 'No se encontraron los precios de ' + supplier, 'error');
+                setMatchPrice(` Precios no registrados`);
                 console.log(err.message);
             }
-
-            //         overweightCostBase.forEach(rates => {
-            //         console.log(rates.min, rates.max, rates.precio, rates.entrega, parseInt(realKg, 10));
-            //         if (
-
-            //             rates.precio === costGuia &&
-            //             rates.entrega === supplier &&
-            //             !rates.kgExtra
-            //         ) {
-            //             //console.log('guardando el max rate de su tarifa');
-            //             maxrate = parseInt(rates.max, 10);
-            //             //console.log(maxrate);
-            //             if (
-            //                 parseInt(rates.min, 10) <= parseInt(realKg, 10) &&
-            //                 parseInt(rates.max, 10) >= parseInt(realKg, 10) &&
-            //                 rates.precio === costGuia &&
-            //                 rates.entrega === supplier &&
-            //                 !rates.kgExtra
-            //             ) {
-            //                 //console.log('entra en su tarifa');
-            //                 cargoExtraCero = 0;
-            //                 setMatchPrice(`de ${rates.min} hasta  ${rates.max} con ${rates.entrega}`);
-            //             } else {
-            //                 console.log(
-            //                     'maxrate',
-            //                     maxrate,
-            //                     'realKg',
-            //                     parseInt(realKg, 10),
-            //                     'kg exta',
-            //                     rateKgExtra,
-            //                 );
-            //                 console.log(parseInt(realKg, 10) - maxrate);
-            //                 cargoExtra =
-            //                     (parseInt(realKg, 10) - maxrate) * parseInt(rateKgExtra, 10) * 1.16;
-            //             }
-            //         } else {
-            //             console.log('no entra en ninguna tarifa');
-            //             // let rest =  (parseInt(realKg, 10) - parseInt(kgDeclarados, 10))
-            //             // console.log(rest, 'rest')
-            //             cargo =
-            //                 (parseInt(realKg, 10) - parseInt(kgDeclarados, 10)) *
-            //                 parseInt(rateKgExtra, 10) *
-            //                 1.16;
-            //             //console.log(cargo)
-            //         }
-            //     });
-            // }
-
-            // //console.log('cargoExtraCero', cargoExtraCero, 'cargoExtra', cargoExtra, 'cargo', cargo);
-            // if (cargoExtraCero === 0) {
-            //     setMatchRate(false);
-            //     setCargo(cargoExtraCero);
-            // } else if (cargoExtra < cargo) {
-            //     setMatchRate(true);
-            //     setCargo(cargoExtra);
-            // } else {
-            //     setMatchRate(true);
-            //     setCargo(cargo);
         }
     };
 
@@ -466,13 +416,17 @@ export default function OverweightUser({ user }) {
                     readOnly
                 />
                 <div style={{ flex: '1 1' }}>
-                    <Button
-                        disabled={true}
-                        className="btn-confirm"
-                        label="Confirmar"
-                        onClick={addOverWeight}
-                    />
+                    <p>Estatus</p>
+                    <p>{matchPrice}</p>
                 </div>
+                <Button
+                    disabled={true}
+                    className="btn-confirm"
+                    style={{ flex: '1 1' }}
+                    label="Confirmar"
+                    onClick={addOverWeight}
+                />
+                <br></br>
             </div>
             <div className="rainbow-p-bottom_large rainbow-p-top_large">
                 <StyledPanel>
