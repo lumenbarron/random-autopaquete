@@ -243,6 +243,7 @@ const SendPage = () => {
                             body: data,
                             redirect: 'follow',
                         };
+                        console.log(data);
                         fetch(
                             'https://autopaquete.simplestcode.com/api/do-shipping/',
                             requestOptions,

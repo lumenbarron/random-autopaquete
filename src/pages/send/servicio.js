@@ -1285,7 +1285,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 <img src="/assets/fedex-eco.png" style={{ maxWidth: 180 }} alt="Fedex" />
             )}
             {proveedor === 'dhl' && tipoEnvio === 'Express' && (
-                <img src="/assets/autoencar.png" style={{ maxWidth: 180 }} alt="Autoencargos" />
+                <img src="/assets/dhl-express.png" style={{ maxWidth: 180 }} alt="Dhl" />
             )}
             {proveedor === 'redpack' && tipoEnvio === 'Express' && (
                 <img src="/assets/redpack-express.png" style={{ maxWidth: 180 }} alt="Redpack" />
