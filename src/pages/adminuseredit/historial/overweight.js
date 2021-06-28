@@ -44,6 +44,8 @@ export default function OverweightUser({ user }) {
     const [rateKgExtra, setRateKgExtra] = useState();
     const [overweightRatesBase, setOverweightRatesBase] = useState([]);
     const [cargo, setCargo] = useState();
+    const [confirmar, setConfirmar] = useState(true);
+    const [inputRealKg, setinputRealKg] = useState(true);
 
     const creationDate = new Date();
     let guiaRef = useRef('');
@@ -148,12 +150,16 @@ export default function OverweightUser({ user }) {
         setDate('');
         setKgdeclarados('');
         setMatchPrice(`Guia no registrada`);
+        setCargo('');
+        setRealKg('');
+        setConfirmar(true);
+        setinputRealKg(true);
         console.log('obteniendo guia');
         e.preventDefault();
         setTrackNumber(e.target.value);
         guiaRef.current = e.target.value;
         let overWeightGuide = [];
-        if (e.target.value === '') {
+        if (e.target.value.trim() === '') {
             setMatchPrice('');
         }
         history.forEach(item => {
@@ -201,12 +207,10 @@ export default function OverweightUser({ user }) {
                         setSupplier(doc.data().supplierData.tarifa.entrega);
 
                         setMatchPrice('');
-
-                        // setErrorGuia(true);
+                        setinputRealKg(false);
                     });
                 })
                 .catch(function(error) {
-                    // setErrorGuia(true);
                     console.log('Error getting documents: ', error);
                 });
         }
@@ -220,17 +224,19 @@ export default function OverweightUser({ user }) {
         let realKg = e.target.value;
         let totalKg;
         setRealKg(e.target.value);
+        setConfirmar(true);
         if (realKg.trim() === '') {
             setMatchPrice('');
+            setCargo('');
         }
         //mientras que los kilos reales sean menores que los de la plataforma el cargo es 0
         if (parseInt(realKg, 10) <= parseInt(kgDeclarados, 10) && parseInt(realKg, 10) >= 0) {
             console.log('cargo 0');
             setMatchPrice(` Peso cubierto con ${supplier}`);
             setCargo(cargoExtra);
-        } //si no se hace el calculo
+        } //si no, se hace el calculo
         else if (parseInt(realKg, 10) > parseInt(kgDeclarados, 10)) {
-            //se busca el comvenio del cliente
+            //se busca el convenio del cliente
             console.log('Convenio:', overweightRatesBase);
 
             overweightCostBase = overweightRatesBase
@@ -261,6 +267,7 @@ export default function OverweightUser({ user }) {
                         console.log('Cargo extra:', cargoExtra);
                         setMatchPrice(` Kilos a cobrar: ${totalKg}`);
                         setCargo(cargoExtra);
+                        setConfirmar(false);
                     } catch (err) {
                         console.log('No se encontro Costo de kilo extra');
                         setMatchPrice(` Precio kilo Extra ${supplier} no registrado`);
@@ -348,6 +355,7 @@ export default function OverweightUser({ user }) {
                     setTrackNumber('');
                     setRealKg('');
                     setCargo('');
+                    setConfirmar(true);
                     console.log('Document written');
                     swal.fire('Agregado', '', 'success');
                 })
@@ -403,6 +411,7 @@ export default function OverweightUser({ user }) {
                     id="kgsReales"
                     label="Kgs Reales"
                     className="rainbow-p-around_medium"
+                    disabled={inputRealKg}
                     style={{ flex: '1 1' }}
                     onChange={e => calculateExtraWeight(e)}
                     value={realKg}
@@ -419,14 +428,15 @@ export default function OverweightUser({ user }) {
                     <p>Estatus</p>
                     <p>{matchPrice}</p>
                 </div>
-                <Button
-                    disabled={true}
-                    className="btn-confirm"
-                    style={{ flex: '1 1' }}
-                    label="Confirmar"
-                    onClick={addOverWeight}
-                />
-                <br></br>
+                <div style={{ flex: '1 1' }}>
+                    <Button
+                        disabled={confirmar}
+                        style={{ flex: '1 1' }}
+                        className="btn-confirm"
+                        label="Confirmar"
+                        onClick={addOverWeight}
+                    />
+                </div>
             </div>
             <div className="rainbow-p-bottom_large rainbow-p-top_large">
                 <StyledPanel>
