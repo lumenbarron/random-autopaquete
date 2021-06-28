@@ -355,6 +355,7 @@ export default function OverweightUser({ user }) {
                     setTrackNumber('');
                     setRealKg('');
                     setCargo('');
+                    setMatchPrice('');
                     setConfirmar(true);
                     setinputRealKg(true);
                     console.log('Document written');
