@@ -356,6 +356,7 @@ export default function OverweightUser({ user }) {
                     setRealKg('');
                     setCargo('');
                     setConfirmar(true);
+                    setinputRealKg(true);
                     console.log('Document written');
                     swal.fire('Agregado', '', 'success');
                 })
@@ -428,15 +429,13 @@ export default function OverweightUser({ user }) {
                     <p>Estatus</p>
                     <p>{matchPrice}</p>
                 </div>
-                <div style={{ flex: '1 1' }}>
-                    <Button
-                        disabled={confirmar}
-                        style={{ flex: '1 1' }}
-                        className="btn-confirm"
-                        label="Confirmar"
-                        onClick={addOverWeight}
-                    />
-                </div>
+                <Button
+                    disabled={confirmar}
+                    style={{ flex: '1 1' }}
+                    className="btn-confirm"
+                    label="Confirmar"
+                    onClick={addOverWeight}
+                />
             </div>
             <div className="rainbow-p-bottom_large rainbow-p-top_large">
                 <StyledPanel>
