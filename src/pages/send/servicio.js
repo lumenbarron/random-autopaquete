@@ -292,7 +292,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             .onSnapshot(function getGuia(doc) {
                 //console.log('Document data 1:', doc.data());
                 // Get snapshot sender information
-                console.log(doc.data());
+                // console.log(doc.data());
                 setNameSender(doc.data().sender_addresses.name);
                 setCPSender(doc.data().sender_addresses.codigo_postal);
                 getCPSender.current = doc.data().sender_addresses.codigo_postal;
@@ -589,7 +589,13 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             }
                         }
 
-                        listaDisponibles(suppliersGeneral);
+                        if (result.length >= 1) {
+                            listaDisponibles(suppliersGeneral);
+                        } else if (result.length === 0) {
+                            console.log('no hay paqueterias');
+                            setNoSupplier(true);
+                            console.log(noSupplier);
+                        }
                     } else if (result.length === 0) {
                         console.log('no hay paqueterias');
                         setNoSupplier(true);
@@ -727,7 +733,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                 const kgsExtraTarifas = {};
                 let precioTotal;
                 querySnapshot.forEach(doc => {
-                    // console.log(doc.data());
+                    console.log(doc.data());
                     const { entrega, precio, max, min, kgExtra } = doc.data();
 
                     // Encontramos si hay tarifas que apliquen directo al paquete
