@@ -592,6 +592,8 @@ export default function Tarifario({ user }) {
 
     const [estafetaEconomico, estafetaEconomicoExtra] = getTarifasDeServicio('estafetaEconomico');
 
+    const [dhlExpress, dhlExtra] = getTarifasDeServicio('dhlExpress');
+
     return (
         <>
             <StyleHeader>
@@ -663,13 +665,16 @@ export default function Tarifario({ user }) {
                     entrega="autoencargos"
                     user={user}
                 />
-                {/* <TarifarioPorServicio
-                    label="Autoencargos Día Siguiente"
-                    tarifas={autoencargosDiaSiguiente}
-                    kgExtra={autoencargosDiaSiguienteExtra}
-                    entrega="autoencargosDiaSiguiente"
+            </Accordion>
+            <h3 style={{ marginTop: '1rem' }}>DHL</h3>
+            <Accordion id="accordion-dhl" multiple>
+                <TarifarioPorServicio
+                    label="DHL Express"
+                    tarifas={dhlExpress}
+                    kgExtra={dhlExtra}
+                    entrega="dhlExpress"
                     user={user}
-                /> */}
+                />
             </Accordion>
             <p style={{ margin: '1rem' }}>
                 <b>NOTA:</b> El peso volumétrico equivale al (largo x ancho x alto) / 5000 y este
