@@ -140,8 +140,8 @@ const SendPage = () => {
                         // );
                         xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                         xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-                        //console.log('llego')
-                        //newBalance(costGuia);
+                        console.log('llego');
+                        newBalance(costGuia);
                         setguiaReady(true);
                         setCurrentStepName('descarga');
                     });
