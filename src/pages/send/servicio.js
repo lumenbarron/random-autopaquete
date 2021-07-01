@@ -1478,22 +1478,31 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                     <h2>favor de contactar a tu asesor.</h2>
                 </div>
             )}
-            {!(supplierAvailability.ESTAFETADIASIGUIENTE && supplierCostEstafetaDiaS.guia) &&
-                !(supplierAvailability.ESTAFETATERRESTRECONSUMO && supplierCostEstafetaEcon.guia) &&
-                !(supplierAvailability.NACIONALDIASIGUIENTE && supplierCostFedexDiaS.guia) &&
-                !(supplierAvailability.NACIONALECONOMICO && supplierCostFedexEcon.guia) &&
-                !(supplierAvailability.EXPRESS && supplierCostRedpackEx.guia) &&
-                !(supplierAvailability.ECOEXPRESS && supplierCostRedpackEco.guia) &&
-                !(supplierAvailability.AUTOENCARGOS && supplierCostAutoencargosEcon.guia) &&
-                !(supplierAvailability['DHL-DOMÉSTICOEXPRESS'] && supplierCostDhlEx.guia) && (
-                    <div className="alert-error">
-                        <br />
-                        <h1>¡Oh no! el servicio que intentas usar se encuentra inactivo</h1>
-                        <h2>Favor de contactar a tu asesor.</h2>
-                    </div>
-                )}
             {hasActivatedSuppliers && supplierAvailability && (
                 <>
+                    {!(
+                        supplierAvailability.ESTAFETADIASIGUIENTE && supplierCostEstafetaDiaS.guia
+                    ) &&
+                        !(
+                            supplierAvailability.ESTAFETATERRESTRECONSUMO &&
+                            supplierCostEstafetaEcon.guia
+                        ) &&
+                        !(
+                            supplierAvailability.NACIONALDIASIGUIENTE && supplierCostFedexDiaS.guia
+                        ) &&
+                        !(supplierAvailability.NACIONALECONOMICO && supplierCostFedexEcon.guia) &&
+                        !(supplierAvailability.EXPRESS && supplierCostRedpackEx.guia) &&
+                        !(supplierAvailability.ECOEXPRESS && supplierCostRedpackEco.guia) &&
+                        !(supplierAvailability.AUTOENCARGOS && supplierCostAutoencargosEcon.guia) &&
+                        !(
+                            supplierAvailability['DHL-DOMÉSTICOEXPRESS'] && supplierCostDhlEx.guia
+                        ) && (
+                            <div className="alert-error">
+                                <br />
+                                <h1>¡Oh no! el servicio que intentas usar se encuentra inactivo</h1>
+                                <h2>Favor de contactar a tu asesor.</h2>
+                            </div>
+                        )}
                     <StyledPaneContainer style={{ justifyContent: 'center' }}>
                         {supplierAvailability.ESTAFETADIASIGUIENTE &&
                             supplierCostEstafetaDiaS.guia &&
