@@ -238,7 +238,7 @@ export default function OverweightUser({ user }) {
         else if (parseInt(realKg, 10) > parseInt(kgDeclarados, 10)) {
             //se busca el convenio del cliente
             console.log('Convenio:', overweightRatesBase);
-
+            //se busca el rango en donde esta kilos cobrados
             overweightCostBase = overweightRatesBase
                 .filter(rates => rates.entrega === supplier)
                 .filter(
@@ -246,6 +246,13 @@ export default function OverweightUser({ user }) {
                         parseInt(rates.min, 10) <= parseInt(kgDeclarados, 10) &&
                         parseInt(rates.max, 10) >= parseInt(kgDeclarados, 10),
                 )[0];
+            //si los kilos cobrados es mayor que el rango buscar el valor maximo registrado
+            if (overweightCostBase === undefined) {
+                overweightCostBase = overweightRatesBase.filter(
+                    rates => rates.entrega === supplier,
+                );
+                overweightCostBase = overweightRatesBase[overweightRatesBase.length - 1];
+            }
 
             costoKiloExtra = overweightRatesBase.filter(
                 rates => rates.entrega === supplier + 'Extra',
