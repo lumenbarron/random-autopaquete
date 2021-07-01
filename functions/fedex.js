@@ -64,6 +64,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
         // } else {
         //     supplier = 'fedexEconomico';
         // }
+        console.log(supplier);
     } else if (servicio === 'fedexDiaSiguiente') {
         supplier = 'fedexOvernight';
     } else {
@@ -273,6 +274,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
     const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
     if (!supplierData) {
         res.status(500).send('Missing fedex config');
+        console.log('Missing fedex config');
         return;
     }
     const isProd = supplierData.type === 'prod';
@@ -360,6 +362,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
             },
         },
     };
+    res.status(200).send(requestArgs);
 
     soap.createClient(url, {}, function(err, client) {
         client.ShipService.ShipServicePort.processShipment(requestArgs, function(err1, result) {
