@@ -767,6 +767,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         if (entrega === 'dhlExpress') {
                             getFinalPriceDhlExp.finalPrice = parseInt(precio, 10);
                         }
+                        console.log(getFinalPriceDhlExp);
                         //se verifica el exceso de altura
                         let cargoExtraHeight;
                         if (parseInt(height, 10) > 100 && entrega === 'redpackEcoExpress') {
@@ -1448,6 +1449,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             <StyledError>
                 {error && (
                     <div className="alert-error">
+                        <br />
                         <h2>No tienes el saldo suficiente</h2>
                     </div>
                 )}
@@ -1471,10 +1473,25 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             )}
             {hasActivatedSuppliers && !supplierAvailability && noSupplier === true && (
                 <div className="alert-error">
+                    <br />
                     <h2>¡Oh no! el codigo postal de origen y/o destino no tiene cobertura,</h2>
                     <h2>favor de contactar a tu asesor.</h2>
                 </div>
             )}
+            {!(supplierAvailability.ESTAFETADIASIGUIENTE && supplierCostEstafetaDiaS.guia) &&
+                !(supplierAvailability.ESTAFETATERRESTRECONSUMO && supplierCostEstafetaEcon.guia) &&
+                !(supplierAvailability.NACIONALDIASIGUIENTE && supplierCostFedexDiaS.guia) &&
+                !(supplierAvailability.NACIONALECONOMICO && supplierCostFedexEcon.guia) &&
+                !(supplierAvailability.EXPRESS && supplierCostRedpackEx.guia) &&
+                !(supplierAvailability.ECOEXPRESS && supplierCostRedpackEco.guia) &&
+                !(supplierAvailability.AUTOENCARGOS && supplierCostAutoencargosEcon.guia) &&
+                !(supplierAvailability['DHL-DOMÉSTICOEXPRESS'] && supplierCostDhlEx.guia) && (
+                    <div className="alert-error">
+                        <br />
+                        <h1>¡Oh no! el servicio que intentas usar se encuentra inactivo</h1>
+                        <h2>Favor de contactar a tu asesor.</h2>
+                    </div>
+                )}
             {hasActivatedSuppliers && supplierAvailability && (
                 <>
                     <StyledPaneContainer style={{ justifyContent: 'center' }}>
