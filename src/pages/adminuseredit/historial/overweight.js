@@ -46,6 +46,7 @@ export default function OverweightUser({ user }) {
     const [cargo, setCargo] = useState();
     const [confirmar, setConfirmar] = useState(true);
     const [inputRealKg, setinputRealKg] = useState(true);
+    const [kgExentos, setKgExentos] = useState('');
 
     const creationDate = new Date();
     let guiaRef = useRef('');
@@ -150,6 +151,7 @@ export default function OverweightUser({ user }) {
         setDate('');
         setKgdeclarados('');
         setMatchPrice(`Guia no registrada`);
+        setKgExentos(``);
         setCargo('');
         setRealKg('');
         setConfirmar(true);
@@ -161,6 +163,7 @@ export default function OverweightUser({ user }) {
         let overWeightGuide = [];
         if (e.target.value.trim() === '') {
             setMatchPrice('');
+            setKgExentos(``);
         }
         history.forEach(item => {
             // console.log( item.rastreo)
@@ -169,6 +172,7 @@ export default function OverweightUser({ user }) {
         // console.log('overWeightGuide', overWeightGuide);
         if (overWeightGuide.includes(guiaRef.current)) {
             setMatchPrice(` Esta Guia ya tiene sobrepeso`);
+            setKgExentos(``);
             guiaRef.current = '';
         } else {
             // console.log(guiaRef.current)
@@ -207,6 +211,7 @@ export default function OverweightUser({ user }) {
                         setSupplier(doc.data().supplierData.tarifa.entrega);
 
                         setMatchPrice('');
+                        setKgExentos(``);
                         setinputRealKg(false);
                     });
                 })
@@ -222,17 +227,22 @@ export default function OverweightUser({ user }) {
         let overweightCostBase;
         let costoKiloExtra;
         let realKg = e.target.value;
+        // restarKg: cuando los kilos cobrados sobrepasan los pesos del convenio, se le resta el peso maximo del convenio
+        // el resultado se le va restar a kilos totales
+        let restarKg = 0;
         let totalKg;
         setRealKg(e.target.value);
         setConfirmar(true);
         if (realKg.trim() === '') {
             setMatchPrice('');
+            setKgExentos(``);
             setCargo('');
         }
         //mientras que los kilos reales sean menores que los de la plataforma el cargo es 0
         if (parseInt(realKg, 10) <= parseInt(kgDeclarados, 10) && parseInt(realKg, 10) >= 0) {
             console.log('cargo 0');
             setMatchPrice(` Peso cubierto con ${supplier}`);
+            setKgExentos(``);
             setCargo(cargoExtra);
         } //si no, se hace el calculo
         else if (parseInt(realKg, 10) > parseInt(kgDeclarados, 10)) {
@@ -246,13 +256,6 @@ export default function OverweightUser({ user }) {
                         parseInt(rates.min, 10) <= parseInt(kgDeclarados, 10) &&
                         parseInt(rates.max, 10) >= parseInt(kgDeclarados, 10),
                 )[0];
-            //si los kilos cobrados es mayor que el rango buscar el valor maximo registrado
-            if (overweightCostBase === undefined) {
-                overweightCostBase = overweightRatesBase.filter(
-                    rates => rates.entrega === supplier,
-                );
-                overweightCostBase = overweightRatesBase[overweightRatesBase.length - 1];
-            }
 
             costoKiloExtra = overweightRatesBase.filter(
                 rates => rates.entrega === supplier + 'Extra',
@@ -262,28 +265,45 @@ export default function OverweightUser({ user }) {
             console.log('Costo Kilo extra: ', costoKiloExtra);
 
             try {
-                totalKg = realKg - overweightCostBase.max;
+                //si los kilos cobrados es mayor que el rango buscar el valor maximo registrado
+                if (overweightCostBase === undefined) {
+                    overweightCostBase = overweightRatesBase
+                        .filter(rates => rates.entrega === supplier)
+                        .reduce(function(a, b) {
+                            return Math.max(a.max, b.max);
+                        });
+                    console.log('Rango maximo peso: ', overweightCostBase);
+                    restarKg = kgDeclarados - overweightCostBase.max;
+                    console.log('Kilos excentos de cobro: ', restarKg);
+                }
+
+                totalKg = realKg - overweightCostBase.max - restarKg;
+
                 if (totalKg <= 0) {
                     console.log('cargo 0, Kilos a cobrar:', totalKg);
                     setMatchPrice(` Peso cubierto con ${supplier}`);
+                    setKgExentos(``);
                     setCargo(cargoExtra);
                 } else {
                     try {
                         console.log('Kilos a cobrar:', totalKg);
                         cargoExtra = totalKg * costoKiloExtra * 1.16;
                         console.log('Cargo extra:', cargoExtra);
-                        setMatchPrice(` Kilos a cobrar: ${totalKg}`);
+                        setKgExentos(`Kilos excentos: ${restarKg}`);
+                        setMatchPrice(`Kilos a cobrar: ${totalKg}`);
                         setCargo(cargoExtra);
                         setConfirmar(false);
                     } catch (err) {
                         console.log('No se encontro Costo de kilo extra');
                         setMatchPrice(` Precio kilo Extra ${supplier} no registrado`);
+                        setKgExentos(``);
                         console.log(err.message);
                         setCargo(cargoExtra);
                     }
                 }
             } catch (err) {
                 console.log('no se encontro convenio');
+                setKgExentos(``);
                 setMatchPrice(` Precios no registrados`);
                 console.log(err.message);
             }
@@ -363,6 +383,7 @@ export default function OverweightUser({ user }) {
                     setRealKg('');
                     setCargo('');
                     setMatchPrice('');
+                    setKgExentos(``);
                     setConfirmar(true);
                     setinputRealKg(true);
                     console.log('Document written');
@@ -435,6 +456,7 @@ export default function OverweightUser({ user }) {
                 />
                 <div style={{ flex: '1 1' }}>
                     <p>Estatus</p>
+                    <p>{kgExentos}</p>
                     <p>{matchPrice}</p>
                 </div>
                 <Button
