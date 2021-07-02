@@ -110,6 +110,7 @@ const SendPage = () => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
         //console.log('supplierData', supplierData);
         let costGuia = supplierData.Supplier_cost;
+        console.log('llego: costo guia:', costGuia);
         // console.log('costGuia', costGuia);
         const directionsGuiasCollectionAdd = db
             .collection('guia')
@@ -118,7 +119,7 @@ const SendPage = () => {
 
         if (supplierData.Supplier === 'autoencargosEconomico') {
             // console.log('autoencargos pdf');
-            // console.log(idGuiaGlobal.current);
+            console.log('quita saldo en autoencargos');
             newBalance(costGuia);
             setguiaReady(true);
             setCurrentStepName('descarga');
@@ -130,17 +131,22 @@ const SendPage = () => {
                 .then(function() {
                     console.log('peticion a la api fed');
                     user.getIdToken().then(idToken => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.responseType = 'json';
-                        xhr.contentType = 'application/json';
-                        xhr.open('POST', '/guia/fedex');
-                        // xhr.open(
-                        //     'POST',
-                        //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
-                        // );
-                        xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-                        xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-                        console.log('llego');
+                        try {
+                            const xhr = new XMLHttpRequest();
+                            xhr.responseType = 'json';
+                            xhr.contentType = 'application/json';
+                            xhr.open('POST', '/guia/fedex');
+                            // xhr.open(
+                            //     'POST',
+                            //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
+                            // );
+                            xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+                            xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+                            console.log('llego', xhr.status);
+                        } catch (err) {
+                            console.log(err.message);
+                        }
+                        console.log('quita saldo en fedex');
                         newBalance(costGuia);
                         setguiaReady(true);
                         setCurrentStepName('descarga');
@@ -273,6 +279,7 @@ const SendPage = () => {
                                             body: data,
                                             result: finalResult,
                                         });
+                                    console.log('quita saldo demas paqueterias');
                                     newBalance(costGuia);
                                     setguiaReady(true);
                                 }
