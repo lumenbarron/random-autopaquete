@@ -18,7 +18,7 @@ const numberRegex = RegExp(/^[0-9]+$/);
 const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
 
 const optionsSuppliers = [
-    { value: 'fedex', label: 'Fedex' },
+    //{ value: 'fedex', label: 'Fedex' },
     { value: 'infinito/dhl', label: 'DHL' },
     { value: 'pakke', label: 'Estafeta' },
     { value: 'redpack', label: 'Redpack' },
@@ -80,7 +80,7 @@ export const PaqueteComponent = ({ onSave, idGuiaGlobal }) => {
     const [width, setWidth] = useState('');
     const [depth, setDepth] = useState('');
     const [weight, setWeight] = useState('');
-    const [defaultSupplier, setDefaultSupplier] = useState('fedex');
+    const [defaultSupplier, setDefaultSupplier] = useState('infinito/dhl');
 
     const [contentDescription, setContentDescription] = useState('');
     const [contentValue, setContentValue] = useState('');
