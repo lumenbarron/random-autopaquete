@@ -8,7 +8,7 @@ async function getGuiaByIdWithoutValidation(guiaId) {
         .doc(guiaId)
         .get();
     const guia = query ? query.data() : null;
-    functions.logger.info('getGuiaByIdWithoutValidation: obteniendo guia: ', guia);
+    functions.logger.info('getGuiaByIdWithoutValidation: obteniendo guia: ', guiaId);
     return guia;
 }
 
@@ -61,7 +61,7 @@ async function saveLabel(guiaId, label, rastreo, APIResponse) {
 }
 
 async function saveError(guiaId, APIResponse, error) {
-    functions.logger.info('entro a saveError');
+    functions.logger.info('entro a saveError', error);
     const response = APIResponse || false;
     const db = admin.firestore();
     await db

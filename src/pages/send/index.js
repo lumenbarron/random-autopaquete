@@ -145,11 +145,13 @@ const SendPage = () => {
                                 console.log('LOADING: ', xhr.status);
                             };
                             xhr.onload = function() {
-                                console.log('DONE: ', xhr.status);
-                                console.log('quita saldo en fedex:', costGuia);
-                                //newBalance(costGuia);
-                                setguiaReady(true);
-                                setCurrentStepName('descarga');
+                                if (xhr.status === 200) {
+                                    console.log('DONE: ', xhr.status);
+                                    console.log('quita saldo en fedex:', costGuia);
+                                    //newBalance(costGuia);
+                                    setguiaReady(true);
+                                    setCurrentStepName('descarga');
+                                }
                             };
                         } catch (err) {
                             console.log(err.message);

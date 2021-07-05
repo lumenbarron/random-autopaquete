@@ -249,13 +249,18 @@ export default function OverweightUser({ user }) {
             //se busca el convenio del cliente
             console.log('Convenio:', overweightRatesBase);
             //se busca el rango en donde esta kilos cobrados
-            overweightCostBase = overweightRatesBase
-                .filter(rates => rates.entrega === supplier)
-                .filter(
-                    rates =>
-                        parseInt(rates.min, 10) <= parseInt(kgDeclarados, 10) &&
-                        parseInt(rates.max, 10) >= parseInt(kgDeclarados, 10),
-                )[0];
+            try {
+                overweightCostBase = overweightRatesBase
+                    .filter(rates => rates.entrega === supplier)
+                    .filter(
+                        rates =>
+                            parseInt(rates.min, 10) <= parseInt(kgDeclarados, 10) &&
+                            parseInt(rates.max, 10) >= parseInt(kgDeclarados, 10),
+                    )[0].max;
+            } catch (err) {
+                console.log('no se encontro convenio');
+                console.log(err.message);
+            }
 
             costoKiloExtra = overweightRatesBase.filter(
                 rates => rates.entrega === supplier + 'Extra',
@@ -269,15 +274,18 @@ export default function OverweightUser({ user }) {
                 if (overweightCostBase === undefined) {
                     overweightCostBase = overweightRatesBase
                         .filter(rates => rates.entrega === supplier)
+                        .map(function(rango) {
+                            return rango.max;
+                        })
                         .reduce(function(a, b) {
-                            return Math.max(a.max, b.max);
+                            return Math.max(a, b);
                         });
                     console.log('Rango maximo peso: ', overweightCostBase);
-                    restarKg = kgDeclarados - overweightCostBase.max;
+                    restarKg = kgDeclarados - overweightCostBase;
                     console.log('Kilos excentos de cobro: ', restarKg);
                 }
 
-                totalKg = realKg - overweightCostBase.max - restarKg;
+                totalKg = realKg - overweightCostBase - restarKg;
 
                 if (totalKg <= 0) {
                     console.log('cargo 0, Kilos a cobrar:', totalKg);
