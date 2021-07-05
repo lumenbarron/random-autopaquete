@@ -110,7 +110,6 @@ const SendPage = () => {
         // TODO: Guardar la elección de paquetería en un State, para usarla cuando se creará la guía
         //console.log('supplierData', supplierData);
         let costGuia = supplierData.Supplier_cost;
-        console.log('llego: costo guia:', costGuia);
         // console.log('costGuia', costGuia);
         const directionsGuiasCollectionAdd = db
             .collection('guia')
@@ -142,14 +141,19 @@ const SendPage = () => {
                             // );
                             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-                            console.log('llego', xhr.status);
+                            xhr.onprogress = function() {
+                                console.log('LOADING: ', xhr.status);
+                            };
+                            xhr.onload = function() {
+                                console.log('DONE: ', xhr.status);
+                                console.log('quita saldo en fedex:', costGuia);
+                                //newBalance(costGuia);
+                                setguiaReady(true);
+                                setCurrentStepName('descarga');
+                            };
                         } catch (err) {
                             console.log(err.message);
                         }
-                        console.log('quita saldo en fedex');
-                        newBalance(costGuia);
-                        setguiaReady(true);
-                        setCurrentStepName('descarga');
                     });
                 })
                 .catch(function(error) {

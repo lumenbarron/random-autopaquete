@@ -541,7 +541,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             console.log(supplier, subSupplier);
         }
         // if(supplier === 'fedex'){
-        //     supplier = 'pakke'
+        //      supplier = 'pakke'
         // }
         //si se selecciono autoencargos
         if (supplier === 'autoencargos') {

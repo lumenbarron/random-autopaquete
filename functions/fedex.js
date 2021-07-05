@@ -181,6 +181,7 @@ exports.rate = async function rateFedex(uid, guiaId, servicio) {
 };
 
 exports.create = functions.https.onRequest(async (req, res) => {
+    functions.logger.info('Entrando a cloud funtion fedex');
     const contentType = req.get('content-type');
     if (!contentType && contentType !== 'application/json') {
         res.status(400).send('Bad Request: Expected JSON');
@@ -194,6 +195,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
     }
 
     const { guiaId } = JSON.parse(req.body);
+    functions.logger.log('Buscando guia fedex');
     const guia = await getGuiaById(profile.ID, guiaId);
     if (!profile) {
         res.status(400).send('Guia Id not found');
@@ -274,7 +276,8 @@ exports.create = functions.https.onRequest(async (req, res) => {
     const supplierData = supplierQuery.docs[0] ? supplierQuery.docs[0].data() : null;
     if (!supplierData) {
         res.status(500).send('Missing fedex config');
-        console.log('Missing fedex config');
+
+        functions.logger.info('Missing fedex config');
         return;
     }
     const isProd = supplierData.type === 'prod';
@@ -363,7 +366,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
         },
     };
     res.status(200).send(requestArgs);
-
+    functions.logger.info(requestArgs);
     soap.createClient(url, {}, function(err, client) {
         client.ShipService.ShipServicePort.processShipment(requestArgs, function(err1, result) {
             const apiResult = JSON.parse(JSON.stringify(result));

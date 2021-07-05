@@ -1,4 +1,5 @@
 const { admin } = require('./admin');
+const functions = require('firebase-functions');
 
 async function getGuiaByIdWithoutValidation(guiaId) {
     const db = admin.firestore();
@@ -7,10 +8,12 @@ async function getGuiaByIdWithoutValidation(guiaId) {
         .doc(guiaId)
         .get();
     const guia = query ? query.data() : null;
+    functions.logger.info('getGuiaByIdWithoutValidation: obteniendo guia: ', guia);
     return guia;
 }
 
 async function getGuiaById(uid, guiaId) {
+    functions.logger.info('Entrando a archivo guia.js en funcion getGuiaById');
     const guia = await getGuiaByIdWithoutValidation(guiaId);
 
     if (guia && guia.ID === uid) {
@@ -20,6 +23,7 @@ async function getGuiaById(uid, guiaId) {
 }
 
 async function checkBalance(guiaId, commit) {
+    functions.logger.info('se checa balance ');
     const guia = await getGuiaByIdWithoutValidation(guiaId);
     const db = admin.firestore();
     const profileQuery = await db
@@ -46,6 +50,7 @@ async function checkBalance(guiaId, commit) {
 }
 
 async function saveLabel(guiaId, label, rastreo, APIResponse) {
+    functions.logger.info('entro a saveLabel');
     const db = admin.firestore();
     await db
         .collection('guia')
@@ -56,6 +61,7 @@ async function saveLabel(guiaId, label, rastreo, APIResponse) {
 }
 
 async function saveError(guiaId, APIResponse, error) {
+    functions.logger.info('entro a saveError');
     const response = APIResponse || false;
     const db = admin.firestore();
     await db
