@@ -135,24 +135,11 @@ const SendPage = () => {
                             xhr.responseType = 'json';
                             xhr.contentType = 'application/json';
                             xhr.open('POST', '/guia/fedex');
-                            // xhr.open(
-                            //     'POST',
-                            //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
-                            // );
                             xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
                             xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-                            xhr.onprogress = function() {
-                                console.log('LOADING: ', xhr.status);
-                            };
-                            xhr.onload = function() {
-                                if (xhr.status === 200) {
-                                    console.log('DONE: ', xhr.status);
-                                    console.log('quita saldo en fedex:', costGuia);
-                                    //newBalance(costGuia);
-                                    setguiaReady(true);
-                                    setCurrentStepName('descarga');
-                                }
-                            };
+                            //newBalance(costGuia);
+                            setguiaReady(true);
+                            setCurrentStepName('descarga');
                         } catch (err) {
                             console.log(err.message);
                         }

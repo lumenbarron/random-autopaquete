@@ -367,6 +367,7 @@ exports.create = functions.https.onRequest(async (req, res) => {
     };
     res.status(200).send(requestArgs);
     functions.logger.info(requestArgs);
+
     soap.createClient(url, {}, function(err, client) {
         client.ShipService.ShipServicePort.processShipment(requestArgs, function(err1, result) {
             const apiResult = JSON.parse(JSON.stringify(result));
@@ -382,9 +383,26 @@ exports.create = functions.https.onRequest(async (req, res) => {
                 for (let i = 0; i < packageDetail.TrackingIds.length; i += 1) {
                     guias.push(packageDetail.TrackingIds[i].TrackingNumber);
                 }
-                saveLabel(guiaId, pdf, guias, apiResult);
-                res.status(200).send('OK');
+
+                try {
+                    functions.logger.info(
+                        'guia id:',
+                        guiaId,
+                        'pdf: ',
+                        pdf,
+                        'guias:',
+                        guias,
+                        'apiResult:',
+                        apiResult,
+                    );
+                    res.status(200).send('OK');
+                } catch (error) {
+                    functions.logger.info('Error al guardar guia; ', error.message);
+                    saveError(guiaId, result, JSON.parse(JSON.stringify(error)));
+                    res.status(200).send('NOT OK');
+                }
             } catch (error) {
+                functions.logger.info('Error al generar guia; ', error.message);
                 saveError(guiaId, result, JSON.parse(JSON.stringify(error)));
                 res.status(200).send('NOT OK');
             }

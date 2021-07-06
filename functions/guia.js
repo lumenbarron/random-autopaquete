@@ -50,13 +50,26 @@ async function checkBalance(guiaId, commit) {
 }
 
 async function saveLabel(guiaId, label, rastreo, APIResponse) {
-    functions.logger.info('entro a saveLabel');
-    const db = admin.firestore();
-    await db
-        .collection('guia')
-        .doc(guiaId)
-        .update({ label, APIResponse, rastreo });
-
+    functions.logger.info(
+        'entro a saveLabel: { guiaId: ',
+        guiaId,
+        ', label: ',
+        label,
+        ', rastreo: ',
+        rastreo,
+        ', APIResponse: ',
+        APIResponse,
+        ' }',
+    );
+    try {
+        const db = admin.firestore();
+        await db
+            .collection('guia')
+            .doc(guiaId)
+            .update({ label, APIResponse, rastreo });
+    } catch (error) {
+        functions.logger.info('Error al guardar etiqueta:', error.message);
+    }
     await checkBalance(guiaId, true);
 }
 
