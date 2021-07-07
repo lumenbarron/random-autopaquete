@@ -543,6 +543,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         if (supplier === 'fedex' || supplier === '') {
             supplier = 'pakke';
         }
+        //agragar estafetadiasiguiente infinito
         //si se selecciono autoencargos
         if (supplier === 'autoencargos') {
             //sacamos lista autoencargos
