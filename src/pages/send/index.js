@@ -122,33 +122,35 @@ const SendPage = () => {
             newBalance(costGuia);
             setguiaReady(true);
             setCurrentStepName('descarga');
-        } else if (
-            supplierData.Supplier === 'fedexDiaSiguiente' ||
-            supplierData.Supplier === 'fedexEconomico'
-        ) {
-            directionsGuiasCollectionAdd
-                .then(function() {
-                    console.log('peticion a la api fed');
-                    user.getIdToken().then(idToken => {
-                        try {
-                            const xhr = new XMLHttpRequest();
-                            xhr.responseType = 'json';
-                            xhr.contentType = 'application/json';
-                            xhr.open('POST', '/guia/fedex');
-                            xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-                            xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
-                            //newBalance(costGuia);
-                            setguiaReady(true);
-                            setCurrentStepName('descarga');
-                        } catch (err) {
-                            console.log(err.message);
-                        }
-                    });
-                })
-                .catch(function(error) {
-                    console.error('Error adding document: ', error);
-                });
-        } else {
+        }
+        // else if (
+        //     supplierData.Supplier === 'fedexDiaSiguiente' ||
+        //     supplierData.Supplier === 'fedexEconomico'
+        // ) {
+        //     directionsGuiasCollectionAdd
+        //         .then(function() {
+        //             console.log('peticion a la api fed');
+        //             user.getIdToken().then(idToken => {
+        //                 try {
+        //                     const xhr = new XMLHttpRequest();
+        //                     xhr.responseType = 'json';
+        //                     xhr.contentType = 'application/json';
+        //                     xhr.open('POST', '/guia/fedex');
+        //                     xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+        //                     xhr.send(JSON.stringify({ guiaId: idGuiaGlobal.current }));
+        //                     //newBalance(costGuia);
+        //                     setguiaReady(true);
+        //                     setCurrentStepName('descarga');
+        //                 } catch (err) {
+        //                     console.log(err.message);
+        //                 }
+        //             });
+        //         })
+        //         .catch(function(error) {
+        //             console.error('Error adding document: ', error);
+        //         });
+        // }
+        else {
             setCurrentStepName('descarga');
             let myHeaders = new Headers();
             myHeaders.append('Authorization', tokenProd);
