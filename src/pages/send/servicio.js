@@ -540,9 +540,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             supplier = supplier.split('/')[0];
             console.log(supplier, subSupplier);
         }
-        if (supplier === 'fedex' || supplier === '') {
-            supplier = 'pakke';
-        }
+        // if (supplier === 'fedex' || supplier === '') {
+        //     supplier = 'pakke';
+        // }
         //agragar estafetadiasiguiente infinito
         //si se selecciono autoencargos
         if (supplier === 'autoencargos') {
@@ -580,6 +580,18 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 element => element.shipping_service.name === 'DHL-DOMÉSTICOEXPRESS',
                             );
                             console.log('DHL:', suppliersGeneral);
+                        }
+                        try {
+                            //si selecciona estafeta express, separarlo de la lista
+                            if (subSupplier === 'estafeta') {
+                                suppliersGeneral = suppliersGeneral.filter(
+                                    element =>
+                                        element.shipping_service.name === 'ESTAFETA-DÍASIGUIENTE',
+                                );
+                                console.log('Estafeta Express:', suppliersGeneral); //ESTAFETADIASIGUIENTE
+                            }
+                        } catch (err) {
+                            console.log(err.message);
                         }
 
                         //si selecciona todas las paqueterias se cotiza autoencargos
@@ -693,9 +705,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         } else {
             console.log('no zona extendida extendedAreaEstafetaEco');
         }
-        if (typeof supplierAvailability.estafetaDiaSiguiente !== 'undefined') {
+        if (typeof supplierAvailability['ESTAFETA-DÍASIGUIENTE'] !== 'undefined') {
             extendedAreaEstafetaDiaS =
-                typeof supplierAvailability.estafetaDiaSiguiente.zonaExtendida !== 'undefined'
+                typeof supplierAvailability['ESTAFETA-DÍASIGUIENTE'].zonaExtendida !== 'undefined'
                     ? 110
                     : 0;
         } else {
@@ -709,7 +721,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
         }
         if (typeof supplierAvailability['DHL-DOMÉSTICOEXPRESS'] !== 'undefined') {
             extendedAreaDhlExpress =
-                typeof supplierAvailability['DHL-DOMÉSTICOEXPRESS'].zonaExtendida !== 'undefined'
+                typeof supplierAvailability['DHL-DOMÉSTICOEXPRESS'].zonaExtendida !== 'undefined' //supplierAvailability['ESTAFETA-DÍASIGUIENTE']
                     ? 150
                     : 0;
         } else {
@@ -786,6 +798,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                         }
                         //---------LECTURA DEL CODIGO DEL 23/06/2021-------//
                         //Guardando datos que se van a mostrar en su respectivo estado
+                        console.log('imprimiendo entrega:', entrega);
                         if (entrega === 'estafetaDiaSiguiente')
                             setSupplierCostEstafetaDiaS({
                                 id: doc.id,
@@ -798,9 +811,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                                 cargoExtraHeight: cargoExtraHeight,
                                 guia: getFinalPriceEstafetaDiaS.finalPrice,
                                 zonaExt: extendedAreaEstafetaDiaS != 0 ? 110 : false,
-                                shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
+                                shippingInfo: !supplierAvailabilityGeneral['ESTAFETA-DÍASIGUIENTE']
                                     ? false
-                                    : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
+                                    : supplierAvailabilityGeneral['ESTAFETA-DÍASIGUIENTE'],
                                 insurance: getInsurancePrice('estafetaDiaSiguiente'),
                             });
                         if (entrega === 'estafetaEconomico')
@@ -1128,9 +1141,9 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             cargoExtra,
                             guia,
                             zonaExt: extendedAreaEstafetaDiaS != 0 ? 110 : false,
-                            shippingInfo: !supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE
+                            shippingInfo: !supplierAvailabilityGeneral['ESTAFETA-DÍASIGUIENTE']
                                 ? false
-                                : supplierAvailabilityGeneral.ESTAFETADIASIGUIENTE,
+                                : supplierAvailabilityGeneral['ESTAFETA-DÍASIGUIENTE'],
                             insurance: getInsurancePrice('estafetaDiaSiguiente'),
                         });
                     if (entrega === 'estafetaEconomico')
@@ -1484,7 +1497,8 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             {hasActivatedSuppliers && supplierAvailability && (
                 <>
                     {!(
-                        supplierAvailability.ESTAFETADIASIGUIENTE && supplierCostEstafetaDiaS.guia
+                        supplierAvailability['ESTAFETA-DÍASIGUIENTE'] &&
+                        supplierCostEstafetaDiaS.guia
                     ) &&
                         !(
                             supplierAvailability.ESTAFETATERRESTRECONSUMO &&
@@ -1507,12 +1521,12 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
                             </div>
                         )}
                     <StyledPaneContainer style={{ justifyContent: 'center' }}>
-                        {supplierAvailability.ESTAFETADIASIGUIENTE &&
+                        {supplierAvailability['ESTAFETA-DÍASIGUIENTE'] &&
                             supplierCostEstafetaDiaS.guia &&
                             supplierCard(
                                 'estafeta',
                                 'DiaSiguiente',
-                                '3 a 5 días hábiles',
+                                '1 días hábil',
                                 supplierCostEstafetaDiaS,
                             )}
                         {supplierAvailability.ESTAFETATERRESTRECONSUMO &&

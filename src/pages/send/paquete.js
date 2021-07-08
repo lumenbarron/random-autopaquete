@@ -20,7 +20,8 @@ const numberWithDecimalRegex = RegExp(/^\d+\.?\d*$/);
 const optionsSuppliers = [
     { value: 'fedex', label: 'Fedex' },
     { value: 'infinito/dhl', label: 'DHL' },
-    { value: 'pakke', label: 'Estafeta' },
+    { value: 'pakke', label: 'Estafeta Economico' },
+    { value: 'infinito/estafeta', label: 'Estafeta Express' },
     { value: 'redpack', label: 'Redpack' },
     { value: 'autoencargos', label: 'AutoEncargos' },
     { value: '', label: 'Todas las paqueterias' },
