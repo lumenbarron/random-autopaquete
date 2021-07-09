@@ -72,6 +72,7 @@ const SendPage = () => {
     };
 
     const savePackagingData = (packageData, packageGuiaData, checkBox) => {
+        console.log('entra a savePackagingData: ', packageData, packageGuiaData, checkBox);
         if (idGuiaGlobal.current === null) {
             console.log('Es necesario completar el primer paso');
             return;
