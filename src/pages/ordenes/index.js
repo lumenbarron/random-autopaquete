@@ -161,51 +161,52 @@ const OrdenesPage = () => {
         db.collection('guia')
             .doc(idDoc)
             .get()
-            .then(function(doc) {
-                if (doc.exists) {
-                    console.log('Document data:', doc.data());
-                    let costGuia = doc.data().supplierData.Supplier_cost;
-                    //console.log('costGuia', costGuia, 'saldo', userSaldo.current)
-                    if (parseFloat(costGuia) > userSaldo.current) {
-                        swal.fire({
-                            title: '!Lo siento!',
-                            text: 'No tienes saldo suficiente',
-                            icon: 'error',
-                            confirmButtonText: 'Ok',
-                        });
-                    } else {
-                        if (
-                            doc.data().supplierData.Supplier === 'fedexDiaSiguiente' ||
-                            doc.data().supplierData.Supplier === 'fedexEconomico'
-                        ) {
-                            db.collection('guia')
-                                .doc(idDoc)
-                                .update({ status: 'completed' })
-                                .then(function() {
-                                    console.log('peticion a la api fed');
-                                    user.getIdToken().then(idToken => {
-                                        const xhr = new XMLHttpRequest();
-                                        xhr.responseType = 'json';
-                                        xhr.contentType = 'application/json';
-                                        xhr.open('POST', '/guia/fedex');
-                                        // xhr.open(
-                                        //     'POST',
-                                        //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
-                                        // );
-                                        xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
-                                        xhr.send(JSON.stringify({ guiaId: idDoc }));
-                                        swal.fire({
-                                            title: '¡Excelente!',
-                                            text: 'Tu guía ha sido creada',
-                                            icon: 'success',
-                                            confirmButtonText: 'Ok',
-                                        });
-                                    });
-                                })
-                                .catch(function(error) {
-                                    console.error('Error adding document: ', error);
-                                });
+            .then(
+                function(doc) {
+                    if (doc.exists) {
+                        console.log('Document data:', doc.data());
+                        let costGuia = doc.data().supplierData.Supplier_cost;
+                        //console.log('costGuia', costGuia, 'saldo', userSaldo.current)
+                        if (parseFloat(costGuia) > userSaldo.current) {
+                            swal.fire({
+                                title: '!Lo siento!',
+                                text: 'No tienes saldo suficiente',
+                                icon: 'error',
+                                confirmButtonText: 'Ok',
+                            });
                         } else {
+                            // if (
+                            //     doc.data().supplierData.Supplier === 'fedexDiaSiguiente' ||
+                            //     doc.data().supplierData.Supplier === 'fedexEconomico'
+                            // ) {
+                            //     db.collection('guia')
+                            //         .doc(idDoc)
+                            //         .update({ status: 'completed' })
+                            //         .then(function() {
+                            //             console.log('peticion a la api fed');
+                            //             user.getIdToken().then(idToken => {
+                            //                 const xhr = new XMLHttpRequest();
+                            //                 xhr.responseType = 'json';
+                            //                 xhr.contentType = 'application/json';
+                            //                 xhr.open('POST', '/guia/fedex');
+                            //                 // xhr.open(
+                            //                 //     'POST',
+                            //                 //     'https://cors-anywhere.herokuapp.com/https://us-central1-autopaquete-92c1b.cloudfunctions.net/fedex-create',
+                            //                 // );
+                            //                 xhr.setRequestHeader('Authorization', `Bearer ${idToken}`);
+                            //                 xhr.send(JSON.stringify({ guiaId: idDoc }));
+                            //                 swal.fire({
+                            //                     title: '¡Excelente!',
+                            //                     text: 'Tu guía ha sido creada',
+                            //                     icon: 'success',
+                            //                     confirmButtonText: 'Ok',
+                            //                 });
+                            //             });
+                            //         })
+                            //         .catch(function(error) {
+                            //             console.error('Error adding document: ', error);
+                            //         });
+                            // } else {
                             let data = JSON.stringify({
                                 sender: {
                                     contact_name:
@@ -358,8 +359,9 @@ const OrdenesPage = () => {
                                 });
                         }
                     }
-                }
-            })
+                },
+                //}
+            )
             .catch(function(error) {
                 console.error('Error getting document:', error);
             });
