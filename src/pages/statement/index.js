@@ -264,7 +264,14 @@ const StatementPage = () => {
         } else {
             concepto = statement.concept;
         }
-
+        console.log({
+            id: statement.id,
+            concept: concepto,
+            date: statement.date,
+            reference: statement.reference,
+            monto: statement.monto.toFixed(2),
+            saldo: statement.saldo.toFixed(2),
+        });
         return {
             id: statement.id,
             concept: concepto,
