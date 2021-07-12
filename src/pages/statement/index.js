@@ -245,7 +245,7 @@ const StatementPage = () => {
         setStatementData(data);
     };
 
-    const data = statementData.map((statement, idx) => {
+    const data = statementData.reverse().map((statement, idx) => {
         let concepto;
         if (statement.concept === 'DSM') {
             concepto = 'Saldo por Morosidad';
