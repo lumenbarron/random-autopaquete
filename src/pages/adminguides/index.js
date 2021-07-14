@@ -30,6 +30,15 @@ const StyledTable = styled(TableWithBrowserPagination)`
         }
     }
 `;
+function Name(value) {
+    return (
+        <>
+            <a href={`https://autopaquete.com.mx/admin/usuario/${value.row.ID}`}>
+                {value.row.name}
+            </a>
+        </>
+    );
+}
 
 const DownloadLabel = ({ value }) => {
     const [label, setLabel] = useState(true);
@@ -187,39 +196,6 @@ export default function AllGuides({}) {
             });
     }, []);
 
-    //Get all the guides, all the times
-    const allGuidesEver = () => {
-        let dataALLGuias = [];
-        db.collection('guia')
-            .where('status', '==', 'completed')
-            .orderBy('creation_date', 'desc')
-            .get()
-            .then(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
-                    dataALLGuias.push({
-                        id: doc.id,
-                        volumetricWeight: Math.ceil(
-                            (doc.data().package.height *
-                                doc.data().package.width *
-                                doc.data().package.depth) /
-                                5000,
-                        ),
-                        sentDate: doc
-                            .data()
-                            .creation_date.toDate()
-                            .toLocaleDateString('es-US', optionsDate),
-                        ...doc.data(),
-                    });
-                });
-                console.log(dataALLGuias);
-                setAllGuides(dataALLGuias);
-                setAvailable(true);
-            })
-            .catch(function(error) {
-                console.log('Error getting documents: ', error);
-            });
-    };
-
     const searchName = () => {
         let dataUsers = [];
         let dataSingleUser = [];
@@ -249,6 +225,7 @@ export default function AllGuides({}) {
         setTableData(
             history.map(historyRecord => {
                 return {
+                    ID: historyRecord.ID,
                     id: historyRecord.id,
                     date: historyRecord.package.creation_date,
                     name: historyRecord.name,
@@ -321,7 +298,9 @@ export default function AllGuides({}) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
+                        console.log(doc.data().ID, doc.id);
                         ByPeriod.push({
+                            ID: doc.data().ID,
                             id: doc.id,
                             volumetricWeight: Math.ceil(
                                 (doc.data().package.height *
@@ -361,8 +340,9 @@ export default function AllGuides({}) {
                 .get()
                 .then(function(querySnapshot) {
                     querySnapshot.forEach(function(doc) {
-                        console.log(doc.id);
+                        //console.log(doc);
                         dataGuia.push({
+                            ID: doc.data().ID,
                             id: doc.id,
                             volumetricWeight: Math.ceil(
                                 (doc.data().package.height *
@@ -391,6 +371,7 @@ export default function AllGuides({}) {
                     querySnapshot.forEach(function(doc) {
                         console.log(doc.id);
                         dataGuia.push({
+                            ID: doc.data().ID,
                             id: doc.id,
                             volumetricWeight: Math.ceil(
                                 (doc.data().package.height *
@@ -500,7 +481,12 @@ export default function AllGuides({}) {
                             className="direction-table"
                         >
                             <Column header="Fecha " field="date" defaultWidth={105} />
-                            <Column header="Name " field="name" defaultWidth={120} />
+                            <Column
+                                header="Name "
+                                component={Name}
+                                field="name"
+                                defaultWidth={120}
+                            />
                             <Column header="Guía" field="guide" defaultWidth={120} />
                             <Column header="Nombre Origen" field="nameorigin" defaultWidth={100} />
                             <Column
