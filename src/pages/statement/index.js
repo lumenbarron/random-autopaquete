@@ -141,13 +141,28 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('restCredit', doc.data().concepto, 'doc.id', doc.id);
+                    console.log(
+                        'restCredit',
+                        doc.data().concepto,
+                        'doc.id',
+                        doc.id,
+                        'date',
+                        doc.data().create_date,
+                    );
                     data.push({
                         id: doc.id,
                         concept: doc.data().concepto,
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
                         monto: parseFloat(doc.data().saldo),
-                        date: new Date(doc.data().create_date),
+                        date: new Date(doc.data().create_date.replace(/-/g, '/')),
+                        saldo: 0,
+                    });
+                    console.log({
+                        id: doc.id,
+                        concept: doc.data().concepto,
+                        reference: doc.data().referencia ? doc.data().referencia : 's/r',
+                        monto: parseFloat(doc.data().saldo),
+                        date: new Date(doc.data().create_date.replace(/-/g, '/')),
                         saldo: 0,
                     });
                 });
@@ -193,13 +208,12 @@ const StatementPage = () => {
                         saldo: 0,
                     });
                 });
-                //console.log('data', data);
 
                 const sortedData = data.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
-                    // b.date - a.date
                 });
                 //console.log(sortedData);
+                console.log('data', sortedData);
                 makingOperations(sortedData);
             })
             .catch(function(error) {

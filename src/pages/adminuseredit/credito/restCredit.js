@@ -13,6 +13,7 @@ import toFixed from 'accounting-js/lib/toFixed';
 import styled from 'styled-components';
 import * as firebase from 'firebase';
 import swal from 'sweetalert2';
+import { now } from 'moment';
 
 const StyledPanel = styled.div`
     box-shadow: 0px 0px 16px -4px rgba(0, 0, 0, 0.75);
@@ -139,7 +140,7 @@ export default function RestCredito({ user }) {
     const inforTransacciones = voucherData.map((voucher, idx) => {
         return {
             id: voucher.id,
-            date: new Date(voucher.create_date).toLocaleDateString(),
+            date: voucher.create_date,
             monto: formatMoney(voucher.saldo, 2),
             concepto: voucher.concepto,
             autor: voucher.autor,
@@ -152,16 +153,18 @@ export default function RestCredito({ user }) {
 
     const restCredit = () => {
         let autor;
-        // console.log(
-        //     'monto',
-        //     monto,
-        //     'concepto',
-        //     concepto,
-        //     'password',
-        //     password,
-        //     'referencia',
-        //     referencia,
-        // );
+        console.log(
+            'fecha',
+            date,
+            'monto',
+            monto,
+            'concepto',
+            concepto,
+            'password',
+            password,
+            'referencia',
+            referencia,
+        );
 
         if (password === passJulio) {
             autor = 'Julio Arroyo';
@@ -211,7 +214,7 @@ export default function RestCredito({ user }) {
             //console.log('monto', monto, 'concepto', concepto, 'password', password);
             const restCreditData = {
                 ID: user.ID,
-                create_date: date,
+                create_date: new Date().toISOString(),
                 saldo: monto,
                 concepto: concepto,
                 autor: autor,
@@ -221,7 +224,7 @@ export default function RestCredito({ user }) {
             db.collection('restCredit')
                 .add(restCreditData)
                 .then(function() {
-                    console.log('restando credito exitosamente');
+                    console.log('restando credito exitosamente:', restCreditData);
                     setMonto('');
                     setConcepto('');
                     setPassword('');
