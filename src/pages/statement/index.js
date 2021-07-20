@@ -95,7 +95,7 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('data guias', doc.data().creation_date, 'doc.id', doc.id);
+                    console.log('data guias', doc.data().creation_date, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: 'Guia',
@@ -141,13 +141,28 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('restCredit', doc.data().concepto, 'doc.id', doc.id);
+                    console.log(
+                        'restCredit',
+                        doc.data().concepto,
+                        'doc.id',
+                        doc.id,
+                        'date',
+                        doc.data().create_date,
+                    );
                     data.push({
                         id: doc.id,
                         concept: doc.data().concepto,
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
                         monto: parseFloat(doc.data().saldo),
                         date: new Date(doc.data().create_date),
+                        saldo: 0,
+                    });
+                    console.log({
+                        id: doc.id,
+                        concept: doc.data().concepto,
+                        reference: doc.data().referencia ? doc.data().referencia : 's/r',
+                        monto: parseFloat(doc.data().saldo),
+                        date: new Date(doc.data().create_date), //new Date(doc.data().create_date.replace(/-/g, '/').substring(0, 10)),
                         saldo: 0,
                     });
                 });
@@ -193,13 +208,12 @@ const StatementPage = () => {
                         saldo: 0,
                     });
                 });
-                //console.log('data', data);
 
                 const sortedData = data.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
-                    // b.date - a.date
                 });
                 //console.log(sortedData);
+                console.log('data', sortedData);
                 makingOperations(sortedData);
             })
             .catch(function(error) {
@@ -245,7 +259,7 @@ const StatementPage = () => {
         setStatementData(data);
     };
 
-    const data = statementData.map((statement, idx) => {
+    const data = statementData.reverse().map((statement, idx) => {
         let concepto;
         if (statement.concept === 'DSM') {
             concepto = 'Saldo por Morosidad';
@@ -264,7 +278,14 @@ const StatementPage = () => {
         } else {
             concepto = statement.concept;
         }
-
+        console.log({
+            id: statement.id,
+            concept: concepto,
+            date: statement.date,
+            reference: statement.reference,
+            monto: statement.monto.toFixed(2),
+            saldo: statement.saldo.toFixed(2),
+        });
         return {
             id: statement.id,
             concept: concepto,

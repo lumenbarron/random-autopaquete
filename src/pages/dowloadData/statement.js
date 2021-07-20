@@ -3,7 +3,6 @@ import { CSVLink } from 'react-csv';
 import { Button } from 'react-rainbow-components';
 
 export default function ExportReactStatementCSV({ data }) {
-    //console.log('data csv', data);
     const headers = [
         { label: 'ID', key: 'id' },
         { label: 'Fecha', key: 'date' },
