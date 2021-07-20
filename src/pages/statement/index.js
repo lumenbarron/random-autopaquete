@@ -95,7 +95,7 @@ const StatementPage = () => {
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
-                    //console.log('data guias', doc.data().creation_date, 'doc.id', doc.id);
+                    console.log('data guias', doc.data().creation_date, 'doc.id', doc.id);
                     data.push({
                         id: doc.id,
                         concept: 'Guia',
@@ -154,7 +154,7 @@ const StatementPage = () => {
                         concept: doc.data().concepto,
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
                         monto: parseFloat(doc.data().saldo),
-                        date: new Date(doc.data().create_date.replace(/-/g, '/')),
+                        date: new Date(doc.data().create_date),
                         saldo: 0,
                     });
                     console.log({
@@ -162,7 +162,7 @@ const StatementPage = () => {
                         concept: doc.data().concepto,
                         reference: doc.data().referencia ? doc.data().referencia : 's/r',
                         monto: parseFloat(doc.data().saldo),
-                        date: new Date(doc.data().create_date.replace(/-/g, '/')),
+                        date: new Date(doc.data().create_date), //new Date(doc.data().create_date.replace(/-/g, '/').substring(0, 10)),
                         saldo: 0,
                     });
                 });

@@ -136,7 +136,7 @@ export default function AddCredito({ user }) {
     const inforTransacciones = voucherData.map((voucher, idx) => {
         return {
             id: voucher.id,
-            date: voucher.create_date,
+            date: new Date(voucher.create_date).toISOString().substring(0, 10),
             monto: formatMoney(voucher.saldo, 2),
             concepto: voucher.concepto ? voucher.concepto : 'sin concepto',
             autor: voucher.autor ? voucher.autor : 'desconocido',
@@ -210,7 +210,7 @@ export default function AddCredito({ user }) {
             console.log('monto', monto, 'concepto', concepto, 'password', password);
             const addCreditData = {
                 ID: user.ID,
-                create_date: date,
+                create_date: new Date().toISOString(),
                 saldo: monto,
                 concepto: concepto,
                 autor: autor,
