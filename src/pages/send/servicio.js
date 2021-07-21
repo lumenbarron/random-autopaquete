@@ -559,7 +559,7 @@ export const ServicioComponent = ({ onSave, idGuiaGlobal }) => {
             }
         } else {
             const urlRequest = `https://autopaquete.simplestcode.com/api/do-shipping-quote/${supplier}`;
-            console.log('url', urlRequest);
+            console.log('url: ', urlRequest, 'request:', data);
 
             fetch(urlRequest, requestOptions)
                 .then(response => response.json())

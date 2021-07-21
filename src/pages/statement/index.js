@@ -301,7 +301,7 @@ const StatementPage = () => {
             <StatementContainer>
                 <Row className="row-header">
                     <h1>Mis movimientos</h1>
-                    <ExportReactStatementCSV data={statementData} />
+                    <ExportReactStatementCSV data={data} />
                 </Row>
                 <div className="back">
                     <div className="rainbow-p-bottom_xx-large">
